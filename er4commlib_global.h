@@ -1,10 +1,10 @@
-/*! \file e4ocommlib_global.h
+/*! \file er4commlib_global.h
  * \brief Defines global macros and typedefs.
- * \note \a E4OCOMMLIB_LIBRARY should be defined only during the library compilation.
- * Defining \a E4OCOMMLIB_LIBRARY when the library is included in a project will prevent project building.
+ * \note \a ER4COMMLIB_LIBRARY should be defined only during the library compilation.
+ * Defining \a ER4COMMLIB_LIBRARY when the library is included in a project will prevent project building.
  */
-#ifndef E4OCOMMLIB_GLOBAL_H
-#define E4OCOMMLIB_GLOBAL_H
+#ifndef ER4COMMLIB_GLOBAL_H
+#define ER4COMMLIB_GLOBAL_H
 
 #include <vector>
 #include <string>
@@ -17,18 +17,18 @@
 
 #if defined(_WIN32)
 
-#if defined(E4OCOMMLIB_LIBRARY)
-#  define E4OCOMMLIBSHARED_EXPORT __declspec(dllexport)
+#if defined(ER4COMMLIB_LIBRARY)
+#  define ER4COMMLIBSHARED_EXPORT __declspec(dllexport)
 #else
-#  define E4OCOMMLIBSHARED_EXPORT __declspec(dllimport)
+#  define ER4COMMLIBSHARED_EXPORT __declspec(dllimport)
 #endif
 
 #elif defined(__APPLE__)
 
-#if defined(E4OCOMMLIB_LIBRARY)
-#  define E4OCOMMLIBSHARED_EXPORT __attribute__((visibility("default")))
+#if defined(ER4COMMLIB_LIBRARY)
+#  define ER4COMMLIBSHARED_EXPORT __attribute__((visibility("default")))
 #else
-#  define E4OCOMMLIBSHARED_EXPORT __attribute__((visibility("default")))
+#  define ER4COMMLIBSHARED_EXPORT __attribute__((visibility("default")))
 #endif
 
 #endif
@@ -37,40 +37,40 @@
  *  Arguments qualifiers  *
 \**************************/
 
-/*! \def E4OCL_ARGIN
+/*! \def ER4CL_ARGIN
  * \brief Dummy define to identify input arguments.
  */
-#define E4OCL_ARGIN
+#define ER4CL_ARGIN
 
-/*! \def E4OCL_ARGOUT
+/*! \def ER4CL_ARGOUT
  * \brief Dummy define to identify output arguments.
  */
-#define E4OCL_ARGOUT
+#define ER4CL_ARGOUT
 
-/*! \def E4OCL_ARGVOID
+/*! \def ER4CL_ARGVOID
  * \brief Dummy define to identify void arguments.
  */
-#define E4OCL_ARGVOID void
+#define ER4CL_ARGVOID void
 
-/*! \def E4OCL_DATA_ARRAY_SIZE
+/*! \def ER4CL_DATA_ARRAY_SIZE
  * \brief Size of data array.
- * When calling method readData data corresponding to at most #E4OCL_DATA_ARRAY_SIZE samples is returned.
- * When calling method readData provide an array of float with at least #E4OCL_DATA_ARRAY_SIZE items.
+ * When calling method readData data corresponding to at most #ER4CL_DATA_ARRAY_SIZE samples is returned.
+ * When calling method readData provide an array of float with at least #ER4CL_DATA_ARRAY_SIZE items.
  */
-#define E4OCL_DATA_ARRAY_SIZE (65536)
+#define ER4CL_DATA_ARRAY_SIZE (65536)
 
-namespace e4oCommLib {
+namespace er4CommLib {
 
 /********************\
  *  Other typedefs  *
 \********************/
 
 /*! \enum DeviceTypes_t
- * \brief Enumerates the device types that can be handled by e4oCommLib.
+ * \brief Enumerates the device types that can be handled by er4CommLib.
  */
 typedef enum {
-    DeviceEnprNooma,           /*!< eNPR customized for Nooma. */
-    DeviceFakeEnprNooma,       /*!< Fake eNPR device resembling eNPR customized for Nooma. */
+    DeviceE16n,                 /*!< e16 2020 release. */
+    DeviceFakeE16n,             /*!< Fake e16 2020 release. */
     DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */
     DevicesNum
 } DeviceTypes_t;
@@ -98,7 +98,7 @@ typedef enum {
  * \param value [out] incremented prefix.
  * \return true if the prefix was successfully incremented; false if the prefix has already the maximum possible value.
  */
-static inline bool incrementUnit(E4OCL_ARGOUT UnitPfx_t &value);
+static inline bool incrementUnit(ER4CL_ARGOUT UnitPfx_t &value);
 
 /*! \brief Increments a prefix by n.
  *
@@ -106,14 +106,14 @@ static inline bool incrementUnit(E4OCL_ARGOUT UnitPfx_t &value);
  * \param n [in] increment.
  * \return true if the prefix was successfully incremented; false if the prefix surpasses the maximum possible value.
  */
-static inline bool incrementUnit(E4OCL_ARGOUT UnitPfx_t &value, E4OCL_ARGIN int n);
+static inline bool incrementUnit(ER4CL_ARGOUT UnitPfx_t &value, ER4CL_ARGIN int n);
 
 /*! \brief Decrements a prefix by 1.
  *
  * \param value [out] decremented prefix.
  * \return true if the prefix was successfully decremented; false if the prefix has already the minimum possible value.
  */
-static inline bool decrementUnit(E4OCL_ARGOUT UnitPfx_t &value);
+static inline bool decrementUnit(ER4CL_ARGOUT UnitPfx_t &value);
 
 /*! \brief Decrements a prefix by n.
  *
@@ -121,9 +121,9 @@ static inline bool decrementUnit(E4OCL_ARGOUT UnitPfx_t &value);
  * \param n [in] decrement.
  * \return true if the prefix was successfully decremented; false if the prefix surpasses the minimum possible value.
  */
-static inline bool decrementUnit(E4OCL_ARGOUT UnitPfx_t &value, E4OCL_ARGIN int n);
+static inline bool decrementUnit(ER4CL_ARGOUT UnitPfx_t &value, ER4CL_ARGIN int n);
 
-static inline bool incrementUnit(E4OCL_ARGOUT UnitPfx_t &value) {
+static inline bool incrementUnit(ER4CL_ARGOUT UnitPfx_t &value) {
     if (value < UnitPfxNum-1) {
         int intValue = static_cast <int> (value) +1;
         value = static_cast <UnitPfx_t> (intValue);
@@ -134,7 +134,7 @@ static inline bool incrementUnit(E4OCL_ARGOUT UnitPfx_t &value) {
     }
 }
 
-static inline bool incrementUnit(E4OCL_ARGOUT UnitPfx_t &value, E4OCL_ARGIN int n) {
+static inline bool incrementUnit(ER4CL_ARGOUT UnitPfx_t &value, ER4CL_ARGIN int n) {
     if (value < UnitPfxNum-n) {
         int intValue = static_cast <int> (value) +n;
         value = static_cast <UnitPfx_t> (intValue);
@@ -147,7 +147,7 @@ static inline bool incrementUnit(E4OCL_ARGOUT UnitPfx_t &value, E4OCL_ARGIN int 
     }
 }
 
-static inline bool decrementUnit(E4OCL_ARGOUT UnitPfx_t &value) {
+static inline bool decrementUnit(ER4CL_ARGOUT UnitPfx_t &value) {
     if (value > 0) {
         int intValue = static_cast <int> (value) -1;
         value = static_cast <UnitPfx_t> (intValue);
@@ -158,7 +158,7 @@ static inline bool decrementUnit(E4OCL_ARGOUT UnitPfx_t &value) {
     }
 }
 
-static inline bool decrementUnit(E4OCL_ARGOUT UnitPfx_t &value, E4OCL_ARGIN int n) {
+static inline bool decrementUnit(ER4CL_ARGOUT UnitPfx_t &value, ER4CL_ARGIN int n) {
     if (value > n-1) {
         int intValue = static_cast <int> (value) -n;
         value = static_cast <UnitPfx_t> (intValue);
@@ -215,7 +215,7 @@ typedef struct Measurement {
      *
      * \return String corresponding to the prefix.
      */
-    std::string getPrefix(E4OCL_ARGVOID) {
+    std::string getPrefix(ER4CL_ARGVOID) {
         return unitPrefixes[prefix];
     }
 
@@ -223,7 +223,7 @@ typedef struct Measurement {
      *
      * \return String corresponding to the unit with the prefix.
      */
-    std::string getFullUnit(E4OCL_ARGVOID) {
+    std::string getFullUnit(ER4CL_ARGVOID) {
         return unitPrefixes[prefix] + unit;
     }
 
@@ -231,7 +231,7 @@ typedef struct Measurement {
      *
      * \return Prefix multiplier, e.g. 10^-6 for micro.
      */
-    double multiplier(E4OCL_ARGVOID) {
+    double multiplier(ER4CL_ARGVOID) {
         unsigned int delta;
         bool deltaPositive;
 
@@ -257,7 +257,7 @@ typedef struct Measurement {
      * \param maxChars [in] maximum number of characters for the returned string.
      * \return String describing the value with its prefix and unit.
      */
-    std::string label(E4OCL_ARGIN unsigned int maxChars = 8) {
+    std::string label(ER4CL_ARGIN unsigned int maxChars = 8) {
         std::string valueSt = std::to_string(value);
         if (valueSt.length() >= maxChars) {
             valueSt.erase(maxChars);
@@ -282,7 +282,7 @@ typedef struct Measurement {
      *
      * \return String describing the value with its prefix and unit. The value and the prefix are converted so that the value is in the range [1.0, 1000.0[.
      */
-    std::string niceLabel(E4OCL_ARGVOID) {
+    std::string niceLabel(ER4CL_ARGVOID) {
         Measurement temp;
         temp.value = value;
         temp.prefix = prefix;
@@ -296,7 +296,7 @@ typedef struct Measurement {
      *
      * \param newPrefix [in] Desired unit prefix.
      */
-    void convertValue(E4OCL_ARGIN UnitPfx_t newPrefix) {
+    void convertValue(ER4CL_ARGIN UnitPfx_t newPrefix) {
         unsigned int delta;
         bool deltaPositive;
 
@@ -322,7 +322,7 @@ typedef struct Measurement {
      *
      * \param newMultiplier [in] Desired unit multiplier.
      */
-    void convertValue(E4OCL_ARGIN double newMultiplier) {
+    void convertValue(ER4CL_ARGIN double newMultiplier) {
         double multiplier = this->multiplier();
         double gain;
         bool gainPositive;
@@ -359,7 +359,7 @@ typedef struct Measurement {
 
     /*! \brief Converts #value and #prefix in order to have a final #value in range [1.0, 1000.0[.
      */
-    void nice(E4OCL_ARGVOID) {
+    void nice(ER4CL_ARGVOID) {
         if ((value == 0.0) || isinf(value)) {
             prefix = UnitPfxNone;
 
@@ -503,7 +503,7 @@ typedef struct {
      *
      * \return String corresponding to the prefix.
      */
-    std::string getPrefix(E4OCL_ARGVOID) {
+    std::string getPrefix(ER4CL_ARGVOID) {
         return unitPrefixes[prefix];
     }
 
@@ -511,7 +511,7 @@ typedef struct {
      *
      * \return String corresponding to the unit with the prefix.
      */
-    std::string getFullUnit(E4OCL_ARGVOID) {
+    std::string getFullUnit(ER4CL_ARGVOID) {
         return unitPrefixes[prefix] + unit;
     }
 
@@ -519,7 +519,7 @@ typedef struct {
      *
      * \return Prefix multiplier, e.g. 10^-6 for micro.
      */
-    double multiplier(E4OCL_ARGVOID) {
+    double multiplier(ER4CL_ARGVOID) {
         unsigned int delta;
         bool deltaPositive;
 
@@ -544,7 +544,7 @@ typedef struct {
      *
      * \param newPrefix [in] Desired unit prefix.
      */
-    void convertValues(E4OCL_ARGIN UnitPfx_t newPrefix) {
+    void convertValues(ER4CL_ARGIN UnitPfx_t newPrefix) {
         unsigned int delta;
         bool deltaPositive;
 
@@ -574,7 +574,7 @@ typedef struct {
      *
      * \param newMultiplier [in] Desired unit multiplier.
      */
-    void convertValues(E4OCL_ARGIN double newMultiplier) {
+    void convertValues(ER4CL_ARGIN double newMultiplier) {
         double multiplier = this->multiplier();
         double gain;
         bool gainPositive;
@@ -617,7 +617,7 @@ typedef struct {
      *
      * \return Difference between max and min.
      */
-    double delta(E4OCL_ARGVOID) {
+    double delta(ER4CL_ARGVOID) {
         return max-min;
     }
 
@@ -625,7 +625,7 @@ typedef struct {
      *
      * \return A reasonable amount of decimals to represent the values in the range.
      */
-    int decimals(E4OCL_ARGVOID) {
+    int decimals(ER4CL_ARGVOID) {
         int decimals = 0;
         double temp = step;
         while ((fabs(temp-round(temp)) > 0.05 || temp < 1.0) &&
@@ -688,7 +688,7 @@ typedef struct {
      *
      * \return String corresponding to the prefix.
      */
-    std::string getPrefix(E4OCL_ARGVOID) {
+    std::string getPrefix(ER4CL_ARGVOID) {
         return unitPrefixes[prefix];
     }
 
@@ -696,7 +696,7 @@ typedef struct {
      *
      * \return String corresponding to the unit with the prefix.
      */
-    std::string getFullUnit(E4OCL_ARGVOID) {
+    std::string getFullUnit(ER4CL_ARGVOID) {
         return unitPrefixes[prefix] + unit;
     }
 
@@ -704,7 +704,7 @@ typedef struct {
      *
      * \return String describing the compensation with its prefix and unit.
      */
-    std::string title(E4OCL_ARGVOID) {
+    std::string title(ER4CL_ARGVOID) {
         if (unit != "") {
             return name + " [" + unitPrefixes[prefix] + unit + "]";
 
@@ -714,6 +714,6 @@ typedef struct {
     }
 } CompensationControl_t;
 
-} // namespace e4oCommLib
+} // namespace er4CommLib
 
-#endif // E4OCOMMLIB_GLOBAL_H
+#endif // ER4COMMLIB_GLOBAL_H

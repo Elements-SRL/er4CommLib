@@ -1,10 +1,10 @@
-/*! \file e4ocommlib_errorcodes.h
- * \brief Defines error codes returned by methods in e4oCommLib namespace.
+/*! \file er4commlib_errorcodes.h
+ * \brief Defines error codes returned by methods in er4CommLib namespace.
  */
-#ifndef E4OCOMMLIB_ERRORCODES_H
-#define E4OCOMMLIB_ERRORCODES_H
+#ifndef ER4COMMLIB_ERRORCODES_H
+#define ER4COMMLIB_ERRORCODES_H
 
-namespace e4oCommLib {
+namespace er4CommLib {
 
 /*! \enum ErrorGroups_t
  *  \brief Enumerated error groups.
@@ -57,6 +57,6 @@ typedef enum {
     ErrorUnknown =                                                      0xFFFFFFFF  /*!< Undefined error. */
 } ErrorCodes_t;
 
-} // e4oCommLib
+} // er4CommLib
 
-#endif // E4OCOMMLIB_ERRORCODES_H
+#endif // ER4COMMLIB_ERRORCODES_H

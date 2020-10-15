@@ -7,15 +7,15 @@
 #include <condition_variable>
 #include <unordered_map>
 
-#include "e4ocommlib_errorcodes.h"
-#include "e4ocommlib_global.h"
+#include "er4commlib_errorcodes.h"
+#include "er4commlib_global.h"
 #include "ftdieeprom.h"
 #include "ftdieeprom56.h"
 #include "ftdieepromdemo.h"
 #include "commandcoder.h"
 
 using namespace std;
-using namespace e4oCommLib;
+using namespace er4CommLib;
 
 //#define DEBUG_PRINT
 
@@ -54,8 +54,8 @@ using namespace e4oCommLib;
 #define FTD_FEW_PACKET_COEFF 0.01 /*!< = 10.0/1000.0: 10.0 because I want to get data once every 10ms, 1000 to convert sampling rate from Hz to kHz */
 #define FTD_MAX_BYTES_TO_WAIT_FOR 2048
 
-#define E4OCL_OUTPUT_BUFFER_SIZE 0x100000 /*!< Always use a power of 2 for efficient circular buffer management through index masking */
-#define E4OCL_OUTPUT_BUFFER_MASK (E4OCL_OUTPUT_BUFFER_SIZE-1)
+#define ER4CL_OUTPUT_BUFFER_SIZE 0x100000 /*!< Always use a power of 2 for efficient circular buffer management through index masking */
+#define ER4CL_OUTPUT_BUFFER_MASK (ER4CL_OUTPUT_BUFFER_SIZE-1)
 
 #define FTD_TX_WORD_SIZE (sizeof(uint8_t)) // 1 bite word
 #define FTD_TX_SYNC_WORD_SIZE (FTD_TX_WORD_SIZE) // could be different size

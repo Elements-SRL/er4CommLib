@@ -1,6 +1,6 @@
-#include "messagedispatcher_enpr_nooma.h"
+#include "messagedispatcher_e16n.h"
 
-MessageDispatcher_eNPR_Nooma::MessageDispatcher_eNPR_Nooma(string di) :
+MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     MessageDispatcher(di) {
 
     ftdiEepromId = FtdiEepromId56;
@@ -22,7 +22,7 @@ MessageDispatcher_eNPR_Nooma::MessageDispatcher_eNPR_Nooma(string di) :
 
     readFrameLength = FTD_RX_SYNC_WORD_SIZE+(totalChannelsNum*packetsPerFrame)*FTD_RX_WORD_SIZE;
 
-    maxOutputPacketsNum = E4OCL_DATA_ARRAY_SIZE/totalChannelsNum;
+    maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
     /*! Current ranges */
     /*! VC */
@@ -1029,11 +1029,11 @@ MessageDispatcher_eNPR_Nooma::MessageDispatcher_eNPR_Nooma(string di) :
     txStatus[204] = 0x00;
 }
 
-MessageDispatcher_eNPR_Nooma::~MessageDispatcher_eNPR_Nooma() {
+MessageDispatcher_e16n::~MessageDispatcher_e16n() {
 
 }
 
-void MessageDispatcher_eNPR_Nooma::initializeDevice() {
+void MessageDispatcher_e16n::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     int16_t vcOffsetInt = (int16_t)ftdiEeprom->getVcOffset();

@@ -1,4 +1,4 @@
-#include "messagedispatcher_fake_nooma.h"
+#include "messagedispatcher_fake_e16n.h"
 
 #include <thread>
 #include <ctime>
@@ -9,8 +9,8 @@
  *  Ctor / Dtor  *
 \*****************/
 
-MessageDispatcher_fake_Nooma::MessageDispatcher_fake_Nooma(string di) :
-    MessageDispatcher_eNPR_Nooma(di) {
+MessageDispatcher_fake_e16n::MessageDispatcher_fake_e16n(string di) :
+    MessageDispatcher_e16n(di) {
 
     /*! Sampling rates */
     samplingRatesNum = 4;
@@ -31,7 +31,7 @@ MessageDispatcher_fake_Nooma::MessageDispatcher_fake_Nooma(string di) :
     realSamplingRatesArray[SamplingRate20kHz].unit = "Hz";
 }
 
-MessageDispatcher_fake_Nooma::~MessageDispatcher_fake_Nooma() {
+MessageDispatcher_fake_e16n::~MessageDispatcher_fake_e16n() {
 
 }
 
@@ -39,7 +39,7 @@ MessageDispatcher_fake_Nooma::~MessageDispatcher_fake_Nooma() {
  *  Connection methods  *
 \************************/
 
-ErrorCodes_t MessageDispatcher_fake_Nooma::connect(FtdiEeprom * ftdiEeprom) {
+ErrorCodes_t MessageDispatcher_fake_e16n::connect(FtdiEeprom * ftdiEeprom) {
     if (connected) {
         return ErrorDeviceAlreadyConnected;
     }
@@ -53,18 +53,18 @@ ErrorCodes_t MessageDispatcher_fake_Nooma::connect(FtdiEeprom * ftdiEeprom) {
 
     stopConnectionFlag = false;
 
-//    rxThread = thread(&MessageDispatcher_fake_Nooma::readAndParseMessagesForGenerator, this);
+//    rxThread = thread(&MessageDispatcher_fake_e16n::readAndParseMessagesForGenerator, this);
 
-//    txThread = thread(&MessageDispatcher_fake_Nooma::unwrapAndSendMessagesForGenerator, this);
+//    txThread = thread(&MessageDispatcher_fake_e16n::unwrapAndSendMessagesForGenerator, this);
 
-//    gnThread = thread(&MessageDispatcher_fake_Nooma::generateData, this);
+//    gnThread = thread(&MessageDispatcher_fake_e16n::generateData, this);
 
-//    satThread = thread(&MessageDispatcher_fake_Nooma::saturationFromGenerator, this);
+//    satThread = thread(&MessageDispatcher_fake_e16n::saturationFromGenerator, this);
 
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher_fake_Nooma::disconnect() {
+ErrorCodes_t MessageDispatcher_fake_e16n::disconnect() {
     if (!connected) {
         return ErrorDeviceNotConnected;
     }
@@ -95,7 +95,7 @@ ErrorCodes_t MessageDispatcher_fake_Nooma::disconnect() {
  *  Tx methods for generator  *
 \******************************/
 
-ErrorCodes_t MessageDispatcher_fake_Nooma::setCurrentRange(uint16_t currentRangeIdx) {
+ErrorCodes_t MessageDispatcher_fake_e16n::setCurrentRange(uint16_t currentRangeIdx) {
     ErrorCodes_t ret;
     ret = MessageDispatcher::setCurrentRange(currentRangeIdx);
     if (ret == Success) {
@@ -105,7 +105,7 @@ ErrorCodes_t MessageDispatcher_fake_Nooma::setCurrentRange(uint16_t currentRange
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher_fake_Nooma::setSamplingRate(uint16_t samplingRateIdx, bool) {
+ErrorCodes_t MessageDispatcher_fake_e16n::setSamplingRate(uint16_t samplingRateIdx, bool) {
     ErrorCodes_t ret;
     ret = MessageDispatcher::setSamplingRate(samplingRateIdx);
     if (ret == Success) {

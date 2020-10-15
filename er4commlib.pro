@@ -19,19 +19,21 @@ CONFIG(release, debug|release) {
 
 TEMPLATE = lib
 
-DEFINES += E4OCOMMLIB_LIBRARY
+DEFINES += ER4COMMLIB_LIBRARY
 
 SOURCES += \
+    devices/fake/messagedispatcher_fake_e16n.cpp \
+    devices/nanopore/messagedispatcher_e16n.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
     ftdieeprom56.cpp \
     ftdieepromdemo.cpp \
     messagedispatcher.cpp \
-    commandcoder.cpp \
-    devices/fake/messagedispatcher_fake_nooma.cpp \
-    devices/nanopore/messagedispatcher_enpr_nooma.cpp
+    commandcoder.cpp
 
 HEADERS += \
+    devices/fake/messagedispatcher_fake_e16n.h \
+    devices/nanopore/messagedispatcher_e16n.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
@@ -39,9 +41,7 @@ HEADERS += \
     ftdieeprom56.h \
     ftdieepromdemo.h \
     messagedispatcher.h \
-    commandcoder.h \
-    devices/fake/messagedispatcher_fake_nooma.h \
-    devices/nanopore/messagedispatcher_enpr_nooma.h
+    commandcoder.h
 
 unix {
     target.path = /usr/lib

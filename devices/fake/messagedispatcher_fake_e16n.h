@@ -1,7 +1,7 @@
-#ifndef MESSAGEDISPATCHER_FAKE_NOOMA_H
-#define MESSAGEDISPATCHER_FAKE_NOOMA_H
+#ifndef MESSAGEDISPATCHER_FAKE_E16N_H
+#define MESSAGEDISPATCHER_FAKE_E16N_H
 
-#include "messagedispatcher_enpr_nooma.h"
+#include "messagedispatcher_e16n.h"
 
 /********************************************************************************************\
  *                                                                                          *
@@ -9,14 +9,14 @@
  *                                                                                          *
 \********************************************************************************************/
 
-class MessageDispatcher_fake_Nooma : public MessageDispatcher_eNPR_Nooma {
+class MessageDispatcher_fake_e16n : public MessageDispatcher_e16n {
 public:
     /*****************\
      *  Ctor / Dtor  *
     \*****************/
 
-    MessageDispatcher_fake_Nooma(string di);
-    ~MessageDispatcher_fake_Nooma();
+    MessageDispatcher_fake_e16n(string di);
+    ~MessageDispatcher_fake_e16n();
 
     /************************\
      *  Connection methods  *
@@ -156,4 +156,4 @@ protected:
     thread satThread;
 };
 
-#endif // MESSAGEDISPATCHER_FAKE_NOOMA_H
+#endif // MESSAGEDISPATCHER_FAKE_E16N_H

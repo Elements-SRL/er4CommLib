@@ -1,5 +1,5 @@
-#ifndef MESSAGEDISPATCHER_ENPR_NOOMA_H
-#define MESSAGEDISPATCHER_ENPR_NOOMA_H
+#ifndef MESSAGEDISPATCHER_E16N_H
+#define MESSAGEDISPATCHER_E16N_H
 
 #include "messagedispatcher.h"
 
@@ -7,10 +7,10 @@
 
 using namespace std;
 
-class MessageDispatcher_eNPR_Nooma : public MessageDispatcher {
+class MessageDispatcher_e16n : public MessageDispatcher {
 public:
-    MessageDispatcher_eNPR_Nooma(string di);
-    virtual ~MessageDispatcher_eNPR_Nooma();
+    MessageDispatcher_e16n(string di);
+    virtual ~MessageDispatcher_e16n();
 
 protected:
     enum CurrentRanges {
@@ -143,4 +143,4 @@ protected:
     void initializeDevice() override;
 };
 
-#endif // MESSAGEDISPATCHER_ENPR_NOOMA_H
+#endif // MESSAGEDISPATCHER_E16N_H

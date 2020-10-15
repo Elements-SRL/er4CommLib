@@ -10,12 +10,8 @@
 #include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionPrototype, DeviceSubversionProtoEnprNooma, 1, DeviceEnprNooma},        //  254,12,   1 : eNPR customized for Nooma
-    {DeviceVersionPrototype, DeviceSubversionProtoEnprNooma, 3, DeviceEnprNooma},        //  254,12,   3 : eNPR customized for Nooma
-    {DeviceVersionPrototype, DeviceSubversionProtoEnprNooma, 4, DeviceEnprNooma},        //  254,12,   4 : eNPR customized for Nooma
-    {DeviceVersionPrototype, DeviceSubversionProtoEnprNooma, 5, DeviceEnprNooma},        //  254,12,   5 : eNPR customized for Nooma
-    {DeviceVersionPrototype, DeviceSubversionProtoEnprNooma, 6, DeviceEnprNooma},        //  254,12,   6 : eNPR customized for Nooma
-    {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeEnprNooma}
+    {DeviceVersionE16, DeviceSubversionE16n, 1, DeviceE16n},            //    3,  5,  1 : e16 2020 release
+    {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
 
 /********************************************************************************************\
@@ -47,16 +43,16 @@ ErrorCodes_t MessageDispatcher::init() {
         return ErrorInitializationFailed;
     }
 
-    outputDataBuffer = new (std::nothrow) uint16_t * [E4OCL_OUTPUT_BUFFER_SIZE];
+    outputDataBuffer = new (std::nothrow) uint16_t * [ER4CL_OUTPUT_BUFFER_SIZE];
     if (outputDataBuffer == nullptr) {
         return ErrorInitializationFailed;
     }
 
-    outputDataBuffer[0] = new (std::nothrow) uint16_t[E4OCL_OUTPUT_BUFFER_SIZE*totalChannelsNum];
+    outputDataBuffer[0] = new (std::nothrow) uint16_t[ER4CL_OUTPUT_BUFFER_SIZE*totalChannelsNum];
     if (outputDataBuffer == nullptr) {
         return ErrorInitializationFailed;
     }
-    for (int packetIdx = 1; packetIdx < E4OCL_OUTPUT_BUFFER_SIZE; packetIdx++) {
+    for (int packetIdx = 1; packetIdx < ER4CL_OUTPUT_BUFFER_SIZE; packetIdx++) {
         outputDataBuffer[packetIdx] = outputDataBuffer[0]+((int)totalChannelsNum)*packetIdx;
     }
 
@@ -831,10 +827,10 @@ ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int pa
     unsigned int channelIdx;
     for (unsigned int packetIdx = 0; packetIdx < packetsNumber; packetIdx++) {
         for (channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
-            data[packetIdx*totalChannelsNum+channelIdx] = outputDataBuffer[(outputBufferReadOffset+packetIdx)&E4OCL_OUTPUT_BUFFER_MASK][channelIdx];
+            data[packetIdx*totalChannelsNum+channelIdx] = outputDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
         }
     }
-    outputBufferReadOffset = (outputBufferReadOffset+packetsNumber)&E4OCL_OUTPUT_BUFFER_MASK;
+    outputBufferReadOffset = (outputBufferReadOffset+packetsNumber)&ER4CL_OUTPUT_BUFFER_MASK;
     outputBufferAvailablePackets -= packetsNumber;
     * packetsRead = packetsNumber;
 
@@ -1442,14 +1438,14 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                 iirOff--;
             }
 
-            outputBufferWriteOffset = (outputBufferWriteOffset+1)&E4OCL_OUTPUT_BUFFER_MASK;
+            outputBufferWriteOffset = (outputBufferWriteOffset+1)&ER4CL_OUTPUT_BUFFER_MASK;
             outputBufferAvailablePackets++;
         }
     }
 
     /*! If too many packets are written but not read from the user the buffer saturates */
-    if (outputBufferAvailablePackets > E4OCL_OUTPUT_BUFFER_SIZE/totalChannelsNum) {
-        outputBufferAvailablePackets = E4OCL_OUTPUT_BUFFER_SIZE/totalChannelsNum; /*!< Saturates available packets */
+    if (outputBufferAvailablePackets > ER4CL_OUTPUT_BUFFER_SIZE/totalChannelsNum) {
+        outputBufferAvailablePackets = ER4CL_OUTPUT_BUFFER_SIZE/totalChannelsNum; /*!< Saturates available packets */
         outputBufferReadOffset = outputBufferWriteOffset; /*! Move read offset just on top of the write offset so that it can read up to 1 position before after a full buffer read */
         outputBufferOverflowFlag = true;
     }

@@ -12,7 +12,7 @@
 #include "ftd2xx.h"
 #endif
 
-#include "e4ocommlib.h"
+#include "er4commlib.h"
 
 typedef enum {
     FtdiEepromId56,
@@ -20,17 +20,19 @@ typedef enum {
 } FtdiEepromId_t;
 
 typedef enum {
+    DeviceVersionE16 = 0x03,
     DeviceVersionDemo = 0xFD,
     DeviceVersionPrototype = 0xFE,
     DeviceVersionUndefined = 0xFF
 } DeviceVersion_t;
 
 typedef enum {
+    DeviceSubversionE16n = 5,
+
     /*! Subversions used for ver = FD */
     DeviceSubversionDemo = 1,
 
     /*! Subversions used for ver = FE */
-    DeviceSubversionProtoEnprNooma = 12,
 
     /*! Subversions used for ver = 0xFF */
     DeviceSubversionUndefined = 0xFF
@@ -57,7 +59,7 @@ inline bool operator != (const DeviceTuple_t &a, const DeviceTuple_t &b) {
 }
 
 using namespace std;
-using namespace e4oCommLib;
+using namespace er4CommLib;
 
 class FtdiEeprom {
 public:

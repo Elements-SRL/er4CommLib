@@ -1,10 +1,10 @@
-#include "e4ocommlib.h"
+#include "er4commlib.h"
 
 #include <algorithm>
 
 #include "messagedispatcher.h"
-#include "messagedispatcher_enpr_nooma.h"
-#include "messagedispatcher_fake_nooma.h"
+#include "messagedispatcher_e16n.h"
+#include "messagedispatcher_fake_e16n.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -24,14 +24,14 @@ string getDeviceSerial(
 bool getDeviceCount(
         DWORD &numDevs);
 
-namespace e4oCommLib {
+namespace er4CommLib {
 
 /*****************\
  *  Ctor / Dtor  *
 \*****************/
 
 ErrorCodes_t init() {
-    buffer_l = new (nothrow) uint16_t [E4OCL_DATA_ARRAY_SIZE];
+    buffer_l = new (nothrow) uint16_t [ER4CL_DATA_ARRAY_SIZE];
     if (buffer_l == nullptr) {
         //        delete [] deviceId_l;
         //        deviceId_l = nullptr;
@@ -121,12 +121,12 @@ ErrorCodes_t connect(
         }
 
         switch (deviceType) {
-        case DeviceEnprNooma:
-            messageDispatcher = new MessageDispatcher_eNPR_Nooma(deviceId);
+        case DeviceE16n:
+            messageDispatcher = new MessageDispatcher_e16n(deviceId);
             break;
 
-        case DeviceFakeEnprNooma:
-            messageDispatcher = new MessageDispatcher_fake_Nooma(deviceId);
+        case DeviceFakeE16n:
+            messageDispatcher = new MessageDispatcher_fake_e16n(deviceId);
             break;
 
         default:
@@ -1075,7 +1075,7 @@ ErrorCodes_t getConditioningProtocolTime(
     return ret;
 }
 
-} // namespace e4oCommLib
+} // namespace er4CommLib
 
 /*! Private functions */
 string getDeviceSerial(

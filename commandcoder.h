@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <vector>
 
-#include <e4ocommlib_global.h>
+#include <er4commlib_global.h>
 
 using namespace std;
 

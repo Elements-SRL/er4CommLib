@@ -27,8 +27,11 @@ using namespace er4CommLib;
 #define SHORT_MAX (static_cast <double> (0x7FFF))
 #define SHORT_MIN (-SHORT_MAX-1.0)
 #define USHORT_MAX (static_cast <double> (0xFFFF))
+#define UINT10_MAX (static_cast <double> (0x3FF))
 #define INT18_MAX (static_cast <double> (0x1FFFF))
 #define UINT28_MAX (static_cast <double> (0xFFFFFFF))
+#define INT28_MAX (static_cast <double> (0x7FFFFFF))
+#define INT28_MIN (-INT28_MAX-1.0)
 
 #define LSB_NOISE_ARRAY_SIZE 0x40000 /*! \todo FCON valutare che questo numero sia adeguato */ // ~250k
 #define LSB_NOISE_ARRAY_MASK (LSB_NOISE_ARRAY_SIZE-1) // 0b11...1 for all bits of the array indexes
@@ -111,31 +114,16 @@ public:
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
 
     ErrorCodes_t sendCommands();
-    ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
-    ErrorCodes_t setInterposerInserted(bool flag, bool applyFlag = true);
-    ErrorCodes_t setConditioningCheck(bool flag, bool applyFlag = true);
-    ErrorCodes_t setConditioningChannel(uint16_t channelIdx, bool applyFlag = true);
     ErrorCodes_t selectVoltageProtocol(unsigned int idx, bool applyFlag = false);
     ErrorCodes_t applyVoltageProtocol();
     ErrorCodes_t setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
-    ErrorCodes_t setTriangularVoltage(Measurement_t voltage, bool applyFlag = false);
     ErrorCodes_t setProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag = false);
-    ErrorCodes_t setTriangularTime(Measurement_t time, bool applyFlag = false);
-    ErrorCodes_t setFsmFlag(unsigned int idx, bool flag, bool applyFlag = true);
-    ErrorCodes_t setFsmVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = true);
-    ErrorCodes_t setFsmThresholdCurrent(unsigned int idx, Measurement_t current, bool applyFlag = true);
-    ErrorCodes_t setFsmTime(unsigned int idx, Measurement_t time, bool applyFlag = true);
-    ErrorCodes_t setFsmInteger(unsigned int idx, unsigned int value, bool applyFlag = true);
-    ErrorCodes_t setMovingAverageFilterDuration(Measurement_t duration, bool applyFlag = true);
-    ErrorCodes_t set4thOrderFilterCutoffFrequency(Measurement_t cFrequency, bool applyFlag = true);
+    ErrorCodes_t setProtocolSlope(unsigned int idx, Measurement_t slope, bool applyFlag = false);
+    ErrorCodes_t setProtocolInteger(unsigned int idx, int32_t value, bool applyFlag = false);
+
     ErrorCodes_t setRawDataFilterCutoffFrequency(Measurement_t cFrequency);
-    ErrorCodes_t setConditioningProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
-    ErrorCodes_t setCheckingProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
-    ErrorCodes_t setConditioningProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag = false);
     ErrorCodes_t activateFEResetDenoiser(bool flag, bool applyFlag = true);
     ErrorCodes_t activateDacIntFilter(bool flag, bool applyFlag = true);
-    ErrorCodes_t activateDacExtFilter(bool flag, bool applyFlag = true);
-    ErrorCodes_t setVcmForce(bool flag, bool applyFlag = true);
 
     /****************\
      *  Rx methods  *
@@ -148,17 +136,13 @@ public:
     ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int * packetsRead);
     ErrorCodes_t purgeData();
 
-    ErrorCodes_t getChannelsNumber(uint32_t &fsmStateChannelsNumber, uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber);
+    ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber);
 
     ErrorCodes_t getCurrentRanges(vector <RangedMeasurement_t> &currentRanges);
     ErrorCodes_t getCurrentRange(RangedMeasurement_t &currentRange);
-    ErrorCodes_t getCheckingCurrentRange(RangedMeasurement_t &currentRange);
-    ErrorCodes_t getConditioningCurrentRange(RangedMeasurement_t &currentRange);
 
     ErrorCodes_t getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges);
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
-    ErrorCodes_t getCheckingVoltageRange(RangedMeasurement_t &voltageRange);
-    ErrorCodes_t getConditioningVoltageRange(RangedMeasurement_t &voltageRange);
 
     ErrorCodes_t getSamplingRates(vector <Measurement_t> &samplingRates, unsigned int &defaultOption);
     ErrorCodes_t getRealSamplingRates(vector <Measurement_t> &samplingRates);
@@ -167,23 +151,12 @@ public:
 
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
 
-    ErrorCodes_t getDacExtRange(RangedMeasurement_t &range, Measurement_t &defaultValue);
-    ErrorCodes_t getProtocolList(vector <string> &protocolsNames, unsigned int &triangularIdx);
+    ErrorCodes_t getProtocolList(vector <string> &protocolsNames);
     ErrorCodes_t getProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
-    ErrorCodes_t getTriangularVoltage(RangedMeasurement_t &range, Measurement_t &defaultValue);
-    ErrorCodes_t getProtocolTime(vector <string> &timeNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues);
-    ErrorCodes_t getTriangularTime(RangedMeasurement_t &range, Measurement_t &defaultValue);
-    ErrorCodes_t getFsmFlag(vector <string> &flagNames, vector <bool> &defaultValues);
-    ErrorCodes_t getFsmVoltage(vector <string> &voltageNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues);
-    ErrorCodes_t getFsmThresholdCurrent(vector <string> &currentNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues);
-    ErrorCodes_t getFsmTime(vector <string> &timeNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues);
-    ErrorCodes_t getFsmInteger(vector <string> &integerNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues);
-    ErrorCodes_t getMovingAverageFilterDuration(RangedMeasurement_t &range, Measurement_t &defaultValue);
-    ErrorCodes_t get4thOrderFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
+    ErrorCodes_t getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
+    ErrorCodes_t getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
+    ErrorCodes_t getProtocolInteger(vector <string> &integerNames, vector <RangedMeasurement_t> &ranges, vector <int32_t> &defaultValues);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
-    ErrorCodes_t getConditioningProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
-    ErrorCodes_t getCheckingProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
-    ErrorCodes_t getConditioningProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
 
 protected:
     typedef enum {
@@ -239,13 +212,9 @@ protected:
 
     int packetsPerFrame = 16;
 
-    uint16_t fsmStateChannelsNum = 1;
-    uint16_t voltageChannelsNum = 2;
-    uint16_t currentChannelsNum = 2;
-    uint16_t filteredCurrentChannelsNum = currentChannelsNum;
-    uint16_t averagedCurrentChannelsNum = currentChannelsNum;
-    uint16_t totalChannelsNum = fsmStateChannelsNum+voltageChannelsNum+
-            currentChannelsNum+filteredCurrentChannelsNum+averagedCurrentChannelsNum;
+    uint16_t voltageChannelsNum = 1;
+    uint16_t currentChannelsNum = 1;
+    uint16_t totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
     uint32_t currentRangesNum;
     uint16_t selectedCurrentRangeIdx = 0;
@@ -266,94 +235,45 @@ protected:
 
     BoolArrayCoder * deviceResetCoder;
     BoolArrayCoder * digitalOffsetCompensationCoder;
-    vector <BoolArrayCoder *> zapCoders;
+    BoolArrayCoder * digitalOffsetCompensationResetCoder;
+    BoolArrayCoder * zapCoder;
     vector <bool> zapStates;
+    BoolArrayCoder * channelOffCoder;
+    BoolArrayCoder * channelSelectCoder;
 
-    bool interposerInserted = false;
-    BoolArrayCoder * conditioningModalityCoder;
-    BoolArrayCoder * conditioningChannelCoder;
-    uint16_t sequencingVoltageRangeIdx = 0;
-    uint16_t conditioningVoltageRangeIdx = 0;
-    uint16_t checkingVoltageRangeIdx = 0;
-    uint16_t sequencingCurrentRangeIdx = 0;
-    uint16_t conditioningCurrentRangeIdx = 0;
-    uint16_t checkingCurrentRangeIdx = 0;
-
-    RangedMeasurement_t dacExtRange;
-    DoubleOffsetBinaryCoder * dacExtCoder;
-    Measurement_t dacExtDefault;
+    uint16_t voltageRangeIdx = 0;
+    uint16_t currentRangeIdx = 0;
 
     vector <std::string> protocolsNames;
-    unsigned int triangularIdx;
     BoolArrayCoder * protocolsSelectCoder;
     BoolArrayCoder * protocolStartCoder;
+    unsigned int defaultProtocol;
 
     unsigned int protocolVoltagesNum;
     vector <std::string> protocolVoltageNames;
     vector <RangedMeasurement_t> protocolVoltageRanges;
-    vector <DoubleSignAbsCoder *> protocolVoltageCoders;
+    vector <DoubleCoder *> protocolVoltageCoders;
     vector <Measurement_t> protocolVoltageDefault;
-
-    RangedMeasurement_t triangularVoltageRange;
-    DoubleOffsetBinaryCoder * triangularVoltageCoder;
-    Measurement_t triangularVoltageDefault;
 
     unsigned int protocolTimesNum;
     vector <std::string> protocolTimeNames;
-    RangedMeasurement_t protocolTimeRange;
-    vector <DoubleOffsetBinaryCoder *> protocolTimeCoders;
+    vector <RangedMeasurement_t> protocolTimeRanges;
+    vector <DoubleCoder *> protocolTimeCoders;
     vector <Measurement_t> protocolTimeDefault;
 
-    RangedMeasurement_t triangularTimeRange;
-    DoubleOffsetBinaryCoder * triangularTimeCoder;
-    Measurement_t triangularTimeDefault;
+    unsigned int protocolSlopesNum;
+    vector <std::string> protocolSlopeNames;
+    vector <RangedMeasurement_t> protocolSlopeRanges;
+    vector <DoubleCoder *> protocolSlopeCoders;
+    vector <Measurement_t> protocolSlopeDefault;
 
-    unsigned int fsmFlagsNum;
-    vector <std::string> fsmFlagNames;
-    uint32_t fsmFlagStatus = 0x00000000;
-    vector <BoolArrayCoder *> fsmFlagCoders;
-    vector <bool> fsmFlagDefault;
-
-    unsigned int fsmVoltagesNum;
-    vector <std::string> fsmVoltageNames;
-    RangedMeasurement_t fsmVoltageRange;
-    vector <DoubleTwosCompCoder *> fsmVoltageCoders;
-    vector <Measurement_t> fsmVoltageDefault;
-
-    unsigned int fsmCurrentsNum;
-    vector <std::string> fsmCurrentNames;
-    RangedMeasurement_t fsmThresholdCurrentRange;
-    vector <DoubleOffsetBinaryCoder *> fsmThresholdCurrentCoders;
-    vector <Measurement_t> fsmThresholdCurrentDefault;
-
-    unsigned int fsmTimesNum;
-    vector <std::string> fsmTimeNames;
-    RangedMeasurement_t fsmTimeRange;
-    vector <DoubleOffsetBinaryCoder *> fsmTimeCoders;
-    vector <Measurement_t> fsmTimeDefault;
-
-    unsigned int fsmIntegersNum;
-    vector <std::string> fsmIntegerNames;
-    RangedMeasurement_t fsmIntegerRange;
-    vector <BoolArrayCoder *> fsmIntegerCoders;
-    vector <Measurement_t> fsmIntegerDefault;
+    unsigned int protocolIntegersNum;
+    vector <std::string> protocolIntegerNames;
+    vector <RangedMeasurement_t> protocolIntegerRanges;
+    vector <BoolArrayCoder *> protocolIntegerCoders;
+    vector <int32_t> protocolIntegerDefault;
 
     Measurement_t integrationStep;
-
-    RangedMeasurement_t movingAverageFilterDurationRange;
-    DoubleTwosCompCoder * movingAverageFilterKxCoder;
-    Measurement_t movingAverageFilterDurationDefault;
-    Measurement_t movingAverageFilterDuration;
-
-    RangedMeasurement_t fourthOrderFilterCutoffFrequencyRange;
-    DoubleTwosCompCoder * fourthOrderFilterA01Coder;
-    DoubleTwosCompCoder * fourthOrderFilterA02Coder;
-    DoubleTwosCompCoder * fourthOrderFilterK0Coder;
-    DoubleTwosCompCoder * fourthOrderFilterA11Coder;
-    DoubleTwosCompCoder * fourthOrderFilterA12Coder;
-    DoubleTwosCompCoder * fourthOrderFilterK1Coder;
-    Measurement_t fourthOrderFilterCutoffFrequencyDefault;
-    Measurement_t fourthOrderFilterCutoffFrequency;
 
     RangedMeasurement_t rawDataFilterCutoffFrequencyRange;
     Measurement_t rawDataFilterCutoffFrequencyDefault;
@@ -369,29 +289,8 @@ protected:
 
     uint16_t iirOff = 0;
 
-    unsigned int conditioningVoltagesNum;
-    vector <std::string> conditioningProtocolVoltageNames;
-    vector <RangedMeasurement_t> conditioningProtocolVoltageRanges;
-    vector <DoubleOffsetBinaryCoder *> conditioningProtocolVoltageCoders;
-    vector <Measurement_t> conditioningProtocolVoltageDefault;
-
-    unsigned int checkingVoltagesNum;
-    vector <std::string> checkingProtocolVoltageNames;
-    vector <RangedMeasurement_t> checkingProtocolVoltageRanges;
-    vector <DoubleSignAbsCoder *> checkingProtocolVoltageCoders;
-    vector <Measurement_t> checkingProtocolVoltageDefault;
-
-    unsigned int conditioningTimesNum;
-    vector <std::string> conditioningProtocolTimeNames;
-    vector <RangedMeasurement_t> conditioningProtocolTimeRanges;
-    vector <DoubleOffsetBinaryCoder *> conditioningProtocolTimeCoders;
-    vector <Measurement_t> conditioningProtocolTimeDefault;
-
     BoolArrayCoder * fEResetDenoiserCoder;
     BoolArrayCoder * dacIntFilterCoder;
-    BoolArrayCoder * dacExtFilterCoder;
-    BoolArrayCoder * vcIntCoder;
-    BoolArrayCoder * vcmForceCoder;
 
     /***************\
      *  Variables  *

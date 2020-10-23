@@ -93,7 +93,7 @@ ErrorCodes_t connect(
         /*! Initializes eeprom */
         /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
         FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
-        if (deviceId == "eNPR Demo") {
+        if (deviceId == "e16 Demo") {
             ftdiEepromId = FtdiEepromIdDemo;
         }
 
@@ -188,54 +188,6 @@ ErrorCodes_t sendCommands() {
     return ret;
 }
 
-ErrorCodes_t applyDacExt(
-        Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->applyDacExt(voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setInterposerInserted(
-        bool flag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setInterposerInserted(flag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setConditioningCheck(
-        bool flag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setConditioningCheck(flag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setConditioningChannel(
-        uint16_t channelIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setConditioningChannel(channelIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
 ErrorCodes_t selectVoltageProtocol(
         unsigned int idx) {
     ErrorCodes_t ret;
@@ -272,18 +224,6 @@ ErrorCodes_t setProtocolVoltage(
     return ret;
 }
 
-ErrorCodes_t setTriangularVoltage(
-        Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setTriangularVoltage(voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
 ErrorCodes_t setProtocolTime(
         unsigned int idx,
         Measurement_t time) {
@@ -297,25 +237,12 @@ ErrorCodes_t setProtocolTime(
     return ret;
 }
 
-ErrorCodes_t setTriangularTime(
-        Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setTriangularTime(time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setFsmFlag(
+ErrorCodes_t setProtocolSlope(
         unsigned int idx,
-        bool flag,
-        bool applyFlag) {
+        Measurement_t slope) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFsmFlag(idx, flag, applyFlag);
+        ret = messageDispatcher->setProtocolSlope(idx, slope);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -323,79 +250,12 @@ ErrorCodes_t setFsmFlag(
     return ret;
 }
 
-ErrorCodes_t setFsmVoltage(
+ErrorCodes_t setProtocolInteger(
         unsigned int idx,
-        Measurement_t voltage,
-        bool applyFlag) {
+        int32_t value) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFsmVoltage(idx, voltage, applyFlag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setFsmThresholdCurrent(
-        unsigned int idx,
-        Measurement_t current,
-        bool applyFlag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFsmThresholdCurrent(idx, current, applyFlag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setFsmTime(
-        unsigned int idx,
-        Measurement_t time,
-        bool applyFlag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFsmTime(idx, time, applyFlag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setFsmInteger(
-        unsigned int idx,
-        unsigned int value,
-        bool applyFlag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFsmInteger(idx, value, applyFlag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setMovingAverageFilterDuration(
-        Measurement_t duration) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setMovingAverageFilterDuration(duration);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t set4thOrderFilterCutoffFrequency(
-        Measurement_t cFrequency) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->set4thOrderFilterCutoffFrequency(cFrequency);
+        ret = messageDispatcher->setProtocolInteger(idx, value);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -408,45 +268,6 @@ ErrorCodes_t setRawDataFilterCutoffFrequency(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->setRawDataFilterCutoffFrequency(cFrequency);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setConditioningProtocolVoltage(
-        unsigned int idx,
-        Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setConditioningProtocolVoltage(idx, voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setCheckingProtocolVoltage(
-        unsigned int idx,
-        Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setCheckingProtocolVoltage(idx, voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setConditioningProtocolTime(
-        unsigned int idx,
-        Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setConditioningProtocolTime(idx, time);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -471,30 +292,6 @@ ErrorCodes_t activateDacIntFilter(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->activateDacIntFilter(flag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t activateDacExtFilter(
-        bool flag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->activateDacExtFilter(flag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setVcmForce(
-        bool flag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setVcmForce(flag);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -643,12 +440,11 @@ ErrorCodes_t getQueueStatus(
 }
 
 ErrorCodes_t getChannelsNumber(
-        uint32_t &fsmStatesChannelsNum,
         uint32_t &voltageChannelsNum,
         uint32_t &currentChannelsNum) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getChannelsNumber(fsmStatesChannelsNum, voltageChannelsNum, currentChannelsNum);
+        ret = messageDispatcher->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -724,30 +520,6 @@ ErrorCodes_t getCurrentRange(
     return ret;
 }
 
-ErrorCodes_t getCheckingCurrentRange(
-        RangedMeasurement_t &currentRange) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCheckingCurrentRange(currentRange);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getConditioningCurrentRange(
-        RangedMeasurement_t &currentRange) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getConditioningCurrentRange(currentRange);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
 ErrorCodes_t getVoltageRanges(
         vector <RangedMeasurement_t> &voltageRanges) {
     ErrorCodes_t ret;
@@ -765,30 +537,6 @@ ErrorCodes_t getVoltageRange(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getVoltageRange(voltageRange);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getCheckingVoltageRange(
-        RangedMeasurement_t &voltageRange) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCheckingVoltageRange(voltageRange);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getConditioningVoltageRange(
-        RangedMeasurement_t &voltageRange) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getConditioningVoltageRange(voltageRange);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -845,25 +593,11 @@ ErrorCodes_t getLiquidJunctionControl(
     return ret;
 }
 
-ErrorCodes_t getDacExtRange(
-        RangedMeasurement_t &range,
-        Measurement_t &defaultValue) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getDacExtRange(range, defaultValue);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
 ErrorCodes_t getProtocolList(
-        vector <string> &protocolsNames,
-        unsigned int &triangularIdx) {
+        vector <string> &protocolsNames) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolList(protocolsNames, triangularIdx);
+        ret = messageDispatcher->getProtocolList(protocolsNames);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -885,26 +619,13 @@ ErrorCodes_t getProtocolVoltage(
     return ret;
 }
 
-ErrorCodes_t getTriangularVoltage(
-        RangedMeasurement_t &range,
-        Measurement_t &defaultValue) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getTriangularVoltage(range, defaultValue);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
 ErrorCodes_t getProtocolTime(
         vector <string> &timeNames,
-        RangedMeasurement_t &range,
+        vector <RangedMeasurement_t> &ranges,
         vector <Measurement_t> &defaultValues) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolTime(timeNames, range, defaultValues);
+        ret = messageDispatcher->getProtocolTime(timeNames, ranges, defaultValues);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -912,39 +633,13 @@ ErrorCodes_t getProtocolTime(
     return ret;
 }
 
-ErrorCodes_t getTriangularTime(
-        RangedMeasurement_t &range,
-        Measurement_t &defaultValue) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getTriangularTime(range, defaultValue);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getFsmFlag(
-        vector <string> &flagNames,
-        vector <bool> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFsmFlag(flagNames, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getFsmVoltage(
-        vector <string> &voltageNames,
-        RangedMeasurement_t &range,
+ErrorCodes_t getProtocolSlope(
+        vector <string> &slopeNames,
+        vector <RangedMeasurement_t> &ranges,
         vector <Measurement_t> &defaultValues) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFsmVoltage(voltageNames, range, defaultValues);
+        ret = messageDispatcher->getProtocolSlope(slopeNames, ranges, defaultValues);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -952,67 +647,13 @@ ErrorCodes_t getFsmVoltage(
     return ret;
 }
 
-ErrorCodes_t getFsmThresholdCurrent(
-        vector <string> &currentNames,
-        RangedMeasurement_t &range,
-        vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFsmThresholdCurrent(currentNames, range, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getFsmTime(
-        vector <string> &timeNames,
-        RangedMeasurement_t &range,
-        vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFsmTime(timeNames, range, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getFsmInteger(
+ErrorCodes_t getProtocolInteger(
         vector <string> &integerNames,
-        RangedMeasurement_t &range,
-        vector <Measurement_t> &defaultValues) {
+        vector <RangedMeasurement_t> &ranges,
+        vector <int32_t> &defaultValues) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFsmInteger(integerNames, range, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getMovingAverageFilterDuration(
-        RangedMeasurement_t &range,
-        Measurement_t &defaultValue) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getMovingAverageFilterDuration(range, defaultValue);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t get4thOrderFilterCutoffFrequency(
-        RangedMeasurement_t &range,
-        Measurement_t &defaultValue) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->get4thOrderFilterCutoffFrequency(range, defaultValue);
+        ret = messageDispatcher->getProtocolInteger(integerNames, ranges, defaultValues);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1026,48 +667,6 @@ ErrorCodes_t getRawDataFilterCutoffFrequency(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getRawDataFilterCutoffFrequency(range, defaultValue);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getConditioningProtocolVoltage(
-        vector <string> &voltageNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getConditioningProtocolVoltage(voltageNames, ranges, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getCheckingProtocolVoltage(
-        vector <string> &voltageNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCheckingProtocolVoltage(voltageNames, ranges, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getConditioningProtocolTime(
-        vector <string> &timeNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getConditioningProtocolTime(timeNames, ranges, defaultValues);
 
     } else {
         ret = ErrorDeviceNotConnected;

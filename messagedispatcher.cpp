@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionE16, DeviceSubversionE16n, 1, DeviceE16n},            //    3,  5,  1 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 2, DeviceE16n},            //    3,  5,  2 : e16 2020 release
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
 
@@ -308,8 +308,6 @@ ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx) {
 
 ErrorCodes_t MessageDispatcher::setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) {
     integrationStep = integrationStepArray[samplingRateIdx];
-    this->setMovingAverageFilterDuration(movingAverageFilterDuration, false);
-    this->set4thOrderFilterCutoffFrequency(fourthOrderFilterCutoffFrequency, false);
     this->setRawDataFilterCutoffFrequency(rawDataFilterCutoffFrequency);
 
     samplingRateCoder->encode(samplingRateIdx, txStatus);
@@ -330,17 +328,21 @@ ErrorCodes_t MessageDispatcher::digitalOffsetCompensation(bool on, bool applyFla
 }
 
 ErrorCodes_t MessageDispatcher::zap(uint16_t channelIdx, bool applyFlag) {
-    if (channelIdx > currentChannelsNum) {
-        return ErrorValueOutOfRange;
-
-    } else {
+    if (channelIdx < currentChannelsNum) {
         zapStates[channelIdx] = !zapStates[channelIdx];
-        zapCoders[channelIdx]->encode(zapStates[channelIdx] ? 1 : 0, txStatus);
+        uint32_t zapState = 0;
+        for (int idx = 0; idx < currentChannelsNum; idx++) {
+            zapState |= zapStates[idx] << idx;
+        }
+        zapCoder->encode(zapState, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
 
         return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
     }
 }
 
@@ -381,66 +383,6 @@ ErrorCodes_t MessageDispatcher::sendCommands() {
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFlag) {
-    voltage.convertValue(dacExtRange.prefix);
-    dacExtCoder->encode(voltage.value, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::setInterposerInserted(bool flag, bool) {
-    interposerInserted = flag;
-    if (interposerInserted) {
-        this->setVoltageRange(checkingVoltageRangeIdx);
-        this->setCurrentRange(checkingCurrentRangeIdx);
-        this->setFsmFlag(0, false, false);
-
-    } else {
-        this->setVoltageRange(sequencingVoltageRangeIdx);
-        this->setCurrentRange(sequencingCurrentRangeIdx);
-        this->activateDacExtFilter(true, false);
-    }
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::setConditioningCheck(bool flag, bool) {
-    conditioningModalityCoder->encode(flag ? 1 : 0, txStatus);
-    if (flag) {
-        this->setVoltageRange(checkingVoltageRangeIdx);
-        this->setCurrentRange(checkingCurrentRangeIdx);
-        Measurement_t voltage = {0.0, voltageRangesArray[conditioningVoltageRangeIdx].prefix, "V"};
-        for (unsigned int idx = 0; idx < conditioningVoltagesNum; idx++) {
-            this->setConditioningProtocolVoltage(idx, voltage, false);
-        }
-        this->activateDacExtFilter(true, false);
-
-    } else {
-        this->setVoltageRange(conditioningVoltageRangeIdx);
-        this->setCurrentRange(conditioningCurrentRangeIdx);
-        Measurement_t voltage = {0.0, voltageRangesArray[checkingVoltageRangeIdx].prefix, "V"};
-        for (unsigned int idx = 0; idx < checkingVoltagesNum; idx++) {
-            this->setCheckingProtocolVoltage(idx, voltage, false);
-        }
-        this->activateDacExtFilter(false, false);
-    }
-    this->applyVoltageProtocol();
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::setConditioningChannel(uint16_t channelIdx, bool applyFlag) {
-    conditioningChannelCoder->encode(channelIdx, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
-
-    return Success;
-}
-
 ErrorCodes_t MessageDispatcher::selectVoltageProtocol(unsigned int idx, bool applyFlag) {
     protocolsSelectCoder->encode(idx, txStatus);
     if (applyFlag) {
@@ -473,19 +415,9 @@ ErrorCodes_t MessageDispatcher::setProtocolVoltage(unsigned int idx, Measurement
     }
 }
 
-ErrorCodes_t MessageDispatcher::setTriangularVoltage(Measurement_t voltage, bool applyFlag) {
-    voltage.convertValue(triangularVoltageRange.prefix);
-    triangularVoltageCoder->encode(voltage.value, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
-
-    return Success;
-}
-
 ErrorCodes_t MessageDispatcher::setProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag) {
     if (idx < protocolTimesNum) {
-        time.convertValue(protocolTimeRange.prefix);
+        time.convertValue(protocolTimeRanges[idx].prefix);
         protocolTimeCoders[idx]->encode(time.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
@@ -498,19 +430,10 @@ ErrorCodes_t MessageDispatcher::setProtocolTime(unsigned int idx, Measurement_t 
     }
 }
 
-ErrorCodes_t MessageDispatcher::setTriangularTime(Measurement_t time, bool applyFlag) {
-    time.convertValue(triangularTimeRange.prefix);
-    triangularTimeCoder->encode(time.value, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::setFsmFlag(unsigned int idx, bool flag, bool applyFlag) {
-    if (idx < fsmFlagsNum) {
-        fsmFlagCoders[idx]->encode(flag ? 1 : 0, txStatus);
+ErrorCodes_t MessageDispatcher::setProtocolSlope(unsigned int idx, Measurement_t slope, bool applyFlag) {
+    if (idx < protocolSlopesNum) {
+        slope.convertValue(protocolSlopeRanges[idx].prefix);
+        protocolSlopeCoders[idx]->encode(slope.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -522,10 +445,9 @@ ErrorCodes_t MessageDispatcher::setFsmFlag(unsigned int idx, bool flag, bool app
     }
 }
 
-ErrorCodes_t MessageDispatcher::setFsmVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
-    if (idx < fsmVoltagesNum) {
-        voltage.convertValue(fsmVoltageRange.prefix);
-        fsmVoltageCoders[idx]->encode(voltage.value, txStatus);
+ErrorCodes_t MessageDispatcher::setProtocolInteger(unsigned int idx, int32_t value, bool applyFlag) {
+    if (idx < protocolIntegersNum) {
+        protocolIntegerCoders[idx]->encode((uint32_t)value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -535,92 +457,6 @@ ErrorCodes_t MessageDispatcher::setFsmVoltage(unsigned int idx, Measurement_t vo
     } else {
         return ErrorValueOutOfRange;
     }
-}
-
-ErrorCodes_t MessageDispatcher::setFsmThresholdCurrent(unsigned int idx, Measurement_t current, bool applyFlag) {
-    if (idx < fsmCurrentsNum) {
-        current.convertValue(fsmThresholdCurrentRange.prefix);
-        fsmThresholdCurrentCoders[idx]->encode(current.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
-        return ErrorValueOutOfRange;
-    }
-}
-
-ErrorCodes_t MessageDispatcher::setFsmTime(unsigned int idx, Measurement_t time, bool applyFlag) {
-    if (idx < fsmTimesNum) {
-        time.convertValue(fsmTimeRange.prefix);
-        fsmTimeCoders[idx]->encode(time.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
-        return ErrorValueOutOfRange;
-    }
-}
-
-ErrorCodes_t MessageDispatcher::setFsmInteger(unsigned int idx, unsigned int value, bool applyFlag) {
-    if (idx < fsmIntegersNum) {
-        fsmIntegerCoders[idx]->encode(value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
-        return ErrorValueOutOfRange;
-    }
-}
-
-ErrorCodes_t MessageDispatcher::setMovingAverageFilterDuration(Measurement_t duration, bool applyFlag) {
-    movingAverageFilterDuration = duration;
-    movingAverageFilterDuration.convertValue(integrationStep.prefix);
-
-    double fofKx = 4.0*integrationStep.value/(movingAverageFilterDuration.value+integrationStep.value);
-    movingAverageFilterKxCoder->encode(fofKx, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::set4thOrderFilterCutoffFrequency(Measurement_t cFrequency, bool applyFlag) {
-    fourthOrderFilterCutoffFrequency = cFrequency;
-    fourthOrderFilterCutoffFrequency.convertValue(1.0/integrationStep.multiplier());
-
-    double c1 = tan(M_PI*fourthOrderFilterCutoffFrequency.value*integrationStep.value);
-    double c12 = c1*c1;
-    double c2 = -2.0+2.0*c12;
-    double d1 = 1.0/(1.0+c1*IIR_2_SIN_3_PI_8+c12);
-    double d2 = 1.0/(1.0+c1*IIR_2_SIN_PI_8+c12);
-    double a01 = c2*d1;
-    double a02 = (-1.0-c2+c12*c12+c12*IIR_2_COS_3_PI_8_2)*d1*d1;
-    double k0 = 1.0+a01+a02;
-    double a11 = c2*d2;
-    double a12 = (-1.0-c2+c12*c12+c12*IIR_2_COS_PI_8_2)*d2*d2;
-    double k1 = 1.0+a11+a12;
-
-    fourthOrderFilterA01Coder->encode(a01, txStatus);
-    fourthOrderFilterA02Coder->encode(a02, txStatus);
-    fourthOrderFilterK0Coder->encode(k0, txStatus);
-    fourthOrderFilterA11Coder->encode(a11, txStatus);
-    fourthOrderFilterA12Coder->encode(a12, txStatus);
-    fourthOrderFilterK1Coder->encode(k1, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
-
-    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setRawDataFilterCutoffFrequency(Measurement_t cFrequency) {
@@ -685,51 +521,6 @@ ErrorCodes_t MessageDispatcher::setRawDataFilterCutoffFrequency(Measurement_t cF
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::setConditioningProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
-    if (idx < conditioningVoltagesNum) {
-        voltage.convertValue(voltageRangesArray[conditioningVoltageRangeIdx].prefix);
-        conditioningProtocolVoltageCoders[idx]->encode(voltage.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
-        return ErrorValueOutOfRange;
-    }
-}
-
-ErrorCodes_t MessageDispatcher::setCheckingProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
-    if (idx < checkingVoltagesNum) {
-        voltage.convertValue(voltageRangesArray[checkingVoltageRangeIdx].prefix);
-        checkingProtocolVoltageCoders[idx]->encode(voltage.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
-        return ErrorValueOutOfRange;
-    }
-}
-
-ErrorCodes_t MessageDispatcher::setConditioningProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag) {
-    if (idx < conditioningTimesNum) {
-        time.convertValue(conditioningProtocolTimeRanges[idx].prefix);
-        conditioningProtocolTimeCoders[idx]->encode(time.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
-        return ErrorValueOutOfRange;
-    }
-}
-
 ErrorCodes_t MessageDispatcher::activateFEResetDenoiser(bool flag, bool applyFlag) {
     fEResetDenoiserCoder->encode(flag ? 1 : 0, txStatus);
     if (applyFlag) {
@@ -741,25 +532,6 @@ ErrorCodes_t MessageDispatcher::activateFEResetDenoiser(bool flag, bool applyFla
 
 ErrorCodes_t MessageDispatcher::activateDacIntFilter(bool flag, bool applyFlag) {
     dacIntFilterCoder->encode(flag ? 1 : 0, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::activateDacExtFilter(bool flag, bool applyFlag) {
-    dacExtFilterCoder->encode(flag ? 0 : 1, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::setVcmForce(bool flag, bool applyFlag) {
-    vcIntCoder->encode(flag ? 0 : 1, txStatus);
-    vcmForceCoder->encode(flag ? 3 : 0, txStatus);
     if (applyFlag) {
         this->stackOutgoingMessage(txStatus);
     }
@@ -847,8 +619,7 @@ ErrorCodes_t MessageDispatcher::purgeData() {
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getChannelsNumber(uint32_t &fsmStateChannelsNumber, uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber) {
-    fsmStateChannelsNumber = fsmStateChannelsNum;
+ErrorCodes_t MessageDispatcher::getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber) {
     voltageChannelsNumber = voltageChannelsNum;
     currentChannelsNumber = currentChannelsNum;
     return Success;
@@ -860,17 +631,7 @@ ErrorCodes_t MessageDispatcher::getCurrentRanges(vector <RangedMeasurement_t> &c
 }
 
 ErrorCodes_t MessageDispatcher::getCurrentRange(RangedMeasurement_t &currentRange) {
-    currentRange = currentRangesArray[sequencingCurrentRangeIdx];
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getCheckingCurrentRange(RangedMeasurement_t &currentRange) {
-    currentRange = currentRangesArray[checkingCurrentRangeIdx];
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getConditioningCurrentRange(RangedMeasurement_t &currentRange) {
-    currentRange = currentRangesArray[conditioningCurrentRangeIdx];
+    currentRange = currentRangesArray[currentRangeIdx];
     return Success;
 }
 
@@ -880,17 +641,7 @@ ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &v
 }
 
 ErrorCodes_t MessageDispatcher::getVoltageRange(RangedMeasurement_t &voltageRange) {
-    voltageRange = voltageRangesArray[sequencingVoltageRangeIdx];
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getCheckingVoltageRange(RangedMeasurement_t &voltageRange) {
-    voltageRange = voltageRangesArray[checkingVoltageRangeIdx];
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getConditioningVoltageRange(RangedMeasurement_t &voltageRange) {
-    voltageRange = voltageRangesArray[conditioningVoltageRangeIdx];
+    voltageRange = voltageRangesArray[voltageRangeIdx];
     return Success;
 }
 
@@ -914,15 +665,8 @@ ErrorCodes_t MessageDispatcher::getLiquidJunctionControl(CompensationControl_t &
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::getDacExtRange(RangedMeasurement_t &range, Measurement_t &defaultValue) {
-    range = dacExtRange;
-    defaultValue = dacExtDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getProtocolList(std::vector <std::string> &protocolsNames, unsigned int &triangularIdx) {
+ErrorCodes_t MessageDispatcher::getProtocolList(std::vector <std::string> &protocolsNames) {
     protocolsNames = this->protocolsNames;
-    triangularIdx = this->triangularIdx;
     return Success;
 }
 
@@ -933,95 +677,30 @@ ErrorCodes_t MessageDispatcher::getProtocolVoltage(vector <string> &voltageNames
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getTriangularVoltage(RangedMeasurement_t &range, Measurement_t &defaultValue) {
-    range = triangularVoltageRange;
-    defaultValue = triangularVoltageDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getProtocolTime(vector <string> &timeNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues) {
+ErrorCodes_t MessageDispatcher::getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues) {
     timeNames = protocolTimeNames;
-    range = protocolTimeRange;
+    ranges = protocolTimeRanges;
     defaultValues = protocolTimeDefault;
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getTriangularTime(RangedMeasurement_t &range, Measurement_t &defaultValue) {
-    range = triangularTimeRange;
-    defaultValue = triangularTimeDefault;
+ErrorCodes_t MessageDispatcher::getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues) {
+    slopeNames = protocolSlopeNames;
+    ranges = protocolSlopeRanges;
+    defaultValues = protocolSlopeDefault;
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getFsmFlag(vector <string> &flagNames, vector <bool> &defaultValues) {
-    flagNames = fsmFlagNames;
-    defaultValues = fsmFlagDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getFsmVoltage(vector <string> &voltageNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues) {
-    voltageNames = fsmVoltageNames;
-    range = fsmVoltageRange;
-    defaultValues = fsmVoltageDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getFsmThresholdCurrent(vector <string> &currentNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues) {
-    currentNames = fsmCurrentNames;
-    range = fsmThresholdCurrentRange;
-    defaultValues = fsmThresholdCurrentDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getFsmTime(vector <string> &timeNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues) {
-    timeNames = fsmTimeNames;
-    range = fsmTimeRange;
-    defaultValues = fsmTimeDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getFsmInteger(vector <string> &integerNames, RangedMeasurement_t &range, vector <Measurement_t> &defaultValues) {
-    integerNames = fsmIntegerNames;
-    range = fsmIntegerRange;
-    defaultValues = fsmIntegerDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getMovingAverageFilterDuration(RangedMeasurement_t &range, Measurement_t &defaultValue) {
-    range = movingAverageFilterDurationRange;
-    defaultValue = movingAverageFilterDurationDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::get4thOrderFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue) {
-    range = fourthOrderFilterCutoffFrequencyRange;
-    defaultValue = fourthOrderFilterCutoffFrequencyDefault;
+ErrorCodes_t MessageDispatcher::getProtocolInteger(vector <string> &integerNames, vector <RangedMeasurement_t> &ranges, vector <int32_t> &defaultValues) {
+    integerNames = protocolIntegerNames;
+    ranges = protocolIntegerRanges;
+    defaultValues = protocolIntegerDefault;
     return Success;
 }
 
 ErrorCodes_t MessageDispatcher::getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue) {
     range = rawDataFilterCutoffFrequencyRange;
     defaultValue = rawDataFilterCutoffFrequencyDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getConditioningProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues) {
-    voltageNames = conditioningProtocolVoltageNames;
-    ranges = conditioningProtocolVoltageRanges;
-    defaultValues = conditioningProtocolVoltageDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getCheckingProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues) {
-    voltageNames = checkingProtocolVoltageNames;
-    ranges = checkingProtocolVoltageRanges;
-    defaultValues = checkingProtocolVoltageDefault;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getConditioningProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues) {
-    timeNames = conditioningProtocolTimeNames;
-    ranges = conditioningProtocolTimeRanges;
-    defaultValues = conditioningProtocolTimeDefault;
     return Success;
 }
 
@@ -1416,16 +1095,11 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                 }
 
                 /*! Correct offset of voltage channels */
-                if ((channelIdx == 1) || (channelIdx == 5)) {
+                if (channelIdx < voltageChannelsNum) {
                     value += voltageOffset;
-                }
 
-                /*! Filter raw current signals */
-                if (channelIdx == 2) {
-                    this->applyFilter(0, value);
-
-                } else if (channelIdx == 6) {
-                    this->applyFilter(1, value);
+                } else {
+                    this->applyFilter(channelIdx-voltageChannelsNum, value);
                 }
 
                 outputDataBuffer[outputBufferWriteOffset][channelIdx] = value;

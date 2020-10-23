@@ -14,22 +14,26 @@ public:
 
 protected:
     enum CurrentRanges {
+        CurrentRange200pA,
+        CurrentRange2nA,
+        CurrentRange20nA,
         CurrentRange200nA,
-        CurrentRange4uA,
         CurrentRangesNum
     };
 
     enum VoltageRanges {
-        VoltageRange800mV,
         VoltageRange500mV,
-        VoltageRange15V,
         VoltageRangesNum
     };
 
     enum SamplingRates {
+        SamplingRate1_25kHz,
+        SamplingRate5kHz,
+        SamplingRate10kHz,
+        SamplingRate20kHz,
+        SamplingRate50kHz,
+        SamplingRate100kHz,
         SamplingRate200kHz,
-        SamplingRate312_5kHz,
-        SamplingRate320kHz,
         SamplingRatesNum
     };
 
@@ -37,107 +41,41 @@ protected:
         ProtocolConstant,
         ProtocolTriangular,
         ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
         ProtocolsNum
     };
 
     enum ProtocolVoltages {
         ProtocolVHold,
         ProtocolVPulse,
+        ProtocolVStep,
+        ProtocolVPk,
+        ProtocolVMax,
+        ProtocolVMin,
         ProtocolVoltagesNum
     };
 
     enum ProtocolTimes {
         ProtocolTHold,
         ProtocolTPulse,
+        ProtocolTStep,
+        ProtocolTPe,
         ProtocolTimesNum
     };
 
-    enum FsmFlags {
-        FsmRun,
-        FsmEnhance,
-        FsmEnableReScan,
-        FsmEnableP2Exit,
-        FsmFlagsNum
+    enum ProtocolSlopes {
+        ProtocolSlope,
+        ProtocolSlopesNum
     };
 
-    enum FsmVoltages {
-        FsmV1PreCapture,
-        FsmV1L2R,
-        FsmV1R2L,
-        FsmV1PrePause,
-        FsmV1Capture,
-        FsmV1Pause,
-        FsmV2Reverse,
-        FsmV2Capture,
-        FsmV12Push,
-        FsmV12Pull,
-        FsmVoltagesNum
-    };
-
-    enum FsmCurrents {
-        FsmP1PreCaptureThreshold,
-        FsmP1CaptureThreshold,
-        FsmP2CaptureThreshold,
-        FsmP2TagThreshold,
-        FsmP2TagThresholdHigh,
-        FsmP2ExitThreshold,
-        FsmP2FoldThreshold,
-        FsmPullCaptureThreshold,
-        FsmCurrentsNum
-    };
-
-    enum FsmTimes {
-        FsmTransientSettleTime,
-        FsmTofHoldTime,
-        FsmPauseFilterResetTime,
-        FsmPreCaptureLowLimitTime,
-        FsmPreCaptureHighLimitTime,
-        FsmL2RCalibrationTime,
-        FsmR2LCalibrationTime,
-        FsmPrePauseWaitTime,
-        FsmP1CaptureTimeout,
-        FsmP1CaptureWaitTime,
-        FsmP2CaptureTimeout,
-        FsmP2CaptureWaitTime,
-        FsmP2ReverseTimeout,
-        FsmP2ExitWaitTime,
-        FsmTagDurationMaxTime,
-        FsmTagDurationMinTime,
-        FsmTagWaitTime,
-        FsmTagHoldTime,
-        FsmBaselineSettleTime,
-        FsmPushTime,
-        FsmPullTimeout,
-        FsmPullInDelayTime,
-        FsmRecaptureTimeout,
-        FsmTimesNum
-    };
-
-    enum FsmIntegers {
-        FsmInitialTagMax,
-        FsmTagCountStop,
-        FsmScanCountMax,
-        FsmRecaptureTagCount,
-        FsmIntegersNum
-    };
-
-    enum ConditioningVoltages {
-        ConditioningVChargePos,
-        ConditioningVChargeNeg,
-        ConditioningVObservePos,
-        ConditioningVObserveNeg,
-        ConditioningVoltagesNum
-    };
-
-    enum CheckingVoltages {
-        CheckingVHold,
-        CheckingVoltagesNum
-    };
-
-    enum ConditioningTimes {
-        ConditioningTCharge,
-        ConditioningTObserve,
-        ConditioningTimesNum
+    enum ProtocolIntegers {
+        ProtocolN,
+        ProtocolNR,
+        ProtocolIntegersNum
     };
 
     void initializeDevice() override;

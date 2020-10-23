@@ -29,7 +29,7 @@ SOURCES += \
     messagedispatcher.cpp \
     commandcoder.cpp \
     devices/fake/messagedispatcher_fake_e16n.cpp \
-    devices/nanopore/messagedispatcher_e16n.cpp
+    devices/e16/messagedispatcher_e16n.cpp
 
 HEADERS += \
     er4commlib.h \
@@ -41,7 +41,7 @@ HEADERS += \
     messagedispatcher.h \
     commandcoder.h \
     devices/fake/messagedispatcher_fake_e16n.h \
-    devices/nanopore/messagedispatcher_e16n.h
+    devices/e16/messagedispatcher_e16n.h
 
 unix {
     target.path = /usr/lib
@@ -55,7 +55,7 @@ INCLUDEPATH += ./ \
 
 DEPENDPATH += ./ \
     devices \
-    devices/nanopore \
+    devices/e16 \
     devices/fake
 
 macx: LIBS += -L/usr/local/lib/ -lftd2xx

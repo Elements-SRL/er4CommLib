@@ -263,11 +263,13 @@ ErrorCodes_t setProtocolInteger(
     return ret;
 }
 
-ErrorCodes_t setRawDataFilterCutoffFrequency(
-        Measurement_t cFrequency) {
+ErrorCodes_t setRawDataFilter(
+        Measurement_t cutoffFrequency,
+        bool lowPassFlag,
+        bool activeFlag) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setRawDataFilterCutoffFrequency(cFrequency);
+        ret = messageDispatcher->setRawDataFilter(cutoffFrequency, lowPassFlag, activeFlag);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -292,6 +294,30 @@ ErrorCodes_t activateDacIntFilter(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->activateDacIntFilter(flag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setCurrentRange(
+        uint16_t currentRangeIdx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setCurrentRange(currentRangeIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setVoltageRange(
+        uint16_t voltageRangeIdx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setVoltageRange(voltageRangeIdx);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -335,11 +361,10 @@ ErrorCodes_t zap(
     return ret;
 }
 
-ErrorCodes_t resetDevice(
-        bool reset) {
+ErrorCodes_t resetDevice() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->resetDevice(reset);
+        ret = messageDispatcher->resetDevice();
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -497,10 +522,11 @@ ErrorCodes_t purgeData() {
 }
 
 ErrorCodes_t getCurrentRanges(
-        vector <RangedMeasurement_t> &currentRanges) {
+        vector <RangedMeasurement_t> &currentRanges,
+        unsigned int &defaultOption) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCurrentRanges(currentRanges);
+        ret = messageDispatcher->getCurrentRanges(currentRanges, defaultOption);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -521,10 +547,11 @@ ErrorCodes_t getCurrentRange(
 }
 
 ErrorCodes_t getVoltageRanges(
-        vector <RangedMeasurement_t> &voltageRanges) {
+        vector <RangedMeasurement_t> &voltageRanges,
+        unsigned int &defaultOption) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getVoltageRanges(voltageRanges);
+        ret = messageDispatcher->getVoltageRanges(voltageRanges, defaultOption);
 
     } else {
         ret = ErrorDeviceNotConnected;

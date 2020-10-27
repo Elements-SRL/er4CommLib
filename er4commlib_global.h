@@ -252,12 +252,12 @@ typedef struct Measurement {
         }
     }
 
-    /*! \brief Returns a string describing the value with its prefix and unit.
+    /*! \brief Returns a string describing the value.
      *
      * \param maxChars [in] maximum number of characters for the returned string.
-     * \return String describing the value with its prefix and unit.
+     * \return String describing the value.
      */
-    std::string label(ER4CL_ARGIN unsigned int maxChars = 8) {
+    std::string valueLabel(ER4CL_ARGIN unsigned int maxChars = 8) {
         std::string valueSt = std::to_string(value);
         if (valueSt.length() >= maxChars) {
             valueSt.erase(maxChars);
@@ -267,15 +267,24 @@ typedef struct Measurement {
 
         if (notZero != std::string::npos) {
             if (dot != std::string::npos) {
-                return valueSt.erase(dot < notZero ? notZero+1 : dot) + " " + unitPrefixes[prefix] + unit;
+                return valueSt.erase(dot < notZero ? notZero+1 : dot);
 
             } else {
-                return valueSt + " " + unitPrefixes[prefix] + unit;
+                return valueSt;
             }
 
         } else {
-            return "0 " + unitPrefixes[prefix] + unit;
+            return "0";
         }
+    }
+
+    /*! \brief Returns a string describing the value with its prefix and unit.
+     *
+     * \param maxChars [in] maximum number of characters for the returned string.
+     * \return String describing the value with its prefix and unit.
+     */
+    std::string label(ER4CL_ARGIN unsigned int maxChars = 8) {
+        return valueLabel(maxChars) + " " + unitPrefixes[prefix] + unit;
     }
 
     /*! \brief Returns the string describing the value with its prefix and unit in a nice fashion.
@@ -489,6 +498,50 @@ inline bool operator >= (const Measurement_t &a, const Measurement_t &b) {
     }
 }
 
+/*! \brief Overloaded multiplication between #Measurement_t and a constant.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the product of the values and the unit equals the unit of the first operand.
+*/
+inline Measurement_t operator * (const Measurement_t &a, const double &b) {
+    Measurement_t c = a;
+    c.value *= b;
+    return c;
+}
+
+/*! \brief Overloaded multiplication between #Measurement_t and a constant.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the product of the values and the unit equals the unit of the second operand.
+*/
+inline Measurement_t operator * (const double &a, const Measurement_t &b) {
+    return b*a;
+}
+
+/*! \brief Overloaded division between #Measurement_t and a constant.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the ratio of the values and the unit equals the unit of the first operand.
+*/
+inline Measurement_t operator / (const Measurement_t &a, const double &b) {
+    Measurement_t c = a;
+    c.value /= b;
+    return c;
+}
+
+/*! \brief Overloaded division between #Measurement_t and a constant.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the ratio of the values and the unit equals the unit of the second operand.
+*/
+inline Measurement_t operator / (const double &a, const Measurement_t &b) {
+    return b/a;
+}
+
 /*! \struct RangedMeasurement_t
  * \brief Structure used manage physical ranges that define a range with its unit and unit prefix.
  */
@@ -538,6 +591,55 @@ typedef struct {
         } else {
             return 1.0/powersOf1000[delta];
         }
+    }
+
+    /*! \brief Returns a string describing the max value.
+     *
+     * \param maxChars [in] maximum number of characters for the returned string.
+     * \return String describing the max value.
+     */
+    std::string valueLabel(ER4CL_ARGIN unsigned int maxChars = 8) {
+        std::string valueSt = std::to_string(max);
+        if (valueSt.length() >= maxChars) {
+            valueSt.erase(maxChars);
+        }
+        size_t dot = valueSt.find_last_of(".");
+        size_t notZero = valueSt.find_last_not_of("0");
+
+        if (notZero != std::string::npos) {
+            if (dot != std::string::npos) {
+                return valueSt.erase(dot < notZero ? notZero+1 : dot);
+
+            } else {
+                return valueSt;
+            }
+
+        } else {
+            return "0";
+        }
+    }
+
+    /*! \brief Returns a string describing the max value with its prefix and unit.
+     *
+     * \param maxChars [in] maximum number of characters for the returned string.
+     * \return String describing the max value with its prefix and unit.
+     */
+    std::string label(ER4CL_ARGIN unsigned int maxChars = 8) {
+        return valueLabel(maxChars) + " " + unitPrefixes[prefix] + unit;
+    }
+
+    /*! \brief Returns the string describing the max value with its prefix and unit in a nice fashion.
+     *
+     * \return String describing the max value with its prefix and unit. The max value and the prefix are converted so that the value is in the range [1.0, 1000.0[.
+     */
+    std::string niceLabel(ER4CL_ARGVOID) {
+        Measurement temp;
+        temp.value = max;
+        temp.prefix = prefix;
+        temp.unit = unit;
+        temp.nice();
+
+        return temp.label(5);
     }
 
     /*! \brief Converts #min, #max and #step given the input unit prefix.

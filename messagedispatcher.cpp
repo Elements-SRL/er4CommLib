@@ -112,7 +112,7 @@ ErrorCodes_t MessageDispatcher::deinit() {
         txRawBuffer = nullptr;
     }
 
-    for (unsigned int channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+    for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
         delete [] iirX[channelIdx];
         delete [] iirU[channelIdx];
         delete [] iirY[channelIdx];
@@ -165,7 +165,7 @@ ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
 
     stopConnectionFlag = false;
 
-    this->setRawDataFilterCutoffFrequency({30.0, UnitPfxKilo, "Hz"});
+    this->setRawDataFilter({30.0, UnitPfxKilo, "Hz"}, true, false);
 
     rxThread = thread(&MessageDispatcher::readDataFromDevice, this);
 
@@ -173,15 +173,14 @@ ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
 
     threadsStarted = true;
 
-    this->resetDevice(true, true);
-    this_thread::sleep_for(chrono::milliseconds(100));
-    this->resetDevice(false, true);
+    this->resetDevice();
+    this_thread::sleep_for(chrono::milliseconds(10));
 
     /*! Initialize device */
     this->initializeDevice();
     this->stackOutgoingMessage(txStatus);
 
-    this_thread::sleep_for(chrono::milliseconds(100));
+    this_thread::sleep_for(chrono::milliseconds(10));
 
     return ret;
 }
@@ -269,25 +268,32 @@ ErrorCodes_t MessageDispatcher::turnOnLsbNoise(bool flag) {
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::convertVoltageValue(uint16_t intValue, double &fltValue) {
-    fltValue = (((double)((int16_t)intValue))+lsbNoiseArray[lsbNoiseIdx])*voltageResolution;
+ErrorCodes_t MessageDispatcher::convertVoltageValue(uint16_t uintValue, double &fltValue) {
+    fltValue = (((double)((int16_t)uintValue))+lsbNoiseArray[lsbNoiseIdx])*voltageResolution;
     lsbNoiseIdx = (lsbNoiseIdx+1)&LSB_NOISE_ARRAY_MASK;
 
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::convertCurrentValue(uint16_t intValue, double &fltValue) {
-    fltValue = (((double)((int16_t)intValue))+lsbNoiseArray[lsbNoiseIdx])*currentResolution;
+ErrorCodes_t MessageDispatcher::convertCurrentValue(uint16_t uintValue, double &fltValue) {
+    fltValue = (((double)((int16_t)uintValue))+lsbNoiseArray[lsbNoiseIdx])*currentResolution;
     lsbNoiseIdx = (lsbNoiseIdx+1)&LSB_NOISE_ARRAY_MASK;
 
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx) {
+ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag) {
     if (voltageRangeIdx < voltageRangesNum) {
-        voltageRange = voltageRangesArray[voltageRangeIdx];
-        voltageResolution = voltageRangesArray[voltageRangeIdx].step;
-        voltageOffset = voltageOffsetArray[voltageRangeIdx];
+        selectedVoltageRangeIdx = voltageRangeIdx;
+        voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
+        voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
+        voltageOffset = voltageOffsetArray[selectedVoltageRangeIdx];
+
+        voltageRangeCoder->encode(selectedVoltageRangeIdx, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
         return Success;
 
     } else {
@@ -295,10 +301,17 @@ ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx) {
     }
 }
 
-ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx) {
+ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, bool applyFlag) {
     if (currentRangeIdx < currentRangesNum) {
-        currentRange = currentRangesArray[currentRangeIdx];
-        currentResolution = currentRangesArray[currentRangeIdx].step;
+        selectedCurrentRangeIdx = currentRangeIdx;
+        currentRange = currentRangesArray[selectedCurrentRangeIdx];
+        currentResolution = currentRangesArray[selectedCurrentRangeIdx].step;
+
+        currentRangeCoder->encode(selectedCurrentRangeIdx, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
         return Success;
 
     } else {
@@ -307,15 +320,21 @@ ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx) {
 }
 
 ErrorCodes_t MessageDispatcher::setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) {
-    integrationStep = integrationStepArray[samplingRateIdx];
-    this->setRawDataFilterCutoffFrequency(rawDataFilterCutoffFrequency);
+    if (samplingRateIdx < samplingRatesNum) {
+        samplingRate = realSamplingRatesArray[samplingRateIdx];
+        integrationStep = integrationStepArray[samplingRateIdx];
+        this->setRawDataFilter(rawDataFilterCutoffFrequency, rawDataFilterLowPassFlag, rawDataFilterActiveFlag);
 
-    samplingRateCoder->encode(samplingRateIdx, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
+        samplingRateCoder->encode(samplingRateIdx, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
     }
-
-    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::digitalOffsetCompensation(bool on, bool applyFlag) {
@@ -346,11 +365,10 @@ ErrorCodes_t MessageDispatcher::zap(uint16_t channelIdx, bool applyFlag) {
     }
 }
 
-ErrorCodes_t MessageDispatcher::resetDevice(bool reset, bool applyFlag) {
-    deviceResetCoder->encode(reset ? 1 : 0, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
+ErrorCodes_t MessageDispatcher::resetDevice() {
+    deviceResetCoder->encode(1, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    deviceResetCoder->encode(0, txStatus);
 
     return Success;
 }
@@ -459,66 +477,22 @@ ErrorCodes_t MessageDispatcher::setProtocolInteger(unsigned int idx, int32_t val
     }
 }
 
-ErrorCodes_t MessageDispatcher::setRawDataFilterCutoffFrequency(Measurement_t cFrequency) {
-    rawDataFilterCutoffFrequency = cFrequency;
-    if (rawDataFilterCutoffFrequency.value != 0.0) {
-        rawDataFilterCutoffFrequency.convertValue(1.0/integrationStep.multiplier());
+ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag) {
+    ErrorCodes_t ret;
 
-        double k1 = tan(M_PI*rawDataFilterCutoffFrequency.value*integrationStep.value);
-        double k12 = k1*k1;
-        double k2 = -2+2*k12; /*!< frequently used expression */
-        double d1 = 1.0/(1.0+k1*IIR_2_SIN_3_PI_8+k12); /*! denominator of first biquad */
-        double d2 = 1.0/(1.0+k1*IIR_2_SIN_PI_8+k12); /*! denominator of second biquad */
+    if ((cutoffFrequency.value > 0.0) || (cutoffFrequency < samplingRate*0.5)) {
+        rawDataFilterCutoffFrequency = cutoffFrequency;
+        rawDataFilterLowPassFlag = lowPassFlag;
+        rawDataFilterActiveFlag = activeFlag;
+        this->computeFilterCoefficients();
 
-        /*! Denominators */
-        // iir1Den[0] = 1.0; not used
-        // iir2Den[0] = 1.0; not used
-        iir1Den[1] = k2*d1;
-        iir2Den[1] = k2*d2;
-        iir1Den[2] = (-1.0-k2+k12*k12+k12*IIR_2_COS_3_PI_8_2)*d1*d1;
-        iir2Den[2] = (-1.0-k2+k12*k12+k12*IIR_2_COS_PI_8_2)*d2*d2;
-
-        /*! Gains and numerators */
-        double iir1G;
-        double iir2G;
-
-        iir1G = (1.0+iir1Den[1]+iir1Den[2])*0.25;
-        iir2G = (1.0+iir2Den[1]+iir2Den[2])*0.25;
-
-        iir1Num[1] = 2.0*iir1G;
-        iir2Num[1] = 2.0*iir2G;
-
-        iir1Num[0] = iir1G;
-        iir2Num[0] = iir2G;
-        iir1Num[2] = iir1G;
-        iir2Num[2] = iir2G;
+        ret = Success;
 
     } else {
-        /*! Delta impulse response with no autoregressive part */
-        iir1Num[0] = 1.0;
-        iir2Num[0] = 1.0;
-        iir1Num[1] = 0.0;
-        iir2Num[1] = 0.0;
-        iir1Num[2] = 0.0;
-        iir2Num[2] = 0.0;
-        // iir1Den[0] = 1.0; not used
-        // iir2Den[0] = 1.0; not used
-        iir1Den[1] = 0.0;
-        iir2Den[1] = 0.0;
-        iir1Den[2] = 0.0;
-        iir2Den[2] = 0.0;
+        ret = ErrorValueOutOfRange;
     }
 
-    /*! reset FIFOs */
-    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        for (int tapIdx = 0; tapIdx < IIR_ORD+1; tapIdx++) {
-            iirX[channelIdx][tapIdx] = 0.0;
-            iirU[channelIdx][tapIdx] = 0.0;
-            iirY[channelIdx][tapIdx] = 0.0;
-        }
-    }
-
-    return Success;
+    return ret;
 }
 
 ErrorCodes_t MessageDispatcher::activateFEResetDenoiser(bool flag, bool applyFlag) {
@@ -625,23 +599,25 @@ ErrorCodes_t MessageDispatcher::getChannelsNumber(uint32_t &voltageChannelsNumbe
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getCurrentRanges(vector <RangedMeasurement_t> &currentRanges) {
+ErrorCodes_t MessageDispatcher::getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, unsigned int &defaultOption) {
     currentRanges = currentRangesArray;
+    defaultOption = defaultCurrentRangeIdx;
     return Success;
 }
 
 ErrorCodes_t MessageDispatcher::getCurrentRange(RangedMeasurement_t &currentRange) {
-    currentRange = currentRangesArray[currentRangeIdx];
+    currentRange = currentRangesArray[selectedCurrentRangeIdx];
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges) {
+ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, unsigned int &defaultOption) {
     voltageRanges = voltageRangesArray;
+    defaultOption = defaultVoltageRangeIdx;
     return Success;
 }
 
 ErrorCodes_t MessageDispatcher::getVoltageRange(RangedMeasurement_t &voltageRange) {
-    voltageRange = voltageRangesArray[voltageRangeIdx];
+    voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
     return Success;
 }
 
@@ -1099,6 +1075,7 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                     value += voltageOffset;
 
                 } else {
+                    value = (value&0x7fff) + (~value&0x8000);
                     this->applyFilter(channelIdx-voltageChannelsNum, value);
                 }
 
@@ -1156,13 +1133,80 @@ void MessageDispatcher::computeMinimumPacketNumber() {
 }
 
 void MessageDispatcher::initializeRawDataFilterVariables() {
-    iirX = new double * [currentChannelsNum];
-    iirU = new double * [currentChannelsNum];
-    iirY = new double * [currentChannelsNum];
-    for (unsigned int channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+    iirX = new double * [totalChannelsNum];
+    iirU = new double * [totalChannelsNum];
+    iirY = new double * [totalChannelsNum];
+    for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
         iirX[channelIdx] = new double[IIR_ORD+1];
         iirU[channelIdx] = new double[IIR_ORD+1];
         iirY[channelIdx] = new double[IIR_ORD+1];
+        for (int tapIdx = 0; tapIdx < IIR_ORD+1; tapIdx++) {
+            iirX[channelIdx][tapIdx] = 0.0;
+            iirU[channelIdx][tapIdx] = 0.0;
+            iirY[channelIdx][tapIdx] = 0.0;
+        }
+    }
+}
+
+void MessageDispatcher::computeFilterCoefficients() {
+    if (rawDataFilterActiveFlag && (rawDataFilterCutoffFrequency < samplingRate*0.5)) {
+        rawDataFilterCutoffFrequency.convertValue(1.0/integrationStep.multiplier());
+
+        double k1 = tan(M_PI*rawDataFilterCutoffFrequency.value*integrationStep.value);
+        double k12 = k1*k1;
+        double k2 = -2+2*k12; /*!< frequently used expression */
+        double d1 = 1.0/(1.0+k1*IIR_2_SIN_3_PI_8+k12); /*! denominator of first biquad */
+        double d2 = 1.0/(1.0+k1*IIR_2_SIN_PI_8+k12); /*! denominator of second biquad */
+
+        /*! Denominators */
+        // iir1Den[0] = 1.0; not used
+        // iir2Den[0] = 1.0; not used
+        iir1Den[1] = k2*d1;
+        iir2Den[1] = k2*d2;
+        iir1Den[2] = (-1.0-k2+k12*k12+k12*IIR_2_COS_3_PI_8_2)*d1*d1;
+        iir2Den[2] = (-1.0-k2+k12*k12+k12*IIR_2_COS_PI_8_2)*d2*d2;
+
+        /*! Gains and numerators */
+        double iir1G;
+        double iir2G;
+        if (rawDataFilterLowPassFlag) {
+            iir1G = (1.0+iir1Den[1]+iir1Den[2])*0.25;
+            iir2G = (1.0+iir2Den[1]+iir2Den[2])*0.25;
+
+            iir1Num[1] = 2.0*iir1G;
+            iir2Num[1] = 2.0*iir2G;
+
+        } else {
+            iir1G = (1.0-iir1Den[1]+iir1Den[2])*0.25;
+            iir2G = (1.0-iir2Den[1]+iir2Den[2])*0.25;
+
+            iir1Num[1] = -2.0*iir1G;
+            iir2Num[1] = -2.0*iir2G;
+        }
+
+        iir1Num[0] = iir1G;
+        iir2Num[0] = iir2G;
+        iir1Num[2] = iir1G;
+        iir2Num[2] = iir2G;
+
+    } else {
+        /*! Delta impulse response with no autoregressive part */
+        iir1Num[0] = 1.0;
+        iir2Num[0] = 1.0;
+        iir1Num[1] = 0.0;
+        iir2Num[1] = 0.0;
+        iir1Num[2] = 0.0;
+        iir2Num[2] = 0.0;
+        // iir1Den[0] = 1.0; not used
+        // iir2Den[0] = 1.0; not used
+        iir1Den[1] = 0.0;
+        iir2Den[1] = 0.0;
+        iir1Den[2] = 0.0;
+        iir2Den[2] = 0.0;
+    }
+
+    /*! reset FIFOs */
+    for (uint16_t channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
         for (int tapIdx = 0; tapIdx < IIR_ORD+1; tapIdx++) {
             iirX[channelIdx][tapIdx] = 0.0;
             iirU[channelIdx][tapIdx] = 0.0;

@@ -101,16 +101,16 @@ public:
     \****************/
 
     ErrorCodes_t turnOnLsbNoise(bool flag);
-    ErrorCodes_t convertVoltageValue(uint16_t intValue, double &fltValue);
-    ErrorCodes_t convertCurrentValue(uint16_t intValue, double &fltValue);
-    ErrorCodes_t setVoltageRange(uint16_t voltageRangeIdx);
-    virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx);
+    ErrorCodes_t convertVoltageValue(uint16_t uintValue, double &fltValue);
+    ErrorCodes_t convertCurrentValue(uint16_t uintValue, double &fltValue);
+    ErrorCodes_t setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag = true);
+    virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, bool applyFlag = true);
     virtual ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag = true);
 
     virtual ErrorCodes_t digitalOffsetCompensation(bool on, bool applyFlag = true);
     ErrorCodes_t zap(uint16_t channelIdx, bool applyFlag = true);
 
-    ErrorCodes_t resetDevice(bool reset, bool applyFlag = true);
+    ErrorCodes_t resetDevice();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
 
     ErrorCodes_t sendCommands();
@@ -121,7 +121,7 @@ public:
     ErrorCodes_t setProtocolSlope(unsigned int idx, Measurement_t slope, bool applyFlag = false);
     ErrorCodes_t setProtocolInteger(unsigned int idx, int32_t value, bool applyFlag = false);
 
-    ErrorCodes_t setRawDataFilterCutoffFrequency(Measurement_t cFrequency);
+    ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t activateFEResetDenoiser(bool flag, bool applyFlag = true);
     ErrorCodes_t activateDacIntFilter(bool flag, bool applyFlag = true);
 
@@ -138,10 +138,10 @@ public:
 
     ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber);
 
-    ErrorCodes_t getCurrentRanges(vector <RangedMeasurement_t> &currentRanges);
+    ErrorCodes_t getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, unsigned int &defaultOption);
     ErrorCodes_t getCurrentRange(RangedMeasurement_t &currentRange);
 
-    ErrorCodes_t getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges);
+    ErrorCodes_t getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, unsigned int &defaultOption);
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
 
     ErrorCodes_t getSamplingRates(vector <Measurement_t> &samplingRates, unsigned int &defaultOption);
@@ -193,6 +193,7 @@ protected:
 
     void computeMinimumPacketNumber();
     void initializeRawDataFilterVariables();
+    void computeFilterCoefficients();
     void applyFilter(uint16_t channelIdx, uint16_t &x);
 
     /****************\
@@ -219,12 +220,16 @@ protected:
     uint32_t currentRangesNum;
     uint16_t selectedCurrentRangeIdx = 0;
     vector <RangedMeasurement_t> currentRangesArray;
+    unsigned int defaultCurrentRangeIdx = 0;
+    BoolRandomArrayCoder * currentRangeCoder;
 
     uint32_t voltageRangesNum;
     uint16_t selectedVoltageRangeIdx = 0;
     vector <RangedMeasurement_t> voltageRangesArray;
+    unsigned int defaultVoltageRangeIdx = 0;
     vector <uint16_t> voltageOffsetArray;
     uint16_t voltageOffset;
+    BoolRandomArrayCoder * voltageRangeCoder;
 
     uint32_t samplingRatesNum;
     vector <Measurement_t> samplingRatesArray;
@@ -240,9 +245,6 @@ protected:
     vector <bool> zapStates;
     BoolArrayCoder * channelOffCoder;
     BoolArrayCoder * channelSelectCoder;
-
-    uint16_t voltageRangeIdx = 0;
-    uint16_t currentRangeIdx = 0;
 
     vector <std::string> protocolsNames;
     BoolArrayCoder * protocolsSelectCoder;
@@ -278,6 +280,8 @@ protected:
     RangedMeasurement_t rawDataFilterCutoffFrequencyRange;
     Measurement_t rawDataFilterCutoffFrequencyDefault;
     Measurement_t rawDataFilterCutoffFrequency = {30.0, UnitPfxKilo, "Hz"};
+    bool rawDataFilterLowPassFlag = true;
+    bool rawDataFilterActiveFlag = false;
     double iir1Num[IIR_ORD+1];
     double iir1Den[IIR_ORD+1];
     double iir2Num[IIR_ORD+1];
@@ -346,7 +350,7 @@ protected:
     RangedMeasurement_t voltageRange;
     RangedMeasurement_t currentRange;
 
-    Measurement_t samplingRate = {200.0, UnitPfxKilo, "Hz"};
+    Measurement_t samplingRate = {1.0, UnitPfxKilo, "Hz"};
 
     double stepsOnLastSweep;
     uint16_t protocolItemsNum;

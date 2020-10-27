@@ -47,6 +47,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     currentRangesArray[CurrentRange200nA].step = currentRangesArray[CurrentRange200nA].max/SHORT_MAX;
     currentRangesArray[CurrentRange200nA].prefix = UnitPfxNano;
     currentRangesArray[CurrentRange200nA].unit = "A";
+    defaultCurrentRangeIdx = CurrentRange200pA;
 
     /*! Voltage ranges */
     /*! VC */
@@ -57,6 +58,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     voltageRangesArray[VoltageRange500mV].step = 1.0;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
+    defaultVoltageRangeIdx = VoltageRange500mV;
 
     voltageOffsetArray.resize(voltageRangesNum);
     for (unsigned int voltageRangeIdx = 0; voltageRangeIdx < voltageRangesNum; voltageRangeIdx++) {
@@ -138,14 +140,14 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     txDataBytes = 90;
 
     /*! Default values */
-    voltageRangeIdx = VoltageRange500mV;
-    currentRangeIdx = CurrentRange200pA;
+    selectedVoltageRangeIdx = defaultVoltageRangeIdx;
+    selectedCurrentRangeIdx = defaultCurrentRangeIdx;
 
-    currentRange = currentRangesArray[currentRangeIdx];
-    currentResolution = currentRangesArray[currentRangeIdx].step;
-    voltageRange = voltageRangesArray[voltageRangeIdx];
-    voltageResolution = voltageRangesArray[voltageRangeIdx].step;
-    voltageOffset = voltageOffsetArray[voltageRangeIdx];
+    currentRange = currentRangesArray[selectedCurrentRangeIdx];
+    currentResolution = currentRangesArray[selectedCurrentRangeIdx].step;
+    voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
+    voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
+    voltageOffset = voltageOffsetArray[selectedVoltageRangeIdx];
     samplingRate = realSamplingRatesArray[defaultSamplingRateIdx];
     integrationStep = integrationStepArray[defaultSamplingRateIdx];
 
@@ -193,6 +195,23 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     boolConfig.bitsNum = 16;
     channelSelectCoder = new BoolArrayCoder(boolConfig);
 
+    /*! Current rate */
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 3;
+    currentRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    currentRangeCoder->addMapItem(0); /*!< 200pA    -> 0b000 */
+    currentRangeCoder->addMapItem(2); /*!< 2nA      -> 0b010 */
+    currentRangeCoder->addMapItem(3); /*!< 20nA     -> 0b011 */
+    currentRangeCoder->addMapItem(7); /*!< 200pA    -> 0b111 */
+
+    /*! Voltage range */
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+
     /*! Sampling rate */
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 3;
@@ -215,7 +234,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolsNames[ProtocolVariableAmplitude] = "Variable Amplitude";
     protocolsNames[ProtocolVariableDuration] = "Variable Duration";
     protocolsNames[ProtocolRamp] = "Ramp";
-    protocolsNames[ProtocolSquareWave] = "Cyclic Voltammetry";
+    protocolsNames[ProtocolCyclicVoltammetry] = "Cyclic Voltammetry";
 
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 2;
@@ -482,7 +501,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     /*! Raw data filter */
     rawDataFilterCutoffFrequencyRange.step = 0.1;
     rawDataFilterCutoffFrequencyRange.min = 0.0;
-    rawDataFilterCutoffFrequencyRange.max = 30.0;
+    rawDataFilterCutoffFrequencyRange.max = 100.0;
     rawDataFilterCutoffFrequencyRange.prefix = UnitPfxKilo;
     rawDataFilterCutoffFrequencyRange.unit = "Hz";
 
@@ -603,7 +622,6 @@ MessageDispatcher_e16n::~MessageDispatcher_e16n() {
 void MessageDispatcher_e16n::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
-//    this->resetDevice(false);
 //    this->digitalOffsetCompensation(false);
 
     this->selectVoltageProtocol(defaultProtocol);

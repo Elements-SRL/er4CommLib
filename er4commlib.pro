@@ -50,7 +50,7 @@ unix {
 
 INCLUDEPATH += ./ \
     devices \
-    devices/nanopore \
+    devices/e16 \
     devices/fake
 
 DEPENDPATH += ./ \

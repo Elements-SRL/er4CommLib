@@ -149,14 +149,18 @@ ErrorCodes_t setProtocolInteger(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN int32_t value);
 
-/*! \brief Set the raw data filter cut off frequency.
+/*! \brief Set the raw data filter cut off frequency and type.
  *
- * \param cFrequency [in] Cut off frequency of the raw data filter.
+ * \param cutoffFrequency [in] Cut off frequency of the raw data filter.
+ * \param lowPassFlag [in] true: set a low pass filter; false: set a high pass filter.
+ * \param activeFlag [in] true: enable the filter; false: disable the filter.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setRawDataFilterCutoffFrequency(
-        ER4CL_ARGIN Measurement_t cFrequency);
+ErrorCodes_t setRawDataFilter(
+        ER4CL_ARGIN Measurement_t cutoffFrequency,
+        ER4CL_ARGIN bool lowPassFlag,
+        ER4CL_ARGIN bool activeFlag);
 
 /*! \brief Activate the front end reset denoiser.
  *
@@ -175,6 +179,24 @@ ErrorCodes_t activateFEResetDenoiser(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t activateDacIntFilter(
         ER4CL_ARGIN bool flag);
+
+/*! \brief Set the current range.
+ *
+ * \param currentRangeIdx [in] Index of the current range to be set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setCurrentRange(
+        ER4CL_ARGIN uint16_t currentRangeIdx);
+
+/*! \brief Set the voltage range.
+ *
+ * \param voltageRangeIdx [in] Index of the voltage range to be set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setVoltageRange(
+        ER4CL_ARGIN uint16_t voltageRangeIdx);
 
 /*! \brief Set the sampling rate.
  *
@@ -213,7 +235,7 @@ ErrorCodes_t zap(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t resetDevice(
-        ER4CL_ARGIN bool reset);
+        ER4CL_ARGVOID);
 
 ///*! \brief Reset the device's digital offset compensation.
 // *
@@ -341,11 +363,13 @@ ErrorCodes_t getChannelsNumber(
 /*! \brief Get the current ranges available in voltage clamp for the device.
  *
  * \param currentRanges [out] Array containing all the available current ranges in voltage clamp.
+ * \param defaultValue [out] Default option.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRanges(
-        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &currentRanges);
+        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &currentRanges,
+        ER4CL_ARGOUT unsigned int &defaultOption);
 
 /*! \brief Get the current range currently applied.
  *
@@ -359,11 +383,13 @@ ErrorCodes_t getCurrentRange(
 /*! \brief Get the voltage ranges available in voltage clamp for the device.
  *
  * \param voltageRanges [out] Array containing all the available voltage ranges in voltage clamp.
+ * \param defaultValue [out] Default option.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRanges(
-        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &voltageRanges);
+        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &voltageRanges,
+        ER4CL_ARGOUT unsigned int &defaultOption);
 
 /*! \brief Get the voltage range currently applied.
  *

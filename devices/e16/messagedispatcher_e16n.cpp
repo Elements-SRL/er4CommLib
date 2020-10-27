@@ -64,6 +64,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     for (unsigned int voltageRangeIdx = 0; voltageRangeIdx < voltageRangesNum; voltageRangeIdx++) {
         voltageOffsetArray[voltageRangeIdx] = (uint16_t)round(0.5*(voltageRangesArray[voltageRangeIdx].max+voltageRangesArray[voltageRangeIdx].min)/voltageRangesArray[voltageRangeIdx].step);
     }
+    voltageOffsetArray[VoltageRange500mV] = 65536-500;
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
@@ -236,14 +237,14 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolsNames[ProtocolRamp] = "Ramp";
     protocolsNames[ProtocolCyclicVoltammetry] = "Cyclic Voltammetry";
 
-    boolConfig.initialByte = 3;
-    boolConfig.initialBit = 2;
+    boolConfig.initialByte = 9;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 4;
     protocolsSelectCoder = new BoolArrayCoder(boolConfig);
 
     /*! Protocol start */
-    boolConfig.initialByte = 3;
-    boolConfig.initialBit = 6;
+    boolConfig.initialByte = 9;
+    boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
     protocolStartCoder = new BoolArrayCoder(boolConfig);
 
@@ -299,7 +300,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     doubleConfig.offset = 0.0;
-    protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
+    protocolVoltageCoders[ProtocolVHold] = new DoubleOffsetBinaryCoder(doubleConfig);
     doubleConfig.initialByte = 50;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 10;
@@ -509,11 +510,6 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     rawDataFilterCutoffFrequencyDefault.prefix = UnitPfxKilo;
     rawDataFilterCutoffFrequencyDefault.unit = "Hz";
     rawDataFilterCutoffFrequency = rawDataFilterCutoffFrequencyDefault;
-
-    boolConfig.initialByte = 1;
-    boolConfig.initialBit = 6;
-    boolConfig.bitsNum = 1;
-    fEResetDenoiserCoder = new BoolArrayCoder(boolConfig);
 
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;

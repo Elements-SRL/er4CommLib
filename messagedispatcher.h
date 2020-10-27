@@ -293,7 +293,6 @@ protected:
 
     uint16_t iirOff = 0;
 
-    BoolArrayCoder * fEResetDenoiserCoder;
     BoolArrayCoder * dacIntFilterCoder;
 
     /***************\
@@ -352,15 +351,9 @@ protected:
 
     Measurement_t samplingRate = {1.0, UnitPfxKilo, "Hz"};
 
-    double stepsOnLastSweep;
-    uint16_t protocolItemsNum;
-    uint16_t protocolItemIndex;
-
     CompensationControl_t liquidJunctionControl;
     double liquidJunctionResolution = 1.0;
     double liquidJunctionOffsetBinary = 0.0;
-
-    uint16_t zapDurationHwRegisterOffset = 0;
 
     /********************************************\
      *  Multi-thread synchronization variables  *

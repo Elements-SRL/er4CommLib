@@ -496,10 +496,10 @@ ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, 
 }
 
 ErrorCodes_t MessageDispatcher::activateFEResetDenoiser(bool flag, bool applyFlag) {
-    fEResetDenoiserCoder->encode(flag ? 1 : 0, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
+//    fEResetDenoiserCoder->encode(flag ? 1 : 0, txStatus);
+//    if (applyFlag) {
+//        this->stackOutgoingMessage(txStatus);
+//    }
 
     return Success;
 }

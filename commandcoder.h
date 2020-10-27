@@ -46,6 +46,13 @@ public:
     void encode(uint32_t value, vector <uint8_t> &encodingBytes) override;
 };
 
+class BoolNegatedArrayCoder : public BoolArrayCoder {
+public:
+    BoolNegatedArrayCoder(CoderConfig_t config);
+
+    void encode(uint32_t value, vector <uint8_t> &encodingBytes) override;
+};
+
 class BoolRandomArrayCoder : public BoolArrayCoder {
 public:
     BoolRandomArrayCoder(CoderConfig_t config);

@@ -211,22 +211,39 @@ ErrorCodes_t setSamplingRate(
  * Digital offset compensation tunes the offset of the applied voltage so that the
  * acquired current is 0.
  *
+ * \param channelIdx [in] Index of the channel to apply the digital offset compensation to.
+ * Set equal to the number of current channels to apply to all channels.
  * \param on [in] False disables the digital offset compensation, true enables it.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t digitalOffsetCompensation(
+        ER4CL_ARGIN uint16_t channelIdx,
         ER4CL_ARGIN bool on);
 
 /*! \brief Zap.
  * A big voltage is applied in order to break the membrane.
  *
  * \param channelIdx [in] Index of the channel to zap.
+ * Set equal to the number of current channels to apply to all channels.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t zap(
         ER4CL_ARGIN uint16_t channelIdx);
+
+/*! \brief Channel on.
+ * Switch on the channel. Switched off channel do not send data and are constantly compensated to reduce current offset.
+ *
+ * \param channelIdx [in] Index of the channel to switch on.
+ * Set equal to the number of current channels to apply to all channels.
+ * \param on [in] False switches off the channel, true switches it on.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t switchChannelOn(
+        ER4CL_ARGIN uint16_t channelIdx,
+        ER4CL_ARGIN bool on);
 
 /*! \brief Reset the device.
  *
@@ -430,14 +447,38 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageStimulusLpfs(
         ER4CL_ARGOUT std::vector <std::string> &filterOptions);
 
-/*! \brief Get the specifications of the control for the liquid junction.
+/*! \brief Get the digital offset compensation feature availability.
  *
- * \param control [out] Specifications of the control for the liquid junction.
- * \return Success if the device implements liquid junction control.
+ * \param digitalOffsetCompensationFlag [out] True if the device has the digital offset compensation feature.
+ * \param singleChannelDOCFlag [out] True if the device can apply digital offset compesantion to single channels independently.
+ * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getLiquidJunctionControl(
-        ER4CL_ARGOUT CompensationControl_t &control);
+ErrorCodes_t hasDigitalOffsetCompensation(
+        ER4CL_ARGOUT bool &digitalOffsetCompensationFlag,
+        ER4CL_ARGOUT bool &singleChannelDOCFlag);
+
+/*! \brief Get the zap feature availability.
+ *
+ * \param zappableDeviceFlag [out] True if the device has the zap feature.
+ * \param singleChannelZapFlag [out] True if the device can zap single channels independently.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasZap(
+        ER4CL_ARGOUT bool &zappableDeviceFlag,
+        ER4CL_ARGOUT bool &singleChannelZapFlag);
+
+/*! \brief Get the switch on feature availability.
+ *
+ * \param channelOnFlag [out] True if the device has the switch channel on feature.
+ * \param singleChannelOnFlag [out] True if the device can switch on single channels independently.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasChannelOn(
+        ER4CL_ARGOUT bool &channelOnFlag,
+        ER4CL_ARGOUT bool &singleChannelOnFlag);
 
 /*! \brief Get protocol list.
  *

@@ -48,6 +48,16 @@ void BoolArrayCoder::encode(uint32_t value, vector <uint8_t> &encodingBytes) {
     this->encodeUint(value, encodingBytes);
 }
 
+BoolNegatedArrayCoder::BoolNegatedArrayCoder(CoderConfig_t config) :
+    BoolArrayCoder(config) {
+
+}
+
+void BoolNegatedArrayCoder::encode(uint32_t value, vector <uint8_t> &encodingBytes) {
+//    uint32_t mask = ((uint32_t)1 << (config.bitsNum-1))-(uint32_t)1;
+    this->encodeUint((~value)/*&mask*/, encodingBytes);
+}
+
 BoolRandomArrayCoder::BoolRandomArrayCoder(CoderConfig_t config) :
     BoolArrayCoder(config) {
 

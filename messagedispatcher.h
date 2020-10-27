@@ -107,8 +107,9 @@ public:
     virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, bool applyFlag = true);
     virtual ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag = true);
 
-    virtual ErrorCodes_t digitalOffsetCompensation(bool on, bool applyFlag = true);
+    virtual ErrorCodes_t digitalOffsetCompensation(uint16_t channelIdx, bool on, bool applyFlag = true);
     ErrorCodes_t zap(uint16_t channelIdx, bool applyFlag = true);
+    ErrorCodes_t switchChannelOn(uint16_t channelIdx, bool on, bool applyFlag = true);
 
     ErrorCodes_t resetDevice();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
@@ -148,6 +149,10 @@ public:
     ErrorCodes_t getRealSamplingRates(vector <Measurement_t> &samplingRates);
 
     ErrorCodes_t getVoltageStimulusLpfs(vector <string> &filterOptions);
+
+    ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag);
+    ErrorCodes_t hasZap(bool &zappableDeviceFlag, bool &singleChannelZapFlag);
+    ErrorCodes_t hasChannelOn(bool &channelOnFlag, bool &singleChannelOnFlag);
 
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
 
@@ -238,12 +243,24 @@ protected:
     vector <Measurement_t> integrationStepArray;
     BoolRandomArrayCoder * samplingRateCoder;
 
+    bool digitalOffsetCompensationFlag = false;
+    bool singleChannelDOCFlag = false;
+    bool zappableDeviceFlag = false;
+    bool singleChannelZapFlag = false;
+    bool channelOnFlag = false;
+    bool singleChannelOnFlag = false;
+
     BoolArrayCoder * deviceResetCoder;
     BoolArrayCoder * digitalOffsetCompensationCoder;
+    vector <bool> digitalOffsetCompensationStates;
     BoolArrayCoder * digitalOffsetCompensationResetCoder;
+
     BoolArrayCoder * zapCoder;
     vector <bool> zapStates;
-    BoolArrayCoder * channelOffCoder;
+
+    BoolArrayCoder * channelOnCoder;
+    vector <bool> channelOnStates;
+
     BoolArrayCoder * channelSelectCoder;
 
     vector <std::string> protocolsNames;

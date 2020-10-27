@@ -337,17 +337,43 @@ ErrorCodes_t MessageDispatcher::setSamplingRate(uint16_t samplingRateIdx, bool a
     }
 }
 
-ErrorCodes_t MessageDispatcher::digitalOffsetCompensation(bool on, bool applyFlag) {
-    digitalOffsetCompensationCoder->encode(on ? 1 : 0, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
+ErrorCodes_t MessageDispatcher::digitalOffsetCompensation(uint16_t channelIdx, bool on, bool applyFlag) {
+    if ((channelIdx < currentChannelsNum) && digitalOffsetCompensationFlag) {
+        digitalOffsetCompensationStates[channelIdx] = on;
+        uint32_t digitalOffsetCompensationState = 0;
+        for (int idx = 0; idx < currentChannelsNum; idx++) {
+            digitalOffsetCompensationState |= digitalOffsetCompensationStates[idx] << idx;
+        }
+        digitalOffsetCompensationCoder->encode(digitalOffsetCompensationState, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
 
-    return Success;
+        return Success;
+
+    } else if ((channelIdx == currentChannelsNum) && singleChannelDOCFlag) {
+        for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+            this->digitalOffsetCompensation(channelIdx, on, false);
+        }
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        if (((channelIdx < currentChannelsNum) && !digitalOffsetCompensationFlag) ||
+                ((channelIdx == currentChannelsNum) && !singleChannelDOCFlag)) {
+            return ErrorFeatureNotImplemented;
+
+        } else {
+            return ErrorValueOutOfRange;
+        }
+    }
 }
 
 ErrorCodes_t MessageDispatcher::zap(uint16_t channelIdx, bool applyFlag) {
-    if (channelIdx < currentChannelsNum) {
+    if ((channelIdx < currentChannelsNum) && singleChannelZapFlag) {
         zapStates[channelIdx] = !zapStates[channelIdx];
         uint32_t zapState = 0;
         for (int idx = 0; idx < currentChannelsNum; idx++) {
@@ -360,8 +386,59 @@ ErrorCodes_t MessageDispatcher::zap(uint16_t channelIdx, bool applyFlag) {
 
         return Success;
 
+    } else if ((channelIdx == currentChannelsNum) && zappableDeviceFlag) {
+        for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+            this->zap(channelIdx, false);
+        }
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
     } else {
-        return ErrorValueOutOfRange;
+        if (((channelIdx < currentChannelsNum) && !singleChannelZapFlag) ||
+                ((channelIdx == currentChannelsNum) && !zappableDeviceFlag)) {
+            return ErrorFeatureNotImplemented;
+
+        } else {
+            return ErrorValueOutOfRange;
+        }
+    }
+}
+
+ErrorCodes_t MessageDispatcher::switchChannelOn(uint16_t channelIdx, bool on, bool applyFlag) {
+    if ((channelIdx < currentChannelsNum) && singleChannelOnFlag) {
+        channelOnStates[channelIdx] = on;
+        uint32_t channelOnState = 0;
+        for (int idx = 0; idx < currentChannelsNum; idx++) {
+            channelOnState |= channelOnStates[idx] << idx;
+        }
+        channelOnCoder->encode(channelOnState, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else if ((channelIdx == currentChannelsNum) && channelOnFlag) {
+        for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+            this->switchChannelOn(channelIdx, on, false);
+        }
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        if (((channelIdx < currentChannelsNum) && !singleChannelOnFlag) ||
+                ((channelIdx == currentChannelsNum) && !channelOnFlag)) {
+            return ErrorFeatureNotImplemented;
+
+        } else {
+            return ErrorValueOutOfRange;
+        }
     }
 }
 
@@ -629,6 +706,24 @@ ErrorCodes_t MessageDispatcher::getSamplingRates(vector <Measurement_t> &samplin
 
 ErrorCodes_t MessageDispatcher::getRealSamplingRates(vector <Measurement_t> &samplingRates) {
     samplingRates = realSamplingRatesArray;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag) {
+    digitalOffsetCompensationFlag = this->digitalOffsetCompensationFlag;
+    singleChannelDOCFlag = this->singleChannelDOCFlag;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::hasZap(bool &zappableDeviceFlag, bool &singleChannelZapFlag) {
+    zappableDeviceFlag = this->zappableDeviceFlag;
+    singleChannelZapFlag = this->singleChannelZapFlag;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::hasChannelOn(bool &channelOnFlag, bool &singleChannelOnFlag) {
+    channelOnFlag = this->channelOnFlag;
+    singleChannelOnFlag = this->singleChannelOnFlag;
     return Success;
 }
 

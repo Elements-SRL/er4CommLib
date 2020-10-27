@@ -53,8 +53,8 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     /*! VC */
     voltageRangesNum = VoltageRangesNum;
     voltageRangesArray.resize(voltageRangesNum);
-    voltageRangesArray[VoltageRange500mV].min = -500.0;
-    voltageRangesArray[VoltageRange500mV].max = 500.0;
+    voltageRangesArray[VoltageRange500mV].min = -511.0;
+    voltageRangesArray[VoltageRange500mV].max = 511.0;
     voltageRangesArray[VoltageRange500mV].step = 1.0;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
@@ -64,7 +64,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     for (unsigned int voltageRangeIdx = 0; voltageRangeIdx < voltageRangesNum; voltageRangeIdx++) {
         voltageOffsetArray[voltageRangeIdx] = (uint16_t)round(0.5*(voltageRangesArray[voltageRangeIdx].max+voltageRangesArray[voltageRangeIdx].min)/voltageRangesArray[voltageRangeIdx].step);
     }
-    voltageOffsetArray[VoltageRange500mV] = 65536-500;
+    voltageOffsetArray[VoltageRange500mV] = 65536-512;
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
@@ -163,10 +163,18 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     deviceResetCoder = new BoolArrayCoder(boolConfig);
 
     /*! Digital offset compensations */
+    digitalOffsetCompensationFlag = true;
+    singleChannelDOCFlag = true;
+
     boolConfig.initialByte = 6;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 16;
     digitalOffsetCompensationCoder = new BoolArrayCoder(boolConfig);
+
+    digitalOffsetCompensationStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        digitalOffsetCompensationStates[currentIdx] = false;
+    }
 
     boolConfig.initialByte = 8;
     boolConfig.initialBit = 3;
@@ -174,6 +182,9 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
     /*! Zap */
+    zappableDeviceFlag = true;
+    singleChannelZapFlag = true;
+
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 16;
@@ -185,10 +196,18 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     }
 
     /*! Channel off */
+    channelOnFlag = true;
+    singleChannelOnFlag = true;
+
     boolConfig.initialByte = 10;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 16;
-    channelOffCoder = new BoolArrayCoder(boolConfig);
+    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
+
+    channelOnStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        channelOnStates[currentIdx] = false;
+    }
 
     /*! Channel select */
     boolConfig.initialByte = 13;
@@ -521,7 +540,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
 
     txStatus[0] = txSyncWord; // HDR
     txStatus[1] = 0x20; // CG0
-    txStatus[2] = 0x00; // CFG1
+    txStatus[2] = 0x03; // CFG1
     txStatus[3] = 0x00; // CFG2
     txStatus[4] = 0x00; // CFG3
     txStatus[5] = 0x00; // CFG4
@@ -532,8 +551,8 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     txStatus[10] = 0x00; // CFG9
     txStatus[11] = 0x00; // CFG10
     txStatus[12] = 0x00; // CFG11
-    txStatus[13] = 0x3F; // CFG12
-    txStatus[14] = 0x3F; // CFG13
+    txStatus[13] = 0x7F; // CFG12
+    txStatus[14] = 0x7F; // CFG13
     txStatus[15] = 0x03; // CFG14
     txStatus[16] = 0x00; // Vhold
     txStatus[17] = 0x00;
@@ -618,7 +637,8 @@ MessageDispatcher_e16n::~MessageDispatcher_e16n() {
 void MessageDispatcher_e16n::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
-//    this->digitalOffsetCompensation(false);
+    this->digitalOffsetCompensation(currentChannelsNum, false);
+    this->switchChannelOn(currentChannelsNum, true, false);
 
     this->selectVoltageProtocol(defaultProtocol);
 
@@ -638,7 +658,6 @@ void MessageDispatcher_e16n::initializeDevice() {
         this->setProtocolInteger(integerIdx, protocolIntegerDefault[integerIdx], false);
     }
 
-//    this->activateFEResetDenoiser(false, false);
 //    this->activateDacIntFilter(false, false);
 //    this->activateDacExtFilter(true, false);
 }

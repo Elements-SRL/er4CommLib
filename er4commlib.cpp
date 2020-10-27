@@ -338,10 +338,11 @@ ErrorCodes_t setSamplingRate(
 }
 
 ErrorCodes_t digitalOffsetCompensation(
+        uint16_t channelIdx,
         bool on) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->digitalOffsetCompensation(on);
+        ret = messageDispatcher->digitalOffsetCompensation(channelIdx, on);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -354,6 +355,19 @@ ErrorCodes_t zap(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->zap(channelIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t switchChannelOn(
+        uint16_t channelIdx,
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->switchChannelOn(channelIdx, on);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -608,15 +622,42 @@ ErrorCodes_t getVoltageStimulusLpfs(
     return ret;
 }
 
-ErrorCodes_t getLiquidJunctionControl(
-        CompensationControl_t &control) {
+ErrorCodes_t hasDigitalOffsetCompensation(
+        bool &digitalOffsetCompensationFlag,
+        bool &singleChannelDOCFlag) {
     ErrorCodes_t ret;
-//    if (messageDispatcher != nullptr) {
-//        ret = messageDispatcher->getLiquidJunctionControl(control);
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasDigitalOffsetCompensation(digitalOffsetCompensationFlag, singleChannelDOCFlag);
 
-//    } else {
-//        ret = ErrorDeviceNotConnected;
-//    }
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasZap(
+        bool &zappableDeviceFlag,
+        bool &singleChannelZapFlag) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasZap(zappableDeviceFlag, singleChannelZapFlag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasChannelOn(
+        bool &channelOnFlag,
+        bool &singleChannelOnFlag) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasChannelOn(channelOnFlag, singleChannelOnFlag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
     return ret;
 }
 

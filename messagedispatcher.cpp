@@ -1254,8 +1254,8 @@ void MessageDispatcher::computeFilterCoefficients() {
         double d2 = 1.0/(1.0+k1*IIR_2_SIN_PI_8+k12); /*! denominator of second biquad */
 
         /*! Denominators */
-        // iir1Den[0] = 1.0; not used
-        // iir2Den[0] = 1.0; not used
+        iir1Den[0] = 1.0;
+        iir2Den[0] = 1.0;
         iir1Den[1] = k2*d1;
         iir2Den[1] = k2*d2;
         iir1Den[2] = (-1.0-k2+k12*k12+k12*IIR_2_COS_3_PI_8_2)*d1*d1;
@@ -1292,8 +1292,8 @@ void MessageDispatcher::computeFilterCoefficients() {
         iir2Num[1] = 0.0;
         iir1Num[2] = 0.0;
         iir2Num[2] = 0.0;
-        // iir1Den[0] = 1.0; not used
-        // iir2Den[0] = 1.0; not used
+        iir1Den[0] = 1.0;
+        iir2Den[0] = 1.0;
         iir1Den[1] = 0.0;
         iir2Den[1] = 0.0;
         iir1Den[2] = 0.0;

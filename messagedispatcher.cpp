@@ -321,11 +321,12 @@ ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, bool a
 
 ErrorCodes_t MessageDispatcher::setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) {
     if (samplingRateIdx < samplingRatesNum) {
-        samplingRate = realSamplingRatesArray[samplingRateIdx];
-        integrationStep = integrationStepArray[samplingRateIdx];
+        selectedSamplingRateIdx = samplingRateIdx;
+        samplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
+        integrationStep = integrationStepArray[selectedSamplingRateIdx];
         this->setRawDataFilter(rawDataFilterCutoffFrequency, rawDataFilterLowPassFlag, rawDataFilterActiveFlag);
 
-        samplingRateCoder->encode(samplingRateIdx, txStatus);
+        samplingRateCoder->encode(selectedSamplingRateIdx, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -704,6 +705,11 @@ ErrorCodes_t MessageDispatcher::getSamplingRates(vector <Measurement_t> &samplin
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::getSamplingRate(Measurement_t &samplingRate) {
+    samplingRate = samplingRatesArray[selectedSamplingRateIdx];
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::getRealSamplingRates(vector <Measurement_t> &samplingRates) {
     samplingRates = realSamplingRatesArray;
     return Success;
@@ -766,6 +772,11 @@ ErrorCodes_t MessageDispatcher::getProtocolInteger(vector <string> &integerNames
     integerNames = protocolIntegerNames;
     ranges = protocolIntegerRanges;
     defaultValues = protocolIntegerDefault;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getEdhFormat(string &format) {
+    format = edhFormat;
     return Success;
 }
 
@@ -1170,7 +1181,7 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                     value += voltageOffset;
 
                 } else {
-                    value = (value&0x7fff) + (~value&0x8000);
+                    value ^= 0x8000;
                     this->applyFilter(channelIdx-voltageChannelsNum, value);
                 }
 

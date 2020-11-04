@@ -146,6 +146,7 @@ public:
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
 
     ErrorCodes_t getSamplingRates(vector <Measurement_t> &samplingRates, unsigned int &defaultOption);
+    ErrorCodes_t getSamplingRate(Measurement_t &samplingRates);
     ErrorCodes_t getRealSamplingRates(vector <Measurement_t> &samplingRates);
 
     ErrorCodes_t getVoltageStimulusLpfs(vector <string> &filterOptions);
@@ -161,6 +162,7 @@ public:
     ErrorCodes_t getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolInteger(vector <string> &integerNames, vector <RangedMeasurement_t> &ranges, vector <int32_t> &defaultValues);
+    ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
 
 protected:
@@ -237,6 +239,7 @@ protected:
     BoolRandomArrayCoder * voltageRangeCoder;
 
     uint32_t samplingRatesNum;
+    uint16_t selectedSamplingRateIdx;
     vector <Measurement_t> samplingRatesArray;
     unsigned int defaultSamplingRateIdx = 0;
     vector <Measurement_t> realSamplingRatesArray;
@@ -291,6 +294,8 @@ protected:
     vector <RangedMeasurement_t> protocolIntegerRanges;
     vector <BoolArrayCoder *> protocolIntegerCoders;
     vector <int32_t> protocolIntegerDefault;
+
+    string edhFormat;
 
     Measurement_t integrationStep;
 

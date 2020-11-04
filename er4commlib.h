@@ -428,6 +428,15 @@ ErrorCodes_t getSamplingRates(
         ER4CL_ARGOUT std::vector <Measurement_t> &samplingRates,
         ER4CL_ARGOUT unsigned int &defaultOption);
 
+/*! \brief Get the sampling rate currently applied.
+ *
+ * \param samplingRate [out] Sampling rate currently applied.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getSamplingRate(
+        ER4CL_ARGOUT Measurement_t &samplingRate);
+
 /*! \brief Get the real sampling rates available for the device.
  *
  * \param samplingRates [out] Array containing all the available real sampling rates
@@ -540,6 +549,15 @@ ErrorCodes_t getProtocolInteger(
         ER4CL_ARGOUT std::vector <std::string> &integerNames,
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT std::vector <int32_t> &defaultValues);
+
+/*! \brief Get data header format.
+ *
+ * \param format [out] Format of the data header.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getEdhFormat(
+        ER4CL_ARGOUT std::string &format);
 
 /*! \brief Get the raw data filter appliable cut off frequency range.
  *

@@ -598,6 +598,18 @@ ErrorCodes_t getSamplingRates(
     return ret;
 }
 
+ErrorCodes_t getSamplingRate(
+        Measurement_t &samplingRate) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getSamplingRate(samplingRate);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t getRealSamplingRates(
         vector <Measurement_t> &samplingRates) {
     ErrorCodes_t ret;
@@ -722,6 +734,18 @@ ErrorCodes_t getProtocolInteger(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getProtocolInteger(integerNames, ranges, defaultValues);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getEdhFormat(
+        string &format) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getEdhFormat(format);
 
     } else {
         ret = ErrorDeviceNotConnected;

@@ -143,14 +143,15 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     /*! Default values */
     selectedVoltageRangeIdx = defaultVoltageRangeIdx;
     selectedCurrentRangeIdx = defaultCurrentRangeIdx;
+    selectedSamplingRateIdx = defaultSamplingRateIdx;
 
     currentRange = currentRangesArray[selectedCurrentRangeIdx];
     currentResolution = currentRangesArray[selectedCurrentRangeIdx].step;
     voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
     voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
     voltageOffset = voltageOffsetArray[selectedVoltageRangeIdx];
-    samplingRate = realSamplingRatesArray[defaultSamplingRateIdx];
-    integrationStep = integrationStepArray[defaultSamplingRateIdx];
+    samplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
+    integrationStep = integrationStepArray[selectedSamplingRateIdx];
 
     /*! Input controls */
     BoolCoder::CoderConfig_t boolConfig;
@@ -517,6 +518,23 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolIntegerDefault.resize(ProtocolIntegersNum);
     protocolIntegerDefault[ProtocolN] = 5;
     protocolIntegerDefault[ProtocolNR] = 0;
+
+    edhFormat =
+            "EDH Version: 2.0\n"
+            "\n"
+            "Elements e16n\n"
+            "Channels: 16\n"
+            "\n"
+            "Data header file\n"
+            "\n"
+            "Amplifier Setup\n"
+            "Range: %currentRange%\n" // 200 pA
+            "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
+            "Final Bandwidth: SR/2 (no filter)\n"
+            "\n"
+            "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
+            "\n"
+            "Active channels: %activeChannels%\n"; // 2 3 4 5 6 7 8 9 10 12 13 14 15 16
 
     /*! Raw data filter */
     rawDataFilterCutoffFrequencyRange.step = 0.1;

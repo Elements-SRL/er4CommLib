@@ -342,8 +342,8 @@ ErrorCodes_t MessageDispatcher::digitalOffsetCompensation(uint16_t channelIdx, b
     if ((channelIdx < currentChannelsNum) && digitalOffsetCompensationFlag) {
         digitalOffsetCompensationStates[channelIdx] = on;
         uint32_t digitalOffsetCompensationState = 0;
-        for (int idx = 0; idx < currentChannelsNum; idx++) {
-            digitalOffsetCompensationState |= digitalOffsetCompensationStates[idx] << idx;
+        for (unsigned int idx = 0; idx < currentChannelsNum; idx++) {
+            digitalOffsetCompensationState |= (digitalOffsetCompensationStates[idx] ? (uint32_t)1 : 0) << idx;
         }
         digitalOffsetCompensationCoder->encode(digitalOffsetCompensationState, txStatus);
         if (applyFlag) {
@@ -377,8 +377,8 @@ ErrorCodes_t MessageDispatcher::zap(uint16_t channelIdx, bool applyFlag) {
     if ((channelIdx < currentChannelsNum) && singleChannelZapFlag) {
         zapStates[channelIdx] = !zapStates[channelIdx];
         uint32_t zapState = 0;
-        for (int idx = 0; idx < currentChannelsNum; idx++) {
-            zapState |= zapStates[idx] << idx;
+        for (unsigned int idx = 0; idx < currentChannelsNum; idx++) {
+            zapState |= (zapStates[idx] ? (uint32_t)1 : 0) << idx;
         }
         zapCoder->encode(zapState, txStatus);
         if (applyFlag) {
@@ -412,8 +412,8 @@ ErrorCodes_t MessageDispatcher::switchChannelOn(uint16_t channelIdx, bool on, bo
     if ((channelIdx < currentChannelsNum) && singleChannelOnFlag) {
         channelOnStates[channelIdx] = on;
         uint32_t channelOnState = 0;
-        for (int idx = 0; idx < currentChannelsNum; idx++) {
-            channelOnState |= channelOnStates[idx] << idx;
+        for (unsigned int idx = 0; idx < currentChannelsNum; idx++) {
+            channelOnState |= (channelOnStates[idx] ? (uint32_t)1 : 0) << idx;
         }
         channelOnCoder->encode(channelOnState, txStatus);
         if (applyFlag) {
@@ -591,6 +591,18 @@ ErrorCodes_t MessageDispatcher::activateDacIntFilter(bool flag, bool applyFlag) 
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::resetWasherError() {
+    return ErrorFeatureNotImplemented;
+}
+
+ErrorCodes_t MessageDispatcher::setWasherPresetSpeeds(vector <int8_t>) {
+    return ErrorFeatureNotImplemented;
+}
+
+ErrorCodes_t MessageDispatcher::startWasher(uint16_t) {
+    return ErrorFeatureNotImplemented;
+}
+
 /****************\
  *  Rx methods  *
 \****************/
@@ -677,7 +689,7 @@ ErrorCodes_t MessageDispatcher::getChannelsNumber(uint32_t &voltageChannelsNumbe
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, unsigned int &defaultOption) {
+ErrorCodes_t MessageDispatcher::getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, uint16_t &defaultOption) {
     currentRanges = currentRangesArray;
     defaultOption = defaultCurrentRangeIdx;
     return Success;
@@ -688,7 +700,7 @@ ErrorCodes_t MessageDispatcher::getCurrentRange(RangedMeasurement_t &currentRang
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, unsigned int &defaultOption) {
+ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption) {
     voltageRanges = voltageRangesArray;
     defaultOption = defaultVoltageRangeIdx;
     return Success;
@@ -699,7 +711,7 @@ ErrorCodes_t MessageDispatcher::getVoltageRange(RangedMeasurement_t &voltageRang
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getSamplingRates(vector <Measurement_t> &samplingRates, unsigned int &defaultOption) {
+ErrorCodes_t MessageDispatcher::getSamplingRates(vector <Measurement_t> &samplingRates, uint16_t &defaultOption) {
     samplingRates = samplingRatesArray;
     defaultOption = defaultSamplingRateIdx;
     return Success;
@@ -784,6 +796,27 @@ ErrorCodes_t MessageDispatcher::getRawDataFilterCutoffFrequency(RangedMeasuremen
     range = rawDataFilterCutoffFrequencyRange;
     defaultValue = rawDataFilterCutoffFrequencyDefault;
     return Success;
+}
+
+ErrorCodes_t MessageDispatcher::hasWasherControls() {
+    if (washerControlFlag) {
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::getWasherSpeedRange(RangedMeasurement_t &) {
+    return ErrorFeatureNotImplemented;
+}
+
+ErrorCodes_t MessageDispatcher::getWasherStatus(WasherStatus_t &, WasherError_t &) {
+    return ErrorFeatureNotImplemented;
+}
+
+ErrorCodes_t MessageDispatcher::getWasherPresetSpeeds(vector <int8_t> &) {
+    return ErrorFeatureNotImplemented;
 }
 
 /*********************\
@@ -1158,12 +1191,27 @@ void MessageDispatcher::sendCommandsToDevice() {
 
 void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
     uint16_t value;
+    uint8_t infoIndex;
+    uint8_t infoValue;
     int currentChannelIdx = 0;
 
     for (unsigned int frameIdx = 0; frameIdx < framesNum; frameIdx++) {
         /*! Skips the sync word at the beginning of each packet */
         bufferReadOffset = (bufferReadOffset+(unsigned long)FTD_RX_SYNC_WORD_SIZE)&FTD_RX_BUFFER_MASK;
 
+        /*! Extract info struct */
+        infoIndex = *(readDataBuffer+bufferReadOffset);
+        bufferReadOffset = (bufferReadOffset+1)&FTD_RX_BUFFER_MASK;
+
+        infoValue = *(readDataBuffer+bufferReadOffset);
+        bufferReadOffset = (bufferReadOffset+1)&FTD_RX_BUFFER_MASK;
+
+        printf("0x%02x 0x%02x\n", infoIndex, infoValue);
+        fflush(stdout);
+
+        infoStructPtr[infoIndex] = infoValue;
+
+        /*! Get current and voltage data */
         for (int packetIdx = 0; packetIdx < packetsPerFrame; packetIdx++) {
             currentChannelIdx = 0;
 
@@ -1181,7 +1229,6 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                     value += voltageOffset;
 
                 } else {
-                    value ^= 0x8000;
                     this->applyFilter(channelIdx-voltageChannelsNum, value);
                 }
 

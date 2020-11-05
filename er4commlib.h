@@ -180,6 +180,32 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t activateDacIntFilter(
         ER4CL_ARGIN bool flag);
 
+/*! \brief Reset the error status for the Orbit washer.
+ *
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t resetWasherError(
+        ER4CL_ARGVOID);
+
+/*! \brief Set the Orbit washer preset speed values.
+ *
+ * \param speedValues [in] Vector of preset speed values.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setWasherPresetSpeeds(
+        ER4CL_ARGIN std::vector <int8_t> speedValues);
+
+/*! \brief Start the Orbit washer at a given preset speed.
+ *
+ * \param speedIdx [in] Index of the preset speed to use.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t startWasher(
+        ER4CL_ARGIN uint16_t speedIdx);
+
 /*! \brief Set the current range.
  *
  * \param currentRangeIdx [in] Index of the current range to be set.
@@ -386,7 +412,7 @@ ErrorCodes_t getChannelsNumber(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRanges(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &currentRanges,
-        ER4CL_ARGOUT unsigned int &defaultOption);
+        ER4CL_ARGOUT uint16_t &defaultOption);
 
 /*! \brief Get the current range currently applied.
  *
@@ -406,7 +432,7 @@ ErrorCodes_t getCurrentRange(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRanges(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &voltageRanges,
-        ER4CL_ARGOUT unsigned int &defaultOption);
+        ER4CL_ARGOUT uint16_t &defaultOption);
 
 /*! \brief Get the voltage range currently applied.
  *
@@ -426,7 +452,7 @@ ErrorCodes_t getVoltageRange(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getSamplingRates(
         ER4CL_ARGOUT std::vector <Measurement_t> &samplingRates,
-        ER4CL_ARGOUT unsigned int &defaultOption);
+        ER4CL_ARGOUT uint16_t &defaultOption);
 
 /*! \brief Get the sampling rate currently applied.
  *
@@ -498,10 +524,10 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolList(
         ER4CL_ARGOUT std::vector <std::string> &protocolsNames);
 
-/*! \brief Get protocol appliable voltage range.
+/*! \brief Get protocol applicable voltage range.
  *
  * \param voltageNames [out] Names of available voltages.
- * \param ranges [out] Ranges of appliable voltage in protocols.
+ * \param ranges [out] Ranges of applicable voltage in protocols.
  * \param defaultValues [out] Default values.
  * \return Error code.
  */
@@ -511,10 +537,10 @@ ErrorCodes_t getProtocolVoltage(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT std::vector <Measurement_t> &defaultValues);
 
-/*! \brief Get protocol appliable time range.
+/*! \brief Get protocol applicable time range.
  *
  * \param timeNames [out] Names of available times.
- * \param ranges [out] Ranges of appliable time in protocols.
+ * \param ranges [out] Ranges of applicable time in protocols.
  * \param defaultValues [out] Default values.
  * \return Error code.
  */
@@ -524,10 +550,10 @@ ErrorCodes_t getProtocolTime(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT std::vector <Measurement_t> &defaultValues);
 
-/*! \brief Get protocol appliable slope range.
+/*! \brief Get protocol applicable slope range.
  *
  * \param slopeNames [out] Names of available slopes.
- * \param ranges [out] Ranges of appliable slope in protocols.
+ * \param ranges [out] Ranges of applicable slope in protocols.
  * \param defaultValues [out] Default values.
  * \return Error code.
  */
@@ -537,10 +563,10 @@ ErrorCodes_t getProtocolSlope(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT std::vector <Measurement_t> &defaultValues);
 
-/*! \brief Get protocol appliable integer range.
+/*! \brief Get protocol applicable integer range.
  *
  * \param integerNames [out] Names of available integers.
- * \param ranges [out] Ranges of appliable integer in protocols.
+ * \param ranges [out] Ranges of applicable integer in protocols.
  * \param defaultValues [out] Default values.
  * \return Error code.
  */
@@ -559,9 +585,9 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getEdhFormat(
         ER4CL_ARGOUT std::string &format);
 
-/*! \brief Get the raw data filter appliable cut off frequency range.
+/*! \brief Get the raw data filter applicable cut off frequency range.
  *
- * \param range [out] Range of appliable cut off frequency of the raw data filter.
+ * \param range [out] Range of applicable cut off frequency of the raw data filter.
  * \param defaultValue [out] Default value.
  * \return Error code.
  */
@@ -569,6 +595,44 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getRawDataFilterCutoffFrequency(
         ER4CL_ARGOUT RangedMeasurement_t &range,
         ER4CL_ARGOUT Measurement_t &defaultValue);
+
+/*! \brief Availability of Orbit washer controls.
+ *
+ * \return Success if the Orbit washer control is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasWasherControls(
+        ER4CL_ARGVOID);
+
+/*! \brief Get Orbit washer's speed range.
+ *
+ * \param range [out] Range of applicable cut off frequency of the raw data filter.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getWasherSpeedRange(
+        ER4CL_ARGOUT RangedMeasurement_t &range);
+
+/*! \brief Get Orbit washer's status.
+ *
+ * \param status [out] Status code.
+ * \param error [out] Error code.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getWasherStatus(
+        ER4CL_ARGOUT WasherStatus_t &status,
+        ER4CL_ARGOUT WasherError_t &error);
+
+/*! \brief Get Orbit washer's preset speeds.
+ *
+ * \param speedValue [out] vector of preset speeds.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getWasherPresetSpeeds(
+        ER4CL_ARGOUT std::vector <int8_t> &speedValue);
+
 }
 
 #endif // ER4COMMLIB_H

@@ -11,7 +11,7 @@ using namespace std;
 class CommandCoder {
 public:
     CommandCoder(uint16_t initialByte, uint8_t initialBit, uint8_t bitsNum);
-    ~CommandCoder();
+    virtual ~CommandCoder();
 
 protected:
     void encodeUint(uint32_t uintValue, vector <uint8_t> &encodingBytes);

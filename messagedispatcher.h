@@ -17,7 +17,7 @@
 using namespace std;
 using namespace er4CommLib;
 
-//#define DEBUG_PRINT
+#define DEBUG_PRINT
 
 #ifdef DEBUG_PRINT
 //#define DEBUG_RAW_BIT_RATE_PRINT
@@ -49,7 +49,8 @@ using namespace er4CommLib;
 #define FTD_MAX_WRITE_TRIES 10
 
 #define FTD_RX_WORD_SIZE (sizeof(uint16_t)) // 16 bit word
-#define FTD_RX_SYNC_WORD_SIZE ((int)(2*FTD_RX_WORD_SIZE)) // could be different size
+#define FTD_RX_SYNC_WORD_SIZE (static_cast <int> (2*FTD_RX_WORD_SIZE))
+#define FTD_RX_INFO_WORD_SIZE (static_cast <int> (FTD_RX_WORD_SIZE))
 #define FTD_RX_BUFFER_SIZE 0x20000 /*!< Always use a power of 2 for efficient circular buffer management through index masking */
 #define FTD_RX_BUFFER_MASK (FTD_RX_BUFFER_SIZE-1)
 #define FTD_DEFAULT_MIN_FRAME_NUMBER 10
@@ -126,6 +127,12 @@ public:
     ErrorCodes_t activateFEResetDenoiser(bool flag, bool applyFlag = true);
     ErrorCodes_t activateDacIntFilter(bool flag, bool applyFlag = true);
 
+    /*! Device specific controls */
+
+    virtual ErrorCodes_t resetWasherError();
+    virtual ErrorCodes_t setWasherPresetSpeeds(vector <int8_t> speedValues);
+    virtual ErrorCodes_t startWasher(uint16_t speedIdx);
+
     /****************\
      *  Rx methods  *
     \****************/
@@ -139,13 +146,13 @@ public:
 
     ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber);
 
-    ErrorCodes_t getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, unsigned int &defaultOption);
+    ErrorCodes_t getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, uint16_t &defaultOption);
     ErrorCodes_t getCurrentRange(RangedMeasurement_t &currentRange);
 
-    ErrorCodes_t getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, unsigned int &defaultOption);
+    ErrorCodes_t getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption);
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
 
-    ErrorCodes_t getSamplingRates(vector <Measurement_t> &samplingRates, unsigned int &defaultOption);
+    ErrorCodes_t getSamplingRates(vector <Measurement_t> &samplingRates, uint16_t &defaultOption);
     ErrorCodes_t getSamplingRate(Measurement_t &samplingRates);
     ErrorCodes_t getRealSamplingRates(vector <Measurement_t> &samplingRates);
 
@@ -164,6 +171,13 @@ public:
     ErrorCodes_t getProtocolInteger(vector <string> &integerNames, vector <RangedMeasurement_t> &ranges, vector <int32_t> &defaultValues);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
+
+    /*! Device specific controls */
+
+    ErrorCodes_t hasWasherControls();
+    virtual ErrorCodes_t getWasherSpeedRange(RangedMeasurement_t &range);
+    virtual ErrorCodes_t getWasherStatus(WasherStatus_t &status, WasherError_t &error);
+    virtual ErrorCodes_t getWasherPresetSpeeds(vector <int8_t> &speedValue);
 
 protected:
     typedef enum {
@@ -227,13 +241,13 @@ protected:
     uint32_t currentRangesNum;
     uint16_t selectedCurrentRangeIdx = 0;
     vector <RangedMeasurement_t> currentRangesArray;
-    unsigned int defaultCurrentRangeIdx = 0;
+    uint16_t defaultCurrentRangeIdx = 0;
     BoolRandomArrayCoder * currentRangeCoder;
 
     uint32_t voltageRangesNum;
     uint16_t selectedVoltageRangeIdx = 0;
     vector <RangedMeasurement_t> voltageRangesArray;
-    unsigned int defaultVoltageRangeIdx = 0;
+    uint16_t defaultVoltageRangeIdx = 0;
     vector <uint16_t> voltageOffsetArray;
     uint16_t voltageOffset;
     BoolRandomArrayCoder * voltageRangeCoder;
@@ -241,7 +255,7 @@ protected:
     uint32_t samplingRatesNum;
     uint16_t selectedSamplingRateIdx;
     vector <Measurement_t> samplingRatesArray;
-    unsigned int defaultSamplingRateIdx = 0;
+    uint16_t defaultSamplingRateIdx = 0;
     vector <Measurement_t> realSamplingRatesArray;
     vector <Measurement_t> integrationStepArray;
     BoolRandomArrayCoder * samplingRateCoder;
@@ -317,6 +331,10 @@ protected:
 
     BoolArrayCoder * dacIntFilterCoder;
 
+    /*! Device specific parameters */
+
+    bool washerControlFlag = false;
+
     /***************\
      *  Variables  *
     \***************/
@@ -334,6 +352,9 @@ protected:
     /*! Read data buffer management */
     mutable mutex readDataMtx;
     int readFrameLength;
+    uint8_t nullInfoStruct;
+    uint8_t * infoStructPtr = &nullInfoStruct;
+    unsigned int infoStructSize = 1;
     unsigned long minFrameNumber = FTD_DEFAULT_MIN_FRAME_NUMBER;
     unsigned int fewFramesSleep = FTD_DEFAULT_FEW_FRAME_SLEEP;
     unsigned char * readDataBuffer = nullptr; /*!< Buffer used in the read to store the data received from the device */

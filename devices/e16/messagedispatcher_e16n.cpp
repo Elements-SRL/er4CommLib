@@ -7,7 +7,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     rxChannel = 'B';
     txChannel = 'B';
 
-    rxSyncWord = 0xFFFF0000;
+    rxSyncWord = 0x7FFF8000;
     txSyncWord = 0x80;
 
     packetsPerFrame = 16;
@@ -16,7 +16,10 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     currentChannelsNum = 16;
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
-    readFrameLength = FTD_RX_SYNC_WORD_SIZE+(totalChannelsNum*packetsPerFrame)*FTD_RX_WORD_SIZE;
+    readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
+
+    infoStructSize = sizeof(InfoStruct_t);
+    infoStructPtr = (uint8_t *)&infoStruct;
 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
@@ -55,7 +58,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     voltageRangesArray.resize(voltageRangesNum);
     voltageRangesArray[VoltageRange500mV].min = -511.0;
     voltageRangesArray[VoltageRange500mV].max = 511.0;
-    voltageRangesArray[VoltageRange500mV].step = 1.0;
+    voltageRangesArray[VoltageRange500mV].step = 0.0625;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
@@ -64,7 +67,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     for (unsigned int voltageRangeIdx = 0; voltageRangeIdx < voltageRangesNum; voltageRangeIdx++) {
         voltageOffsetArray[voltageRangeIdx] = (uint16_t)round(0.5*(voltageRangesArray[voltageRangeIdx].max+voltageRangesArray[voltageRangeIdx].min)/voltageRangesArray[voltageRangeIdx].step);
     }
-    voltageOffsetArray[VoltageRange500mV] = 65536-512;
+    voltageOffsetArray[VoltageRange500mV] = 0;
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
@@ -548,10 +551,57 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     rawDataFilterCutoffFrequencyDefault.unit = "Hz";
     rawDataFilterCutoffFrequency = rawDataFilterCutoffFrequencyDefault;
 
+    /*! Device specific controls */
+
+    washerControlFlag = true;
+
+    washerSpeedRange.min = -100.0;
+    washerSpeedRange.max = 100.0;
+    washerSpeedRange.step = 1.0;
+    washerSpeedRange.prefix = UnitPfxNone;
+    washerSpeedRange.unit = "rpm";
+
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
     dacIntFilterCoder = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 3;
+    boolConfig.bitsNum = 1;
+    washerResetCoder = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 1;
+    washerGetStatusCoder = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 5;
+    boolConfig.bitsNum = 1;
+    washerGetSpeedsCoder = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 6;
+    boolConfig.bitsNum = 1;
+    washerSetSpeedsCoder = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 8;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 1;
+    washerStartCoder = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 8;
+    boolConfig.initialBit = 5;
+    boolConfig.bitsNum = 2;
+    washerSelectSpeedCoder = new BoolArrayCoder(boolConfig);
+
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 8;
+    doubleConfig.resolution = washerSpeedRange.step;
+    doubleConfig.minValue = washerSpeedRange.min;
+    doubleConfig.maxValue = washerSpeedRange.max;
+    doubleConfig.offset = 0.0;
+    washerPresetSpeedsCoders.resize(WasherSpeedsNum);
+    for (unsigned short speedIdx = 0; speedIdx < WasherSpeedsNum; speedIdx++) {
+        doubleConfig.initialByte = 82+speedIdx*2;
+        washerPresetSpeedsCoders[speedIdx] = new DoubleTwosCompCoder(doubleConfig);
+    }
 
     /*! Default status */
     txStatus.resize(txDataBytes);
@@ -638,18 +688,74 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     txStatus[79] = 0x00;
     txStatus[80] = 0x00; // VMin
     txStatus[81] = 0x00;
-    txStatus[82] = 0x00;
+    txStatus[82] = 0x00; // Wash_pre1
     txStatus[83] = 0x00;
-    txStatus[84] = 0x00;
+    txStatus[84] = 0x00; // Wash_pre2
     txStatus[85] = 0x00;
-    txStatus[86] = 0x00;
+    txStatus[86] = 0x00; // Wash_pre3
     txStatus[87] = 0x00;
-    txStatus[88] = 0x00;
+    txStatus[88] = 0x00; // Wash_pre4
     txStatus[89] = 0x00;
 }
 
 MessageDispatcher_e16n::~MessageDispatcher_e16n() {
 
+}
+
+ErrorCodes_t MessageDispatcher_e16n::resetWasherError() {
+    washerResetCoder->encode(1, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    washerResetCoder->encode(0, txStatus);
+    this->updateWasherStatus();
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher_e16n::setWasherPresetSpeeds(vector <int8_t> speedValues) {
+    for (unsigned int idx = 0; idx < 4; idx++) {
+        washerPresetSpeedsCoders[idx]->encode(speedValues[idx], txStatus);
+    }
+    washerSetSpeedsCoder->encode(1, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    washerSetSpeedsCoder->encode(0, txStatus);
+
+    /*! After setting the speeds get them, in a separate request to give a bit of time for the eeprom update */
+    this->updateWasherSpeeds();
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher_e16n::startWasher(uint16_t speedIdx) {
+    if (speedIdx < WasherSpeedsNum) {
+        washerSelectSpeedCoder->encode(speedIdx, txStatus);
+        washerStartCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        washerStartCoder->encode(0, txStatus);
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher_e16n::getWasherSpeedRange(RangedMeasurement_t &range) {
+    range = washerSpeedRange;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher_e16n::getWasherStatus(WasherStatus_t &status, WasherError_t &error) {
+    status = (WasherStatus_t)((infoStruct.state & 0xF0) >> 4);
+    error = (WasherError_t)(infoStruct.state & 0x0F);
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher_e16n::getWasherPresetSpeeds(vector <int8_t> &speedValue) {
+    speedValue.resize(WasherSpeedsNum);
+    for (unsigned int idx = 0; idx < WasherSpeedsNum; idx++) {
+        speedValue[idx] = infoStruct.presetSpeeds[idx];
+    }
+    return Success;
 }
 
 void MessageDispatcher_e16n::initializeDevice() {
@@ -660,22 +766,37 @@ void MessageDispatcher_e16n::initializeDevice() {
 
     this->selectVoltageProtocol(defaultProtocol);
 
-    for (int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
+    for (unsigned int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
         this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
     }
 
-    for (int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
+    for (unsigned int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
         this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
     }
 
-    for (int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
+    for (unsigned int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
         this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
     }
 
-    for (int integerIdx = 0; integerIdx < ProtocolIntegersNum; integerIdx++) {
+    for (unsigned int integerIdx = 0; integerIdx < ProtocolIntegersNum; integerIdx++) {
         this->setProtocolInteger(integerIdx, protocolIntegerDefault[integerIdx], false);
     }
 
+    this->resetWasherError();
+    this->updateWasherSpeeds();
+
 //    this->activateDacIntFilter(false, false);
 //    this->activateDacExtFilter(true, false);
+}
+
+void MessageDispatcher_e16n::updateWasherStatus() {
+    washerGetStatusCoder->encode(1, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    washerGetStatusCoder->encode(0, txStatus);
+}
+
+void MessageDispatcher_e16n::updateWasherSpeeds() {
+    washerGetSpeedsCoder->encode(1, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    washerGetSpeedsCoder->encode(0, txStatus);
 }

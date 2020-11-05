@@ -200,9 +200,6 @@ static const double powersOf1000[UnitPfxNum] = {
     1.0e30
 };
 
-/*! \typedef Measurement_t
- */
-
 /*! \struct Measurement_t
  * \brief Structure used manage physical quantities that define a value with its unit and unit prefix.
  */
@@ -815,6 +812,33 @@ typedef struct {
         }
     }
 } CompensationControl_t;
+
+/******************************\
+ *  Device specific typedefs  *
+\******************************/
+
+/*! \enum WasherStatus_t
+ * \brief Enumerates the e16n washers statuses.
+ */
+typedef enum {
+    WasherIdle,
+    WasherUnsaved,
+    WasherSaving
+} WasherStatus_t;
+
+/*! \enum WasherError_t
+ * \brief Enumerates the e16n washers errors.
+ */
+typedef enum {
+    WasherOk,
+    WasherTimeout,
+    WasherPower,
+    WasherCommunication,
+    WasherExecution,
+    WasherOverload,
+    WasherChecksumError,
+    WasherIllFormedMessage
+} WasherError_t;
 
 } // namespace er4CommLib
 

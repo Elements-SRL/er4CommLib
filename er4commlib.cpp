@@ -301,6 +301,41 @@ ErrorCodes_t activateDacIntFilter(
     return ret;
 }
 
+ErrorCodes_t resetWasherError() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->resetWasherError();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setWasherPresetSpeeds(
+        vector <int8_t> speedValues) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setWasherPresetSpeeds(speedValues);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t startWasher(
+        uint16_t speedIdx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->startWasher(speedIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setCurrentRange(
         uint16_t currentRangeIdx) {
     ErrorCodes_t ret;
@@ -537,7 +572,7 @@ ErrorCodes_t purgeData() {
 
 ErrorCodes_t getCurrentRanges(
         vector <RangedMeasurement_t> &currentRanges,
-        unsigned int &defaultOption) {
+        uint16_t &defaultOption) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getCurrentRanges(currentRanges, defaultOption);
@@ -562,7 +597,7 @@ ErrorCodes_t getCurrentRange(
 
 ErrorCodes_t getVoltageRanges(
         vector <RangedMeasurement_t> &voltageRanges,
-        unsigned int &defaultOption) {
+        uint16_t &defaultOption) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getVoltageRanges(voltageRanges, defaultOption);
@@ -587,7 +622,7 @@ ErrorCodes_t getVoltageRange(
 
 ErrorCodes_t getSamplingRates(
         vector <Measurement_t> &samplingRates,
-        unsigned int &defaultOption) {
+        uint16_t &defaultOption) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getSamplingRates(samplingRates, defaultOption);
@@ -759,6 +794,54 @@ ErrorCodes_t getRawDataFilterCutoffFrequency(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getRawDataFilterCutoffFrequency(range, defaultValue);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasWasherControls() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasWasherControls();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getWasherSpeedRange(
+        RangedMeasurement_t &range) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getWasherSpeedRange(range);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getWasherStatus(
+        WasherStatus_t &status,
+        WasherError_t &error) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getWasherStatus(status, error);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getWasherPresetSpeeds(
+        vector <int8_t> &speedValue) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getWasherPresetSpeeds(speedValue);
 
     } else {
         ret = ErrorDeviceNotConnected;

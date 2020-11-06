@@ -11,6 +11,7 @@
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 2, DeviceE16n},            //    3,  5,  2 : e16 2020 release
+    {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
 

@@ -125,6 +125,10 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e16n(deviceId);
             break;
 
+        case DeviceDlp:
+            messageDispatcher = new MessageDispatcher_dlp(deviceId);
+            break;
+
         case DeviceFakeE16n:
             messageDispatcher = new MessageDispatcher_fake_e16n(deviceId);
             break;

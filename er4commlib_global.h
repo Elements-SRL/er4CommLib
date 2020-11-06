@@ -70,6 +70,7 @@ namespace er4CommLib {
  */
 typedef enum {
     DeviceE16n,                 /*!< e16 2020 release. */
+    DeviceDlp,                  /*!< debug dlp. */
     DeviceFakeE16n,             /*!< Fake e16 2020 release. */
     DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */
     DevicesNum

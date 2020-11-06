@@ -113,4 +113,9 @@ protected:
     vector <DoubleTwosCompCoder *> washerPresetSpeedsCoders;
 };
 
+class MessageDispatcher_dlp : public MessageDispatcher_e16n {
+public:
+    MessageDispatcher_dlp(string di);
+};
+
 #endif // MESSAGEDISPATCHER_E16N_H

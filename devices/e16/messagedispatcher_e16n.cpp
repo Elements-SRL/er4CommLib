@@ -800,3 +800,10 @@ void MessageDispatcher_e16n::updateWasherSpeeds() {
     this->stackOutgoingMessage(txStatus);
     washerGetSpeedsCoder->encode(0, txStatus);
 }
+
+MessageDispatcher_dlp::MessageDispatcher_dlp(string di) :
+    MessageDispatcher_e16n(di) {
+
+    rxChannel = 'A';
+    txChannel = 'A';
+}

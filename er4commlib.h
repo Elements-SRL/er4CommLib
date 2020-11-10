@@ -206,6 +206,22 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t startWasher(
         ER4CL_ARGIN uint16_t speedIdx);
 
+/*! \brief Forces an update of the washer status, otherwise the update is done automatically after a reset.
+ *
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t updateWasherState(
+        ER4CL_ARGVOID);
+
+/*! \brief Forces an update of the washer preset speeds, otherwise the update is done automatically after the preset speeds are set.
+ *
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t updateWasherPresetSpeeds(
+        ER4CL_ARGVOID);
+
 /*! \brief Set the current range.
  *
  * \param currentRangeIdx [in] Index of the current range to be set.
@@ -269,6 +285,14 @@ ErrorCodes_t zap(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t switchChannelOn(
         ER4CL_ARGIN uint16_t channelIdx,
+        ER4CL_ARGIN bool on);
+
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t switchVcSel0(
+        ER4CL_ARGIN bool on);
+
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t switchVcSel1(
         ER4CL_ARGIN bool on);
 
 /*! \brief Reset the device.

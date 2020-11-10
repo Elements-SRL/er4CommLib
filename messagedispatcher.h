@@ -111,6 +111,8 @@ public:
     virtual ErrorCodes_t digitalOffsetCompensation(uint16_t channelIdx, bool on, bool applyFlag = true);
     ErrorCodes_t zap(uint16_t channelIdx, bool applyFlag = true);
     ErrorCodes_t switchChannelOn(uint16_t channelIdx, bool on, bool applyFlag = true);
+    ErrorCodes_t switchVcSel0(bool on);
+    ErrorCodes_t switchVcSel1(bool on);
 
     ErrorCodes_t resetDevice();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
@@ -132,6 +134,8 @@ public:
     virtual ErrorCodes_t resetWasherError();
     virtual ErrorCodes_t setWasherPresetSpeeds(vector <int8_t> speedValues);
     virtual ErrorCodes_t startWasher(uint16_t speedIdx);
+    virtual ErrorCodes_t updateWasherState();
+    virtual ErrorCodes_t updateWasherPresetSpeeds();
 
     /****************\
      *  Rx methods  *
@@ -279,6 +283,9 @@ protected:
     vector <bool> channelOnStates;
 
     BoolArrayCoder * channelSelectCoder;
+
+    BoolArrayCoder * VcSel0Coder;
+    BoolArrayCoder * VcSel1Coder;
 
     vector <std::string> protocolsNames;
     BoolArrayCoder * protocolsSelectCoder;

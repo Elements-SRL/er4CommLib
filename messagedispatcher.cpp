@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionE16, DeviceSubversionE16n, 2, DeviceE16n},            //    3,  5,  2 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 3, DeviceE16n},            //    3,  5,  3 : e16 2020 release
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
@@ -444,6 +444,20 @@ ErrorCodes_t MessageDispatcher::switchChannelOn(uint16_t channelIdx, bool on, bo
     }
 }
 
+ErrorCodes_t MessageDispatcher::switchVcSel0(bool on) {
+    VcSel0Coder->encode(on ? 1 : 0, txStatus);
+    this->stackOutgoingMessage(txStatus);
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::switchVcSel1(bool on) {
+    VcSel1Coder->encode(on ? 1 : 0, txStatus);
+    this->stackOutgoingMessage(txStatus);
+
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::resetDevice() {
     deviceResetCoder->encode(1, txStatus);
     this->stackOutgoingMessage(txStatus);
@@ -601,6 +615,14 @@ ErrorCodes_t MessageDispatcher::setWasherPresetSpeeds(vector <int8_t>) {
 }
 
 ErrorCodes_t MessageDispatcher::startWasher(uint16_t) {
+    return ErrorFeatureNotImplemented;
+}
+
+ErrorCodes_t MessageDispatcher::updateWasherState() {
+    return ErrorFeatureNotImplemented;
+}
+
+ErrorCodes_t MessageDispatcher::updateWasherPresetSpeeds() {
     return ErrorFeatureNotImplemented;
 }
 

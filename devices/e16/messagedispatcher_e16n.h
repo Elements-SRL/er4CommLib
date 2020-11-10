@@ -15,6 +15,8 @@ public:
     ErrorCodes_t resetWasherError() override;
     ErrorCodes_t setWasherPresetSpeeds(vector <int8_t> speedValues) override;
     ErrorCodes_t startWasher(uint16_t speedIdx) override;
+    ErrorCodes_t updateWasherState() override;
+    ErrorCodes_t updateWasherPresetSpeeds() override;
 
     ErrorCodes_t getWasherSpeedRange(RangedMeasurement_t &range) override;
     ErrorCodes_t getWasherStatus(WasherStatus_t &status, WasherError_t &error) override;
@@ -73,6 +75,7 @@ protected:
         ProtocolVPk,
         ProtocolVMax,
         ProtocolVMin,
+//        ProtocolVExt,
         ProtocolVoltagesNum
     };
 

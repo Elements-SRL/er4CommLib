@@ -340,6 +340,28 @@ ErrorCodes_t startWasher(
     return ret;
 }
 
+ErrorCodes_t updateWasherState() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->updateWasherState();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t updateWasherPresetSpeeds() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->updateWasherPresetSpeeds();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setCurrentRange(
         uint16_t currentRangeIdx) {
     ErrorCodes_t ret;
@@ -407,6 +429,30 @@ ErrorCodes_t switchChannelOn(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->switchChannelOn(channelIdx, on);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t switchVcSel0(
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->switchVcSel0(on);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t switchVcSel1(
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->switchVcSel1(on);
 
     } else {
         ret = ErrorDeviceNotConnected;

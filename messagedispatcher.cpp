@@ -1229,9 +1229,6 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
         infoValue = *(readDataBuffer+bufferReadOffset);
         bufferReadOffset = (bufferReadOffset+1)&FTD_RX_BUFFER_MASK;
 
-        printf("0x%02x 0x%02x\n", infoIndex, infoValue);
-        fflush(stdout);
-
         infoStructPtr[infoIndex] = infoValue;
 
         /*! Get current and voltage data */

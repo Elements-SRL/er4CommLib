@@ -15,7 +15,7 @@ CommandCoder::CommandCoder(uint16_t initialByte, uint8_t initialBit, uint8_t bit
     for (uint8_t byteIdx = 0; byteIdx < bytesNum; byteIdx++) {
         bitOffsets[byteIdx] = initialBit;
         bitsInNthByte = (bitsNum+initialBit < 7 ? bitsNum+initialBit : 7)-initialBit;
-        bitMasks[byteIdx] = ((1 << bitsInNthByte)-1) << initialBit;
+        bitMasks[byteIdx] = ((U8_1 << bitsInNthByte)-U8_1) << initialBit;
         bitsNum -= bitsInNthByte;
         initialBit = 0;
     }
@@ -95,13 +95,12 @@ DoubleCoder::DoubleCoder(CoderConfig_t config) :
     config(config),
     resolution(config.resolution),
     minValue(config.minValue),
-    maxValue(config.maxValue),
-    offset(config.offset) {
+    maxValue(config.maxValue) {
 
 }
 
 double DoubleCoder::clip(double value) {
-    return (value > maxValue ? maxValue : (value < minValue ? minValue : value))-offset;
+    return (value > maxValue ? maxValue : (value < minValue ? minValue : value));
 }
 
 DoubleTwosCompCoder::DoubleTwosCompCoder(CoderConfig_t config) :

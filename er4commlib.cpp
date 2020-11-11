@@ -759,10 +759,15 @@ ErrorCodes_t hasChannelOn(
 }
 
 ErrorCodes_t getProtocolList(
-        vector <string> &protocolsNames) {
+        vector <string> &names,
+        vector <string> &images,
+        vector <vector <uint16_t>> &voltages,
+        vector <vector <uint16_t>> &times,
+        vector <vector <uint16_t>> &slopes,
+        vector <vector <uint16_t>> &integers) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolList(protocolsNames);
+        ret = messageDispatcher->getProtocolList(names, images, voltages, times, slopes, integers);
 
     } else {
         ret = ErrorDeviceNotConnected;

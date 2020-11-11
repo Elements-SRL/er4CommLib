@@ -1,6 +1,8 @@
 #ifndef COMMANDCODER_H
 #define COMMANDCODER_H
 
+#define U8_1 (static_cast <uint8_t> (1))
+
 #include <stdint.h>
 #include <vector>
 
@@ -83,7 +85,6 @@ public:
         double resolution;
         double minValue;
         double maxValue;
-        double offset;
     } CoderConfig_t;
 
     DoubleCoder(CoderConfig_t config);
@@ -98,7 +99,6 @@ protected:
     double resolution;
     double minValue;
     double maxValue;
-    double offset;
 };
 
 class DoubleTwosCompCoder : public DoubleCoder {

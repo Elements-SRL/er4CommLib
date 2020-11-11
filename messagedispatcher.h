@@ -168,7 +168,7 @@ public:
 
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
 
-    ErrorCodes_t getProtocolList(vector <string> &protocolsNames);
+    ErrorCodes_t getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &integers);
     ErrorCodes_t getProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
@@ -252,8 +252,6 @@ protected:
     uint16_t selectedVoltageRangeIdx = 0;
     vector <RangedMeasurement_t> voltageRangesArray;
     uint16_t defaultVoltageRangeIdx = 0;
-    vector <uint16_t> voltageOffsetArray;
-    uint16_t voltageOffset;
     BoolRandomArrayCoder * voltageRangeCoder;
 
     uint32_t samplingRatesNum;
@@ -287,7 +285,12 @@ protected:
     BoolArrayCoder * VcSel0Coder;
     BoolArrayCoder * VcSel1Coder;
 
-    vector <std::string> protocolsNames;
+    vector <string> protocolsNames;
+    vector <string> protocolsImages;
+    vector <vector <uint16_t>> protocolsAvailableVoltages;
+    vector <vector <uint16_t>> protocolsAvailableTimes;
+    vector <vector <uint16_t>> protocolsAvailableSlopes;
+    vector <vector <uint16_t>> protocolsAvailableIntegers;
     BoolArrayCoder * protocolsSelectCoder;
     BoolArrayCoder * protocolStartCoder;
     unsigned int defaultProtocol;

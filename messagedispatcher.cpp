@@ -28,6 +28,17 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
 MessageDispatcher::MessageDispatcher(string deviceId) :
     deviceId(deviceId) {
 
+    /*! Raw data filter */
+    rawDataFilterCutoffFrequencyRange.step = 0.1;
+    rawDataFilterCutoffFrequencyRange.min = 0.0;
+    rawDataFilterCutoffFrequencyRange.max = 100.0;
+    rawDataFilterCutoffFrequencyRange.prefix = UnitPfxKilo;
+    rawDataFilterCutoffFrequencyRange.unit = "Hz";
+
+    rawDataFilterCutoffFrequencyDefault.value = 30.0;
+    rawDataFilterCutoffFrequencyDefault.prefix = UnitPfxKilo;
+    rawDataFilterCutoffFrequencyDefault.unit = "Hz";
+    rawDataFilterCutoffFrequency = rawDataFilterCutoffFrequencyDefault;
 }
 
 MessageDispatcher::~MessageDispatcher() {
@@ -288,7 +299,6 @@ ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool a
         selectedVoltageRangeIdx = voltageRangeIdx;
         voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
         voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
-        voltageOffset = voltageOffsetArray[selectedVoltageRangeIdx];
 
         voltageRangeCoder->encode(selectedVoltageRangeIdx, txStatus);
         if (applyFlag) {
@@ -777,8 +787,13 @@ ErrorCodes_t MessageDispatcher::getLiquidJunctionControl(CompensationControl_t &
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::getProtocolList(std::vector <std::string> &protocolsNames) {
-    protocolsNames = this->protocolsNames;
+ErrorCodes_t MessageDispatcher::getProtocolList(vector <string> &names, vector <std::string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &integers) {
+    names = protocolsNames;
+    images = protocolsImages;
+    voltages = protocolsAvailableVoltages;
+    times = protocolsAvailableTimes;
+    slopes = protocolsAvailableSlopes;
+    integers = protocolsAvailableIntegers;
     return Success;
 }
 
@@ -1235,7 +1250,7 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
         for (int packetIdx = 0; packetIdx < packetsPerFrame; packetIdx++) {
             currentChannelIdx = 0;
 
-            for (int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            for (unsigned short channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
                 value = 0;
 
                 for (unsigned int byteIdx = 0; byteIdx < FTD_RX_WORD_SIZE; byteIdx++) {
@@ -1246,7 +1261,6 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
 
                 /*! Correct offset of voltage channels */
                 if (channelIdx < voltageChannelsNum) {
-                    value += voltageOffset;
 
                 } else {
                     this->applyFilter(channelIdx-voltageChannelsNum, value);

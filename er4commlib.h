@@ -539,14 +539,24 @@ ErrorCodes_t hasChannelOn(
         ER4CL_ARGOUT bool &channelOnFlag,
         ER4CL_ARGOUT bool &singleChannelOnFlag);
 
-/*! \brief Get protocol list.
+/*! \brief Get protocols list.
  *
- * \param protocolsNames [out] Names of available protocols.
+ * \param names [out] Names of available protocols.
+ * \param images [out] Strings to use in order to load protocols images.
+ * \param voltages [out] Indexes of available voltage controls for each protocol.
+ * \param times [out] Indexes of available time controls for each protocol.
+ * \param slopes [out] Indexes of available slope controls for each protocol.
+ * \param integers [out] Indexes of available integer controls for each protocol.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolList(
-        ER4CL_ARGOUT std::vector <std::string> &protocolsNames);
+        ER4CL_ARGOUT std::vector <std::string> &names,
+        ER4CL_ARGOUT std::vector <std::string> &images,
+        ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &voltages,
+        ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &times,
+        ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &slopes,
+        ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &integers);
 
 /*! \brief Get protocol applicable voltage range.
  *

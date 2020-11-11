@@ -56,6 +56,19 @@ protected:
         SamplingRatesNum
     };
 
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange500mV,
+        ProtocolVoltageRange2V,
+        ProtocolVoltageRangesNum
+    };
+
+    enum ProtocolTimeRanges {
+        ProtocolTimeRange2_10ms,
+        ProtocolTimeRange0OrMore,
+        ProtocolTimeRange1OrMore,
+        ProtocolTimeRangesNum
+    };
+
     enum Protocols {
         ProtocolConstant,
         ProtocolTriangular,
@@ -99,6 +112,7 @@ protected:
     };
 
     void initializeDevice() override;
+    bool checkProtocolValidity(string &message) override;
 
     /*! Device specific controls */
     void updateWasherStatus();

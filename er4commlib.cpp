@@ -267,6 +267,75 @@ ErrorCodes_t setProtocolInteger(
     return ret;
 }
 
+ErrorCodes_t checkSelectedProtocol(
+        unsigned int idx,
+        std::string &message) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->checkSelectedProtocol(idx, message);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t checkProtocolVoltage(
+        unsigned int idx,
+        Measurement_t voltage,
+        std::string &message) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->checkProtocolVoltage(idx, voltage, message);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t checkProtocolTime(
+        unsigned int idx,
+        Measurement_t time,
+        std::string &message) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->checkProtocolTime(idx, time, message);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t checkProtocolSlope(
+        unsigned int idx,
+        Measurement_t slope,
+        std::string &message) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->checkProtocolSlope(idx, slope, message);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t checkProtocolInteger(
+        unsigned int idx,
+        int32_t value,
+        std::string &message) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->checkProtocolInteger(idx, value, message);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setRawDataFilter(
         Measurement_t cutoffFrequency,
         bool lowPassFlag,

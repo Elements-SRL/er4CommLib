@@ -124,6 +124,11 @@ public:
     ErrorCodes_t setProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag = false);
     ErrorCodes_t setProtocolSlope(unsigned int idx, Measurement_t slope, bool applyFlag = false);
     ErrorCodes_t setProtocolInteger(unsigned int idx, int32_t value, bool applyFlag = false);
+    ErrorCodes_t checkSelectedProtocol(unsigned int idx, string &message);
+    ErrorCodes_t checkProtocolVoltage(unsigned int idx, Measurement_t voltage, string &message);
+    ErrorCodes_t checkProtocolTime(unsigned int idx, Measurement_t time, string &message);
+    ErrorCodes_t checkProtocolSlope(unsigned int idx, Measurement_t slope, string &message);
+    ErrorCodes_t checkProtocolInteger(unsigned int idx, int32_t value, string &message);
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t activateFEResetDenoiser(bool flag, bool applyFlag = true);
@@ -208,6 +213,7 @@ protected:
 
     ErrorCodes_t initFtdiChannel(FT_HANDLE * handle, char channel);
     virtual void initializeDevice() = 0;
+    virtual bool checkProtocolValidity(string &message) = 0;
     void initializeLsbNoise(bool nullValues = true);
 
     void storeDataFrames(unsigned int framesNum);
@@ -285,6 +291,9 @@ protected:
     BoolArrayCoder * VcSel0Coder;
     BoolArrayCoder * VcSel1Coder;
 
+    vector <RangedMeasurement_t> protocolVoltageRangesArray;
+    vector <RangedMeasurement_t> protocolTimeRangesArray;
+
     vector <string> protocolsNames;
     vector <string> protocolsImages;
     vector <vector <uint16_t>> protocolsAvailableVoltages;
@@ -294,30 +303,35 @@ protected:
     BoolArrayCoder * protocolsSelectCoder;
     BoolArrayCoder * protocolStartCoder;
     unsigned int defaultProtocol;
+    unsigned int selectedProtocol;
 
     unsigned int protocolVoltagesNum;
     vector <std::string> protocolVoltageNames;
     vector <RangedMeasurement_t> protocolVoltageRanges;
     vector <DoubleCoder *> protocolVoltageCoders;
     vector <Measurement_t> protocolVoltageDefault;
+    vector <Measurement_t> selectedProtocolVoltage;
 
     unsigned int protocolTimesNum;
     vector <std::string> protocolTimeNames;
     vector <RangedMeasurement_t> protocolTimeRanges;
     vector <DoubleCoder *> protocolTimeCoders;
     vector <Measurement_t> protocolTimeDefault;
+    vector <Measurement_t> selectedProtocolTime;
 
     unsigned int protocolSlopesNum;
     vector <std::string> protocolSlopeNames;
     vector <RangedMeasurement_t> protocolSlopeRanges;
     vector <DoubleCoder *> protocolSlopeCoders;
     vector <Measurement_t> protocolSlopeDefault;
+    vector <Measurement_t> selectedProtocolSlope;
 
     unsigned int protocolIntegersNum;
     vector <std::string> protocolIntegerNames;
     vector <RangedMeasurement_t> protocolIntegerRanges;
     vector <BoolArrayCoder *> protocolIntegerCoders;
     vector <int32_t> protocolIntegerDefault;
+    vector <int32_t> selectedProtocolInteger;
 
     string edhFormat;
 

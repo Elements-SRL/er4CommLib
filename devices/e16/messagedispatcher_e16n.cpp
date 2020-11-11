@@ -34,7 +34,6 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     \**********************/
 
     /*! Current ranges */
-    /*! VC */
     currentRangesNum = CurrentRangesNum;
     currentRangesArray.resize(currentRangesNum);
     currentRangesArray[CurrentRange200pA].min = -200.0;
@@ -63,7 +62,6 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     defaultCurrentRangeIdx = CurrentRange200pA;
 
     /*! Voltage ranges */
-    /*! VC */
     voltageRangesNum = VoltageRangesNum;
     voltageRangesArray.resize(voltageRangesNum);
     voltageRangesArray[VoltageRange500mV].min = -511.0;
@@ -161,6 +159,37 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
      * Protocols *
     \*************/
 
+    /*! Voltage ranges */
+    protocolVoltageRangesArray.resize(ProtocolVoltageRangesNum);
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].min = -500.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].max = 500.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
+    protocolVoltageRangesArray[ProtocolVoltageRange2V].min = -2000.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange2V].max = 2000.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange2V].step = 0.0625;
+    protocolVoltageRangesArray[ProtocolVoltageRange2V].prefix = UnitPfxMilli;
+    protocolVoltageRangesArray[ProtocolVoltageRange2V].unit = "V";
+
+    /*! Time ranges */
+    protocolTimeRangesArray.resize(ProtocolTimeRangesNum);
+    protocolTimeRangesArray[ProtocolTimeRange2_10ms].min = 1.0;
+    protocolTimeRangesArray[ProtocolTimeRange2_10ms].max = 1000.0;
+    protocolTimeRangesArray[ProtocolTimeRange2_10ms].step = 1.0;
+    protocolTimeRangesArray[ProtocolTimeRange2_10ms].prefix = UnitPfxMilli;
+    protocolTimeRangesArray[ProtocolTimeRange2_10ms].unit = "s";
+    protocolTimeRangesArray[ProtocolTimeRange0OrMore].min = 0.0;
+    protocolTimeRangesArray[ProtocolTimeRange0OrMore].max = numeric_limits <double> ::max();
+    protocolTimeRangesArray[ProtocolTimeRange0OrMore].step = 1.0;
+    protocolTimeRangesArray[ProtocolTimeRange0OrMore].prefix = UnitPfxMilli;
+    protocolTimeRangesArray[ProtocolTimeRange0OrMore].unit = "s";
+    protocolTimeRangesArray[ProtocolTimeRange1OrMore].min = 1.0;
+    protocolTimeRangesArray[ProtocolTimeRange1OrMore].max = numeric_limits <double> ::max();
+    protocolTimeRangesArray[ProtocolTimeRange1OrMore].step = 1.0;
+    protocolTimeRangesArray[ProtocolTimeRange1OrMore].prefix = UnitPfxMilli;
+    protocolTimeRangesArray[ProtocolTimeRange1OrMore].unit = "s";
+
     /*! Protocol selection */
     protocolsNames.resize(ProtocolsNum);
     protocolsNames[ProtocolConstant] = "Constant";
@@ -172,6 +201,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolsNames[ProtocolRamp] = "Ramp";
     protocolsNames[ProtocolCyclicVoltammetry] = "Cyclic Voltammetry";
     defaultProtocol = ProtocolConstant;
+    selectedProtocol = defaultProtocol;
 
     protocolsImages.resize(ProtocolsNum);
     protocolsImages[ProtocolConstant] = "holdingVoltage001";
@@ -309,6 +339,10 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
 //    protocolVoltageDefault[ProtocolVExt].value = 2048.0;
 //    protocolVoltageDefault[ProtocolVExt].prefix = UnitPfxMilli;
 //    protocolVoltageDefault[ProtocolVExt].unit = "V";
+    selectedProtocolVoltage.resize(ProtocolVoltagesNum);
+    for (unsigned int idx = 0; idx < ProtocolVoltagesNum; idx++) {
+        selectedProtocolVoltage[idx] = protocolVoltageDefault[idx];
+    }
 
     /*! Protocol times */
     protocolTimesNum = ProtocolTimesNum;
@@ -353,6 +387,10 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolTimeDefault[ProtocolTPe].value = 100.0;
     protocolTimeDefault[ProtocolTPe].prefix = UnitPfxMilli;
     protocolTimeDefault[ProtocolTPe].unit = "s";
+    selectedProtocolTime.resize(ProtocolTimesNum);
+    for (unsigned int idx = 0; idx < ProtocolTimesNum; idx++) {
+        selectedProtocolTime[idx] = protocolTimeDefault[idx];
+    }
 
     /*! Protocol slope */
     protocolSlopesNum = ProtocolSlopesNum;
@@ -370,6 +408,10 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolSlopeDefault[ProtocolSlope].value = 1.0;
     protocolSlopeDefault[ProtocolSlope].prefix = UnitPfxMilli;
     protocolSlopeDefault[ProtocolSlope].unit = "s";
+    selectedProtocolSlope.resize(ProtocolSlopesNum);
+    for (unsigned int idx = 0; idx < ProtocolSlopesNum; idx++) {
+        selectedProtocolSlope[idx] = protocolSlopeDefault[idx];
+    }
 
     /*! Protocol integers */
     protocolIntegersNum = ProtocolIntegersNum;
@@ -392,6 +434,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolIntegerDefault.resize(ProtocolIntegersNum);
     protocolIntegerDefault[ProtocolN] = 5;
     protocolIntegerDefault[ProtocolNR] = 0;
+    selectedProtocolInteger = protocolIntegerDefault;
 
     /**************\
      * EDH format *
@@ -894,6 +937,201 @@ void MessageDispatcher_e16n::initializeDevice() {
 
 //    this->activateDacIntFilter(false, false);
 //    this->activateDacExtFilter(true, false);
+}
+
+bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
+    bool validFlag = true;
+    message = "Valid protocol";
+    switch (selectedProtocol) {
+    case ProtocolConstant:
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-500,500]mV";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolTriangular:
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPk]))) {
+            validFlag = false;
+            message = "Vhold+Vamp\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPk]))) {
+            validFlag = false;
+            message = "Vhold-Vamp\nmust be within [-500,500]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange2_10ms].includes(selectedProtocolTime[ProtocolTPe]))) {
+            validFlag = false;
+            message = "TPeriod\nmust be within [1,1000]ms";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolSquareWave:
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold+Vpulse\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold-Vpulse\nmust be within [-500,500]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1OrMore].includes(selectedProtocolTime[ProtocolTPulse]))) {
+            validFlag = false;
+            message = "Tpulse\nmust be at least 1ms";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolConductance:
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold+Vpulse\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
+                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolInteger[ProtocolN]-1)))) {
+            validFlag = false;
+            message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold-Vpulse\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
+                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolInteger[ProtocolN]-1)))) {
+            validFlag = false;
+            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1OrMore].includes(selectedProtocolTime[ProtocolTPulse]))) {
+            validFlag = false;
+            message = "Tpulse\nmust be at least 1ms";
+
+        } else if (!(selectedProtocolInteger[ProtocolN] > 0)) {
+            validFlag = false;
+            message = "N\nmust be at least 1";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolVariableAmplitude:
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold+Vpulse\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
+                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolInteger[ProtocolN]-1)))) {
+            validFlag = false;
+            message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-500,500]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1OrMore].includes(selectedProtocolTime[ProtocolTPulse]))) {
+            validFlag = false;
+            message = "Tpulse\nmust be at least 1ms";
+
+        } else if (!(selectedProtocolInteger[ProtocolN] > 0)) {
+            validFlag = false;
+            message = "N\nmust be at least 1";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolVariableDuration:
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold+Vpulse\nmust be within [-500,500]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1OrMore].includes(selectedProtocolTime[ProtocolTPulse]))) {
+            validFlag = false;
+            message = "Tpulse\nmust be at least 1ms";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1OrMore].includes(selectedProtocolTime[ProtocolTPulse]+
+                                                                               selectedProtocolTime[ProtocolTStep]*(selectedProtocolInteger[ProtocolN]-1)))) {
+            validFlag = false;
+            message = "Tpulse+Tstep(N-1)\nmust be at least 1ms";
+
+        } else if (!(selectedProtocolInteger[ProtocolN] > 0)) {
+            validFlag = false;
+            message = "N\nmust at least 1";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolRamp:
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVMax]))) {
+            validFlag = false;
+            message = "Vmax\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVMin]))) {
+            validFlag = false;
+            message = "Vmin\nmust be within [-500,500]mV";
+
+        } else if (selectedProtocolVoltage[ProtocolVMin] > selectedProtocolVoltage[ProtocolVMax]) {
+            validFlag = false;
+            message = "Vmin\nmust lower than Vmax";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolCyclicVoltammetry:
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVMax]))) {
+            validFlag = false;
+            message = "Vmax\nmust be within [-500,500]mV";
+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVMin]))) {
+            validFlag = false;
+            message = "Vmin\nmust be within [-500,500]mV";
+
+        } else if (selectedProtocolVoltage[ProtocolVMin] > selectedProtocolVoltage[ProtocolVMax]) {
+            validFlag = false;
+            message = "Vmin\nmust lower than Vmax";
+
+        } else if (!(selectedProtocolInteger[ProtocolN] > 0)) {
+            validFlag = false;
+            message = "N\nmust at least 1";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+    }
+    return validFlag;
 }
 
 void MessageDispatcher_e16n::updateWasherStatus() {

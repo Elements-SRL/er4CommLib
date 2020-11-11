@@ -580,6 +580,56 @@ ErrorCodes_t MessageDispatcher::setProtocolInteger(unsigned int idx, int32_t val
     }
 }
 
+ErrorCodes_t MessageDispatcher::checkSelectedProtocol(unsigned int idx, string &message) {
+    selectedProtocol = idx;
+    if (this->checkProtocolValidity(message)) {
+        return Success;
+
+    } else {
+        return ErrorInvalidProtocolParameters;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::checkProtocolVoltage(unsigned int idx, Measurement_t voltage, string &message) {
+    selectedProtocolVoltage[idx] = voltage;
+    if (this->checkProtocolValidity(message)) {
+        return Success;
+
+    } else {
+        return ErrorInvalidProtocolParameters;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::checkProtocolTime(unsigned int idx, Measurement_t time, string &message) {
+    selectedProtocolTime[idx] = time;
+    if (this->checkProtocolValidity(message)) {
+        return Success;
+
+    } else {
+        return ErrorInvalidProtocolParameters;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::checkProtocolSlope(unsigned int idx, Measurement_t slope, string &message) {
+    selectedProtocolSlope[idx] = slope;
+    if (this->checkProtocolValidity(message)) {
+        return Success;
+
+    } else {
+        return ErrorInvalidProtocolParameters;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::checkProtocolInteger(unsigned int idx, int32_t value, string &message) {
+    selectedProtocolInteger[idx] = value;
+    if (this->checkProtocolValidity(message)) {
+        return Success;
+
+    } else {
+        return ErrorInvalidProtocolParameters;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag) {
     ErrorCodes_t ret;
 

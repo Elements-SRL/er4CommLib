@@ -149,6 +149,69 @@ ErrorCodes_t setProtocolInteger(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN int32_t value);
 
+/*! \brief Check if the protocol parameters are valid.
+ *
+ * \param idx [in] Index of the protocol to be checked.
+ * \param message [in] Error message in case the parameters set is invalid.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t checkSelectedProtocol(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN std::string &message);
+
+/*! \brief Check if the protocol parameters are valid.
+ *
+ * \param idx [in] Index of the voltage parameter to be checked.
+ * \param voltage [in] Value of the voltage parameter to be checked.
+ * \param message [in] Error message in case the parameters set is invalid.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t checkProtocolVoltage(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t voltage,
+        ER4CL_ARGIN std::string &message);
+
+/*! \brief Check if the protocol parameters are valid.
+ *
+ * \param idx [in] Index of the time parameter to be checked.
+ * \param time [in] Value of the time parameter to be checked.
+ * \param message [in] Error message in case the parameters set is invalid.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t checkProtocolTime(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t time,
+        ER4CL_ARGIN std::string &message);
+
+/*! \brief Check if the protocol parameters are valid.
+ *
+ * \param idx [in] Index of the slope parameter to be checked.
+ * \param slope [in] Value of the slope parameter to be checked.
+ * \param message [in] Error message in case the parameters set is invalid.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t checkProtocolSlope(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t slope,
+        ER4CL_ARGIN std::string &message);
+
+/*! \brief Check if the protocol parameters are valid.
+ *
+ * \param idx [in] Index of the integer parameter to be checked.
+ * \param value [in] Value of the integer parameter to be checked.
+ * \param message [in] Error message in case the parameters set is invalid.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t checkProtocolInteger(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN int32_t value,
+        ER4CL_ARGIN std::string &message);
+
 /*! \brief Set the raw data filter cut off frequency and type.
  *
  * \param cutoffFrequency [in] Cut off frequency of the raw data filter.

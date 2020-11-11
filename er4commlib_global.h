@@ -398,7 +398,7 @@ typedef struct Measurement {
  * \param b [in] Second item of the comparison.
  * \return true if \p a and \p b have same value, prefix and unit.
 */
-inline bool operator == (const Measurement_t &a, const Measurement_t &b) {
+inline bool operator == (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
     return ((a.value == b.value) && (a.prefix == b.prefix) && (a.unit == b.unit));
 }
 
@@ -408,7 +408,7 @@ inline bool operator == (const Measurement_t &a, const Measurement_t &b) {
  * \param b [in] Second item of the comparison.
  * \return true if \p a and \p b have different value, prefix or unit.
 */
-inline bool operator != (const Measurement_t &a, const Measurement_t &b) {
+inline bool operator != (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
     return !(a == b);
 }
 
@@ -418,7 +418,7 @@ inline bool operator != (const Measurement_t &a, const Measurement_t &b) {
  * \param b [in] Second item of the comparison.
  * \return true if \p a is smaller than \p b after they have been converted to have the same prefix. \note Returns false if \p a and \p b have different units.
 */
-inline bool operator < (const Measurement_t &a, const Measurement_t &b) {
+inline bool operator < (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
     if (a.unit != b.unit) {
         return false;
 
@@ -439,7 +439,7 @@ inline bool operator < (const Measurement_t &a, const Measurement_t &b) {
  * \param b [in] Second item of the comparison.
  * \return true if \p a is smaller than or equal to \p b after they have been converted to have the same prefix. \note Returns false if \p a and \p b have different units.
 */
-inline bool operator <= (const Measurement_t &a, const Measurement_t &b) {
+inline bool operator <= (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
     if (a.unit != b.unit) {
         return false;
 
@@ -460,7 +460,7 @@ inline bool operator <= (const Measurement_t &a, const Measurement_t &b) {
  * \param b [in] Second item of the comparison.
  * \return true if \p a is greater than \p b after they have been converted to have the same prefix. \note Returns false if \p a and \p b have different units.
 */
-inline bool operator > (const Measurement_t &a, const Measurement_t &b) {
+inline bool operator > (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
     if (a.unit != b.unit) {
         return false;
 
@@ -481,7 +481,7 @@ inline bool operator > (const Measurement_t &a, const Measurement_t &b) {
  * \param b [in] Second item of the comparison.
  * \return true if \p a is greater than or equal to \p b after they have been converted to have the same prefix. \note Returns false if \p a and \p b have different units.
 */
-inline bool operator >= (const Measurement_t &a, const Measurement_t &b) {
+inline bool operator >= (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
     if (a.unit != b.unit) {
         return false;
 
@@ -496,15 +496,44 @@ inline bool operator >= (const Measurement_t &a, const Measurement_t &b) {
     }
 }
 
+/*! \brief Overloaded sum for #Measurement_t.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the sum of the values of the operands converted to the prefix of the first operand, and the unit equals the unit of the second operand.
+ * \note This method assumes the units are compatible and won't check for the sake of speed.
+*/
+inline Measurement_t operator + (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+    Measurement_t c = b;
+    c.convertValue(a.prefix);
+    c.value += a.value;
+    return c;
+}
+
+/*! \brief Overloaded subtraction for #Measurement_t.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the difference of the values of the operands converted to the prefix of the first operand, and the unit equals the unit of the second operand.
+ * \note This method assumes the units are compatible and won't check for the sake of speed.
+*/
+inline Measurement_t operator - (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+    Measurement_t c = b;
+    c.convertValue(a.prefix);
+    c.value = a.value-c.value;
+    return c;
+}
+
 /*! \brief Overloaded multiplication between #Measurement_t and a constant.
  *
  * \param a [in] First operand.
  * \param b [in] Second operand.
  * \return A #Measurement_t whose value is the product of the values and the unit equals the unit of the first operand.
 */
-inline Measurement_t operator * (const Measurement_t &a, const double &b) {
+template <class T>
+inline Measurement_t operator * (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const T &b) {
     Measurement_t c = a;
-    c.value *= b;
+    c.value *= (double)b;
     return c;
 }
 
@@ -514,7 +543,8 @@ inline Measurement_t operator * (const Measurement_t &a, const double &b) {
  * \param b [in] Second operand.
  * \return A #Measurement_t whose value is the product of the values and the unit equals the unit of the second operand.
 */
-inline Measurement_t operator * (const double &a, const Measurement_t &b) {
+template <class T>
+inline Measurement_t operator * (ER4CL_ARGIN const T &a, ER4CL_ARGIN const Measurement_t &b) {
     return b*a;
 }
 
@@ -524,9 +554,10 @@ inline Measurement_t operator * (const double &a, const Measurement_t &b) {
  * \param b [in] Second operand.
  * \return A #Measurement_t whose value is the ratio of the values and the unit equals the unit of the first operand.
 */
-inline Measurement_t operator / (const Measurement_t &a, const double &b) {
+template <class T>
+inline Measurement_t operator / (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const T &b) {
     Measurement_t c = a;
-    c.value /= b;
+    c.value /= (double)b;
     return c;
 }
 
@@ -536,7 +567,8 @@ inline Measurement_t operator / (const Measurement_t &a, const double &b) {
  * \param b [in] Second operand.
  * \return A #Measurement_t whose value is the ratio of the values and the unit equals the unit of the second operand.
 */
-inline Measurement_t operator / (const double &a, const Measurement_t &b) {
+template <class T>
+inline Measurement_t operator / (ER4CL_ARGIN const double &a, ER4CL_ARGIN const Measurement_t &b) {
     return b/a;
 }
 
@@ -734,6 +766,43 @@ typedef struct {
             temp *= 10.0;
         }
         return decimals;
+    }
+
+    /*! \brief Returns a Measurement_t equivalent to the max value of the range.
+     *
+     * \return Measurement_t equivalent to the max value of the range.
+     */
+    Measurement_t getMax(ER4CL_ARGVOID) {
+        Measurement_t extreme;
+        extreme.value = max;
+        extreme.prefix = prefix;
+        extreme.unit = unit;
+        return extreme;
+    }
+
+    /*! \brief Returns a Measurement_t equivalent to the min value of the range.
+     *
+     * \return Measurement_t equivalent to the min value of the range.
+     */
+    Measurement_t getMin(ER4CL_ARGVOID) {
+        Measurement_t extreme;
+        extreme.value = min;
+        extreme.prefix = prefix;
+        extreme.unit = unit;
+        return extreme;
+    }
+
+    /*! \brief Checks if a Measurement_t is within the range.
+     *
+     * \return true if the Measurement_t is within the range, false otherwise.
+     */
+    bool includes(ER4CL_ARGIN const Measurement_t value) {
+        if (value >= getMin() && value <= getMax()) {
+            return true;
+
+        } else {
+            return false;
+        }
     }
 } RangedMeasurement_t;
 

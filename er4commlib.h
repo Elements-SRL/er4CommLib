@@ -138,16 +138,16 @@ ErrorCodes_t setProtocolSlope(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t slope);
 
-/*! \brief Set a protocol integer value.
+/*! \brief Set a protocol adimensional value.
  *
- * \param idx [in] Index of the integer set.
- * \param value [in] Value of the integer set.
+ * \param idx [in] Index of the adimensional set.
+ * \param adimensional [in] Value of the adimensional set.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setProtocolInteger(
+ErrorCodes_t setProtocolAdimensional(
         ER4CL_ARGIN unsigned int idx,
-        ER4CL_ARGIN int32_t value);
+        ER4CL_ARGIN Measurement_t adimensional);
 
 /*! \brief Check if the protocol parameters are valid.
  *
@@ -201,15 +201,15 @@ ErrorCodes_t checkProtocolSlope(
 
 /*! \brief Check if the protocol parameters are valid.
  *
- * \param idx [in] Index of the integer parameter to be checked.
- * \param value [in] Value of the integer parameter to be checked.
+ * \param idx [in] Index of the adimensional parameter to be checked.
+ * \param adimensional [in] Value of the adimensional parameter to be checked.
  * \param message [in] Error message in case the parameters set is invalid.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t checkProtocolInteger(
+ErrorCodes_t checkProtocolAdimensional(
         ER4CL_ARGIN unsigned int idx,
-        ER4CL_ARGIN int32_t value,
+        ER4CL_ARGIN Measurement_t adimensional,
         ER4CL_ARGIN std::string &message);
 
 /*! \brief Set the raw data filter cut off frequency and type.
@@ -609,7 +609,7 @@ ErrorCodes_t hasChannelOn(
  * \param voltages [out] Indexes of available voltage controls for each protocol.
  * \param times [out] Indexes of available time controls for each protocol.
  * \param slopes [out] Indexes of available slope controls for each protocol.
- * \param integers [out] Indexes of available integer controls for each protocol.
+ * \param adimensionals [out] Indexes of available adimensional controls for each protocol.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
@@ -619,7 +619,7 @@ ErrorCodes_t getProtocolList(
         ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &voltages,
         ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &times,
         ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &slopes,
-        ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &integers);
+        ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &adimensionals);
 
 /*! \brief Get protocol applicable voltage range.
  *
@@ -660,18 +660,18 @@ ErrorCodes_t getProtocolSlope(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT std::vector <Measurement_t> &defaultValues);
 
-/*! \brief Get protocol applicable integer range.
+/*! \brief Get protocol applicable adimensional range.
  *
- * \param integerNames [out] Names of available integers.
- * \param ranges [out] Ranges of applicable integer in protocols.
+ * \param adimensionalNames [out] Names of available adimensionals.
+ * \param ranges [out] Ranges of applicable adimensional in protocols.
  * \param defaultValues [out] Default values.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getProtocolInteger(
-        ER4CL_ARGOUT std::vector <std::string> &integerNames,
+ErrorCodes_t getProtocolAdimensional(
+        ER4CL_ARGOUT std::vector <std::string> &adimensionalNames,
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
-        ER4CL_ARGOUT std::vector <int32_t> &defaultValues);
+        ER4CL_ARGOUT std::vector <Measurement_t> &defaultValues);
 
 /*! \brief Get data header format.
  *

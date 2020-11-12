@@ -17,7 +17,7 @@
 using namespace std;
 using namespace er4CommLib;
 
-//#define DEBUG_PRINT
+#define DEBUG_PRINT
 
 #ifdef DEBUG_PRINT
 //#define DEBUG_RAW_BIT_RATE_PRINT
@@ -123,12 +123,12 @@ public:
     ErrorCodes_t setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
     ErrorCodes_t setProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag = false);
     ErrorCodes_t setProtocolSlope(unsigned int idx, Measurement_t slope, bool applyFlag = false);
-    ErrorCodes_t setProtocolInteger(unsigned int idx, int32_t value, bool applyFlag = false);
+    ErrorCodes_t setProtocolAdimensional(unsigned int idx, Measurement_t adimensional, bool applyFlag = false);
     ErrorCodes_t checkSelectedProtocol(unsigned int idx, string &message);
     ErrorCodes_t checkProtocolVoltage(unsigned int idx, Measurement_t voltage, string &message);
     ErrorCodes_t checkProtocolTime(unsigned int idx, Measurement_t time, string &message);
     ErrorCodes_t checkProtocolSlope(unsigned int idx, Measurement_t slope, string &message);
-    ErrorCodes_t checkProtocolInteger(unsigned int idx, int32_t value, string &message);
+    ErrorCodes_t checkProtocolAdimensional(unsigned int idx, Measurement_t adimensional, string &message);
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t activateFEResetDenoiser(bool flag, bool applyFlag = true);
@@ -173,11 +173,11 @@ public:
 
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
 
-    ErrorCodes_t getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &integers);
+    ErrorCodes_t getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &adimensionals);
     ErrorCodes_t getProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
-    ErrorCodes_t getProtocolInteger(vector <string> &integerNames, vector <RangedMeasurement_t> &ranges, vector <int32_t> &defaultValues);
+    ErrorCodes_t getProtocolAdimensional(vector <string> &adimensionalNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
 
@@ -299,7 +299,7 @@ protected:
     vector <vector <uint16_t>> protocolsAvailableVoltages;
     vector <vector <uint16_t>> protocolsAvailableTimes;
     vector <vector <uint16_t>> protocolsAvailableSlopes;
-    vector <vector <uint16_t>> protocolsAvailableIntegers;
+    vector <vector <uint16_t>> protocolsAvailableAdimensionals;
     BoolArrayCoder * protocolsSelectCoder;
     BoolArrayCoder * protocolStartCoder;
     unsigned int defaultProtocol;
@@ -326,12 +326,12 @@ protected:
     vector <Measurement_t> protocolSlopeDefault;
     vector <Measurement_t> selectedProtocolSlope;
 
-    unsigned int protocolIntegersNum;
-    vector <std::string> protocolIntegerNames;
-    vector <RangedMeasurement_t> protocolIntegerRanges;
-    vector <BoolArrayCoder *> protocolIntegerCoders;
-    vector <int32_t> protocolIntegerDefault;
-    vector <int32_t> selectedProtocolInteger;
+    unsigned int protocolAdimensionalsNum;
+    vector <std::string> protocolAdimensionalNames;
+    vector <RangedMeasurement_t> protocolAdimensionalRanges;
+    vector <DoubleCoder *> protocolAdimensionalCoders;
+    vector <Measurement_t> protocolAdimensionalDefault;
+    vector <Measurement_t> selectedProtocolAdimensional;
 
     string edhFormat;
 

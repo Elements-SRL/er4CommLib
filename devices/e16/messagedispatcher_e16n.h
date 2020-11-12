@@ -105,10 +105,11 @@ protected:
         ProtocolSlopesNum
     };
 
-    enum ProtocolIntegers {
+    enum ProtocolAdimensionals {
+        ProtocolSlopeDiv,
         ProtocolN,
         ProtocolNR,
-        ProtocolIntegersNum
+        ProtocolAdimensionalsNum
     };
 
     void initializeDevice() override;

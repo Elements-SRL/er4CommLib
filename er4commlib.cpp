@@ -254,12 +254,12 @@ ErrorCodes_t setProtocolSlope(
     return ret;
 }
 
-ErrorCodes_t setProtocolInteger(
+ErrorCodes_t setProtocolAdimensional(
         unsigned int idx,
-        int32_t value) {
+        Measurement_t adimensional) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setProtocolInteger(idx, value);
+        ret = messageDispatcher->setProtocolAdimensional(idx, adimensional);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -322,13 +322,13 @@ ErrorCodes_t checkProtocolSlope(
     return ret;
 }
 
-ErrorCodes_t checkProtocolInteger(
+ErrorCodes_t checkProtocolAdimensional(
         unsigned int idx,
-        int32_t value,
+        Measurement_t adimensional,
         std::string &message) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolInteger(idx, value, message);
+        ret = messageDispatcher->checkProtocolAdimensional(idx, adimensional, message);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -833,10 +833,10 @@ ErrorCodes_t getProtocolList(
         vector <vector <uint16_t>> &voltages,
         vector <vector <uint16_t>> &times,
         vector <vector <uint16_t>> &slopes,
-        vector <vector <uint16_t>> &integers) {
+        vector <vector <uint16_t>> &adimensionals) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolList(names, images, voltages, times, slopes, integers);
+        ret = messageDispatcher->getProtocolList(names, images, voltages, times, slopes, adimensionals);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -886,13 +886,13 @@ ErrorCodes_t getProtocolSlope(
     return ret;
 }
 
-ErrorCodes_t getProtocolInteger(
-        vector <string> &integerNames,
+ErrorCodes_t getProtocolAdimensional(
+        vector <string> &adimensionalNames,
         vector <RangedMeasurement_t> &ranges,
-        vector <int32_t> &defaultValues) {
+        vector <Measurement_t> &defaultValues) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolInteger(integerNames, ranges, defaultValues);
+        ret = messageDispatcher->getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
 
     } else {
         ret = ErrorDeviceNotConnected;

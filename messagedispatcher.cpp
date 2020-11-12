@@ -566,9 +566,10 @@ ErrorCodes_t MessageDispatcher::setProtocolSlope(unsigned int idx, Measurement_t
     }
 }
 
-ErrorCodes_t MessageDispatcher::setProtocolInteger(unsigned int idx, int32_t value, bool applyFlag) {
-    if (idx < protocolIntegersNum) {
-        protocolIntegerCoders[idx]->encode((uint32_t)value, txStatus);
+ErrorCodes_t MessageDispatcher::setProtocolAdimensional(unsigned int idx, Measurement_t adimensional, bool applyFlag) {
+    if (idx < protocolAdimensionalsNum) {
+        adimensional.convertValue(protocolAdimensionalRanges[idx].prefix);
+        protocolAdimensionalCoders[idx]->encode(adimensional.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -620,8 +621,8 @@ ErrorCodes_t MessageDispatcher::checkProtocolSlope(unsigned int idx, Measurement
     }
 }
 
-ErrorCodes_t MessageDispatcher::checkProtocolInteger(unsigned int idx, int32_t value, string &message) {
-    selectedProtocolInteger[idx] = value;
+ErrorCodes_t MessageDispatcher::checkProtocolAdimensional(unsigned int idx, Measurement_t adimensional, string &message) {
+    selectedProtocolAdimensional[idx] = adimensional;
     if (this->checkProtocolValidity(message)) {
         return Success;
 
@@ -837,13 +838,13 @@ ErrorCodes_t MessageDispatcher::getLiquidJunctionControl(CompensationControl_t &
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::getProtocolList(vector <string> &names, vector <std::string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &integers) {
+ErrorCodes_t MessageDispatcher::getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &adimensionals) {
     names = protocolsNames;
     images = protocolsImages;
     voltages = protocolsAvailableVoltages;
     times = protocolsAvailableTimes;
     slopes = protocolsAvailableSlopes;
-    integers = protocolsAvailableIntegers;
+    adimensionals = protocolsAvailableAdimensionals;
     return Success;
 }
 
@@ -868,10 +869,10 @@ ErrorCodes_t MessageDispatcher::getProtocolSlope(vector <string> &slopeNames, ve
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getProtocolInteger(vector <string> &integerNames, vector <RangedMeasurement_t> &ranges, vector <int32_t> &defaultValues) {
-    integerNames = protocolIntegerNames;
-    ranges = protocolIntegerRanges;
-    defaultValues = protocolIntegerDefault;
+ErrorCodes_t MessageDispatcher::getProtocolAdimensional(vector <string> &adimensionalNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues) {
+    adimensionalNames = protocolAdimensionalNames;
+    ranges = protocolAdimensionalRanges;
+    defaultValues = protocolAdimensionalDefault;
     return Success;
 }
 

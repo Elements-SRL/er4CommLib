@@ -216,7 +216,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
     protocolsAvailableSlopes.resize(ProtocolsNum);
-    protocolsAvailableIntegers.resize(ProtocolsNum);
+    protocolsAvailableAdimensionals.resize(ProtocolsNum);
 
     protocolsAvailableVoltages[ProtocolConstant].push_back(ProtocolVHold);
 
@@ -234,24 +234,24 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolsAvailableVoltages[ProtocolConductance].push_back(ProtocolVStep);
     protocolsAvailableTimes[ProtocolConductance].push_back(ProtocolTHold);
     protocolsAvailableTimes[ProtocolConductance].push_back(ProtocolTPulse);
-    protocolsAvailableIntegers[ProtocolConductance].push_back(ProtocolN);
-    protocolsAvailableIntegers[ProtocolConductance].push_back(ProtocolNR);
+    protocolsAvailableAdimensionals[ProtocolConductance].push_back(ProtocolN);
+    protocolsAvailableAdimensionals[ProtocolConductance].push_back(ProtocolNR);
 
     protocolsAvailableVoltages[ProtocolVariableAmplitude].push_back(ProtocolVHold);
     protocolsAvailableVoltages[ProtocolVariableAmplitude].push_back(ProtocolVPulse);
     protocolsAvailableVoltages[ProtocolVariableAmplitude].push_back(ProtocolVStep);
     protocolsAvailableTimes[ProtocolVariableAmplitude].push_back(ProtocolTHold);
     protocolsAvailableTimes[ProtocolVariableAmplitude].push_back(ProtocolTPulse);
-    protocolsAvailableIntegers[ProtocolVariableAmplitude].push_back(ProtocolN);
-    protocolsAvailableIntegers[ProtocolVariableAmplitude].push_back(ProtocolNR);
+    protocolsAvailableAdimensionals[ProtocolVariableAmplitude].push_back(ProtocolN);
+    protocolsAvailableAdimensionals[ProtocolVariableAmplitude].push_back(ProtocolNR);
 
     protocolsAvailableVoltages[ProtocolVariableDuration].push_back(ProtocolVHold);
     protocolsAvailableVoltages[ProtocolVariableDuration].push_back(ProtocolVPulse);
     protocolsAvailableTimes[ProtocolVariableDuration].push_back(ProtocolTHold);
     protocolsAvailableTimes[ProtocolVariableDuration].push_back(ProtocolTPulse);
     protocolsAvailableTimes[ProtocolVariableDuration].push_back(ProtocolTStep);
-    protocolsAvailableIntegers[ProtocolVariableDuration].push_back(ProtocolN);
-    protocolsAvailableIntegers[ProtocolVariableDuration].push_back(ProtocolNR);
+    protocolsAvailableAdimensionals[ProtocolVariableDuration].push_back(ProtocolN);
+    protocolsAvailableAdimensionals[ProtocolVariableDuration].push_back(ProtocolNR);
 
     protocolsAvailableVoltages[ProtocolRamp].push_back(ProtocolVHold);
     protocolsAvailableVoltages[ProtocolRamp].push_back(ProtocolVMax);
@@ -259,15 +259,17 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolsAvailableTimes[ProtocolRamp].push_back(ProtocolTHold);
     protocolsAvailableTimes[ProtocolRamp].push_back(ProtocolTPulse);
     protocolsAvailableSlopes[ProtocolRamp].push_back(ProtocolSlope);
-    protocolsAvailableIntegers[ProtocolRamp].push_back(ProtocolNR);
+    protocolsAvailableAdimensionals[ProtocolRamp].push_back(ProtocolSlopeDiv);
+    protocolsAvailableAdimensionals[ProtocolRamp].push_back(ProtocolNR);
 
     protocolsAvailableVoltages[ProtocolCyclicVoltammetry].push_back(ProtocolVHold);
     protocolsAvailableVoltages[ProtocolCyclicVoltammetry].push_back(ProtocolVMax);
     protocolsAvailableVoltages[ProtocolCyclicVoltammetry].push_back(ProtocolVMin);
     protocolsAvailableTimes[ProtocolCyclicVoltammetry].push_back(ProtocolTHold);
     protocolsAvailableSlopes[ProtocolCyclicVoltammetry].push_back(ProtocolSlope);
-    protocolsAvailableIntegers[ProtocolCyclicVoltammetry].push_back(ProtocolN);
-    protocolsAvailableIntegers[ProtocolCyclicVoltammetry].push_back(ProtocolNR);
+    protocolsAvailableAdimensionals[ProtocolCyclicVoltammetry].push_back(ProtocolSlopeDiv);
+    protocolsAvailableAdimensionals[ProtocolCyclicVoltammetry].push_back(ProtocolN);
+    protocolsAvailableAdimensionals[ProtocolCyclicVoltammetry].push_back(ProtocolNR);
 
     /*! Protocol voltages */
     protocolVoltagesNum = ProtocolVoltagesNum;
@@ -297,7 +299,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolVoltageRanges[ProtocolVStep].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVStep].unit = "V";
     protocolVoltageRanges[ProtocolVPk].step = 25.0;
-    protocolVoltageRanges[ProtocolVPk].min = 0.0;
+    protocolVoltageRanges[ProtocolVPk].min = 25.0;
     protocolVoltageRanges[ProtocolVPk].max = 4.0*protocolVoltageRanges[ProtocolVPk].step;
     protocolVoltageRanges[ProtocolVPk].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPk].unit = "V";
@@ -354,12 +356,12 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
 
     protocolTimeRanges.resize(ProtocolTimesNum);
     protocolTimeRanges[ProtocolTHold].step = 1.0;
-    protocolTimeRanges[ProtocolTHold].min = 1.0;
+    protocolTimeRanges[ProtocolTHold].min = 0.0;
     protocolTimeRanges[ProtocolTHold].max = UINT28_MAX*protocolTimeRanges[ProtocolTHold].step;
     protocolTimeRanges[ProtocolTHold].prefix = UnitPfxMilli;
     protocolTimeRanges[ProtocolTHold].unit = "s";
     protocolTimeRanges[ProtocolTPulse].step = 1.0;
-    protocolTimeRanges[ProtocolTPulse].min = 1.0;
+    protocolTimeRanges[ProtocolTPulse].min = 0.0;
     protocolTimeRanges[ProtocolTPulse].max = UINT28_MAX*protocolTimeRanges[ProtocolTHold].step;
     protocolTimeRanges[ProtocolTPulse].prefix = UnitPfxMilli;
     protocolTimeRanges[ProtocolTPulse].unit = "s";
@@ -369,7 +371,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolTimeRanges[ProtocolTStep].prefix = UnitPfxMilli;
     protocolTimeRanges[ProtocolTStep].unit = "s";
     protocolTimeRanges[ProtocolTPe].step = 1.0;
-    protocolTimeRanges[ProtocolTPe].min = protocolTimeRanges[ProtocolTPe].step;
+    protocolTimeRanges[ProtocolTPe].min = 0.0;
     protocolTimeRanges[ProtocolTPe].max = UINT10_MAX*protocolTimeRanges[ProtocolTPe].step;
     protocolTimeRanges[ProtocolTPe].prefix = UnitPfxMilli;
     protocolTimeRanges[ProtocolTPe].unit = "s";
@@ -413,28 +415,44 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
         selectedProtocolSlope[idx] = protocolSlopeDefault[idx];
     }
 
-    /*! Protocol integers */
-    protocolIntegersNum = ProtocolIntegersNum;
-    protocolIntegerNames.resize(ProtocolIntegersNum);
-    protocolIntegerNames[ProtocolN] = "N";
-    protocolIntegerNames[ProtocolNR] = "NR";
+    /*! Protocol adimensionals */
+    protocolAdimensionalsNum = ProtocolAdimensionalsNum;
+    protocolAdimensionalNames.resize(ProtocolAdimensionalsNum);
+    protocolAdimensionalNames[ProtocolSlopeDiv] = "SlopeDiv 1e+";
+    protocolAdimensionalNames[ProtocolN] = "N";
+    protocolAdimensionalNames[ProtocolNR] = "NR";
 
-    protocolIntegerRanges.resize(ProtocolIntegersNum);
-    protocolIntegerRanges[ProtocolN].step = 1.0;
-    protocolIntegerRanges[ProtocolN].min = 1.0;
-    protocolIntegerRanges[ProtocolN].max = UINT10_MAX*protocolIntegerRanges[ProtocolN].step;
-    protocolIntegerRanges[ProtocolN].prefix = UnitPfxNone;
-    protocolIntegerRanges[ProtocolN].unit = "";
-    protocolIntegerRanges[ProtocolNR].step = 1.0;
-    protocolIntegerRanges[ProtocolNR].min = 0.0;
-    protocolIntegerRanges[ProtocolNR].max = UINT10_MAX*protocolIntegerRanges[ProtocolNR].step;
-    protocolIntegerRanges[ProtocolNR].prefix = UnitPfxNone;
-    protocolIntegerRanges[ProtocolNR].unit = "";
+    protocolAdimensionalRanges.resize(ProtocolAdimensionalsNum);
+    protocolAdimensionalRanges[ProtocolSlopeDiv].step = 3.0;
+    protocolAdimensionalRanges[ProtocolSlopeDiv].min = 0.0;
+    protocolAdimensionalRanges[ProtocolSlopeDiv].max = 3.0;
+    protocolAdimensionalRanges[ProtocolSlopeDiv].prefix = UnitPfxNone;
+    protocolAdimensionalRanges[ProtocolSlopeDiv].unit = "";
+    protocolAdimensionalRanges[ProtocolN].step = 1.0;
+    protocolAdimensionalRanges[ProtocolN].min = 0.0;
+    protocolAdimensionalRanges[ProtocolN].max = UINT10_MAX*protocolAdimensionalRanges[ProtocolN].step;
+    protocolAdimensionalRanges[ProtocolN].prefix = UnitPfxNone;
+    protocolAdimensionalRanges[ProtocolN].unit = "";
+    protocolAdimensionalRanges[ProtocolNR].step = 1.0;
+    protocolAdimensionalRanges[ProtocolNR].min = 0.0;
+    protocolAdimensionalRanges[ProtocolNR].max = UINT10_MAX*protocolAdimensionalRanges[ProtocolNR].step;
+    protocolAdimensionalRanges[ProtocolNR].prefix = UnitPfxNone;
+    protocolAdimensionalRanges[ProtocolNR].unit = "";
 
-    protocolIntegerDefault.resize(ProtocolIntegersNum);
-    protocolIntegerDefault[ProtocolN] = 5;
-    protocolIntegerDefault[ProtocolNR] = 0;
-    selectedProtocolInteger = protocolIntegerDefault;
+    protocolAdimensionalDefault.resize(ProtocolAdimensionalsNum);
+    protocolAdimensionalDefault[ProtocolSlopeDiv].value = 0.0;
+    protocolAdimensionalDefault[ProtocolSlopeDiv].prefix = UnitPfxNone;
+    protocolAdimensionalDefault[ProtocolSlopeDiv].unit = "";
+    protocolAdimensionalDefault[ProtocolN].value = 5.0;
+    protocolAdimensionalDefault[ProtocolN].prefix = UnitPfxNone;
+    protocolAdimensionalDefault[ProtocolN].unit = "";
+    protocolAdimensionalDefault[ProtocolNR].value = 0.0;
+    protocolAdimensionalDefault[ProtocolNR].prefix = UnitPfxNone;
+    protocolAdimensionalDefault[ProtocolNR].unit = "";
+    selectedProtocolAdimensional.resize(ProtocolAdimensionalsNum);
+    for (unsigned int idx = 0; idx < ProtocolAdimensionalsNum; idx++) {
+        selectedProtocolAdimensional[idx] = protocolAdimensionalDefault[idx];
+    }
 
     /**************\
      * EDH format *
@@ -595,7 +613,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
-    protocolVoltageCoders[ProtocolVHold] = new DoubleOffsetBinaryCoder(doubleConfig);
+    protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 50;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 10;
@@ -603,7 +621,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
     protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 55;
+    doubleConfig.initialByte = 54;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 10;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].step;
@@ -616,7 +634,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVPk].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVPk].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPk].max;
-    protocolVoltageCoders[ProtocolVPk] = new DoubleOffsetBinaryCoder(doubleConfig);
+    protocolVoltageCoders[ProtocolVPk] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 78;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 10;
@@ -647,14 +665,14 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     doubleConfig.resolution = protocolTimeRanges[ProtocolTHold].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTHold].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTHold].max;
-    protocolTimeCoders[ProtocolTHold] = new DoubleOffsetBinaryCoder(doubleConfig);
+    protocolTimeCoders[ProtocolTHold] = new DoubleTwosCompCoder(doubleConfig);
     doubleConfig.initialByte = 60;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTPulse].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTPulse].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPulse].max;
-    protocolTimeCoders[ProtocolTPulse] = new DoubleOffsetBinaryCoder(doubleConfig);
+    protocolTimeCoders[ProtocolTPulse] = new DoubleTwosCompCoder(doubleConfig);
     doubleConfig.initialByte = 66;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
@@ -668,7 +686,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     doubleConfig.resolution = protocolTimeRanges[ProtocolTPe].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTPe].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPe].max;
-    protocolTimeCoders[ProtocolTPe] = new DoubleOffsetBinaryCoder(doubleConfig);
+    protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
 
     /*! Protocol slope */
     protocolSlopeCoders.resize(ProtocolSlopesNum);
@@ -678,18 +696,31 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     doubleConfig.resolution = protocolSlopeRanges[ProtocolSlope].step;
     doubleConfig.minValue = protocolSlopeRanges[ProtocolSlope].min;
     doubleConfig.maxValue = protocolSlopeRanges[ProtocolSlope].max;
-    protocolSlopeCoders[ProtocolSlope] = new DoubleOffsetBinaryCoder(doubleConfig);
+    protocolSlopeCoders[ProtocolSlope] = new DoubleTwosCompCoder(doubleConfig);
 
-    /*! Protocol integers */
-    protocolIntegerCoders.resize(ProtocolIntegersNum);
-    boolConfig.initialByte = 70;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 10;
-    protocolIntegerCoders[ProtocolN] = new BoolArrayCoder(boolConfig);
-    boolConfig.initialByte = 72;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 10;
-    protocolIntegerCoders[ProtocolNR] = new BoolArrayCoder(boolConfig);
+    /*! Protocol Adimensionals */
+    protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
+    doubleConfig.initialByte = 77;
+    doubleConfig.initialBit = 3;
+    doubleConfig.bitsNum = 1;
+    doubleConfig.resolution = protocolAdimensionalRanges[ProtocolSlopeDiv].step;
+    doubleConfig.minValue = protocolAdimensionalRanges[ProtocolSlopeDiv].min;
+    doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolSlopeDiv].max;
+    protocolAdimensionalCoders[ProtocolSlopeDiv] = new DoubleOffsetBinaryCoder(doubleConfig);
+    doubleConfig.initialByte = 70;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 10;
+    doubleConfig.resolution = protocolAdimensionalRanges[ProtocolN].step;
+    doubleConfig.minValue = protocolAdimensionalRanges[ProtocolN].min;
+    doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolN].max;
+    protocolAdimensionalCoders[ProtocolN] = new DoubleTwosCompCoder(doubleConfig);
+    doubleConfig.initialByte = 72;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 10;
+    doubleConfig.resolution = protocolAdimensionalRanges[ProtocolNR].step;
+    doubleConfig.minValue = protocolAdimensionalRanges[ProtocolNR].min;
+    doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolNR].max;
+    protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
     /*! Device specific controls */
     boolConfig.initialByte = 1;
@@ -928,8 +959,8 @@ void MessageDispatcher_e16n::initializeDevice() {
         this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
     }
 
-    for (unsigned int integerIdx = 0; integerIdx < ProtocolIntegersNum; integerIdx++) {
-        this->setProtocolInteger(integerIdx, protocolIntegerDefault[integerIdx], false);
+    for (unsigned int adimensionalIdx = 0; adimensionalIdx < ProtocolAdimensionalsNum; adimensionalIdx++) {
+        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
     }
 
     this->resetWasherError();
@@ -998,7 +1029,7 @@ bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
             message = "Vhold+Vpulse\nmust be within [-500,500]mV";
 
         } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
-                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolInteger[ProtocolN]-1)))) {
+                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
             message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-500,500]mV";
 
@@ -1007,7 +1038,7 @@ bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
             message = "Vhold-Vpulse\nmust be within [-500,500]mV";
 
         } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
-                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolInteger[ProtocolN]-1)))) {
+                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
             message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
 
@@ -1015,7 +1046,7 @@ bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Tpulse\nmust be at least 1ms";
 
-        } else if (!(selectedProtocolInteger[ProtocolN] > 0)) {
+        } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
             validFlag = false;
             message = "N\nmust be at least 1";
 
@@ -1035,7 +1066,7 @@ bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
             message = "Vhold+Vpulse\nmust be within [-500,500]mV";
 
         } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
-                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolInteger[ProtocolN]-1)))) {
+                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
             message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-500,500]mV";
 
@@ -1043,7 +1074,7 @@ bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Tpulse\nmust be at least 1ms";
 
-        } else if (!(selectedProtocolInteger[ProtocolN] > 0)) {
+        } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
             validFlag = false;
             message = "N\nmust be at least 1";
 
@@ -1067,11 +1098,11 @@ bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
             message = "Tpulse\nmust be at least 1ms";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1OrMore].includes(selectedProtocolTime[ProtocolTPulse]+
-                                                                               selectedProtocolTime[ProtocolTStep]*(selectedProtocolInteger[ProtocolN]-1)))) {
+                                                                               selectedProtocolTime[ProtocolTStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
             message = "Tpulse+Tstep(N-1)\nmust be at least 1ms";
 
-        } else if (!(selectedProtocolInteger[ProtocolN] > 0)) {
+        } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
             validFlag = false;
             message = "N\nmust at least 1";
 
@@ -1121,7 +1152,7 @@ bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vmin\nmust lower than Vmax";
 
-        } else if (!(selectedProtocolInteger[ProtocolN] > 0)) {
+        } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
             validFlag = false;
             message = "N\nmust at least 1";
 

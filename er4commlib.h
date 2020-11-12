@@ -389,31 +389,33 @@ ErrorCodes_t resetDevice(
 //        ER4CL_ARGOUT std::string &upgradeNotes,
 //        ER4CL_ARGOUT std::string &notificationTag);
 
-///*! \brief Get the device identification information (to be used when the device is already connected).
-// *
-// * \param deviceVersion [out] Device version.
-// * \param deviceSubversion [out] Device subversion.
-// * \param firmwareVersion [out] Firmware version.
-// * \return Error code.
-// */
-//ErrorCodes_t getDeviceInfo(
-//        ER4CL_ARGOUT uint8_t &deviceVersion,
-//        ER4CL_ARGOUT uint8_t &deviceSubversion,
-//        ER4CL_ARGOUT uint32_t &firmwareVersion);
+/*! \brief Get the device identification information (to be used when the device is already connected).
+ *
+ * \param deviceVersion [out] Device version.
+ * \param deviceSubversion [out] Device subversion.
+ * \param firmwareVersion [out] Firmware version.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getDeviceInfo(
+        ER4CL_ARGOUT uint8_t &deviceVersion,
+        ER4CL_ARGOUT uint8_t &deviceSubversion,
+        ER4CL_ARGOUT uint32_t &firmwareVersion);
 
-///*! \brief Get the device identification information (to be used when the device is not connected yet).
-// *
-// * \param deviceId [in] Device identification code (S/N).
-// * \param deviceVersion [out] Device version.
-// * \param deviceSubversion [out] Device subversion.
-// * \param firmwareVersion [out] Firmware version.
-// * \return Error code.
-// */
-//static ErrorCodes_t getDeviceInfo(
-//        ER4CL_ARGOUT std::string deviceId,
-//        ER4CL_ARGOUT uint8_t &deviceVersion,
-//        ER4CL_ARGOUT uint8_t &deviceSubversion,
-//        ER4CL_ARGOUT uint32_t &firmwareVersion);
+/*! \brief Get the device identification information (to be used when the device is not connected yet).
+ *
+ * \param deviceId [in] Device identification code (S/N).
+ * \param deviceVersion [out] Device version.
+ * \param deviceSubversion [out] Device subversion.
+ * \param firmwareVersion [out] Firmware version.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getDeviceInfo(
+        ER4CL_ARGOUT std::string deviceId,
+        ER4CL_ARGOUT uint8_t &deviceVersion,
+        ER4CL_ARGOUT uint8_t &deviceSubversion,
+        ER4CL_ARGOUT uint32_t &firmwareVersion);
 
 /*! \brief Returns information on the queue status.
  * Calling this method if no device is connected will return an error code.

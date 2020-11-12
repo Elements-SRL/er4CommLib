@@ -568,57 +568,57 @@ ErrorCodes_t resetDevice() {
 //    return ret;
 //}
 
-//ErrorCodes_t CommLib::getDeviceInfo(
-//        uint8_t &deviceVersion,
-//        uint8_t &deviceSubversion,
-//        uint32_t &firmwareVersion) {
-//    ErrorCodes_t ret = Success;
-//    if (messageDispatcher != nullptr) {
-//        ret = messageDispatcher->getDeviceInfo(deviceVersion, deviceSubversion, firmwareVersion);
+ErrorCodes_t getDeviceInfo(
+        uint8_t &deviceVersion,
+        uint8_t &deviceSubversion,
+        uint32_t &firmwareVersion) {
+    ErrorCodes_t ret = Success;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getDeviceInfo(deviceVersion, deviceSubversion, firmwareVersion);
 
-//    } else {
-//        ret = ErrorDeviceNotConnected;
-//    }
-//    return ret;
-//}
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
 
-//ErrorCodes_t CommLib::getDeviceInfo(
-//        string deviceId,
-//        uint8_t &deviceVersion,
-//        uint8_t &deviceSubversion,
-//        uint32_t &firmwareVersion) {
-//    ErrorCodes_t ret = Success;
-//    /*! Initializes eeprom */
-//    /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
-//    FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
-//    if (deviceId == "ePatch Demo") {
-//        ftdiEepromId = FtdiEepromIdDemo;
-//    }
+ErrorCodes_t getDeviceInfo(
+        string deviceId,
+        uint8_t &deviceVersion,
+        uint8_t &deviceSubversion,
+        uint32_t &firmwareVersion) {
+    ErrorCodes_t ret = Success;
+    /*! Initializes eeprom */
+    /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
+    FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
+    if (deviceId == "ePatch Demo") {
+        ftdiEepromId = FtdiEepromIdDemo;
+    }
 
-//    /*! ftdiEeprom is deleted by the messageDispatcher if one is created successfully */
-//    FtdiEeprom * ftdiEeprom = nullptr;
-//    switch (ftdiEepromId) {
-//    case FtdiEepromId56:
-//        ftdiEeprom = new FtdiEeprom56(deviceId);
-//        break;
+    /*! ftdiEeprom is deleted by the messageDispatcher if one is created successfully */
+    FtdiEeprom * ftdiEeprom = nullptr;
+    switch (ftdiEepromId) {
+    case FtdiEepromId56:
+        ftdiEeprom = new FtdiEeprom56(deviceId);
+        break;
 
-//    case FtdiEepromIdDemo:
-//        ftdiEeprom = new FtdiEepromDemo(deviceId);
-//        break;
-//    }
+    case FtdiEepromIdDemo:
+        ftdiEeprom = new FtdiEepromDemo(deviceId);
+        break;
+    }
 
-//    if (ftdiEeprom != nullptr) {
-//        DeviceTuple_t deviceTuple = ftdiEeprom->getDeviceTuple();
+    if (ftdiEeprom != nullptr) {
+        DeviceTuple_t deviceTuple = ftdiEeprom->getDeviceTuple();
 
-//        deviceVersion = deviceTuple.version;
-//        deviceSubversion = deviceTuple.subversion;
-//        firmwareVersion = deviceTuple.fwVersion;
+        deviceVersion = deviceTuple.version;
+        deviceSubversion = deviceTuple.subversion;
+        firmwareVersion = deviceTuple.fwVersion;
 
-//    } else {
-//        ret = ErrorEepromNotRecognized;
-//    }
-//    return ret;
-//}
+    } else {
+        ret = ErrorEepromNotRecognized;
+    }
+    return ret;
+}
 
 ErrorCodes_t getQueueStatus(
         QueueStatus_t &status) {

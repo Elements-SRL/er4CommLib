@@ -69,6 +69,7 @@ namespace er4CommLib {
  * \brief Enumerates the device types that can be handled by er4CommLib.
  */
 typedef enum {
+    DeviceE4e,                  /*!< e4 Elements version. */
     DeviceE16n,                 /*!< e16 2020 release. */
     DeviceDlp,                  /*!< debug dlp. */
     DeviceFakeE16n,             /*!< Fake e16 2020 release. */

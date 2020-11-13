@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "messagedispatcher.h"
+#include "messagedispatcher_e4.h"
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_fake_e16n.h"
 
@@ -121,6 +122,10 @@ ErrorCodes_t connect(
         }
 
         switch (deviceType) {
+        case DeviceE4e:
+            messageDispatcher = new MessageDispatcher_e4e(deviceId);
+            break;
+
         case DeviceE16n:
             messageDispatcher = new MessageDispatcher_e16n(deviceId);
             break;

@@ -1,6 +1,6 @@
-#include "messagedispatcher_e16n.h"
+#include "messagedispatcher_e4.h"
 
-MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
+MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -17,7 +17,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     packetsPerFrame = 16;
 
     voltageChannelsNum = 1;
-    currentChannelsNum = 16;
+    currentChannelsNum = 4;
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
     readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
@@ -27,7 +27,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
-    txDataBytes = 90;
+    txDataBytes = 49;
 
     /**********************\
      * Available settings *
@@ -280,7 +280,6 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolVoltageNames[ProtocolVPk] = "Vamp";
     protocolVoltageNames[ProtocolVMax] = "Vmax";
     protocolVoltageNames[ProtocolVMin] = "Vmin";
-//    protocolVoltageNames[ProtocolVExt] = "Dac ext";
 
     protocolVoltageRanges.resize(ProtocolVoltagesNum);
     protocolVoltageRanges[ProtocolVHold].step = 1.0;
@@ -313,11 +312,6 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolVoltageRanges[ProtocolVMin].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVMin].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVMin].unit = "V";
-//    protocolVoltageRanges[ProtocolVExt].step = 4096.0/1048576.0;
-//    protocolVoltageRanges[ProtocolVExt].min = 0.0;
-//    protocolVoltageRanges[ProtocolVExt].max = 4096.0-doubleConfig.resolution;
-//    protocolVoltageRanges[ProtocolVExt].prefix = UnitPfxMilli;
-//    protocolVoltageRanges[ProtocolVExt].unit = "V";
 
     protocolVoltageDefault.resize(ProtocolVoltagesNum);
     protocolVoltageDefault[ProtocolVHold].value = 0.0;
@@ -338,9 +332,6 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     protocolVoltageDefault[ProtocolVMin].value = -100.0;
     protocolVoltageDefault[ProtocolVMin].prefix = UnitPfxMilli;
     protocolVoltageDefault[ProtocolVMin].unit = "V";
-//    protocolVoltageDefault[ProtocolVExt].value = 2048.0;
-//    protocolVoltageDefault[ProtocolVExt].prefix = UnitPfxMilli;
-//    protocolVoltageDefault[ProtocolVExt].unit = "V";
     selectedProtocolVoltage.resize(ProtocolVoltagesNum);
     for (unsigned int idx = 0; idx < ProtocolVoltagesNum; idx++) {
         selectedProtocolVoltage[idx] = protocolVoltageDefault[idx];
@@ -461,8 +452,8 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     edhFormat =
             "EDH Version: 2.0\n"
             "\n"
-            "Elements e16n\n"
-            "Channels: 16\n"
+            "Elements e4\n"
+            "Channels: 4\n"
             "\n"
             "Data header file\n"
             "\n"
@@ -473,19 +464,11 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
             "\n"
             "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
             "\n"
-            "Active channels: %activeChannels%\n"; // 2 3 4 5 6 7 8 9 10 12 13 14 15 16
+            "Active channels: %activeChannels%\n"; // 2 3 4
 
     /****************************\
      * Device specific controls *
     \****************************/
-
-    washerControlFlag = true;
-
-    washerSpeedRange.min = -100.0;
-    washerSpeedRange.max = 100.0;
-    washerSpeedRange.step = 1.0;
-    washerSpeedRange.prefix = UnitPfxNone;
-    washerSpeedRange.unit = "rpm";
 
     /**********\
      * Coders *
@@ -505,9 +488,9 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     digitalOffsetCompensationFlag = true;
     singleChannelDOCFlag = true;
 
-    boolConfig.initialByte = 6;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 16;
+    boolConfig.initialByte = 3;
+    boolConfig.initialBit = 5;
+    boolConfig.bitsNum = 4;
     digitalOffsetCompensationCoder = new BoolArrayCoder(boolConfig);
 
     digitalOffsetCompensationStates.resize(currentChannelsNum);
@@ -515,8 +498,8 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
         digitalOffsetCompensationStates[currentIdx] = false;
     }
 
-    boolConfig.initialByte = 8;
-    boolConfig.initialBit = 3;
+    boolConfig.initialByte = 6;
+    boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
@@ -526,7 +509,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
 
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 16;
+    boolConfig.bitsNum = 4;
     zapCoder = new BoolArrayCoder(boolConfig);
 
     zapStates.resize(currentChannelsNum);
@@ -538,9 +521,9 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     channelOnFlag = true;
     singleChannelOnFlag = true;
 
-    boolConfig.initialByte = 10;
+    boolConfig.initialByte = 5;
     boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 16;
+    boolConfig.bitsNum = 4;
     channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
 
     channelOnStates.resize(currentChannelsNum);
@@ -549,19 +532,10 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     }
 
     /*! Channel select */
-    boolConfig.initialByte = 13;
+    boolConfig.initialByte = 6;
     boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 16;
+    boolConfig.bitsNum = 4;
     channelSelectCoder = new BoolArrayCoder(boolConfig);
-
-//    boolConfig.initialByte = 93;
-//    boolConfig.initialBit = 0;
-//    boolConfig.bitsNum = 1;
-//    VcSel0Coder = new BoolArrayCoder(boolConfig);
-//    boolConfig.initialByte = 93;
-//    boolConfig.initialBit = 1;
-//    boolConfig.bitsNum = 1;
-//    VcSel1Coder = new BoolArrayCoder(boolConfig);
 
     /*! Current range */
     boolConfig.initialByte = 1;
@@ -594,93 +568,86 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     samplingRateCoder->addMapItem(10); /*!< 200kHz  -> 0b1010 */
 
     /*! Protocol selection */
-    boolConfig.initialByte = 9;
-    boolConfig.initialBit = 0;
+    boolConfig.initialByte = 4;
+    boolConfig.initialBit = 2;
     boolConfig.bitsNum = 4;
     protocolsSelectCoder = new BoolArrayCoder(boolConfig);
 
     /*! Protocol start */
-    boolConfig.initialByte = 9;
-    boolConfig.initialBit = 4;
+    boolConfig.initialByte = 4;
+    boolConfig.initialBit = 6;
     boolConfig.bitsNum = 1;
     protocolStartCoder = new BoolArrayCoder(boolConfig);
 
     /*! Protocol voltages */
     protocolVoltageCoders.resize(ProtocolVoltagesNum);
-    doubleConfig.initialByte = 16;
+    doubleConfig.initialByte = 7;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 50;
+    doubleConfig.initialByte = 17;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVPulse].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
     protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 54;
+    doubleConfig.initialByte = 21;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
     protocolVoltageCoders[ProtocolVStep] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 74;
+    doubleConfig.initialByte = 41;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 2;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVPk].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVPk].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPk].max;
     protocolVoltageCoders[ProtocolVPk] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 78;
+    doubleConfig.initialByte = 45;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVMax].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVMax].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVMax].max;
     protocolVoltageCoders[ProtocolVMax] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 80;
+    doubleConfig.initialByte = 47;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVMin].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVMin].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVMin].max;
     protocolVoltageCoders[ProtocolVMin] = new DoubleSignAbsCoder(doubleConfig);
-//    doubleConfig.initialByte = 90;
-//    doubleConfig.initialBit = 0;
-//    doubleConfig.bitsNum = 20;
-//    doubleConfig.resolution = protocolVoltageRanges[ProtocolVExt].step;
-//    doubleConfig.minValue = protocolVoltageRanges[ProtocolVExt].min;
-//    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVExt].max;
-//    protocolVoltageCoders[ProtocolVExt] = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*! Protocol times */
     protocolTimeCoders.resize(ProtocolTimesNum);
-    doubleConfig.initialByte = 56;
+    doubleConfig.initialByte = 23;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTHold].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTHold].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTHold].max;
     protocolTimeCoders[ProtocolTHold] = new DoubleTwosCompCoder(doubleConfig);
-    doubleConfig.initialByte = 60;
+    doubleConfig.initialByte = 27;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTPulse].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTPulse].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPulse].max;
     protocolTimeCoders[ProtocolTPulse] = new DoubleTwosCompCoder(doubleConfig);
-    doubleConfig.initialByte = 66;
+    doubleConfig.initialByte = 33;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTStep].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTStep].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTStep].max;
     protocolTimeCoders[ProtocolTStep] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 74;
+    doubleConfig.initialByte = 41;
     doubleConfig.initialBit = 2;
     doubleConfig.bitsNum = 10;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTPe].step;
@@ -690,7 +657,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
 
     /*! Protocol slope */
     protocolSlopeCoders.resize(ProtocolSlopesNum);
-    doubleConfig.initialByte = 76;
+    doubleConfig.initialByte = 43;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 10;
     doubleConfig.resolution = protocolSlopeRanges[ProtocolSlope].step;
@@ -700,21 +667,21 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
 
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
-    doubleConfig.initialByte = 77;
+    doubleConfig.initialByte = 44;
     doubleConfig.initialBit = 3;
     doubleConfig.bitsNum = 1;
     doubleConfig.resolution = protocolAdimensionalRanges[ProtocolSlopeDiv].step;
     doubleConfig.minValue = protocolAdimensionalRanges[ProtocolSlopeDiv].min;
     doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolSlopeDiv].max;
     protocolAdimensionalCoders[ProtocolSlopeDiv] = new DoubleOffsetBinaryCoder(doubleConfig);
-    doubleConfig.initialByte = 70;
+    doubleConfig.initialByte = 37;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 10;
     doubleConfig.resolution = protocolAdimensionalRanges[ProtocolN].step;
     doubleConfig.minValue = protocolAdimensionalRanges[ProtocolN].min;
     doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolN].max;
     protocolAdimensionalCoders[ProtocolN] = new DoubleTwosCompCoder(doubleConfig);
-    doubleConfig.initialByte = 72;
+    doubleConfig.initialByte = 39;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 10;
     doubleConfig.resolution = protocolAdimensionalRanges[ProtocolNR].step;
@@ -728,41 +695,6 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     dacIntFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Device specific controls */
-    boolConfig.initialByte = 5;
-    boolConfig.initialBit = 3;
-    boolConfig.bitsNum = 1;
-    washerResetCoder = new BoolArrayCoder(boolConfig);
-    boolConfig.initialByte = 5;
-    boolConfig.initialBit = 4;
-    boolConfig.bitsNum = 1;
-    washerGetStatusCoder = new BoolArrayCoder(boolConfig);
-    boolConfig.initialByte = 5;
-    boolConfig.initialBit = 5;
-    boolConfig.bitsNum = 1;
-    washerGetSpeedsCoder = new BoolArrayCoder(boolConfig);
-    boolConfig.initialByte = 5;
-    boolConfig.initialBit = 6;
-    boolConfig.bitsNum = 1;
-    washerSetSpeedsCoder = new BoolArrayCoder(boolConfig);
-    boolConfig.initialByte = 8;
-    boolConfig.initialBit = 4;
-    boolConfig.bitsNum = 1;
-    washerStartCoder = new BoolArrayCoder(boolConfig);
-    boolConfig.initialByte = 8;
-    boolConfig.initialBit = 5;
-    boolConfig.bitsNum = 2;
-    washerSelectSpeedCoder = new BoolArrayCoder(boolConfig);
-
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 8;
-    doubleConfig.resolution = washerSpeedRange.step;
-    doubleConfig.minValue = washerSpeedRange.min;
-    doubleConfig.maxValue = washerSpeedRange.max;
-    washerPresetSpeedsCoders.resize(WasherSpeedsNum);
-    for (unsigned short speedIdx = 0; speedIdx < WasherSpeedsNum; speedIdx++) {
-        doubleConfig.initialByte = 82+speedIdx*2;
-        washerPresetSpeedsCoders[speedIdx] = new DoubleTwosCompCoder(doubleConfig);
-    }
 
     /*******************\
      * Default status  *
@@ -776,170 +708,56 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     txStatus[3] = 0x00; // CFG2
     txStatus[4] = 0x00; // CFG3
     txStatus[5] = 0x00; // CFG4
-    txStatus[6] = 0x00; // CFG5
-    txStatus[7] = 0x00; // CFG6
-    txStatus[8] = 0x00; // CFG7
-    txStatus[9] = 0x00; // CFG8
-    txStatus[10] = 0x00; // CFG9
-    txStatus[11] = 0x00; // CFG10
-    txStatus[12] = 0x00; // CFG11
-    txStatus[13] = 0x7F; // CFG12
-    txStatus[14] = 0x7F; // CFG13
-    txStatus[15] = 0x03; // CFG14
-    txStatus[16] = 0x00; // Vhold
-    txStatus[17] = 0x00;
-    txStatus[18] = 0x00; // VOfs1
-    txStatus[19] = 0x00;
-    txStatus[20] = 0x00; // VOfs2
-    txStatus[21] = 0x00;
-    txStatus[22] = 0x00; // VOfs3
-    txStatus[23] = 0x00;
-    txStatus[24] = 0x00; // VOfs4
+    txStatus[6] = 0x07; // CFG5
+    txStatus[7] = 0x00; // Vhold
+    txStatus[8] = 0x00;
+    txStatus[9] = 0x00; // VOfs1
+    txStatus[10] = 0x00;
+    txStatus[11] = 0x00; // VOfs2
+    txStatus[12] = 0x00;
+    txStatus[13] = 0x00; // VOfs3
+    txStatus[14] = 0x00;
+    txStatus[15] = 0x00; // VOfs4
+    txStatus[16] = 0x00;
+    txStatus[17] = 0x00; // VPulse
+    txStatus[18] = 0x00;
+    txStatus[19] = 0x00; // VInsPulse
+    txStatus[20] = 0x00;
+    txStatus[21] = 0x00; // VStep
+    txStatus[22] = 0x00;
+    txStatus[23] = 0x00; // THold
+    txStatus[24] = 0x00;
     txStatus[25] = 0x00;
-    txStatus[26] = 0x00; // VOfs5
-    txStatus[27] = 0x00;
-    txStatus[28] = 0x00; // VOfs6
+    txStatus[26] = 0x00;
+    txStatus[27] = 0x00; // TPulse
+    txStatus[28] = 0x00;
     txStatus[29] = 0x00;
-    txStatus[30] = 0x00; // VOfs7
-    txStatus[31] = 0x00;
-    txStatus[32] = 0x00; // VOfs8
-    txStatus[33] = 0x00;
-    txStatus[34] = 0x00; // VOfs9
+    txStatus[30] = 0x00;
+    txStatus[31] = 0x00; // TInsPulse
+    txStatus[32] = 0x00;
+    txStatus[33] = 0x00; // TStep
+    txStatus[34] = 0x00;
     txStatus[35] = 0x00;
-    txStatus[36] = 0x00; // VOfs10
-    txStatus[37] = 0x00;
-    txStatus[38] = 0x00; // VOfs11
-    txStatus[39] = 0x00;
-    txStatus[40] = 0x00; // VOfs12
-    txStatus[41] = 0x00;
-    txStatus[42] = 0x00; // VOfs13
-    txStatus[43] = 0x00;
-    txStatus[44] = 0x00; // VOfs14
-    txStatus[45] = 0x00;
-    txStatus[46] = 0x00; // VOfs15
-    txStatus[47] = 0x00;
-    txStatus[48] = 0x00; // VOfs16
-    txStatus[49] = 0x00;
-    txStatus[50] = 0x00; // VPulse
-    txStatus[51] = 0x00;
-    txStatus[52] = 0x00; // VInsPulse
-    txStatus[53] = 0x00;
-    txStatus[54] = 0x00; // VStep
-    txStatus[55] = 0x00;
-    txStatus[56] = 0x00; // THold
-    txStatus[57] = 0x00;
-    txStatus[58] = 0x00;
-    txStatus[59] = 0x00;
-    txStatus[60] = 0x00; // TPulse
-    txStatus[61] = 0x00;
-    txStatus[62] = 0x00;
-    txStatus[63] = 0x00;
-    txStatus[64] = 0x00; // TInsPulse
-    txStatus[65] = 0x00;
-    txStatus[66] = 0x00; // TStep
-    txStatus[67] = 0x00;
-    txStatus[68] = 0x00;
-    txStatus[69] = 0x00;
-    txStatus[70] = 0x00; // N
-    txStatus[71] = 0x00;
-    txStatus[72] = 0x00; // NR
-    txStatus[73] = 0x00;
-    txStatus[74] = 0x00; // Triangular
-    txStatus[75] = 0x00;
-    txStatus[76] = 0x00; // Slope
-    txStatus[77] = 0x00;
-    txStatus[78] = 0x00; // VMax
-    txStatus[79] = 0x00;
-    txStatus[80] = 0x00; // VMin
-    txStatus[81] = 0x00;
-    txStatus[82] = 0x00; // Wash_pre1
-    txStatus[83] = 0x00;
-    txStatus[84] = 0x00; // Wash_pre2
-    txStatus[85] = 0x00;
-    txStatus[86] = 0x00; // Wash_pre3
-    txStatus[87] = 0x00;
-    txStatus[88] = 0x00; // Wash_pre4
-    txStatus[89] = 0x00;
-//    txStatus[90] = 0x00;
-//    txStatus[91] = 0x00;
-//    txStatus[92] = 0x00;
-//    txStatus[93] = 0x00;
+    txStatus[36] = 0x00;
+    txStatus[37] = 0x00; // N
+    txStatus[38] = 0x00;
+    txStatus[39] = 0x00; // NR
+    txStatus[40] = 0x00;
+    txStatus[41] = 0x00; // Triangular
+    txStatus[42] = 0x00;
+    txStatus[43] = 0x00; // Slope
+    txStatus[44] = 0x00;
+    txStatus[45] = 0x00; // VMax
+    txStatus[46] = 0x00;
+    txStatus[47] = 0x00; // VMin
+    txStatus[48] = 0x00;
 }
 
-MessageDispatcher_e16n::~MessageDispatcher_e16n() {
+MessageDispatcher_e4e::~MessageDispatcher_e4e() {
 
 }
 
-ErrorCodes_t MessageDispatcher_e16n::resetWasherError() {
-    washerResetCoder->encode(1, txStatus);
-    this->stackOutgoingMessage(txStatus);
-    washerResetCoder->encode(0, txStatus);
-    this_thread::sleep_for(chrono::milliseconds(10));
-    this->updateWasherStatus();
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher_e16n::setWasherPresetSpeeds(vector <int8_t> speedValues) {
-    for (unsigned int idx = 0; idx < 4; idx++) {
-        washerPresetSpeedsCoders[idx]->encode(speedValues[idx], txStatus);
-    }
-    washerSetSpeedsCoder->encode(1, txStatus);
-    this->stackOutgoingMessage(txStatus);
-    washerSetSpeedsCoder->encode(0, txStatus);
-    this_thread::sleep_for(chrono::milliseconds(30));
-
-    /*! After setting the speeds get them, in a separate request to give a bit of time for the eeprom update */
-    this->updateWasherSpeeds();
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher_e16n::startWasher(uint16_t speedIdx) {
-    if (speedIdx < WasherSpeedsNum) {
-        washerSelectSpeedCoder->encode(speedIdx, txStatus);
-        washerStartCoder->encode(1, txStatus);
-        this->stackOutgoingMessage(txStatus);
-        washerStartCoder->encode(0, txStatus);
-        this_thread::sleep_for(chrono::milliseconds(10));
-
-        return Success;
-
-    } else {
-        return ErrorValueOutOfRange;
-    }
-}
-
-ErrorCodes_t MessageDispatcher_e16n::updateWasherState() {
-    this->updateWasherStatus();
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher_e16n::updateWasherPresetSpeeds() {
-    this->updateWasherSpeeds();
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher_e16n::getWasherSpeedRange(RangedMeasurement_t &range) {
-    range = washerSpeedRange;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher_e16n::getWasherStatus(WasherStatus_t &status, WasherError_t &error) {
-    status = (WasherStatus_t)((infoStruct.state & 0xF0) >> 4);
-    error = (WasherError_t)(infoStruct.state & 0x0F);
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher_e16n::getWasherPresetSpeeds(vector <int8_t> &speedValue) {
-    speedValue.resize(WasherSpeedsNum);
-    for (unsigned int idx = 0; idx < WasherSpeedsNum; idx++) {
-        speedValue[idx] = infoStruct.presetSpeeds[idx];
-    }
-    return Success;
-}
-
-void MessageDispatcher_e16n::initializeDevice() {
+void MessageDispatcher_e4e::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->digitalOffsetCompensation(currentChannelsNum, false);
@@ -963,14 +781,11 @@ void MessageDispatcher_e16n::initializeDevice() {
         this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
     }
 
-    this->resetWasherError();
-    this->updateWasherSpeeds();
-
 //    this->activateDacIntFilter(false, false);
 //    this->activateDacExtFilter(true, false);
 }
 
-bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e4e::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1163,25 +978,4 @@ bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
         break;
     }
     return validFlag;
-}
-
-void MessageDispatcher_e16n::updateWasherStatus() {
-    washerGetStatusCoder->encode(1, txStatus);
-    this->stackOutgoingMessage(txStatus);
-    washerGetStatusCoder->encode(0, txStatus);
-    this_thread::sleep_for(chrono::milliseconds(10));
-}
-
-void MessageDispatcher_e16n::updateWasherSpeeds() {
-    washerGetSpeedsCoder->encode(1, txStatus);
-    this->stackOutgoingMessage(txStatus);
-    washerGetSpeedsCoder->encode(0, txStatus);
-    this_thread::sleep_for(chrono::milliseconds(10));
-}
-
-MessageDispatcher_dlp::MessageDispatcher_dlp(string di) :
-    MessageDispatcher_e16n(di) {
-
-    rxChannel = 'A';
-    txChannel = 'A';
 }

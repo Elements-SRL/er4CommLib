@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
+    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},             //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16n, 3, DeviceE16n},            //    3,  5,  3 : e16 2020 release
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}

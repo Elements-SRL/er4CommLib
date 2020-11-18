@@ -623,6 +623,15 @@ ErrorCodes_t getProtocolList(
         ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &slopes,
         ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &adimensionals);
 
+/*! \brief Get seal test protocol index.
+ *
+ * \param idx [out] Index of the seal test protocol.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getSealTestProtocolIdx(
+        ER4CL_ARGOUT uint16_t &idx);
+
 /*! \brief Get protocol applicable voltage range.
  *
  * \param voltageNames [out] Names of available voltages.

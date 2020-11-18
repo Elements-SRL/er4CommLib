@@ -849,6 +849,18 @@ ErrorCodes_t getProtocolList(
     return ret;
 }
 
+ErrorCodes_t getSealTestProtocolIdx(
+        uint16_t &idx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getSealTestProtocolIdx(idx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t getProtocolVoltage(
         vector <string> &voltageNames,
         vector <RangedMeasurement_t> &ranges,

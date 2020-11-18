@@ -849,6 +849,17 @@ ErrorCodes_t MessageDispatcher::getProtocolList(vector <string> &names, vector <
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::getSealTestProtocolIdx(uint16_t &idx) {
+    if (sealTestProtocolIdx > 0) {
+        /*! Protocol 0 is always the VHold */
+        idx = sealTestProtocolIdx;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::getProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues) {
     voltageNames = protocolVoltageNames;
     ranges = protocolVoltageRanges;

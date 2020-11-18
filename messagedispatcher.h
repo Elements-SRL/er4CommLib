@@ -174,6 +174,7 @@ public:
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
 
     ErrorCodes_t getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &adimensionals);
+    ErrorCodes_t getSealTestProtocolIdx(uint16_t &idx);
     ErrorCodes_t getProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
@@ -302,8 +303,9 @@ protected:
     vector <vector <uint16_t>> protocolsAvailableAdimensionals;
     BoolArrayCoder * protocolsSelectCoder;
     BoolArrayCoder * protocolStartCoder;
-    unsigned int defaultProtocol;
-    unsigned int selectedProtocol;
+    uint16_t defaultProtocol;
+    uint16_t selectedProtocol;
+    uint16_t sealTestProtocolIdx = 0;
 
     unsigned int protocolVoltagesNum;
     vector <std::string> protocolVoltageNames;

@@ -957,10 +957,6 @@ ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel
     }
 
     if (channel == rxChannel) {
-        /*! Set a notification for the received byte event */
-        DWORD EventMask;
-        EventMask = FT_EVENT_RXCHAR;
-
         if (ftRet != FT_OK) {
             FT_Close(* handle);
             return ErrorFtdiConfigurationFailed;
@@ -1294,7 +1290,6 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
     uint16_t value;
     uint8_t infoIndex;
     uint8_t infoValue;
-    int currentChannelIdx = 0;
 
     for (unsigned int frameIdx = 0; frameIdx < framesNum; frameIdx++) {
         /*! Skips the sync word at the beginning of each packet */
@@ -1311,8 +1306,6 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
 
         /*! Get current and voltage data */
         for (int packetIdx = 0; packetIdx < packetsPerFrame; packetIdx++) {
-            currentChannelIdx = 0;
-
             for (unsigned short channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
                 value = 0;
 

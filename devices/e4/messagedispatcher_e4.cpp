@@ -202,6 +202,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     protocolsNames[ProtocolCyclicVoltammetry] = "Cyclic Voltammetry";
     defaultProtocol = ProtocolConstant;
     selectedProtocol = defaultProtocol;
+    triangularProtocolIdx = ProtocolTriangular;
     sealTestProtocolIdx = ProtocolSquareWave;
 
     protocolsImages.resize(ProtocolsNum);

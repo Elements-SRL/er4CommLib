@@ -709,7 +709,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     txStatus[3] = 0x00; // CFG2
     txStatus[4] = 0x00; // CFG3
     txStatus[5] = 0x00; // CFG4
-    txStatus[6] = 0x07; // CFG5
+    txStatus[6] = 0x0F; // CFG5
     txStatus[7] = 0x00; // Vhold
     txStatus[8] = 0x00;
     txStatus[9] = 0x00; // VOfs1

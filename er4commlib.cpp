@@ -341,6 +341,19 @@ ErrorCodes_t checkProtocolAdimensional(
     return ret;
 }
 
+ErrorCodes_t applyInsertionPulse(
+        Measurement_t voltage,
+        Measurement_t duration) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->applyInsertionPulse(voltage, duration);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setRawDataFilter(
         Measurement_t cutoffFrequency,
         bool lowPassFlag,
@@ -922,6 +935,18 @@ ErrorCodes_t getProtocolAdimensional(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange,
+        RangedMeasurement_t &durationRange) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getInsertionPulseControls(voltageRange, durationRange);
 
     } else {
         ret = ErrorDeviceNotConnected;

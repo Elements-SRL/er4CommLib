@@ -129,6 +129,7 @@ public:
     ErrorCodes_t checkProtocolTime(unsigned int idx, Measurement_t time, string &message);
     ErrorCodes_t checkProtocolSlope(unsigned int idx, Measurement_t slope, string &message);
     ErrorCodes_t checkProtocolAdimensional(unsigned int idx, Measurement_t adimensional, string &message);
+    ErrorCodes_t applyInsertionPulse(Measurement_t voltage, Measurement_t duration);
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t activateFEResetDenoiser(bool flag, bool applyFlag = true);
@@ -180,6 +181,7 @@ public:
     ErrorCodes_t getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolAdimensional(vector <string> &adimensionalNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
+    ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
 
@@ -336,6 +338,13 @@ protected:
     vector <DoubleCoder *> protocolAdimensionalCoders;
     vector <Measurement_t> protocolAdimensionalDefault;
     vector <Measurement_t> selectedProtocolAdimensional;
+
+    bool insertionPulseImplemented = false;
+    RangedMeasurement_t insertionPulseVoltageRange;
+    RangedMeasurement_t insertionPulseDurationRange;
+    DoubleCoder * insertionPulseVoltageCoder;
+    DoubleCoder * insertionPulseDurationCoder;
+    BoolCoder * insertionPulseApplyCoder;
 
     string edhFormat;
 

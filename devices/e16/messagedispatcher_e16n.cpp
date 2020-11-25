@@ -456,6 +456,18 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
         selectedProtocolAdimensional[idx] = protocolAdimensionalDefault[idx];
     }
 
+    insertionPulseImplemented = true;
+    insertionPulseVoltageRange.step = 1.0;
+    insertionPulseVoltageRange.min = -500.0;
+    insertionPulseVoltageRange.max = 500.0;
+    insertionPulseVoltageRange.prefix = UnitPfxMilli;
+    insertionPulseVoltageRange.unit = "V";
+    insertionPulseDurationRange.step = 1.0;
+    insertionPulseDurationRange.min = 1.0;
+    insertionPulseDurationRange.max = 15000.0;
+    insertionPulseDurationRange.prefix = UnitPfxMilli;
+    insertionPulseDurationRange.unit = "s";
+
     /**************\
      * EDH format *
     \**************/
@@ -728,6 +740,26 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
     dacIntFilterCoder = new BoolArrayCoder(boolConfig);
+
+    /*! Insertion pulse */
+    doubleConfig.initialByte = 19;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 11;
+    doubleConfig.resolution = insertionPulseVoltageRange.step;
+    doubleConfig.minValue = insertionPulseVoltageRange.min;
+    doubleConfig.maxValue = insertionPulseVoltageRange.max;
+    insertionPulseVoltageCoder = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 31;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 14;
+    doubleConfig.resolution = insertionPulseDurationRange.step;
+    doubleConfig.minValue = insertionPulseDurationRange.min;
+    doubleConfig.maxValue = insertionPulseDurationRange.max;
+    insertionPulseDurationCoder = new DoubleTwosCompCoder(doubleConfig);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 5;
+    boolConfig.bitsNum = 1;
+    insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
 
     /*! Device specific controls */
     boolConfig.initialByte = 5;

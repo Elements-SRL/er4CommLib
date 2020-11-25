@@ -632,6 +632,24 @@ ErrorCodes_t MessageDispatcher::checkProtocolAdimensional(unsigned int idx, Meas
     }
 }
 
+ErrorCodes_t MessageDispatcher::applyInsertionPulse(Measurement_t voltage, Measurement_t duration) {
+    if (insertionPulseImplemented) {
+        voltage.convertValue(insertionPulseVoltageRange.prefix);
+        duration.convertValue(insertionPulseDurationRange.prefix);
+
+        insertionPulseVoltageCoder->encode(voltage.value, txStatus);
+        insertionPulseDurationCoder->encode(duration.value, txStatus);
+        insertionPulseApplyCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        insertionPulseApplyCoder->encode(0, txStatus);
+
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag) {
     ErrorCodes_t ret;
 
@@ -897,6 +915,17 @@ ErrorCodes_t MessageDispatcher::getProtocolAdimensional(vector <string> &adimens
     ranges = protocolAdimensionalRanges;
     defaultValues = protocolAdimensionalDefault;
     return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange) {
+    if (insertionPulseImplemented) {
+        voltageRange = insertionPulseVoltageRange;
+        durationRange = insertionPulseDurationRange;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
 }
 
 ErrorCodes_t MessageDispatcher::getEdhFormat(string &format) {

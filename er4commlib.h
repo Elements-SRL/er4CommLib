@@ -212,6 +212,17 @@ ErrorCodes_t checkProtocolAdimensional(
         ER4CL_ARGIN Measurement_t adimensional,
         ER4CL_ARGIN std::string &message);
 
+/*! \brief Apply the insertion pulse if available.
+ *
+ * \param voltage [in] Voltage of the insertion pulse to be applied.
+ * \param duration [in] Duration of the insertion pulse to be applied.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t applyInsertionPulse(
+        ER4CL_ARGIN Measurement_t voltage,
+        ER4CL_ARGIN Measurement_t duration);
+
 /*! \brief Set the raw data filter cut off frequency and type.
  *
  * \param cutoffFrequency [in] Cut off frequency of the raw data filter.
@@ -692,6 +703,17 @@ ErrorCodes_t getProtocolAdimensional(
         ER4CL_ARGOUT std::vector <std::string> &adimensionalNames,
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT std::vector <Measurement_t> &defaultValues);
+
+/*! \brief Get insertion pulse controls definition.
+ *
+ * \param voltageRange [out] Range of applicable pulse voltage.
+ * \param durationRange [out] Ranges of applicable pulse duration.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getInsertionPulseControls(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange);
 
 /*! \brief Get data header format.
  *

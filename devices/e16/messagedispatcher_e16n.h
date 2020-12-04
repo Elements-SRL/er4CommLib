@@ -64,8 +64,11 @@ protected:
 
     enum ProtocolTimeRanges {
         ProtocolTimeRange2_10ms,
-        ProtocolTimeRange0OrMore,
-        ProtocolTimeRange1OrMore,
+        ProtocolTimeRange0to2_28,
+        ProtocolTimeRange1to2_28,
+        ProtocolTimeRange1orMore,
+        ProtocolTimeRangeSigned2_27,
+        ProtocolTimeRange1to2_25,
         ProtocolTimeRangesNum
     };
 
@@ -86,8 +89,8 @@ protected:
         ProtocolVPulse,
         ProtocolVStep,
         ProtocolVPk,
-        ProtocolVMax,
-        ProtocolVMin,
+        ProtocolVFinal,
+        ProtocolVInit,
 //        ProtocolVExt,
         ProtocolVoltagesNum
     };
@@ -96,17 +99,16 @@ protected:
         ProtocolTHold,
         ProtocolTPulse,
         ProtocolTStep,
+        ProtocolTRamp,
         ProtocolTPe,
         ProtocolTimesNum
     };
 
     enum ProtocolSlopes {
-        ProtocolSlope,
         ProtocolSlopesNum
     };
 
     enum ProtocolAdimensionals {
-        ProtocolSlopeDiv,
         ProtocolN,
         ProtocolNR,
         ProtocolAdimensionalsNum

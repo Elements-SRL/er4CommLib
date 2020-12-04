@@ -1299,8 +1299,8 @@ void MessageDispatcher::sendCommandsToDevice() {
             fflush(fid);
 
             for (int i = 0; i < txDataBytes; i++) {
-                fprintf(fid, "%02x ", txRawBuffer[i]);
-                if (i % 32 == 31) {
+                fprintf(fid, "%03d:%02x ", i, txRawBuffer[i]);
+                if (i % 16 == 15) {
                     fprintf(fid, "\n");
                 }
             }

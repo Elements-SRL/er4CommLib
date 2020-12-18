@@ -733,10 +733,16 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolNR].max;
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
+    dacIntFilterAvailable = true;
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
     dacIntFilterCoder = new BoolArrayCoder(boolConfig);
+
+//    boolConfig.initialByte = 1;
+//    boolConfig.initialBit = 4;
+//    boolConfig.bitsNum = 1;
+//    dacExtFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! Insertion pulse */
     doubleConfig.initialByte = 52;

@@ -392,6 +392,18 @@ ErrorCodes_t activateDacIntFilter(
     return ret;
 }
 
+ErrorCodes_t activateDacExtFilter(
+        bool flag) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->activateDacExtFilter(flag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t resetWasherError() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -787,6 +799,28 @@ ErrorCodes_t getRealSamplingRates(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getRealSamplingRates(samplingRates);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasDacIntFilter() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasDacIntFilter();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasDacExtFilter() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasDacExtFilter();
 
     } else {
         ret = ErrorDeviceNotConnected;

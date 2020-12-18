@@ -254,6 +254,15 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t activateDacIntFilter(
         ER4CL_ARGIN bool flag);
 
+/*! \brief Activate the external dac filter.
+ *
+ * \param flag [in] False: de-activate the external dac filter; True: activate the external dac filter.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t activateDacExtFilter(
+        ER4CL_ARGIN bool flag);
+
 /*! \brief Reset the error status for the Orbit washer.
  *
  * \return Error code.
@@ -572,6 +581,22 @@ ErrorCodes_t getSamplingRate(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getRealSamplingRates(
         ER4CL_ARGOUT std::vector <Measurement_t> &samplingRates);
+
+/*! \brief Get the availability of a low pass filter for the internal DAC.
+ *
+ * \return Success if the filter is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasDacIntFilter(
+        ER4CL_ARGVOID);
+
+/*! \brief Get the availability of a low pass filter for the external DAC.
+ *
+ * \return Success if the filter is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasDacExtFilter(
+        ER4CL_ARGVOID);
 
 /*! \brief Get the available options for the voltage stimulus low pass filter.
  *

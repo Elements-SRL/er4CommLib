@@ -134,6 +134,7 @@ public:
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t activateFEResetDenoiser(bool flag, bool applyFlag = true);
     ErrorCodes_t activateDacIntFilter(bool flag, bool applyFlag = true);
+    ErrorCodes_t activateDacExtFilter(bool flag, bool applyFlag = true);
 
     /*! Device specific controls */
 
@@ -166,6 +167,8 @@ public:
     ErrorCodes_t getSamplingRate(Measurement_t &samplingRates);
     ErrorCodes_t getRealSamplingRates(vector <Measurement_t> &samplingRates);
 
+    ErrorCodes_t hasDacIntFilter();
+    ErrorCodes_t hasDacExtFilter();
     ErrorCodes_t getVoltageStimulusLpfs(vector <string> &filterOptions);
 
     ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag);
@@ -366,7 +369,10 @@ protected:
 
     uint16_t iirOff = 0;
 
+    bool dacIntFilterAvailable = false;
     BoolArrayCoder * dacIntFilterCoder;
+    bool dacExtFilterAvailable = false;
+    BoolArrayCoder * dacExtFilterCoder;
 
     /*! Device specific parameters */
 

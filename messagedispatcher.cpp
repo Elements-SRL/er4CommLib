@@ -12,6 +12,7 @@
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},             //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16n, 4, DeviceE16n},            //    3,  5,  4 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 132, DeviceE16n},          //    3,  5,132 : e16 2020 release
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
@@ -686,6 +687,15 @@ ErrorCodes_t MessageDispatcher::activateDacIntFilter(bool flag, bool applyFlag) 
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::activateDacExtFilter(bool flag, bool applyFlag) {
+    dacExtFilterCoder->encode(flag ? 1 : 0, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::resetWasherError() {
     return ErrorFeatureNotImplemented;
 }
@@ -828,6 +838,24 @@ ErrorCodes_t MessageDispatcher::getSamplingRate(Measurement_t &samplingRate) {
 ErrorCodes_t MessageDispatcher::getRealSamplingRates(vector <Measurement_t> &samplingRates) {
     samplingRates = realSamplingRatesArray;
     return Success;
+}
+
+ErrorCodes_t MessageDispatcher::hasDacIntFilter() {
+    if (dacIntFilterAvailable) {
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::hasDacExtFilter() {
+    if (dacExtFilterAvailable) {
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
 }
 
 ErrorCodes_t MessageDispatcher::hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag) {

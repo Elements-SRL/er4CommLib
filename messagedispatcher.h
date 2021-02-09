@@ -56,7 +56,7 @@ using namespace er4CommLib;
 #define FTD_DEFAULT_MIN_FRAME_NUMBER 10
 #define FTD_DEFAULT_FEW_FRAME_SLEEP 2000
 #define FTD_FEW_PACKET_COEFF 0.01 /*!< = 10.0/1000.0: 10.0 because I want to get data once every 10ms, 1000 to convert sampling rate from Hz to kHz */
-#define FTD_MAX_BYTES_TO_WAIT_FOR 2048
+#define FTD_MAX_BYTES_TO_WAIT_FOR 2048 /*! Max FTDI buffer size = 4k, so wait no more than half full to read it */
 
 #define ER4CL_OUTPUT_BUFFER_SIZE 0x100000 /*!< Always use a power of 2 for efficient circular buffer management through index masking */
 #define ER4CL_OUTPUT_BUFFER_MASK (ER4CL_OUTPUT_BUFFER_SIZE-1)

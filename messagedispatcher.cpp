@@ -13,6 +13,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},             //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16n, 4, DeviceE16n},            //    3,  5,  4 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 132, DeviceE16n},          //    3,  5,132 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 134, DeviceE16n},          //    3,  5,134 : e16 2020 release
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
@@ -338,6 +339,7 @@ ErrorCodes_t MessageDispatcher::setSamplingRate(uint16_t samplingRateIdx, bool a
         samplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
         integrationStep = integrationStepArray[selectedSamplingRateIdx];
         this->setRawDataFilter(rawDataFilterCutoffFrequency, rawDataFilterLowPassFlag, rawDataFilterActiveFlag);
+        this->computeMinimumPacketNumber();
 
         samplingRateCoder->encode(selectedSamplingRateIdx, txStatus);
         if (applyFlag) {
@@ -756,7 +758,12 @@ ErrorCodes_t MessageDispatcher::getQueueStatus(unsigned int * availableDataPacke
 
     outputBufferOverflowFlag = false;
     bufferDataLossFlag = false;
-    return Success;
+    if (* availableDataPackets == 0) {
+        return WarningNoDataAvailable;
+
+    } else {
+        return Success;
+    }
 }
 
 ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int * packetsRead) {
@@ -1440,7 +1447,7 @@ void MessageDispatcher::computeMinimumPacketNumber() {
     samplingRateInHz.convertValue(UnitPfxNone);
     minFrameNumber = (unsigned long)ceil(FTD_FEW_PACKET_COEFF*samplingRateInHz.value/((double)packetsPerFrame));
     minFrameNumber = (unsigned long)min(minFrameNumber, (unsigned long)ceil(((double)FTD_MAX_BYTES_TO_WAIT_FOR)/(double)readFrameLength));
-    fewFramesSleep = (unsigned int)ceil(((double)((minFrameNumber*(unsigned long)packetsPerFrame)/2))/samplingRateInHz.value*1.0e6);
+    fewFramesSleep = (unsigned int)ceil(((double)(minFrameNumber*(unsigned long)packetsPerFrame))/samplingRateInHz.value*1.0e6);
 }
 
 void MessageDispatcher::initializeRawDataFilterVariables() {

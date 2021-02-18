@@ -14,6 +14,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 4, DeviceE16n},            //    3,  5,  4 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 132, DeviceE16n},          //    3,  5,132 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 134, DeviceE16n},          //    3,  5,134 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},          //    3,  5,135 : e16 2020 release
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
@@ -1065,6 +1066,7 @@ void MessageDispatcher::readDataFromDevice() {
     unsigned long availableFrames; /*!< Number of packets available in RX queue */
     DWORD readResult;
     DWORD ftdiQueuedBytes;
+    unsigned int bytesToEnd;
 
     /*! Declare variables to manage buffers indexing */
     unsigned int syncOffset; /*!< Index used to check the sync word */
@@ -1102,17 +1104,18 @@ void MessageDispatcher::readDataFromDevice() {
 
         /*! If there are not enough frames wait for a minimum frame number,
          *  the ftdi driver will wait for that to decrease overhead */
-        if (availableFrames < minFrameNumber) {
+        if (availableFrames < minReadFrameNumber) {
             usleep(fewFramesSleep);
             continue;
         }
 
-        if (ftdiQueuedBytes+bytesLeftFromPreviousRead >= FTD_RX_BUFFER_SIZE) {
-            ftdiQueuedBytes = FTD_RX_BUFFER_SIZE-bytesLeftFromPreviousRead;
+        /*! Cap bytes to read so that we do not try to read more than is available on the internal buffer */
+        if (ftdiQueuedBytes+bytesReadFromDriver >= FTD_RX_BUFFER_SIZE) {
+            ftdiQueuedBytes = FTD_RX_BUFFER_SIZE-bytesReadFromDriver;
         }
 
         /*! Reads the data */
-        unsigned int bytesToEnd = FTD_RX_BUFFER_SIZE-bufferWriteOffset;
+        bytesToEnd = FTD_RX_BUFFER_SIZE-bufferWriteOffset;
         if (ftdiQueuedBytes > bytesToEnd) {
             result = FT_Read(* ftdiRxHandle, readDataBuffer+bufferWriteOffset, bytesToEnd, &readResult);
             result |= FT_Read(* ftdiRxHandle, readDataBuffer, ftdiQueuedBytes-bytesToEnd, &readResult);
@@ -1143,10 +1146,16 @@ void MessageDispatcher::readDataFromDevice() {
         /*! Extracts a pointer to the buffer */
         bufferWriteOffset = (bufferWriteOffset+ftdiQueuedBytes)&FTD_RX_BUFFER_MASK;
 
+        /*! Before storing the data to the output buffer wait for a least minStoreFrameNumber frames */
+        bytesReadFromDriver += ftdiQueuedBytes;
+        if (bytesReadFromDriver/(unsigned long)readFrameLength < minStoreFrameNumber) {
+            continue;
+        }
+
         candidateSync = 0;
         lastSyncIdx = 0;
         okFrames = 0;
-        availableBytes = (int)(ftdiQueuedBytes+bytesLeftFromPreviousRead);
+        availableBytes = (int)bytesReadFromDriver;
         FtdBufferAnalaysisStatus_t status;
 
         if (exitOnSyncWord) {
@@ -1266,7 +1275,8 @@ void MessageDispatcher::readDataFromDevice() {
             }
         }
 
-        bytesLeftFromPreviousRead = (unsigned int)(availableBytes-availableBufferIdx);
+        /*! Left over bytes that made up a partial frame */
+        bytesReadFromDriver = (unsigned int)(availableBytes-availableBufferIdx);
     }
 }
 
@@ -1445,9 +1455,9 @@ void MessageDispatcher::uint322uint16(uint32_t from, vector <uint16_t> &to, size
 void MessageDispatcher::computeMinimumPacketNumber() {
     Measurement_t samplingRateInHz = samplingRate;
     samplingRateInHz.convertValue(UnitPfxNone);
-    minFrameNumber = (unsigned long)ceil(FTD_FEW_PACKET_COEFF*samplingRateInHz.value/((double)packetsPerFrame));
-    minFrameNumber = (unsigned long)min(minFrameNumber, (unsigned long)ceil(((double)FTD_MAX_BYTES_TO_WAIT_FOR)/(double)readFrameLength));
-    fewFramesSleep = (unsigned int)ceil(((double)(minFrameNumber*(unsigned long)packetsPerFrame))/samplingRateInHz.value*1.0e6);
+    minStoreFrameNumber = (unsigned long)ceil(FTD_FEW_PACKET_COEFF*samplingRateInHz.value/((double)packetsPerFrame));
+    minReadFrameNumber = (unsigned long)min(minStoreFrameNumber, (unsigned long)ceil(((double)FTD_MAX_BYTES_TO_WAIT_FOR)/(double)readFrameLength));
+    fewFramesSleep = (unsigned int)ceil(((double)(minReadFrameNumber*(unsigned long)packetsPerFrame))/samplingRateInHz.value*1.0e6);
 }
 
 void MessageDispatcher::initializeRawDataFilterVariables() {

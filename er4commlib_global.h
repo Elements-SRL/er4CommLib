@@ -57,7 +57,7 @@
  * When calling method readData data corresponding to at most #ER4CL_DATA_ARRAY_SIZE samples is returned.
  * When calling method readData provide an array of float with at least #ER4CL_DATA_ARRAY_SIZE items.
  */
-#define ER4CL_DATA_ARRAY_SIZE (65536)
+#define ER4CL_DATA_ARRAY_SIZE (0x40000)
 
 namespace er4CommLib {
 

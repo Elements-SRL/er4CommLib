@@ -123,6 +123,7 @@ protected:
 
     InfoStruct_t infoStruct;
     RangedMeasurement_t washerSpeedRange;
+    vector <int8_t> washerSpeeds;
 
     BoolArrayCoder * washerResetCoder;
     BoolArrayCoder * washerGetStatusCoder;

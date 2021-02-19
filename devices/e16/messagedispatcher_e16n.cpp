@@ -498,6 +498,10 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     \****************************/
 
     washerControlFlag = true;
+    washerSpeeds.resize(4);
+    for (unsigned int speedIdx = 0; speedIdx < 4; speedIdx++) {
+        washerSpeeds[speedIdx] = 0;
+    }
 
     washerSpeedRange.min = -100.0;
     washerSpeedRange.max = 100.0;
@@ -918,17 +922,24 @@ ErrorCodes_t MessageDispatcher_e16n::resetWasherError() {
 }
 
 ErrorCodes_t MessageDispatcher_e16n::setWasherPresetSpeeds(vector <int8_t> speedValues) {
+    bool anyDifferent = false;
     for (unsigned int idx = 0; idx < 4; idx++) {
         washerPresetSpeedsCoders[idx]->encode(speedValues[idx], txStatus);
+        if (washerSpeeds[idx] != speedValues[idx]) {
+            anyDifferent = true;
+        }
     }
-    washerSetSpeedsCoder->encode(1, txStatus);
-    this->stackOutgoingMessage(txStatus);
-    washerSetSpeedsCoder->encode(0, txStatus);
-    this_thread::sleep_for(chrono::milliseconds(30));
 
-    /*! After setting the speeds get them, in a separate request to give a bit of time for the eeprom update */
-    this->updateWasherSpeeds();
+    /*! Reduce as much as possible writings to the eeprom, so if the values didn't change do not re-write them */
+    if (anyDifferent) {
+        washerSetSpeedsCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        washerSetSpeedsCoder->encode(0, txStatus);
+        this_thread::sleep_for(chrono::milliseconds(30));
 
+        /*! After setting the speeds get them, in a separate request to give a bit of time for the eeprom update */
+        this->updateWasherSpeeds();
+    }
     return Success;
 }
 
@@ -972,6 +983,7 @@ ErrorCodes_t MessageDispatcher_e16n::getWasherPresetSpeeds(vector <int8_t> &spee
     speedValue.resize(WasherSpeedsNum);
     for (unsigned int idx = 0; idx < WasherSpeedsNum; idx++) {
         speedValue[idx] = infoStruct.presetSpeeds[idx];
+        washerSpeeds[idx] = infoStruct.presetSpeeds[idx];
     }
     return Success;
 }

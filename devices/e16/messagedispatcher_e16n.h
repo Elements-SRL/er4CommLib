@@ -18,6 +18,7 @@ public:
     ErrorCodes_t updateWasherState() override;
     ErrorCodes_t updateWasherPresetSpeeds() override;
 
+    ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
     ErrorCodes_t getWasherSpeedRange(RangedMeasurement_t &range) override;
     ErrorCodes_t getWasherStatus(WasherStatus_t &status, WasherError_t &error) override;
     ErrorCodes_t getWasherPresetSpeeds(vector <int8_t> &speedValue) override;
@@ -120,6 +121,9 @@ protected:
     /*! Device specific controls */
     void updateWasherStatus();
     void updateWasherSpeeds();
+
+    int minControllerTemperature = -10;
+    int maxControllerTemperature = 50;
 
     InfoStruct_t infoStruct;
     RangedMeasurement_t washerSpeedRange;

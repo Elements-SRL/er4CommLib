@@ -1013,6 +1013,30 @@ ErrorCodes_t getRawDataFilterCutoffFrequency(
     return ret;
 }
 
+ErrorCodes_t hasNanionTemperatureController() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasNanionTemperatureController();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getTemperatureControllerRange(
+        int &minTemperature,
+        int &maxTemperature) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getTemperatureControllerRange(minTemperature, maxTemperature);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t hasWasherControls() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {

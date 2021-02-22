@@ -497,6 +497,8 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
      * Device specific controls *
     \****************************/
 
+    nanionTemperatureControllerFlag = true;
+
     washerControlFlag = true;
     washerSpeeds.resize(4);
     for (unsigned int speedIdx = 0; speedIdx < 4; speedIdx++) {
@@ -966,6 +968,11 @@ ErrorCodes_t MessageDispatcher_e16n::updateWasherState() {
 ErrorCodes_t MessageDispatcher_e16n::updateWasherPresetSpeeds() {
     this->updateWasherSpeeds();
     return Success;
+}
+
+ErrorCodes_t MessageDispatcher_e16n::getTemperatureControllerRange(int &minTemperature, int &maxTemperature) {
+    minTemperature = minControllerTemperature;
+    maxTemperature = maxControllerTemperature;
 }
 
 ErrorCodes_t MessageDispatcher_e16n::getWasherSpeedRange(RangedMeasurement_t &range) {

@@ -975,6 +975,19 @@ ErrorCodes_t MessageDispatcher::getRawDataFilterCutoffFrequency(RangedMeasuremen
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::hasNanionTemperatureController() {
+    if (nanionTemperatureControllerFlag) {
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::getTemperatureControllerRange(int &minTemperature, int &maxTemperature) {
+    return ErrorFeatureNotImplemented;
+}
+
 ErrorCodes_t MessageDispatcher::hasWasherControls() {
     if (washerControlFlag) {
         return Success;

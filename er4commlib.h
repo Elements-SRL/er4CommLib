@@ -760,6 +760,25 @@ ErrorCodes_t getRawDataFilterCutoffFrequency(
         ER4CL_ARGOUT RangedMeasurement_t &range,
         ER4CL_ARGOUT Measurement_t &defaultValue);
 
+/*! \brief Availability of Nanion's temperature controller.
+ *
+ * \return Success if the Nanion's temperature controller is available with this device.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasNanionTemperatureController(
+        ER4CL_ARGVOID);
+
+/*! \brief Get Nanion's temperature controller temeprature range.
+ *
+ * \param minTemperature [out] Minimum applicable temperatures in °C.
+ * \param maxTemperature [out] Minimum applicable temperatures in °C.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getTemperatureControllerRange(
+        ER4CL_ARGOUT int &minTemperature,
+        ER4CL_ARGOUT int &maxTemperature);
+
 /*! \brief Availability of Orbit washer controls.
  *
  * \return Success if the Orbit washer control is available.

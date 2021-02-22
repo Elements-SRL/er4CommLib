@@ -191,6 +191,8 @@ public:
 
     /*! Device specific controls */
 
+    ErrorCodes_t hasNanionTemperatureController();
+    virtual ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature);
     ErrorCodes_t hasWasherControls();
     virtual ErrorCodes_t getWasherSpeedRange(RangedMeasurement_t &range);
     virtual ErrorCodes_t getWasherStatus(WasherStatus_t &status, WasherError_t &error);
@@ -377,6 +379,7 @@ protected:
 
     /*! Device specific parameters */
 
+    bool nanionTemperatureControllerFlag = false;
     bool washerControlFlag = false;
 
     /***************\

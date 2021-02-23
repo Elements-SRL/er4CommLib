@@ -63,21 +63,31 @@ ErrorCodes_t detectDevices(
     if (!devCountOk) {
         return ErrorListDeviceFailed;
 
-    } else if (numDevs == 0) {
+    } else if (numDevs < 2) {
+        /*! Each device has 2 channels */
         deviceIds.clear();
         return ErrorNoDeviceFound;
     }
 
+    vector <string> deviceIdsTemp;
     deviceIds.clear();
+    deviceIdsTemp.clear();
     string deviceName;
 
     /*! Lists all serial numbers */
     for (uint32_t i = 0; i < numDevs; i++) {
         deviceName = getDeviceSerial(i);
-        if (find(deviceIds.begin(), deviceIds.end(), deviceName) == deviceIds.end()) {
-            /*! Adds only new devices (no distinction between channels A and B creates duplicates) */
+        if (find(deviceIdsTemp.begin(), deviceIdsTemp.end(), deviceName) == deviceIdsTemp.end()) {
+            /*! Devices with an open channel are detected wrongly and their name is an empty string */
             if (deviceName.size() > 0) {
-                /*! Devices with an open channel are detected wrongly and their name is an empty string */
+                /*! If this device has been found for the first time put it in the temporary list */
+                deviceIdsTemp.push_back(getDeviceSerial(i));
+            }
+
+        } else {
+            /*! Devices with an open channel are detected wrongly and their name is an empty string */
+            if (deviceName.size() > 0) {
+                /*! If this device has been already been found both channels A and B are detected, so add it in the output list */
                 deviceIds.push_back(getDeviceSerial(i));
             }
         }

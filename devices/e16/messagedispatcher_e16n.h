@@ -123,7 +123,7 @@ protected:
     void updateWasherSpeeds();
 
     int minControllerTemperature = -10;
-    int maxControllerTemperature = 50;
+    int maxControllerTemperature = 60;
 
     InfoStruct_t infoStruct;
     RangedMeasurement_t washerSpeedRange;

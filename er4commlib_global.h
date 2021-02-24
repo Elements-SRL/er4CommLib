@@ -210,6 +210,14 @@ typedef struct Measurement {
     UnitPfx_t prefix; /*!< Unit prefix in the range [femto, Peta]. */
     std::string unit; /*!< Unit. \note Can be any string, the library is not aware of real units meaning. */
 
+    /*! \brief Returns the value without prefix.
+     *
+     * \return Value without prefix, e.g. for 1.5nA returns 1.5e-9.
+     */
+    double getNoPrefixValue(ER4CL_ARGVOID) {
+        return value*multiplier();
+    }
+
     /*! \brief Returns the string corresponding to the prefix.
      *
      * \return String corresponding to the prefix.

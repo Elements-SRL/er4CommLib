@@ -507,6 +507,19 @@ ErrorCodes_t setSamplingRate(
     return ret;
 }
 
+ErrorCodes_t selectStimulusChannel(
+        uint16_t channelIdx,
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->selectStimulusChannel(channelIdx, on);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t digitalOffsetCompensation(
         uint16_t channelIdx,
         bool on) {
@@ -664,7 +677,7 @@ ErrorCodes_t getQueueStatus(
         QueueStatus_t &status) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getQueueStatus(&(status.availableDataPackets), &(status.bufferOverflowFlag), &(status.lostDataFlag));
+        ret = messageDispatcher->getQueueStatus(&(status.availableDataPackets), &(status.bufferOverflowFlag), &(status.lostDataFlag), &(status.communicationErrorFlag));
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -840,13 +853,26 @@ ErrorCodes_t hasDacExtFilter() {
 
 ErrorCodes_t getVoltageStimulusLpfs(
         vector <string> &filterOptions) {
-    ErrorCodes_t ret;
+    ErrorCodes_t ret = ErrorFeatureNotImplemented;
 //    if (messageDispatcher != nullptr) {
 //        ret = messageDispatcher->getVoltageStimulusLpfs(filterOptions);
 
 //    } else {
 //        ret = ErrorDeviceNotConnected;
 //    }
+    return ret;
+}
+
+ErrorCodes_t hasSelectStimulusChannel(
+        bool &selectStimulusChannelFlag,
+        bool &singleChannelSSCFlag) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasSelectStimulusChannel(selectStimulusChannelFlag, singleChannelSSCFlag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
     return ret;
 }
 

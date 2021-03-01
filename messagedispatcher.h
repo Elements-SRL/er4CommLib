@@ -93,6 +93,7 @@ public:
     ErrorCodes_t deinit();
     virtual ErrorCodes_t connect(FtdiEeprom * ftdiEeprom);
     virtual ErrorCodes_t disconnect();
+    virtual ErrorCodes_t pauseConnection(bool pauseFlag);
     void readDataFromDevice();
     void sendCommandsToDevice();
 
@@ -109,6 +110,7 @@ public:
     virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, bool applyFlag = true);
     virtual ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag = true);
 
+    virtual ErrorCodes_t selectStimulusChannel(uint16_t channelIdx, bool on, bool applyFlag = true);
     virtual ErrorCodes_t digitalOffsetCompensation(uint16_t channelIdx, bool on, bool applyFlag = true);
     ErrorCodes_t zap(uint16_t channelIdx, bool applyFlag = true);
     ErrorCodes_t switchChannelOn(uint16_t channelIdx, bool on, bool applyFlag = true);
@@ -152,7 +154,7 @@ public:
     ErrorCodes_t isDeviceUpgradable(string &upgradeNotes, string &notificationTag);
     ErrorCodes_t getDeviceInfo(uint8_t &deviceVersion, uint8_t &deviceSubversion, uint32_t &firmwareVersion);
 
-    ErrorCodes_t getQueueStatus(unsigned int * availableDataPackets, bool * bufferOverflowFlag, bool * dataLossFlag);
+    ErrorCodes_t getQueueStatus(unsigned int * availableDataPackets, bool * bufferOverflowFlag, bool * dataLossFlag, bool * communicationErrorFlag);
     ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int * packetsRead);
     ErrorCodes_t purgeData();
 
@@ -172,6 +174,7 @@ public:
     ErrorCodes_t hasDacExtFilter();
     ErrorCodes_t getVoltageStimulusLpfs(vector <string> &filterOptions);
 
+    ErrorCodes_t hasSelectStimulusChannel(bool &selectStimulusChannelFlag, bool &singleChannelSSCFlag);
     ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag);
     ErrorCodes_t hasZap(bool &zappableDeviceFlag, bool &singleChannelZapFlag);
     ErrorCodes_t hasChannelOn(bool &channelOnFlag, bool &singleChannelOnFlag);
@@ -278,12 +281,17 @@ protected:
     vector <Measurement_t> integrationStepArray;
     BoolRandomArrayCoder * samplingRateCoder;
 
+    bool selectStimulusChannelFlag = false;
+    bool singleChannelSSCFlag = false;
     bool digitalOffsetCompensationFlag = false;
     bool singleChannelDOCFlag = false;
     bool zappableDeviceFlag = false;
     bool singleChannelZapFlag = false;
     bool channelOnFlag = false;
     bool singleChannelOnFlag = false;
+
+    BoolArrayCoder * selectStimulusChannelCoder;
+    vector <bool> selectStimulusChannelStates;
 
     BoolArrayCoder * deviceResetCoder;
     BoolArrayCoder * digitalOffsetCompensationCoder;
@@ -393,6 +401,7 @@ protected:
     FT_HANDLE * ftdiTxHandle = nullptr;
 
     bool connected = false;
+    bool connectionPaused = false;
     bool threadsStarted = false;
     bool stopConnectionFlag = false;
 
@@ -418,6 +427,7 @@ protected:
     unsigned int outputBufferWriteOffset = 0; /*!< outputDataBuffer offset position in which data are converted from readDataBuffer */
     unsigned int outputBufferAvailablePackets = 0; /*!< Number of packets available for the user to read */
     bool outputBufferOverflowFlag = false; /*!< Set to true by an overflow of outputDataBuffer, reset by a status read by the user */
+    bool deviceCommunicationErrorFlag = false; /*!< Set to true by failures in communication with the device */
 
     /*! Write data buffer management */
     uint8_t * txRawBuffer; /*!< Raw outgoing data to the device */

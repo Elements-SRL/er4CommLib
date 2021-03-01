@@ -23,9 +23,11 @@ typedef struct {
                                         * Each data packets consists of 1 sample per channel.
                                         * Successful calls to readData reduce this number. */
     bool bufferOverflowFlag; /*!< This flag is true if the internal buffer has been filled and old data has been overwritten.
-                              * This flag is reset after a call to getQueueStatus. */
+                              *   This flag is reset after a call to getQueueStatus. */
     bool lostDataFlag; /*!< This flag is true if the device has sent too much data and some has been lost.
-                        * This flag is reset after a call to getQueueStatus. */
+                        *   This flag is reset after a call to getQueueStatus. */
+    bool communicationErrorFlag; /*!< This flag is true after a communication error with the device.
+                                  *   This flag is reset if the communication restarts successfully. */
 } QueueStatus_t;
 
 /*******************\
@@ -332,6 +334,20 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setSamplingRate(
         ER4CL_ARGIN uint16_t samplingRateIdx);
 
+/*! \brief Select channels for voltage stimulation.
+ * On multi channel devices it is possible to apply the voltage stimulus only on a subset
+ * of the available channels.
+ *
+ * \param channelIdx [in] Index of the channel to select/deselect fot voltage stimualtion.
+ * Set equal to the number of current channels to select/deselect them all.
+ * \param on [in] False deselect the channel for voltage stimulation, true selects it.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t selectStimulusChannel(
+        ER4CL_ARGIN uint16_t channelIdx,
+        ER4CL_ARGIN bool on);
+
 /*! \brief Execute digital offset compensation.
  * Digital offset compensation tunes the offset of the applied voltage so that the
  * acquired current is 0.
@@ -606,6 +622,17 @@ ErrorCodes_t hasDacExtFilter(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageStimulusLpfs(
         ER4CL_ARGOUT std::vector <std::string> &filterOptions);
+
+/*! \brief Get the select channels for voltage stimulation feature availability.
+ *
+ * \param selectStimulusChannelFlag [out] True if the device has the ability to apply voltage stimulation to selected channels.
+ * \param singleChannelSSCFlag [out] True if the device can select single channels independently for voltage stimulation.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasSelectStimulusChannel(
+        ER4CL_ARGOUT bool &selectStimulusChannelFlag,
+        ER4CL_ARGOUT bool &singleChannelSSCFlag);
 
 /*! \brief Get the digital offset compensation feature availability.
  *

@@ -151,6 +151,7 @@ ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
     }
 
     connected = true;
+    connectionPaused = false;
     ErrorCodes_t ret;
 
     this->ftdiEeprom = ftdiEeprom;
@@ -175,6 +176,7 @@ ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
             return ret;
         }
     }
+    deviceCommunicationErrorFlag = false;
 
     /*! Calculate the LSB noise vector */
     this->initializeLsbNoise();
@@ -214,17 +216,19 @@ ErrorCodes_t MessageDispatcher::disconnect() {
             txThread.join();
         }
 
-        FT_STATUS ftRet;
-        ftRet = FT_Close(* ftdiRxHandle);
-        if (ftRet != FT_OK) {
-            return ErrorDeviceDisconnectionFailed;
-        }
-
-        if (rxChannel != txChannel) {
+        if (!connectionPaused) {
             FT_STATUS ftRet;
-            ftRet = FT_Close(* ftdiTxHandle);
+            ftRet = FT_Close(* ftdiRxHandle);
             if (ftRet != FT_OK) {
                 return ErrorDeviceDisconnectionFailed;
+            }
+
+            if (rxChannel != txChannel) {
+                FT_STATUS ftRet;
+                ftRet = FT_Close(* ftdiTxHandle);
+                if (ftRet != FT_OK) {
+                    return ErrorDeviceDisconnectionFailed;
+                }
             }
         }
 
@@ -247,12 +251,58 @@ ErrorCodes_t MessageDispatcher::disconnect() {
         }
 
         connected = false;
+        connectionPaused = false;
 
         return Success;
 
     } else {
         return ErrorDeviceNotConnected;
     }
+}
+
+ErrorCodes_t MessageDispatcher::pauseConnection(bool pauseFlag) {
+    if (!connected) {
+        return ErrorDeviceNotConnected;
+    }
+
+    ErrorCodes_t ret = Success;
+    if (pauseFlag) {
+        FT_STATUS ftRet;
+        ftRet = FT_Close(* ftdiRxHandle);
+        if (ftRet != FT_OK) {
+            return ErrorDeviceDisconnectionFailed;
+        }
+
+        if (rxChannel != txChannel) {
+            FT_STATUS ftRet;
+            ftRet = FT_Close(* ftdiTxHandle);
+            if (ftRet != FT_OK) {
+                return ErrorDeviceDisconnectionFailed;
+            }
+        }
+        connectionPaused = true;
+
+    } else {
+        /*! Initialize the ftdi Rx handle */
+        ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
+        if (ret != Success) {
+            return ret;
+        }
+
+        if (rxChannel == txChannel) {
+            ftdiTxHandle = ftdiRxHandle;
+
+        } else {
+            /*! Initialize the ftdi Tx handle */
+            ret = this->initFtdiChannel(ftdiTxHandle, txChannel);
+            if (ret != Success) {
+                return ret;
+            }
+        }
+        deviceCommunicationErrorFlag = false;
+        connectionPaused = false;
+    }
+    return ret;
 }
 
 ErrorCodes_t MessageDispatcher::getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type) {
@@ -351,6 +401,41 @@ ErrorCodes_t MessageDispatcher::setSamplingRate(uint16_t samplingRateIdx, bool a
 
     } else {
         return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::selectStimulusChannel(uint16_t channelIdx, bool on, bool applyFlag) {
+    if ((channelIdx < currentChannelsNum) && selectStimulusChannelFlag) {
+        selectStimulusChannelStates[channelIdx] = on;
+        uint32_t selectStimulusChannelState = 0;
+        for (unsigned int idx = 0; idx < currentChannelsNum; idx++) {
+            selectStimulusChannelState |= (selectStimulusChannelStates[idx] ? (uint32_t)1 : 0) << idx;
+        }
+        selectStimulusChannelCoder->encode(selectStimulusChannelState, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else if ((channelIdx == currentChannelsNum) && singleChannelSSCFlag) {
+        for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+            this->selectStimulusChannel(channelIdx, on, false);
+        }
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        if (((channelIdx < currentChannelsNum) && !selectStimulusChannelFlag) ||
+                ((channelIdx == currentChannelsNum) && !singleChannelSSCFlag)) {
+            return ErrorFeatureNotImplemented;
+
+        } else {
+            return ErrorValueOutOfRange;
+        }
     }
 }
 
@@ -746,7 +831,7 @@ ErrorCodes_t MessageDispatcher::getDeviceInfo(uint8_t &deviceVersion, uint8_t &d
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::getQueueStatus(unsigned int * availableDataPackets, bool * bufferOverflowFlag, bool * dataLossFlag) {
+ErrorCodes_t MessageDispatcher::getQueueStatus(unsigned int * availableDataPackets, bool * bufferOverflowFlag, bool * dataLossFlag, bool * communicationErrorFlag) {
     unique_lock <mutex> readDataMtxLock (readDataMtx);
     if (outputBufferAvailablePackets > maxOutputPacketsNum) {
         * availableDataPackets = maxOutputPacketsNum;
@@ -756,10 +841,15 @@ ErrorCodes_t MessageDispatcher::getQueueStatus(unsigned int * availableDataPacke
     }
     * bufferOverflowFlag = outputBufferOverflowFlag;
     * dataLossFlag = bufferDataLossFlag;
+    * communicationErrorFlag = deviceCommunicationErrorFlag;
 
     outputBufferOverflowFlag = false;
     bufferDataLossFlag = false;
-    if (* availableDataPackets == 0) {
+
+    if (deviceCommunicationErrorFlag) {
+        return ErrorDeviceCommunicationFailed;
+
+    } else if (* availableDataPackets == 0) {
         return WarningNoDataAvailable;
 
     } else {
@@ -864,6 +954,12 @@ ErrorCodes_t MessageDispatcher::hasDacExtFilter() {
     } else {
         return ErrorFeatureNotImplemented;
     }
+}
+
+ErrorCodes_t MessageDispatcher::hasSelectStimulusChannel(bool &selectStimulusChannelFlag, bool &singleChannelSSCFlag) {
+    selectStimulusChannelFlag = this->selectStimulusChannelFlag;
+    singleChannelSSCFlag = this->singleChannelSSCFlag;
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag) {
@@ -984,7 +1080,7 @@ ErrorCodes_t MessageDispatcher::hasNanionTemperatureController() {
     }
 }
 
-ErrorCodes_t MessageDispatcher::getTemperatureControllerRange(int &minTemperature, int &maxTemperature) {
+ErrorCodes_t MessageDispatcher::getTemperatureControllerRange(int &, int &) {
     return ErrorFeatureNotImplemented;
 }
 
@@ -1101,6 +1197,12 @@ void MessageDispatcher::readDataFromDevice() {
 #endif
 
     while (!stopConnectionFlag) {
+        if (connectionPaused) {
+            if (this->pauseConnection(false) != Success) {
+                usleep(100000);
+                continue;
+            }
+        }
 
         /******************\
          *  Reading part  *
@@ -1109,7 +1211,10 @@ void MessageDispatcher::readDataFromDevice() {
         /*! Read queue status to check the number of available bytes */
         result = FT_GetQueueStatus(* ftdiRxHandle, &ftdiQueuedBytes);
         if (result != FT_OK) {
-            continue; /*! \todo FCON Notify to user? */
+            deviceCommunicationErrorFlag = true;
+            this->pauseConnection(true);
+            usleep(100000);
+            continue;
         }
 
         /*! Computes the number of available packets */

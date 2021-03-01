@@ -525,6 +525,20 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     boolConfig.bitsNum = 1;
     deviceResetCoder = new BoolArrayCoder(boolConfig);
 
+    /*! Select stimulus channel */
+    selectStimulusChannelFlag = true;
+    singleChannelSSCFlag = true;
+
+    boolConfig.initialByte = 13;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 16;
+    selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
+
+    selectStimulusChannelStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        selectStimulusChannelStates[currentIdx] = false;
+    }
+
     /*! Digital offset compensations */
     digitalOffsetCompensationFlag = true;
     singleChannelDOCFlag = true;
@@ -998,6 +1012,7 @@ ErrorCodes_t MessageDispatcher_e16n::getWasherPresetSpeeds(vector <int8_t> &spee
 void MessageDispatcher_e16n::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
+    this->selectStimulusChannel(currentChannelsNum, true);
     this->digitalOffsetCompensation(currentChannelsNum, false);
     this->switchChannelOn(currentChannelsNum, true, false);
 

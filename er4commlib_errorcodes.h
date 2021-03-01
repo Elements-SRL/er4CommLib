@@ -42,6 +42,7 @@ typedef enum {
     ErrorDeviceConnectionFailed =       ErrorGroupDeviceConnection +    0x00000005, /*!< Error returned when connection to a device fails. */
     ErrorFtdiConfigurationFailed =      ErrorGroupDeviceConnection +    0x00000006, /*!< Error returned when FTDI communication channel configuration fails. */
     ErrorDeviceDisconnectionFailed =    ErrorGroupDeviceConnection +    0x00000007, /*!< Error returned when disconnection from a device fails. */
+    ErrorDeviceCommunicationFailed =    ErrorGroupDeviceConnection +    0x00000008, /*!< Error returned when the FTDI communication fails. */
 
     ErrorSendMessageFailed =            ErrorGroupDeviceCommands +      0x00000001, /*!< Error returned when sending a message to a device fails. */
     ErrorCommandNotImplemented =        ErrorGroupDeviceCommands +      0x00000002, /*!< Error returned when trying to use a command that is not implemented for the current device. */

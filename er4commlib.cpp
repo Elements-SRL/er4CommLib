@@ -351,6 +351,33 @@ ErrorCodes_t checkProtocolAdimensional(
     return ret;
 }
 
+ErrorCodes_t setVoltageOffset(
+        unsigned int idx,
+        Measurement_t voltage) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setVoltageOffset(idx, voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t checkVoltageOffset(
+        unsigned int idx,
+        Measurement_t voltage,
+        std::string &message) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->checkVoltageOffset(idx, voltage, message);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t applyInsertionPulse(
         Measurement_t voltage,
         Measurement_t duration) {
@@ -383,30 +410,6 @@ ErrorCodes_t activateFEResetDenoiser(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->activateFEResetDenoiser(flag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t activateDacIntFilter(
-        bool flag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->activateDacIntFilter(flag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t activateDacExtFilter(
-        bool flag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->activateDacExtFilter(flag);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -500,6 +503,30 @@ ErrorCodes_t setSamplingRate(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->setSamplingRate(samplingRateIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setVoltageStimulusLpf(
+        uint16_t filterIdx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setVoltageStimulusLpf(filterIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setVoltageReferenceLpf(
+        uint16_t filterIdx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setVoltageReferenceLpf(filterIdx);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -677,7 +704,7 @@ ErrorCodes_t getQueueStatus(
         QueueStatus_t &status) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getQueueStatus(&(status.availableDataPackets), &(status.bufferOverflowFlag), &(status.lostDataFlag), &(status.communicationErrorFlag));
+        ret = messageDispatcher->getQueueStatus(&(status.availableDataPackets), &(status.bufferOverflowFlag), &(status.lostDataFlag), &(status.saturationFlag), &(status.communicationErrorFlag));
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -829,37 +856,29 @@ ErrorCodes_t getRealSamplingRates(
     return ret;
 }
 
-ErrorCodes_t hasDacIntFilter() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->hasDacIntFilter();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t hasDacExtFilter() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->hasDacExtFilter();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
 ErrorCodes_t getVoltageStimulusLpfs(
-        vector <string> &filterOptions) {
+        vector <Measurement_t> &filterOptions,
+        uint16_t &defaultOption) {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
-//    if (messageDispatcher != nullptr) {
-//        ret = messageDispatcher->getVoltageStimulusLpfs(filterOptions);
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getVoltageStimulusLpfs(filterOptions, defaultOption);
 
-//    } else {
-//        ret = ErrorDeviceNotConnected;
-//    }
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getVoltageReferenceLpfs(
+        vector <Measurement_t> &filterOptions,
+        uint16_t &defaultOption) {
+    ErrorCodes_t ret = ErrorFeatureNotImplemented;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getVoltageReferenceLpfs(filterOptions, defaultOption);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
     return ret;
 }
 
@@ -1005,6 +1024,18 @@ ErrorCodes_t getProtocolAdimensional(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getVoltageOffsetControls(
+        RangedMeasurement_t &voltageRange) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getVoltageOffsetControls(voltageRange);
 
     } else {
         ret = ErrorDeviceNotConnected;

@@ -57,6 +57,16 @@ protected:
         SamplingRatesNum
     };
 
+    enum VoltageStimulusLpfs {
+        VoltageStimulusLpf1kHz,
+        VoltageStimulusLpf10kHz,
+        VoltageStimulusLpfsNum
+    };
+
+    enum VoltageReferenceLpfs {
+        VoltageReferenceLpfsNum = 0
+    };
+
     enum ProtocolVoltageRanges {
         ProtocolVoltageRange500mV,
         ProtocolVoltageRange2V,

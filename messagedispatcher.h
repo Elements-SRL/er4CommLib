@@ -33,16 +33,16 @@ using namespace er4CommLib;
 #define INT28_MAX (static_cast <double> (0x7FFFFFF))
 #define INT28_MIN (-INT28_MAX-1.0)
 
+#define UINT16_POSITIVE_SATURATION 0x7FFE
+#define UINT16_NEGATIVE_SATURATION 0x8000 /*! \todo FCON dovrebbe essere 0x8001 */
+
 #define LSB_NOISE_ARRAY_SIZE 0x40000 /*! \todo FCON valutare che questo numero sia adeguato */ // ~250k
 #define LSB_NOISE_ARRAY_MASK (LSB_NOISE_ARRAY_SIZE-1) // 0b11...1 for all bits of the array indexes
 
 #define IIR_ORD 2
-#define IIR_2_SIN_PI_8 (2.0*sin(M_PI/8.0))
-#define IIR_2_COS_PI_8 (2.0*cos(M_PI/8.0))
-#define IIR_2_COS_PI_8_2 (IIR_2_COS_PI_8*IIR_2_COS_PI_8)
-#define IIR_2_SIN_3_PI_8 (2.0*sin(3.0*M_PI/8.0))
-#define IIR_2_COS_3_PI_8 (2.0*cos(3.0*M_PI/8.0))
-#define IIR_2_COS_3_PI_8_2 (IIR_2_COS_3_PI_8*IIR_2_COS_3_PI_8)
+#define IIR_2_SIN_PI_4 (2.0*sin(M_PI/4.0))
+#define IIR_2_COS_PI_4 (2.0*cos(M_PI/4.0))
+#define IIR_2_COS_PI_4_2 (IIR_2_COS_PI_4*IIR_2_COS_PI_4)
 
 #define FTD_MAX_RESEND_TRIES 10
 #define FTD_MAX_FPGA_RESET_TRIES 10
@@ -110,6 +110,9 @@ public:
     virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, bool applyFlag = true);
     virtual ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag = true);
 
+    ErrorCodes_t setVoltageStimulusLpf(uint16_t filterIdx, bool applyFlag = true);
+    ErrorCodes_t setVoltageReferenceLpf(uint16_t filterIdx, bool applyFlag = true);
+
     virtual ErrorCodes_t selectStimulusChannel(uint16_t channelIdx, bool on, bool applyFlag = true);
     virtual ErrorCodes_t digitalOffsetCompensation(uint16_t channelIdx, bool on, bool applyFlag = true);
     ErrorCodes_t zap(uint16_t channelIdx, bool applyFlag = true);
@@ -132,12 +135,12 @@ public:
     ErrorCodes_t checkProtocolTime(unsigned int idx, Measurement_t time, string &message);
     ErrorCodes_t checkProtocolSlope(unsigned int idx, Measurement_t slope, string &message);
     ErrorCodes_t checkProtocolAdimensional(unsigned int idx, Measurement_t adimensional, string &message);
+    ErrorCodes_t setVoltageOffset(unsigned int idx, Measurement_t voltage, bool applyFlag = true);
+    ErrorCodes_t checkVoltageOffset(unsigned int idx, Measurement_t voltage, string &message);
     ErrorCodes_t applyInsertionPulse(Measurement_t voltage, Measurement_t duration);
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t activateFEResetDenoiser(bool flag, bool applyFlag = true);
-    ErrorCodes_t activateDacIntFilter(bool flag, bool applyFlag = true);
-    ErrorCodes_t activateDacExtFilter(bool flag, bool applyFlag = true);
 
     /*! Device specific controls */
 
@@ -154,7 +157,7 @@ public:
     ErrorCodes_t isDeviceUpgradable(string &upgradeNotes, string &notificationTag);
     ErrorCodes_t getDeviceInfo(uint8_t &deviceVersion, uint8_t &deviceSubversion, uint32_t &firmwareVersion);
 
-    ErrorCodes_t getQueueStatus(unsigned int * availableDataPackets, bool * bufferOverflowFlag, bool * dataLossFlag, bool * communicationErrorFlag);
+    ErrorCodes_t getQueueStatus(unsigned int * availableDataPackets, bool * bufferOverflowFlag, bool * dataLossFlag, bool * saturationFlag, bool * communicationErrorFlag);
     ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int * packetsRead);
     ErrorCodes_t purgeData();
 
@@ -170,9 +173,8 @@ public:
     ErrorCodes_t getSamplingRate(Measurement_t &samplingRates);
     ErrorCodes_t getRealSamplingRates(vector <Measurement_t> &samplingRates);
 
-    ErrorCodes_t hasDacIntFilter();
-    ErrorCodes_t hasDacExtFilter();
-    ErrorCodes_t getVoltageStimulusLpfs(vector <string> &filterOptions);
+    ErrorCodes_t getVoltageStimulusLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption);
+    ErrorCodes_t getVoltageReferenceLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption);
 
     ErrorCodes_t hasSelectStimulusChannel(bool &selectStimulusChannelFlag, bool &singleChannelSSCFlag);
     ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag);
@@ -188,6 +190,7 @@ public:
     ErrorCodes_t getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolAdimensional(vector <string> &adimensionalNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
+    ErrorCodes_t getVoltageOffsetControls(RangedMeasurement_t &voltageRange);
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
@@ -353,6 +356,14 @@ protected:
     vector <Measurement_t> protocolAdimensionalDefault;
     vector <Measurement_t> selectedProtocolAdimensional;
 
+    vector <Measurement_t> selectedVoltageOffset;
+    Measurement_t minSelectedVoltageOffset = {0, UnitPfxMilli, "V"};
+    Measurement_t maxSelectedVoltageOffset = {0, UnitPfxMilli, "V"};
+
+    bool voltageOffsetControlImplemented = false;
+    RangedMeasurement_t voltageOffsetRange;
+    vector <DoubleCoder *> voltageOffsetCoders;
+
     bool insertionPulseImplemented = false;
     RangedMeasurement_t insertionPulseVoltageRange;
     RangedMeasurement_t insertionPulseDurationRange;
@@ -369,21 +380,24 @@ protected:
     Measurement_t rawDataFilterCutoffFrequency = {30.0, UnitPfxKilo, "Hz"};
     bool rawDataFilterLowPassFlag = true;
     bool rawDataFilterActiveFlag = false;
-    double iir1Num[IIR_ORD+1];
-    double iir1Den[IIR_ORD+1];
-    double iir2Num[IIR_ORD+1];
-    double iir2Den[IIR_ORD+1];
+    double iirNum[IIR_ORD+1];
+    double iirDen[IIR_ORD+1];
 
     double ** iirX;
-    double ** iirU;
     double ** iirY;
 
     uint16_t iirOff = 0;
 
     bool dacIntFilterAvailable = false;
-    BoolArrayCoder * dacIntFilterCoder;
+    vector <Measurement_t> voltageStimulusLpfOptions;
+    uint16_t voltageStimulusLpfOptionsNum = 0;
+    uint16_t voltageStimulusLpfDefaultOption = 0;
+    BoolRandomArrayCoder * dacIntFilterCoder;
     bool dacExtFilterAvailable = false;
-    BoolArrayCoder * dacExtFilterCoder;
+    vector <Measurement_t> voltageReferenceLpfOptions;
+    uint16_t voltageReferenceLpfOptionsNum = 0;
+    uint16_t voltageReferenceLpfDefaultOption = 0;
+    BoolRandomArrayCoder * dacExtFilterCoder;
 
     /*! Device specific parameters */
 
@@ -427,6 +441,7 @@ protected:
     unsigned int outputBufferWriteOffset = 0; /*!< outputDataBuffer offset position in which data are converted from readDataBuffer */
     unsigned int outputBufferAvailablePackets = 0; /*!< Number of packets available for the user to read */
     bool outputBufferOverflowFlag = false; /*!< Set to true by an overflow of outputDataBuffer, reset by a status read by the user */
+    bool bufferSaturationFlag = false; /*!< Set to true by data saturating the front end range */
     bool deviceCommunicationErrorFlag = false; /*!< Set to true by failures in communication with the device */
 
     /*! Write data buffer management */

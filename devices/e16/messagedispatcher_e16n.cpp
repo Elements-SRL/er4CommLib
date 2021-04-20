@@ -143,6 +143,21 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate200kHz].unit = "s";
 
+    /*! Voltage filters */
+    dacIntFilterAvailable = true;
+    voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
+    voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].value = 1.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].prefix = UnitPfxKilo;
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].unit = "Hz";
+    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
+    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+
+    dacExtFilterAvailable = false;
+    voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
+    voltageReferenceLpfOptions.resize(voltageReferenceLpfOptionsNum);
+
     /*! Default values */
     selectedVoltageRangeIdx = defaultVoltageRangeIdx;
     selectedCurrentRangeIdx = defaultCurrentRangeIdx;
@@ -460,6 +475,19 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
         selectedProtocolAdimensional[idx] = protocolAdimensionalDefault[idx];
     }
 
+    voltageOffsetControlImplemented = true;
+    selectedVoltageOffset.resize(currentChannelsNum);
+    voltageOffsetRange.step = 1.0;
+    voltageOffsetRange.min = -500.0;
+    voltageOffsetRange.max = 500.0;
+    voltageOffsetRange.prefix = UnitPfxMilli;
+    voltageOffsetRange.unit = "V";
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        selectedVoltageOffset[channelIdx].value = 0.0;
+        selectedVoltageOffset[channelIdx].prefix = voltageOffsetRange.prefix;
+        selectedVoltageOffset[channelIdx].unit = voltageOffsetRange.unit;
+    }
+
     insertionPulseImplemented = true;
     insertionPulseVoltageRange.step = 1.0;
     insertionPulseVoltageRange.min = -500.0;
@@ -753,16 +781,24 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolNR].max;
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
-    dacIntFilterAvailable = true;
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolArrayCoder(boolConfig);
+    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
+    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
+    dacIntFilterCoder->addMapItem(0); /*!< 10kHz  -> 0b0 */
 
-//    boolConfig.initialByte = 1;
-//    boolConfig.initialBit = 4;
-//    boolConfig.bitsNum = 1;
-//    dacExtFilterCoder = new BoolNegatedArrayCoder(boolConfig);
+    /*! Protocol voltages */
+    voltageOffsetCoders.resize(currentChannelsNum);
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 11;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        doubleConfig.initialByte = 18+2*channelIdx;
+        voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
+    }
 
     /*! Insertion pulse */
     doubleConfig.initialByte = 52;
@@ -1036,9 +1072,6 @@ void MessageDispatcher_e16n::initializeDevice() {
 
     this->resetWasherError();
     this->updateWasherSpeeds();
-
-//    this->activateDacIntFilter(false, false);
-//    this->activateDacExtFilter(true, false);
 }
 
 bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {

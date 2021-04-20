@@ -41,6 +41,16 @@ protected:
         SamplingRatesNum
     };
 
+    enum VoltageStimulusLpfs {
+        VoltageStimulusLpf1kHz,
+        VoltageStimulusLpf10kHz,
+        VoltageStimulusLpfsNum
+    };
+
+    enum VoltageReferenceLpfs {
+        VoltageReferenceLpfsNum = 0
+    };
+
     enum ProtocolVoltageRanges {
         ProtocolVoltageRange500mV,
         ProtocolVoltageRange2V,
@@ -49,8 +59,11 @@ protected:
 
     enum ProtocolTimeRanges {
         ProtocolTimeRange2_10ms,
-        ProtocolTimeRange0OrMore,
-        ProtocolTimeRange1OrMore,
+        ProtocolTimeRange0to2_28,
+        ProtocolTimeRange1to2_28,
+        ProtocolTimeRange1orMore,
+        ProtocolTimeRangeSigned2_27,
+        ProtocolTimeRange1to2_25,
         ProtocolTimeRangesNum
     };
 
@@ -71,8 +84,8 @@ protected:
         ProtocolVPulse,
         ProtocolVStep,
         ProtocolVPk,
-        ProtocolVMax,
-        ProtocolVMin,
+        ProtocolVFinal,
+        ProtocolVInit,
         ProtocolVoltagesNum
     };
 
@@ -80,6 +93,7 @@ protected:
         ProtocolTHold,
         ProtocolTPulse,
         ProtocolTStep,
+        ProtocolTRamp,
         ProtocolTPe,
         ProtocolTimesNum
     };
@@ -90,7 +104,6 @@ protected:
     };
 
     enum ProtocolAdimensionals {
-        ProtocolSlopeDiv,
         ProtocolN,
         ProtocolNR,
         ProtocolAdimensionalsNum

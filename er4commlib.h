@@ -23,9 +23,11 @@ typedef struct {
                                         * Each data packets consists of 1 sample per channel.
                                         * Successful calls to readData reduce this number. */
     bool bufferOverflowFlag; /*!< This flag is true if the internal buffer has been filled and old data has been overwritten.
-                              *   This flag is reset after a call to getQueueStatus. */
+                              *   This flag is reset after a call to getQueueStatus or to purgeData. */
     bool lostDataFlag; /*!< This flag is true if the device has sent too much data and some has been lost.
-                        *   This flag is reset after a call to getQueueStatus. */
+                        *   This flag is reset after a call to getQueueStatus or to purgeData. */
+    bool saturationFlag; /*!< This flag is true if some data saturates the front end range.
+                          *   This flag is reset after a call to getQueueStatus or to purgeData. */
     bool communicationErrorFlag; /*!< This flag is true after a communication error with the device.
                                   *   This flag is reset if the communication restarts successfully. */
 } QueueStatus_t;
@@ -214,6 +216,30 @@ ErrorCodes_t checkProtocolAdimensional(
         ER4CL_ARGIN Measurement_t adimensional,
         ER4CL_ARGIN std::string &message);
 
+/*! \brief Set a channel voltage offset.
+ *
+ * \param idx [in] Index of the channel.
+ * \param voltage [in] Value of the voltage offset.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setVoltageOffset(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t voltage);
+
+/*! \brief Check if the protocol parameters are valid.
+ *
+ * \param idx [in] Index of the channel voltage offset to be checked.
+ * \param voltage [in] Value of the voltage offset to be checked.
+ * \param message [in] Error message in case the parameters set is invalid.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t checkVoltageOffset(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t voltage,
+        ER4CL_ARGIN std::string &message);
+
 /*! \brief Apply the insertion pulse if available.
  *
  * \param voltage [in] Voltage of the insertion pulse to be applied.
@@ -245,24 +271,6 @@ ErrorCodes_t setRawDataFilter(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t activateFEResetDenoiser(
-        ER4CL_ARGIN bool flag);
-
-/*! \brief Activate the internal dac filter.
- *
- * \param flag [in] False: de-activate the internal dac filter; True: activate the internal dac filter.
- * \return Error code.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t activateDacIntFilter(
-        ER4CL_ARGIN bool flag);
-
-/*! \brief Activate the external dac filter.
- *
- * \param flag [in] False: de-activate the external dac filter; True: activate the external dac filter.
- * \return Error code.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t activateDacExtFilter(
         ER4CL_ARGIN bool flag);
 
 /*! \brief Reset the error status for the Orbit washer.
@@ -333,6 +341,24 @@ ErrorCodes_t setVoltageRange(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setSamplingRate(
         ER4CL_ARGIN uint16_t samplingRateIdx);
+
+/*! \brief Sets the low pass filter on the voltage stimulus.
+ *
+ * \param opened [in] Index of the filter setting (get available settings with method getVoltageStimulusLpfs).
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setVoltageStimulusLpf(
+        ER4CL_ARGIN uint16_t filterIdx);
+
+/*! \brief Sets the low pass filter on the voltage reference.
+ *
+ * \param opened [in] Index of the filter setting (get available settings with method getVoltageReferenceLpfs).
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setVoltageReferenceLpf(
+        ER4CL_ARGIN uint16_t filterIdx);
 
 /*! \brief Select channels for voltage stimulation.
  * On multi channel devices it is possible to apply the voltage stimulus only on a subset
@@ -598,30 +624,27 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getRealSamplingRates(
         ER4CL_ARGOUT std::vector <Measurement_t> &samplingRates);
 
-/*! \brief Get the availability of a low pass filter for the internal DAC.
- *
- * \return Success if the filter is available.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t hasDacIntFilter(
-        ER4CL_ARGVOID);
-
-/*! \brief Get the availability of a low pass filter for the external DAC.
- *
- * \return Success if the filter is available.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t hasDacExtFilter(
-        ER4CL_ARGVOID);
-
 /*! \brief Get the available options for the voltage stimulus low pass filter.
  *
- * \param opened [out] Available options for the voltage stimulus low pass filter.
+ * \param filterOptions [out] Available options for the voltage stimulus low pass filter.
+ * \param defaultOption [out] Option selected by default.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageStimulusLpfs(
-        ER4CL_ARGOUT std::vector <std::string> &filterOptions);
+        ER4CL_ARGOUT std::vector <Measurement_t> &filterOptions,
+        ER4CL_ARGOUT uint16_t &defaultOption);
+
+/*! \brief Get the available options for the voltage reference low pass filter.
+ *
+ * \param filterOptions [out] Available options for the voltage reference low pass filter.
+ * \param defaultOption [out] Option selected by default.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageReferenceLpfs(
+        ER4CL_ARGOUT std::vector <Measurement_t> &filterOptions,
+        ER4CL_ARGOUT uint16_t &defaultOption);
 
 /*! \brief Get the select channels for voltage stimulation feature availability.
  *
@@ -756,11 +779,20 @@ ErrorCodes_t getProtocolAdimensional(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT std::vector <Measurement_t> &defaultValues);
 
+/*! \brief Availability of single channels voltage offset controls.
+ *
+ * \param voltageRange [out] Range of applicable voltage offset.
+ * \return Success if the voltage offsets of single channels can be controlled.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageOffsetControls(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange);
+
 /*! \brief Get insertion pulse controls definition.
  *
  * \param voltageRange [out] Range of applicable pulse voltage.
  * \param durationRange [out] Ranges of applicable pulse duration.
- * \return Error code.
+ * \return Success if the device has the insertion pulse feature.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getInsertionPulseControls(

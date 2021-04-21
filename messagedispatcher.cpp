@@ -1581,14 +1581,11 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                     bufferReadOffset = (bufferReadOffset+1)&FTD_RX_BUFFER_MASK;
                 }
 
-                /*! Correct offset of voltage channels */
-                if (channelIdx < voltageChannelsNum) {
-
-                } else {
+                if (channelIdx >= voltageChannelsNum) {
                     if ((value == UINT16_POSITIVE_SATURATION) || (value == UINT16_NEGATIVE_SATURATION)) {
                         bufferSaturationFlag = true;
                     }
-                    this->applyFilter(channelIdx-voltageChannelsNum, value);
+                    this->applyFilter(channelIdx, value);
                 }
 
                 outputDataBuffer[outputBufferWriteOffset][channelIdx] = value;

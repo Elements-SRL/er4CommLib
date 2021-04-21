@@ -69,3 +69,5 @@ macx: DEPENDPATH += /usr/local/include
 
 include (./ftd2xx/includeftd2xx.pri)
 
+win32: QMAKE_CXXFLAGS_DEBUG+=-O0
+win32: QMAKE_CXXFLAGS_DEBUG+=-gdwarf-2

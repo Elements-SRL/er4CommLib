@@ -1023,6 +1023,7 @@ ErrorCodes_t MessageDispatcher_e16n::updateWasherPresetSpeeds() {
 ErrorCodes_t MessageDispatcher_e16n::getTemperatureControllerRange(int &minTemperature, int &maxTemperature) {
     minTemperature = minControllerTemperature;
     maxTemperature = maxControllerTemperature;
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher_e16n::getWasherSpeedRange(RangedMeasurement_t &range) {
@@ -1037,7 +1038,9 @@ ErrorCodes_t MessageDispatcher_e16n::getWasherStatus(WasherStatus_t &status, Was
 }
 
 ErrorCodes_t MessageDispatcher_e16n::getWasherPresetSpeeds(vector <int8_t> &speedValue) {
-    speedValue.resize(WasherSpeedsNum);
+    if (speedValue.size() < WasherSpeedsNum) {
+        speedValue.resize(WasherSpeedsNum);
+    }
     for (unsigned int idx = 0; idx < WasherSpeedsNum; idx++) {
         speedValue[idx] = infoStruct.presetSpeeds[idx];
         washerSpeeds[idx] = infoStruct.presetSpeeds[idx];

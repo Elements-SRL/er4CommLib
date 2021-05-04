@@ -264,15 +264,6 @@ ErrorCodes_t setRawDataFilter(
         ER4CL_ARGIN bool lowPassFlag,
         ER4CL_ARGIN bool activeFlag);
 
-/*! \brief Activate the front end reset denoiser.
- *
- * \param flag [in] False: de-activate the denoiser; True: activate the denoiser.
- * \return Error code.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t activateFEResetDenoiser(
-        ER4CL_ARGIN bool flag);
-
 /*! \brief Reset the error status for the Orbit washer.
  *
  * \return Error code.
@@ -418,6 +409,15 @@ ErrorCodes_t switchVcSel0(
 
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t switchVcSel1(
+        ER4CL_ARGIN bool on);
+
+/*! \brief Enable the front end reset denoiser.
+ *
+ * \param on [in] True to enable, false to disable.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t enableFrontEndResetDenoiser(
         ER4CL_ARGIN bool on);
 
 /*! \brief Reset the device.
@@ -689,6 +689,14 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasChannelOn(
         ER4CL_ARGOUT bool &channelOnFlag,
         ER4CL_ARGOUT bool &singleChannelOnFlag);
+
+/*! \brief Get the front end reset denoiser feature availability.
+ *
+ * \return Return an error code if the feature is not available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasFrontEndResetDenoiser(
+        ER4CL_ARGVOID);
 
 /*! \brief Get protocols list.
  *

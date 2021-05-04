@@ -120,6 +120,8 @@ public:
     ErrorCodes_t switchVcSel0(bool on);
     ErrorCodes_t switchVcSel1(bool on);
 
+    ErrorCodes_t enableFrontEndResetDenoiser(bool flag);
+
     ErrorCodes_t resetDevice();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
 
@@ -140,7 +142,6 @@ public:
     ErrorCodes_t applyInsertionPulse(Measurement_t voltage, Measurement_t duration);
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
-    ErrorCodes_t activateFEResetDenoiser(bool flag, bool applyFlag = true);
 
     /*! Device specific controls */
 
@@ -180,6 +181,8 @@ public:
     ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag);
     ErrorCodes_t hasZap(bool &zappableDeviceFlag, bool &singleChannelZapFlag);
     ErrorCodes_t hasChannelOn(bool &channelOnFlag, bool &singleChannelOnFlag);
+
+    ErrorCodes_t hasFrontEndResetDenoiser();
 
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
 
@@ -230,7 +233,14 @@ protected:
     ErrorCodes_t initFtdiChannel(FT_HANDLE * handle, char channel);
     virtual void initializeDevice() = 0;
     virtual bool checkProtocolValidity(string &message) = 0;
+
     void initializeLsbNoise(bool nullValues = true);
+
+    void processCurrentData(uint16_t channelIdx, uint16_t &x);
+
+    void initializeFerdMemory();
+    virtual void setFerdParameters();
+    double frontEndResetDenoise(uint16_t channelIdx, double x);
 
     void storeDataFrames(unsigned int framesNum);
     void stackOutgoingMessage(vector <uint8_t> &txDataMessage);
@@ -241,7 +251,7 @@ protected:
     void computeMinimumPacketNumber();
     void initializeRawDataFilterVariables();
     void computeFilterCoefficients();
-    void applyFilter(uint16_t channelIdx, uint16_t &x);
+    double applyFilter(uint16_t channelIdx, double x);
 
     /****************\
      *  Parameters  *
@@ -265,19 +275,16 @@ protected:
     uint16_t totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
     uint32_t currentRangesNum;
-    uint16_t selectedCurrentRangeIdx = 0;
     vector <RangedMeasurement_t> currentRangesArray;
     uint16_t defaultCurrentRangeIdx = 0;
     BoolRandomArrayCoder * currentRangeCoder;
 
     uint32_t voltageRangesNum;
-    uint16_t selectedVoltageRangeIdx = 0;
     vector <RangedMeasurement_t> voltageRangesArray;
     uint16_t defaultVoltageRangeIdx = 0;
     BoolRandomArrayCoder * voltageRangeCoder;
 
     uint32_t samplingRatesNum;
-    uint16_t selectedSamplingRateIdx;
     vector <Measurement_t> samplingRatesArray;
     uint16_t defaultSamplingRateIdx = 0;
     vector <Measurement_t> realSamplingRatesArray;
@@ -373,20 +380,13 @@ protected:
 
     string edhFormat;
 
-    Measurement_t integrationStep;
-
+    /*! Filter */
     RangedMeasurement_t rawDataFilterCutoffFrequencyRange;
     Measurement_t rawDataFilterCutoffFrequencyDefault;
-    Measurement_t rawDataFilterCutoffFrequency = {30.0, UnitPfxKilo, "Hz"};
-    bool rawDataFilterLowPassFlag = true;
-    bool rawDataFilterActiveFlag = false;
-    double iirNum[IIR_ORD+1];
-    double iirDen[IIR_ORD+1];
 
-    double ** iirX;
-    double ** iirY;
-
-    uint16_t iirOff = 0;
+    /*! Front end denoiser */
+    bool ferdImplementedFlag = false;
+    unsigned int maxFerdSize = 1;
 
     bool dacIntFilterAvailable = false;
     vector <Measurement_t> voltageStimulusLpfOptions;
@@ -456,16 +456,48 @@ protected:
     double * lsbNoiseArray;
     uint32_t lsbNoiseIdx = 0;
 
+    /*! Front end configuration */
     double currentResolution = 1.0;
     double voltageResolution = 1.0;
 
     double voltageOffsetCorrected = 0.0; /*!< Value currently corrected in applied voltages by the device (expressed in the unit of the liquid junction control) */
     double voltageOffsetCorrection = 0.0; /*!< Value to be used to correct the measured votlage values (expressed in the unit of current voltage range) */
 
+    uint16_t selectedVoltageRangeIdx = 0;
+    uint16_t selectedCurrentRangeIdx = 0;
     RangedMeasurement_t voltageRange;
     RangedMeasurement_t currentRange;
 
+    uint16_t selectedSamplingRateIdx = 0;
     Measurement_t samplingRate = {1.0, UnitPfxKilo, "Hz"};
+    Measurement_t integrationStep;
+
+    uint16_t oversamplingRatio = 1;
+
+    /*! Filter */
+    bool rawDataFilterLowPassFlag = true;
+    bool rawDataFilterActiveFlag = false;
+    Measurement_t rawDataFilterCutoffFrequency = {30.0, UnitPfxKilo, "Hz"};
+    double iirNum[IIR_ORD+1];
+    double iirDen[IIR_ORD+1];
+
+    double ** iirX;
+    double ** iirY;
+
+    uint16_t iirOff = 0;
+
+    /*! Front end denoiser */
+    bool ferdFlag = false;
+    bool ferdInhibition = true;
+
+    unsigned int ferdL = 1; /*!< buffer length */
+    double ferdD = 1.0; /*!< inverse of buffer length */
+    unsigned int ferdIdx = 0;
+    double ferdK; /*!< first order filter coefficient */
+
+    vector <vector <double>> ferdY;
+    vector <double> ferdY0;
+    vector <double> ferdM;
 
     CompensationControl_t liquidJunctionControl;
     double liquidJunctionResolution = 1.0;

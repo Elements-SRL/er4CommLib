@@ -11,9 +11,6 @@
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},             //    4,  8,129 : e4 Elements version
-    {DeviceVersionE16, DeviceSubversionE16n, 4, DeviceE16n},            //    3,  5,  4 : e16 2020 release
-    {DeviceVersionE16, DeviceSubversionE16n, 132, DeviceE16n},          //    3,  5,132 : e16 2020 release
-    {DeviceVersionE16, DeviceSubversionE16n, 134, DeviceE16n},          //    3,  5,134 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},          //    3,  5,135 : e16 2020 release
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
@@ -178,6 +175,8 @@ ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
 
     /*! Calculate the LSB noise vector */
     this->initializeLsbNoise();
+
+    this->initializeFerdMemory();
 
     stopConnectionFlag = false;
 
@@ -352,6 +351,8 @@ ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool a
         voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
         voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
 
+        this->setFerdParameters();
+
         voltageRangeCoder->encode(selectedVoltageRangeIdx, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
@@ -370,6 +371,8 @@ ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, bool a
         currentRange = currentRangesArray[selectedCurrentRangeIdx];
         currentResolution = currentRangesArray[selectedCurrentRangeIdx].step;
 
+        this->setFerdParameters();
+
         currentRangeCoder->encode(selectedCurrentRangeIdx, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
@@ -387,8 +390,10 @@ ErrorCodes_t MessageDispatcher::setSamplingRate(uint16_t samplingRateIdx, bool a
         selectedSamplingRateIdx = samplingRateIdx;
         samplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
         integrationStep = integrationStepArray[selectedSamplingRateIdx];
+
         this->setRawDataFilter(rawDataFilterCutoffFrequency, rawDataFilterLowPassFlag, rawDataFilterActiveFlag);
         this->computeMinimumPacketNumber();
+        this->setFerdParameters();
 
         samplingRateCoder->encode(selectedSamplingRateIdx, txStatus);
         if (applyFlag) {
@@ -581,6 +586,15 @@ ErrorCodes_t MessageDispatcher::switchVcSel1(bool on) {
     VcSel1Coder->encode(on ? 1 : 0, txStatus);
     this->stackOutgoingMessage(txStatus);
 
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::enableFrontEndResetDenoiser(bool flag) {
+    if (!ferdImplementedFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    ferdFlag = flag;
     return Success;
 }
 
@@ -821,15 +835,6 @@ ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, 
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::activateFEResetDenoiser(bool flag, bool applyFlag) {
-//    fEResetDenoiserCoder->encode(flag ? 1 : 0, txStatus);
-//    if (applyFlag) {
-//        this->stackOutgoingMessage(txStatus);
-//    }
-
-    return Success;
-}
-
 ErrorCodes_t MessageDispatcher::resetWasherError() {
     return ErrorFeatureNotImplemented;
 }
@@ -1033,6 +1038,14 @@ ErrorCodes_t MessageDispatcher::hasChannelOn(bool &channelOnFlag, bool &singleCh
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::hasFrontEndResetDenoiser() {
+    ErrorCodes_t ret = ErrorFeatureNotImplemented;
+    if (ferdImplementedFlag) {
+        ret = Success;
+    }
+    return ret;
+}
+
 ErrorCodes_t MessageDispatcher::getLiquidJunctionControl(CompensationControl_t &control) {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (liquidJunctionControl.implemented) {
@@ -1227,6 +1240,56 @@ void MessageDispatcher::initializeLsbNoise(bool nullValues) {
         for (int32_t i = 0; i < LSB_NOISE_ARRAY_SIZE; i++) {
             lsbNoiseArray[i] = ((double)mtRng())/den-0.5;
         }
+    }
+}
+
+void MessageDispatcher::processCurrentData(uint16_t channelIdx, uint16_t &x) {
+    double xFlt = (double)((int16_t)x);
+    xFlt = this->frontEndResetDenoise(channelIdx, xFlt);
+    xFlt = this->applyFilter(channelIdx, xFlt);
+    xFlt = round(xFlt > SHORT_MAX ? SHORT_MAX : (xFlt < SHORT_MIN ? SHORT_MIN : xFlt));
+    x = (uint16_t)((int16_t)xFlt);
+}
+
+void MessageDispatcher::initializeFerdMemory() {
+    ferdY.resize(totalChannelsNum);
+    ferdY0.resize(totalChannelsNum);
+    ferdM.resize(totalChannelsNum);
+
+    for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+        ferdY[channelIdx].resize(maxFerdSize);
+    }
+}
+
+void MessageDispatcher::setFerdParameters() {
+    /*! This are just the steps common to all devices, this method should be overriden for the front en reset denoiser to work properly */
+    ferdIdx = 0;
+    ferdD = 1.0/(double)ferdL;
+
+    for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+        ferdM[channelIdx] = 0.0;
+        for (unsigned int idx = 0; idx < ferdL; idx++) {
+            ferdY[channelIdx][idx] = 0.0;
+        }
+    }
+}
+
+double MessageDispatcher::frontEndResetDenoise(uint16_t channelIdx, double x) {
+    if (ferdFlag & !ferdInhibition) {
+        /*! Store previous noise estimate value */
+        ferdY0[channelIdx] = ferdY[channelIdx][ferdIdx];
+
+        /*! Update noise estimate */
+        ferdY[channelIdx][ferdIdx] += (x-ferdY[channelIdx][ferdIdx])*ferdK;
+
+        /*! Update noise estimate baseline */
+        ferdM[channelIdx] += (ferdY[channelIdx][ferdIdx]-ferdY0[channelIdx])*ferdD;
+
+        /*! Remove noise estimate and add baseline back */
+        return x-ferdY[channelIdx][ferdIdx]+ferdM[channelIdx];
+
+    } else {
+        return x;
     }
 }
 
@@ -1585,10 +1648,14 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                     if ((value == UINT16_POSITIVE_SATURATION) || (value == UINT16_NEGATIVE_SATURATION)) {
                         bufferSaturationFlag = true;
                     }
-                    this->applyFilter(channelIdx, value);
+                    this->processCurrentData(channelIdx, value);
                 }
 
                 outputDataBuffer[outputBufferWriteOffset][channelIdx] = value;
+            }
+
+            if (++ferdIdx >= ferdL) {
+                ferdIdx = 0;
             }
 
             if (iirOff < 1) {
@@ -1703,14 +1770,13 @@ void MessageDispatcher::computeFilterCoefficients() {
     }
 }
 
-void MessageDispatcher::applyFilter(uint16_t channelIdx, uint16_t &x) {
+double MessageDispatcher::applyFilter(uint16_t channelIdx, double x) {
     /*! 2nd order Butterworth filter */
     int tapIdx;
-    double xFlt = (double)((int16_t)x);
 
     int coeffIdx = 0;
-    iirX[channelIdx][iirOff] = xFlt;
-    double y = xFlt*iirNum[coeffIdx++];
+    iirX[channelIdx][iirOff] = x;
+    double y = x*iirNum[coeffIdx++];
 
     for (tapIdx = iirOff+1; tapIdx <= IIR_ORD; tapIdx++) {
         y += iirX[channelIdx][tapIdx]*iirNum[coeffIdx]-iirY[channelIdx][tapIdx]*iirDen[coeffIdx];
@@ -1723,6 +1789,5 @@ void MessageDispatcher::applyFilter(uint16_t channelIdx, uint16_t &x) {
     }
 
     iirY[channelIdx][iirOff] = y;
-    y = round(y > SHORT_MAX ? SHORT_MAX : (y < SHORT_MIN ? SHORT_MIN : y));
-    x = (uint16_t)((int16_t)y);
+    return y;
 }

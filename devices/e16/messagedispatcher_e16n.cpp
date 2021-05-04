@@ -158,6 +158,10 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
     voltageReferenceLpfOptions.resize(voltageReferenceLpfOptionsNum);
 
+    /*! Front end denoiser */
+    ferdImplementedFlag = true;
+    maxFerdSize = 512;
+
     /*! Default values */
     selectedVoltageRangeIdx = defaultVoltageRangeIdx;
     selectedCurrentRangeIdx = defaultCurrentRangeIdx;
@@ -1274,6 +1278,40 @@ bool MessageDispatcher_e16n::checkProtocolValidity(string &message) {
         break;
     }
     return validFlag;
+}
+
+void MessageDispatcher_e16n::setFerdParameters() {
+    unsigned int rangeCoeff;
+    if (selectedCurrentRangeIdx < CurrentRange200nA) {
+        rangeCoeff = 4;
+
+    } else {
+        rangeCoeff = 1;
+    }
+
+    if (selectedSamplingRateIdx < SamplingRate20kHz) {
+        /*! sampling rate too low for reset */
+        ferdL = 1;
+        ferdInhibition = true;
+
+    } else if (selectedSamplingRateIdx == SamplingRate20kHz) {
+        if (rangeCoeff == 1) {
+            /*! sampling rate too low for reset (in the highest range the reset is 4 times faster) */
+            ferdL = 1;
+            ferdInhibition = true;
+
+        } else {
+            ferdL = oversamplingRatio*rangeCoeff/2;
+            ferdInhibition = false;
+        }
+
+    } else {
+        ferdL = oversamplingRatio*((unsigned int)round(samplingRate.getNoPrefixValue()/50.0e3))*rangeCoeff*32; /*! It should be osrSR/baseSR*baseSR/50kHz */
+        ferdInhibition = false;
+    }
+    ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
+
+    MessageDispatcher::setFerdParameters();
 }
 
 void MessageDispatcher_e16n::updateWasherStatus() {

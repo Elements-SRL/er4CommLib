@@ -405,18 +405,6 @@ ErrorCodes_t setRawDataFilter(
     return ret;
 }
 
-ErrorCodes_t activateFEResetDenoiser(
-        bool flag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->activateFEResetDenoiser(flag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
 ErrorCodes_t resetWasherError() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -602,6 +590,18 @@ ErrorCodes_t switchVcSel1(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->switchVcSel1(on);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t enableFrontEndResetDenoiser(
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->enableFrontEndResetDenoiser(on);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -927,6 +927,17 @@ ErrorCodes_t hasChannelOn(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->hasChannelOn(channelOnFlag, singleChannelOnFlag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasFrontEndResetDenoiser() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasFrontEndResetDenoiser();
 
     } else {
         ret = ErrorDeviceNotConnected;

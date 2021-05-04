@@ -127,6 +127,7 @@ protected:
 
     void initializeDevice() override;
     bool checkProtocolValidity(string &message) override;
+    virtual void setFerdParameters() override;
 
     /*! Device specific controls */
     void updateWasherStatus();

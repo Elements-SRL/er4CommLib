@@ -19,7 +19,20 @@ CONFIG(release, debug|release) {
 
 TEMPLATE = lib
 
-DEFINES += ER4COMMLIB_LIBRARY
+include(../version.pri)
+
+DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
+    "VERSION_MINOR=$$VERSION_MINOR"\
+    "VERSION_BUILD=$$VERSION_BUILD"
+
+VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
+
+# use as static library
+DEFINES += ER4COMMLIB_STATIC
+
+# or create .dll
+#CONFIG += staticlib
+#DEFINES += ER4COMMLIB_LIBRARY
 
 SOURCES += \
     er4commlib.cpp \
@@ -69,5 +82,9 @@ macx: DEPENDPATH += /usr/local/include
 
 include (./ftd2xx/includeftd2xx.pri)
 
-win32: QMAKE_CXXFLAGS_DEBUG+=-O0
-win32: QMAKE_CXXFLAGS_DEBUG+=-gdwarf-2
+win32: QMAKE_LFLAGS+=-Wl,-Map=er4commlib_$${VERSION_FULL}.map
+win32: QMAKE_CXXFLAGS_RELEASE+=-O0
+#win32: QMAKE_CXXFLAGS_DEBUG+=-O0
+#win32: QMAKE_CXXFLAGS_DEBUG+=-pg
+#win32: QMAKE_CXXFLAGS_DEBUG+=-gdwarf-2
+#QMAKE_LFLAGS+=-pg

@@ -85,7 +85,28 @@ ErrorCodes_t MessageDispatcher::init() {
     }
 
 #ifdef DEBUG_PRINT
-    fid = fopen("temp.txt", "w+");
+#ifdef _WIN32
+        string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
+#else
+        string path = string(getenv("HOME"));
+#endif
+        stringstream ss;
+
+        for (size_t i = 0; i < path.length(); ++i) {
+            if (path[i] == '\\') {
+                ss << "\\\\";
+
+            } else {
+                ss << path[i];
+            }
+        }
+#ifdef _WIN32
+        ss << "\\\\temp.txt";
+#else
+        ss << "/temp.txt";
+#endif
+
+        fid = fopen(ss.str().c_str(), "wb");
 #endif
 
     this->computeMinimumPacketNumber();
@@ -125,13 +146,21 @@ ErrorCodes_t MessageDispatcher::deinit() {
         txRawBuffer = nullptr;
     }
 
-    for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
-        delete [] iirX[channelIdx];
-        delete [] iirY[channelIdx];
+    if (iirX != nullptr) {
+        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            delete [] iirX[channelIdx];
+        }
+        delete [] iirX;
+        iirX = nullptr;
     }
 
-    delete [] iirX;
-    delete [] iirY;
+    if (iirY != nullptr) {
+        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            delete [] iirY[channelIdx];
+        }
+        delete [] iirY;
+        iirY = nullptr;
+    }
 
 #ifdef DEBUG_PRINT
     fclose(fid);

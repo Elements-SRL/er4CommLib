@@ -29,9 +29,9 @@ VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 # use as static library
 DEFINES += ER4COMMLIB_STATIC
+CONFIG += staticlib
 
 # or create .dll
-#CONFIG += staticlib
 #DEFINES += ER4COMMLIB_LIBRARY
 
 SOURCES += \

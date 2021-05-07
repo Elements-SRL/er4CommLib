@@ -6,7 +6,7 @@
 
 QT       -= core gui
 
-include (./quietWarnings.pri)
+include(./quietWarnings.pri)
 
 CONFIG(debug, debug|release) {
     TARGET = er4commlibd
@@ -18,6 +18,14 @@ CONFIG(release, debug|release) {
 }
 
 TEMPLATE = lib
+CONFIG += c++11
+
+# use as static library
+DEFINES += ER4COMMLIB_STATIC
+
+# or create .dll
+#DEFINES += ER4COMMLIB_LIBRARY
+#CONFIG += staticlib
 
 include(../version.pri)
 
@@ -26,13 +34,6 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
     "VERSION_BUILD=$$VERSION_BUILD"
 
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
-
-# use as static library
-DEFINES += ER4COMMLIB_STATIC
-CONFIG += staticlib
-
-# or create .dll
-#DEFINES += ER4COMMLIB_LIBRARY
 
 SOURCES += \
     er4commlib.cpp \

@@ -22,10 +22,10 @@ CONFIG += c++11
 
 # use as static library
 DEFINES += ER4COMMLIB_STATIC
+CONFIG += staticlib
 
 # or create .dll
 #DEFINES += ER4COMMLIB_LIBRARY
-#CONFIG += staticlib
 
 include(../version.pri)
 
@@ -76,16 +76,10 @@ DEPENDPATH += ./ \
     devices/e16 \
     devices/fake
 
-macx: LIBS += -L/usr/local/lib/ -lftd2xx
-
 macx: INCLUDEPATH += /usr/local/include
 macx: DEPENDPATH += /usr/local/include
 
-include (./ftd2xx/includeftd2xx.pri)
+include(./ftd2xx/includeftd2xx.pri)
 
 win32: QMAKE_LFLAGS+=-Wl,-Map=er4commlib_$${VERSION_FULL}.map
 win32: QMAKE_CXXFLAGS_RELEASE+=-O0
-#win32: QMAKE_CXXFLAGS_DEBUG+=-O0
-#win32: QMAKE_CXXFLAGS_DEBUG+=-pg
-#win32: QMAKE_CXXFLAGS_DEBUG+=-gdwarf-2
-#QMAKE_LFLAGS+=-pg

@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "messagedispatcher.h"
+#include "messagedispatcher_enpr.h"
 #include "messagedispatcher_e4.h"
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_fake_e16n.h"
@@ -132,6 +133,10 @@ ErrorCodes_t connect(
         }
 
         switch (deviceType) {
+        case DeviceENPR:
+            messageDispatcher = new MessageDispatcher_eNPR(deviceId);
+            break;
+
         case DeviceE4e:
             messageDispatcher = new MessageDispatcher_e4e(deviceId);
             break;
@@ -498,6 +503,18 @@ ErrorCodes_t setSamplingRate(
     return ret;
 }
 
+ErrorCodes_t setOversamplingRatio(
+        uint16_t oversamplingRatioIdx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setOversamplingRatio(oversamplingRatioIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setVoltageStimulusLpf(
         uint16_t filterIdx) {
     ErrorCodes_t ret;
@@ -849,6 +866,30 @@ ErrorCodes_t getRealSamplingRates(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getRealSamplingRates(samplingRates);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getOversamplingRatios(
+        vector <uint16_t> &oversamplingRatios) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getOversamplingRatios(oversamplingRatios);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getOversamplingRatio(
+        uint16_t &oversamplingRatio) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getOversamplingRatio(oversamplingRatio);
 
     } else {
         ret = ErrorDeviceNotConnected;

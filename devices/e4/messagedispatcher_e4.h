@@ -41,6 +41,11 @@ protected:
         SamplingRatesNum
     };
 
+    enum OveramplingRatios {
+        OversamplingRatioX1,
+        OversamplingRatiosNum
+    };
+
     enum VoltageStimulusLpfs {
         VoltageStimulusLpf1kHz,
         VoltageStimulusLpf10kHz,
@@ -99,8 +104,7 @@ protected:
     };
 
     enum ProtocolSlopes {
-        ProtocolSlope,
-        ProtocolSlopesNum
+        ProtocolSlopesNum = 0
     };
 
     enum ProtocolAdimensionals {
@@ -111,7 +115,9 @@ protected:
 
     void initializeDevice() override;
     bool checkProtocolValidity(string &message) override;
+    virtual void setFerdParameters() override;
 
+    /*! Device specific controls */
     InfoStruct_t infoStruct;
 };
 

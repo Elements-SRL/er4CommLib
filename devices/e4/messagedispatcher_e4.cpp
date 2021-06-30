@@ -143,6 +143,12 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate200kHz].unit = "s";
 
+    /*! Overampling ratios */
+    oversamplingImplemented = false;
+    oversamplingRatiosNum = OversamplingRatiosNum;
+    oversamplingRatiosArray.resize(oversamplingRatiosNum);
+    oversamplingRatiosArray[OversamplingRatioX1] = 1;
+
     /*! Voltage filters */
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
@@ -158,6 +164,10 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
     voltageReferenceLpfOptions.resize(voltageReferenceLpfOptionsNum);
 
+    /*! Front end denoiser */
+    ferdImplementedFlag = true;
+    maxFerdSize = 512;
+
     /*! Default values */
     selectedVoltageRangeIdx = defaultVoltageRangeIdx;
     selectedCurrentRangeIdx = defaultCurrentRangeIdx;
@@ -167,7 +177,8 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     currentResolution = currentRangesArray[selectedCurrentRangeIdx].step;
     voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
     voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
-    samplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
+    baseSamplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
+    samplingRate = baseSamplingRate;
     integrationStep = integrationStepArray[selectedSamplingRateIdx];
 
     /*************\
@@ -242,8 +253,8 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     protocolsImages[ProtocolConductance] = "conductance001";
     protocolsImages[ProtocolVariableAmplitude] = "stepVariableAmplitude001";
     protocolsImages[ProtocolVariableDuration] = "stepVariableDuration001";
-    protocolsImages[ProtocolRamp] = "ramp001";
-    protocolsImages[ProtocolCyclicVoltammetry] = "cyclicVoltammetry001";
+    protocolsImages[ProtocolRamp] = "ramp002";
+    protocolsImages[ProtocolCyclicVoltammetry] = "cyclicVoltammetry002";
 
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
@@ -350,7 +361,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     protocolVoltageDefault[ProtocolVPulse].value = 100.0;
     protocolVoltageDefault[ProtocolVPulse].prefix = UnitPfxMilli;
     protocolVoltageDefault[ProtocolVPulse].unit = "V";
-    protocolVoltageDefault[ProtocolVStep].value = 100.0;
+    protocolVoltageDefault[ProtocolVStep].value = 20.0;
     protocolVoltageDefault[ProtocolVStep].prefix = UnitPfxMilli;
     protocolVoltageDefault[ProtocolVStep].unit = "V";
     protocolVoltageDefault[ProtocolVPk].value = 100.0;
@@ -384,12 +395,12 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     protocolTimeRanges[ProtocolTHold].unit = "s";
     protocolTimeRanges[ProtocolTPulse].step = 1.0;
     protocolTimeRanges[ProtocolTPulse].min = 0.0;
-    protocolTimeRanges[ProtocolTPulse].max = UINT28_MAX*protocolTimeRanges[ProtocolTHold].step;
+    protocolTimeRanges[ProtocolTPulse].max = UINT28_MAX*protocolTimeRanges[ProtocolTPulse].step;
     protocolTimeRanges[ProtocolTPulse].prefix = UnitPfxMilli;
     protocolTimeRanges[ProtocolTPulse].unit = "s";
     protocolTimeRanges[ProtocolTStep].step = 1.0;
-    protocolTimeRanges[ProtocolTStep].min = INT28_MIN*protocolTimeRanges[ProtocolTHold].step;
-    protocolTimeRanges[ProtocolTStep].max = INT28_MAX*protocolTimeRanges[ProtocolTHold].step;
+    protocolTimeRanges[ProtocolTStep].min = INT28_MIN*protocolTimeRanges[ProtocolTStep].step;
+    protocolTimeRanges[ProtocolTStep].max = INT28_MAX*protocolTimeRanges[ProtocolTStep].step;
     protocolTimeRanges[ProtocolTStep].prefix = UnitPfxMilli;
     protocolTimeRanges[ProtocolTStep].unit = "s";
     protocolTimeRanges[ProtocolTRamp].step = 1.0;
@@ -410,7 +421,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     protocolTimeDefault[ProtocolTPulse].value = 100.0;
     protocolTimeDefault[ProtocolTPulse].prefix = UnitPfxMilli;
     protocolTimeDefault[ProtocolTPulse].unit = "s";
-    protocolTimeDefault[ProtocolTStep].value = 100.0;
+    protocolTimeDefault[ProtocolTStep].value = 20.0;
     protocolTimeDefault[ProtocolTStep].prefix = UnitPfxMilli;
     protocolTimeDefault[ProtocolTStep].unit = "s";
     protocolTimeDefault[ProtocolTRamp].value = 1000.0;
@@ -530,6 +541,20 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     boolConfig.bitsNum = 1;
     deviceResetCoder = new BoolArrayCoder(boolConfig);
 
+    /*! Select stimulus channel */
+    selectStimulusChannelFlag = true;
+    singleChannelSSCFlag = true;
+
+    boolConfig.initialByte = 6;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 4;
+    selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
+
+    selectStimulusChannelStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        selectStimulusChannelStates[currentIdx] = false;
+    }
+
     /*! Digital offset compensations */
     digitalOffsetCompensationFlag = true;
     singleChannelDOCFlag = true;
@@ -576,12 +601,6 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
         channelOnStates[currentIdx] = false;
     }
-
-    /*! Channel select */
-    boolConfig.initialByte = 6;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 4;
-    channelSelectCoder = new BoolArrayCoder(boolConfig);
 
     /*! Current range */
     boolConfig.initialByte = 1;
@@ -835,6 +854,7 @@ MessageDispatcher_e4e::~MessageDispatcher_e4e() {
 void MessageDispatcher_e4e::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
+    this->selectStimulusChannel(currentChannelsNum, true);
     this->digitalOffsetCompensation(currentChannelsNum, false);
     this->switchChannelOn(currentChannelsNum, true, false);
 
@@ -1054,4 +1074,38 @@ bool MessageDispatcher_e4e::checkProtocolValidity(string &message) {
         break;
     }
     return validFlag;
+}
+
+void MessageDispatcher_e4e::setFerdParameters() {
+    unsigned int rangeCoeff;
+    if (selectedCurrentRangeIdx < CurrentRange200nA) {
+        rangeCoeff = 4;
+
+    } else {
+        rangeCoeff = 1;
+    }
+
+    if (selectedSamplingRateIdx < SamplingRate20kHz) {
+        /*! sampling rate too low for reset */
+        ferdL = 1;
+        ferdInhibition = true;
+
+    } else if (selectedSamplingRateIdx == SamplingRate20kHz) {
+        if (rangeCoeff == 1) {
+            /*! sampling rate too low for reset (in the highest range the reset is 4 times faster) */
+            ferdL = 1;
+            ferdInhibition = true;
+
+        } else {
+            ferdL = oversamplingRatio*rangeCoeff/2;
+            ferdInhibition = false;
+        }
+
+    } else {
+        ferdL = oversamplingRatio*((unsigned int)round(baseSamplingRate.getNoPrefixValue()/50.0e3))*rangeCoeff*32; /*! It should be osrSR/baseSR*baseSR/50kHz */
+        ferdInhibition = false;
+    }
+    ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
+
+    MessageDispatcher::setFerdParameters();
 }

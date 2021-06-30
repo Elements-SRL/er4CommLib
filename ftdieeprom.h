@@ -22,6 +22,7 @@ typedef enum {
 typedef enum {
     DeviceVersionE16 = 0x03,
     DeviceVersionE4 = 0x04,
+    DeviceVersionENPR = 0x08,
     DeviceVersionDlp = 0x06,
     DeviceVersionDemo = 0xFD,
     DeviceVersionPrototype = 0xFE,
@@ -34,6 +35,9 @@ typedef enum {
 
     /*! Subversions used for ver = 04 */
     DeviceSubversionE4e = 8,
+
+    /*! Subversions used for ver = 08 */
+    DeviceSubversionENPR = 2,
 
     /*! Subversions used for ver = 06 */
     DeviceSubversionDlp = 3,

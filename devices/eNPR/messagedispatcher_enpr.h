@@ -1,5 +1,5 @@
-#ifndef MESSAGEDISPATCHER_E16N_H
-#define MESSAGEDISPATCHER_E16N_H
+#ifndef MESSAGEDISPATCHER_ENPR_H
+#define MESSAGEDISPATCHER_ENPR_H
 
 #include "messagedispatcher.h"
 
@@ -7,30 +7,14 @@
 
 using namespace std;
 
-class MessageDispatcher_e16n : public MessageDispatcher {
+class MessageDispatcher_eNPR : public MessageDispatcher {
 public:
-    MessageDispatcher_e16n(string di);
-    virtual ~MessageDispatcher_e16n();
-
-    ErrorCodes_t resetWasherError() override;
-    ErrorCodes_t setWasherPresetSpeeds(vector <int8_t> speedValues) override;
-    ErrorCodes_t startWasher(uint16_t speedIdx) override;
-    ErrorCodes_t updateWasherState() override;
-    ErrorCodes_t updateWasherPresetSpeeds() override;
-
-    ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
-    ErrorCodes_t getWasherSpeedRange(RangedMeasurement_t &range) override;
-    ErrorCodes_t getWasherStatus(WasherStatus_t &status, WasherError_t &error) override;
-    ErrorCodes_t getWasherPresetSpeeds(vector <int8_t> &speedValue) override;
+    MessageDispatcher_eNPR(string di);
+    virtual ~MessageDispatcher_eNPR();
 
 protected:
-    enum {
-        WasherSpeedsNum = 4
-    };
-
     typedef struct {
-        uint8_t state;
-        int8_t presetSpeeds[WasherSpeedsNum];
+        uint8_t unused;
     } InfoStruct_t;
 
     enum CurrentRanges {
@@ -42,7 +26,8 @@ protected:
     };
 
     enum VoltageRanges {
-        VoltageRange500mV,
+        VoltageRange700mV,
+        VoltageRange2V,
         VoltageRangesNum
     };
 
@@ -59,6 +44,7 @@ protected:
 
     enum OveramplingRatios {
         OversamplingRatioX1,
+        OversamplingRatioX4,
         OversamplingRatiosNum
     };
 
@@ -69,11 +55,13 @@ protected:
     };
 
     enum VoltageReferenceLpfs {
-        VoltageReferenceLpfsNum = 0
+        VoltageReferenceLpf3Hz,
+        VoltageReferenceLpf180kHz,
+        VoltageReferenceLpfsNum
     };
 
     enum ProtocolVoltageRanges {
-        ProtocolVoltageRange500mV,
+        ProtocolVoltageRange700mV,
         ProtocolVoltageRange2V,
         ProtocolVoltageRangesNum
     };
@@ -107,7 +95,6 @@ protected:
         ProtocolVPk,
         ProtocolVFinal,
         ProtocolVInit,
-//        ProtocolVExt,
         ProtocolVoltagesNum
     };
 
@@ -135,28 +122,7 @@ protected:
     virtual void setFerdParameters() override;
 
     /*! Device specific controls */
-    void updateWasherStatus();
-    void updateWasherSpeeds();
-
-    int minControllerTemperature = -10;
-    int maxControllerTemperature = 60;
-
     InfoStruct_t infoStruct;
-    RangedMeasurement_t washerSpeedRange;
-    vector <int8_t> washerSpeeds;
-
-    BoolArrayCoder * washerResetCoder;
-    BoolArrayCoder * washerGetStatusCoder;
-    BoolArrayCoder * washerGetSpeedsCoder;
-    BoolArrayCoder * washerSetSpeedsCoder;
-    BoolArrayCoder * washerStartCoder;
-    BoolArrayCoder * washerSelectSpeedCoder;
-    vector <DoubleTwosCompCoder *> washerPresetSpeedsCoders;
 };
 
-class MessageDispatcher_dlp : public MessageDispatcher_e16n {
-public:
-    MessageDispatcher_dlp(string di);
-};
-
-#endif // MESSAGEDISPATCHER_E16N_H
+#endif // MESSAGEDISPATCHER_ENPR_H

@@ -42,6 +42,7 @@ SOURCES += \
     ftdieepromdemo.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
+    devices/eNPR/messagedispatcher_enpr.cpp \
     devices/e4/messagedispatcher_e4.cpp \
     devices/fake/messagedispatcher_fake_e16n.cpp \
     devices/e16/messagedispatcher_e16n.cpp
@@ -55,6 +56,7 @@ HEADERS += \
     ftdieepromdemo.h \
     messagedispatcher.h \
     commandcoder.h \
+    devices/eNPR/messagedispatcher_enpr.h \
     devices/e4/messagedispatcher_e4.h \
     devices/fake/messagedispatcher_fake_e16n.h \
     devices/e16/messagedispatcher_e16n.h
@@ -66,12 +68,14 @@ unix {
 
 INCLUDEPATH += ./ \
     devices \
+    devices/eNPR \
     devices/e4 \
     devices/e16 \
     devices/fake
 
 DEPENDPATH += ./ \
     devices \
+    devices/eNPR \
     devices/e4 \
     devices/e16 \
     devices/fake

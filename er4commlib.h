@@ -333,6 +333,15 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setSamplingRate(
         ER4CL_ARGIN uint16_t samplingRateIdx);
 
+/*! \brief Set the oversampling ratio.
+ *
+ * \param oversamplingRatioIdx [in] Index of the oversampling ratio to be set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setOversamplingRatio(
+        ER4CL_ARGIN uint16_t oversamplingRatioIdx);
+
 /*! \brief Sets the low pass filter on the voltage stimulus.
  *
  * \param opened [in] Index of the filter setting (get available settings with method getVoltageStimulusLpfs).
@@ -623,6 +632,24 @@ ErrorCodes_t getSamplingRate(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getRealSamplingRates(
         ER4CL_ARGOUT std::vector <Measurement_t> &samplingRates);
+
+/*! \brief Get the oversampling ratios available for the device.
+ *
+ * \param oversamplingRatios [out] Array containing all the available oversampling ratios.
+ * \return Success only if at least one ratio other than 1 is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getOversamplingRatios(
+        ER4CL_ARGOUT std::vector <uint16_t> &oversamplingRatios);
+
+/*! \brief Get the oversampling ratio currently applied.
+ *
+ * \param oversamplingRatio [out] Oversampling ratio currently applied.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getOversamplingRatio(
+        ER4CL_ARGOUT uint16_t &oversamplingRatio);
 
 /*! \brief Get the available options for the voltage stimulus low pass filter.
  *

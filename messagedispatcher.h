@@ -109,6 +109,7 @@ public:
     ErrorCodes_t setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag = true);
     virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, bool applyFlag = true);
     virtual ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag = true);
+    virtual ErrorCodes_t setOversamplingRatio(uint16_t oversamplingRatioIdx, bool applyFlag = true);
 
     ErrorCodes_t setVoltageStimulusLpf(uint16_t filterIdx, bool applyFlag = true);
     ErrorCodes_t setVoltageReferenceLpf(uint16_t filterIdx, bool applyFlag = true);
@@ -171,8 +172,10 @@ public:
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
 
     ErrorCodes_t getSamplingRates(vector <Measurement_t> &samplingRates, uint16_t &defaultOption);
-    ErrorCodes_t getSamplingRate(Measurement_t &samplingRates);
+    ErrorCodes_t getSamplingRate(Measurement_t &samplingRate);
     ErrorCodes_t getRealSamplingRates(vector <Measurement_t> &samplingRates);
+    ErrorCodes_t getOversamplingRatios(vector <uint16_t> &oversamplingRatios);
+    ErrorCodes_t getOversamplingRatio(uint16_t &oversamplingRatio);
 
     ErrorCodes_t getVoltageStimulusLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption);
     ErrorCodes_t getVoltageReferenceLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption);
@@ -291,6 +294,11 @@ protected:
     vector <Measurement_t> integrationStepArray;
     BoolRandomArrayCoder * samplingRateCoder;
 
+    bool oversamplingImplemented = false;
+    uint32_t oversamplingRatiosNum = 1;
+    vector <uint_fast16_t> oversamplingRatiosArray;
+    BoolRandomArrayCoder * oversamplingRatioCoder;
+
     bool selectStimulusChannelFlag = false;
     bool singleChannelSSCFlag = false;
     bool digitalOffsetCompensationFlag = false;
@@ -313,8 +321,6 @@ protected:
 
     BoolArrayCoder * channelOnCoder;
     vector <bool> channelOnStates;
-
-    BoolArrayCoder * channelSelectCoder;
 
     BoolArrayCoder * VcSel0Coder;
     BoolArrayCoder * VcSel1Coder;
@@ -469,9 +475,11 @@ protected:
     RangedMeasurement_t currentRange;
 
     uint16_t selectedSamplingRateIdx = 0;
-    Measurement_t samplingRate = {1.0, UnitPfxKilo, "Hz"};
-    Measurement_t integrationStep;
+    Measurement_t baseSamplingRate = {1.0, UnitPfxKilo, "Hz"};
+    Measurement_t samplingRate = {1.0, UnitPfxKilo, "Hz"}; /*!< baseSamplingRate*oversamplingRatio */
+    Measurement_t integrationStep = {1.0, UnitPfxMilli, "Hz"};
 
+    uint16_t selectedOversamplingRatioIdx = 0;
     uint16_t oversamplingRatio = 1;
 
     /*! Filter */

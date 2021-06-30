@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
+    {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},         //    8,  2,129 : eNPR
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},             //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},          //    3,  5,135 : e16 2020 release
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
@@ -417,14 +418,39 @@ ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, bool a
 ErrorCodes_t MessageDispatcher::setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) {
     if (samplingRateIdx < samplingRatesNum) {
         selectedSamplingRateIdx = samplingRateIdx;
-        samplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
-        integrationStep = integrationStepArray[selectedSamplingRateIdx];
+        baseSamplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
+        samplingRate = baseSamplingRate*(double)oversamplingRatio;
+        integrationStep = integrationStepArray[selectedSamplingRateIdx]/(double)oversamplingRatio;
 
         this->setRawDataFilter(rawDataFilterCutoffFrequency, rawDataFilterLowPassFlag, rawDataFilterActiveFlag);
         this->computeMinimumPacketNumber();
         this->setFerdParameters();
 
         samplingRateCoder->encode(selectedSamplingRateIdx, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::setOversamplingRatio(uint16_t oversamplingRatioIdx, bool applyFlag) {
+    if (oversamplingRatioIdx < oversamplingRatiosNum) {
+        selectedOversamplingRatioIdx = oversamplingRatioIdx;
+        oversamplingRatio = oversamplingRatiosArray[selectedOversamplingRatioIdx];
+
+        samplingRate = baseSamplingRate*(double)oversamplingRatio;
+        integrationStep = integrationStepArray[selectedSamplingRateIdx]/(double)oversamplingRatio;
+
+        this->setRawDataFilter(rawDataFilterCutoffFrequency, rawDataFilterLowPassFlag, rawDataFilterActiveFlag);
+        this->computeMinimumPacketNumber();
+        this->setFerdParameters();
+
+        oversamplingRatioCoder->encode(selectedOversamplingRatioIdx, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -1019,6 +1045,26 @@ ErrorCodes_t MessageDispatcher::getSamplingRate(Measurement_t &samplingRate) {
 ErrorCodes_t MessageDispatcher::getRealSamplingRates(vector <Measurement_t> &samplingRates) {
     samplingRates = realSamplingRatesArray;
     return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getOversamplingRatios(vector <uint16_t> &oversamplingRatios) {
+    if (oversamplingImplemented) {
+        oversamplingRatios = oversamplingRatiosArray;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::getOversamplingRatio(uint16_t &oversamplingRatio) {
+    if (oversamplingImplemented) {
+        oversamplingRatio = oversamplingRatiosArray[selectedOversamplingRatioIdx];
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
 }
 
 ErrorCodes_t MessageDispatcher::getVoltageStimulusLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption) {
@@ -1757,7 +1803,7 @@ void MessageDispatcher::computeFilterCoefficients() {
         double k1 = tan(M_PI*rawDataFilterCutoffFrequency.value*integrationStep.value);
         double k12 = k1*k1;
         double k2 = -2+2*k12; /*!< frequently used expression */
-        double d = 1.0/(1.0+k1*IIR_2_SIN_PI_4+k12); /*! denominator */
+        double d = 1.0/(1.0+k1*IIR_2_SIN_PI_4+k12); /*!< denominator */
 
         /*! Denominators */
         iirDen[0] = 1.0;

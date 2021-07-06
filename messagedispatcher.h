@@ -105,9 +105,9 @@ public:
 
     ErrorCodes_t turnOnLsbNoise(bool flag);
     ErrorCodes_t convertVoltageValue(uint16_t uintValue, double &fltValue);
-    ErrorCodes_t convertCurrentValue(uint16_t uintValue, double &fltValue);
+    ErrorCodes_t convertCurrentValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue);
     ErrorCodes_t setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag = true);
-    virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, bool applyFlag = true);
+    virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag = true);
     virtual ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag = true);
     virtual ErrorCodes_t setOversamplingRatio(uint16_t oversamplingRatioIdx, bool applyFlag = true);
 
@@ -165,8 +165,9 @@ public:
 
     ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber);
 
-    ErrorCodes_t getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, uint16_t &defaultOption);
-    ErrorCodes_t getCurrentRange(RangedMeasurement_t &currentRange);
+    ErrorCodes_t getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, vector <uint16_t> &defaultOptions);
+    ErrorCodes_t getCurrentRange(RangedMeasurement_t &currentRange, uint16_t channelIdx);
+    ErrorCodes_t hasIndependentCurrentRanges();
 
     ErrorCodes_t getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption);
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
@@ -279,8 +280,8 @@ protected:
 
     uint32_t currentRangesNum;
     vector <RangedMeasurement_t> currentRangesArray;
-    uint16_t defaultCurrentRangeIdx = 0;
-    BoolRandomArrayCoder * currentRangeCoder;
+    vector <uint16_t> defaultCurrentRangesIdx;
+    vector <BoolRandomArrayCoder *> currentRangeCoders;
 
     uint32_t voltageRangesNum;
     vector <RangedMeasurement_t> voltageRangesArray;
@@ -463,16 +464,17 @@ protected:
     uint32_t lsbNoiseIdx = 0;
 
     /*! Front end configuration */
-    double currentResolution = 1.0;
+    vector <double> currentResolutions;
     double voltageResolution = 1.0;
 
     double voltageOffsetCorrected = 0.0; /*!< Value currently corrected in applied voltages by the device (expressed in the unit of the liquid junction control) */
     double voltageOffsetCorrection = 0.0; /*!< Value to be used to correct the measured votlage values (expressed in the unit of current voltage range) */
 
     uint16_t selectedVoltageRangeIdx = 0;
-    uint16_t selectedCurrentRangeIdx = 0;
+    vector <uint16_t> selectedCurrentRangesIdx;
+    bool independentCurrentRangesFlag = false;
     RangedMeasurement_t voltageRange;
-    RangedMeasurement_t currentRange;
+    vector <RangedMeasurement_t> currentRanges;
 
     uint16_t selectedSamplingRateIdx = 0;
     Measurement_t baseSamplingRate = {1.0, UnitPfxKilo, "Hz"};

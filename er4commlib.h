@@ -306,14 +306,16 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t updateWasherPresetSpeeds(
         ER4CL_ARGVOID);
 
-/*! \brief Set the current range.
+/*! \brief Set the current range on a given channel.
  *
  * \param currentRangeIdx [in] Index of the current range to be set.
+ * \param channelIdx [in] Index of the channel to set the current range for; set equal to the number of channels to set them all.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCurrentRange(
-        ER4CL_ARGIN uint16_t currentRangeIdx);
+        ER4CL_ARGIN uint16_t currentRangeIdx,
+        ER4CL_ARGIN uint16_t channelIdx);
 
 /*! \brief Set the voltage range.
  *
@@ -535,12 +537,14 @@ ErrorCodes_t convertVoltageValue(
  * The converted current's unit depends on the device configuration.
  *
  * \param intValue [in] Integer value to be converted.
+ * \param channelIdx [in] Index of the channel to be converted.
  * \param fltValue [out] Floating point current converted value.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t convertCurrentValue(
         ER4CL_ARGIN uint16_t intValue,
+        ER4CL_ARGIN uint16_t channelIdx,
         ER4CL_ARGOUT double &fltValue);
 
 /*! \brief Purges data read from the device.
@@ -566,22 +570,32 @@ ErrorCodes_t getChannelsNumber(
 /*! \brief Get the current ranges available in voltage clamp for the device.
  *
  * \param currentRanges [out] Array containing all the available current ranges in voltage clamp.
- * \param defaultValue [out] Default option.
+ * \param defaultValue [out] Default options.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRanges(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &currentRanges,
-        ER4CL_ARGOUT uint16_t &defaultOption);
+        ER4CL_ARGOUT std::vector <uint16_t> &defaultOptions);
 
-/*! \brief Get the current range currently applied.
+/*! \brief Get the current range currently applied on a given channel.
  *
  * \param currentRange [out] Current range currently applied.
+ * \param channelIdx [in] Channel index.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRange(
-        ER4CL_ARGOUT RangedMeasurement_t &currentRange);
+        ER4CL_ARGOUT RangedMeasurement_t &currentRange,
+        ER4CL_ARGIN uint16_t channelIdx);
+
+/*! \brief Check if the device can set the current range independently on each channel.
+ *
+ * \return Success if the device can set independently the current ranges for each channel.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasIndependentCurrentRanges(
+        ER4CL_ARGVOID);
 
 /*! \brief Get the voltage ranges available in voltage clamp for the device.
  *

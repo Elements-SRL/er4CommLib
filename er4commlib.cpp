@@ -468,10 +468,11 @@ ErrorCodes_t updateWasherPresetSpeeds() {
 }
 
 ErrorCodes_t setCurrentRange(
-        uint16_t currentRangeIdx) {
+        uint16_t currentRangeIdx,
+        uint16_t channelIdx) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setCurrentRange(currentRangeIdx);
+        ret = messageDispatcher->setCurrentRange(currentRangeIdx, channelIdx);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -755,9 +756,10 @@ ErrorCodes_t convertVoltageValue(
 
 ErrorCodes_t convertCurrentValue(
         uint16_t intValue,
+        uint16_t channelIdx,
         double &fltValue) {
     if (messageDispatcher != nullptr) {
-        return messageDispatcher->convertCurrentValue(intValue, fltValue);
+        return messageDispatcher->convertCurrentValue(intValue, channelIdx, fltValue);
 
     } else {
         return ErrorDeviceNotConnected;
@@ -788,10 +790,10 @@ ErrorCodes_t purgeData() {
 
 ErrorCodes_t getCurrentRanges(
         vector <RangedMeasurement_t> &currentRanges,
-        uint16_t &defaultOption) {
+        vector <uint16_t> &defaultOptions) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCurrentRanges(currentRanges, defaultOption);
+        ret = messageDispatcher->getCurrentRanges(currentRanges, defaultOptions);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -800,10 +802,22 @@ ErrorCodes_t getCurrentRanges(
 }
 
 ErrorCodes_t getCurrentRange(
-        RangedMeasurement_t &currentRange) {
+        RangedMeasurement_t &currentRange,
+        uint16_t channelIdx) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCurrentRange(currentRange);
+        ret = messageDispatcher->getCurrentRange(currentRange, channelIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasIndependentCurrentRanges() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasIndependentCurrentRanges();
 
     } else {
         ret = ErrorDeviceNotConnected;

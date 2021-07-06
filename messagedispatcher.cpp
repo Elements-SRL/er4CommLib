@@ -368,8 +368,8 @@ ErrorCodes_t MessageDispatcher::convertVoltageValue(uint16_t uintValue, double &
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::convertCurrentValue(uint16_t uintValue, double &fltValue) {
-    fltValue = (((double)((int16_t)uintValue))+lsbNoiseArray[lsbNoiseIdx])*currentResolution;
+ErrorCodes_t MessageDispatcher::convertCurrentValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue) {
+    fltValue = (((double)((int16_t)uintValue))+lsbNoiseArray[lsbNoiseIdx])*currentResolutions[channelIdx];
     lsbNoiseIdx = (lsbNoiseIdx+1)&LSB_NOISE_ARRAY_MASK;
 
     return Success;
@@ -395,20 +395,41 @@ ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool a
     }
 }
 
-ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, bool applyFlag) {
+ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag) {
     if (currentRangeIdx < currentRangesNum) {
-        selectedCurrentRangeIdx = currentRangeIdx;
-        currentRange = currentRangesArray[selectedCurrentRangeIdx];
-        currentResolution = currentRangesArray[selectedCurrentRangeIdx].step;
+        if (channelIdx < currentChannelsNum) {
+            selectedCurrentRangesIdx[channelIdx] = currentRangeIdx;
+            currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
+            currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
 
-        this->setFerdParameters();
+            this->setFerdParameters();
 
-        currentRangeCoder->encode(selectedCurrentRangeIdx, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
+            currentRangeCoders[channelIdx]->encode(selectedCurrentRangesIdx[channelIdx], txStatus);
+            if (applyFlag) {
+                this->stackOutgoingMessage(txStatus);
+            }
+
+            return Success;
+
+        } else if (channelIdx == currentChannelsNum) {
+            for (channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+                selectedCurrentRangesIdx[channelIdx] = currentRangeIdx;
+                currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
+                currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
+            }
+
+            this->setFerdParameters();
+
+            currentRangeCoders[0]->encode(selectedCurrentRangesIdx[0], txStatus);
+            if (applyFlag) {
+                this->stackOutgoingMessage(txStatus);
+            }
+
+            return Success;
+
+        } else {
+            return ErrorValueOutOfRange;
         }
-
-        return Success;
 
     } else {
         return ErrorValueOutOfRange;
@@ -1009,15 +1030,23 @@ ErrorCodes_t MessageDispatcher::getChannelsNumber(uint32_t &voltageChannelsNumbe
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, uint16_t &defaultOption) {
+ErrorCodes_t MessageDispatcher::getCurrentRanges(vector <RangedMeasurement_t> &currentRanges, vector <uint16_t> &defaultOptions) {
     currentRanges = currentRangesArray;
-    defaultOption = defaultCurrentRangeIdx;
+    defaultOptions = defaultCurrentRangesIdx;
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getCurrentRange(RangedMeasurement_t &currentRange) {
-    currentRange = currentRangesArray[selectedCurrentRangeIdx];
+ErrorCodes_t MessageDispatcher::getCurrentRange(RangedMeasurement_t &currentRange, uint16_t channelIdx) {
+    currentRange = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
     return Success;
+}
+
+ErrorCodes_t MessageDispatcher::hasIndependentCurrentRanges() {
+    ErrorCodes_t ret = Success;
+    if (!independentCurrentRangesFlag) {
+        ret = ErrorFeatureNotImplemented;
+    }
+    return ret;
 }
 
 ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption) {
@@ -1730,6 +1759,7 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
             }
 
             if (++ferdIdx >= ferdL) {
+                /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
                 ferdIdx = 0;
             }
 

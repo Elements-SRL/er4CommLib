@@ -29,7 +29,7 @@ public:
      *  Tx methods for generator  *
     \******************************/
 
-    ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, bool applyFlag) override;
+    ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag) override;
     ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) override;
 
 protected:

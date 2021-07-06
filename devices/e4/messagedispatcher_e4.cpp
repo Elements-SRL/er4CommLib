@@ -59,7 +59,10 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     currentRangesArray[CurrentRange200nA].step = currentRangesArray[CurrentRange200nA].max/SHORT_MAX;
     currentRangesArray[CurrentRange200nA].prefix = UnitPfxNano;
     currentRangesArray[CurrentRange200nA].unit = "A";
-    defaultCurrentRangeIdx = CurrentRange200pA;
+    defaultCurrentRangesIdx.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        defaultCurrentRangesIdx[channelIdx] = CurrentRange200pA;
+    }
 
     /*! Voltage ranges */
     voltageRangesNum = VoltageRangesNum;
@@ -170,11 +173,15 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
 
     /*! Default values */
     selectedVoltageRangeIdx = defaultVoltageRangeIdx;
-    selectedCurrentRangeIdx = defaultCurrentRangeIdx;
+    selectedCurrentRangesIdx = defaultCurrentRangesIdx;
     selectedSamplingRateIdx = defaultSamplingRateIdx;
 
-    currentRange = currentRangesArray[selectedCurrentRangeIdx];
-    currentResolution = currentRangesArray[selectedCurrentRangeIdx].step;
+    currentRanges.resize(currentChannelsNum);
+    currentResolutions.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
+        currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
+    }
     voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
     voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
     baseSamplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
@@ -606,11 +613,12 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 3;
-    currentRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoder->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoder->addMapItem(2); /*!< 2nA      -> 0b010 */
-    currentRangeCoder->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoder->addMapItem(7); /*!< 200pA    -> 0b111 */
+    currentRangeCoders.resize(1);
+    currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
+    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
+    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
+    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
+    currentRangeCoders[0]->addMapItem(7); /*!< 200pA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 0;
@@ -1078,7 +1086,8 @@ bool MessageDispatcher_e4e::checkProtocolValidity(string &message) {
 
 void MessageDispatcher_e4e::setFerdParameters() {
     unsigned int rangeCoeff;
-    if (selectedCurrentRangeIdx < CurrentRange200nA) {
+    /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
+    if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {
         rangeCoeff = 4;
 
     } else {

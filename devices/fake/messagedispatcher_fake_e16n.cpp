@@ -95,9 +95,9 @@ ErrorCodes_t MessageDispatcher_fake_e16n::disconnect() {
  *  Tx methods for generator  *
 \******************************/
 
-ErrorCodes_t MessageDispatcher_fake_e16n::setCurrentRange(uint16_t currentRangeIdx, bool) {
+ErrorCodes_t MessageDispatcher_fake_e16n::setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool) {
     ErrorCodes_t ret;
-    ret = MessageDispatcher::setCurrentRange(currentRangeIdx);
+    ret = MessageDispatcher::setCurrentRange(currentRangeIdx, channelIdx);
     if (ret == Success) {
         genVcCurrentResolution = currentRangesArray[currentRangeIdx];
         genVcCurrentResolution.convertValues(UnitPfxNone);

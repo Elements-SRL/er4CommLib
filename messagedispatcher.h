@@ -28,6 +28,7 @@ using namespace er4CommLib;
 #define SHORT_MIN (-SHORT_MAX-1.0)
 #define USHORT_MAX (static_cast <double> (0xFFFF))
 #define UINT10_MAX (static_cast <double> (0x3FF))
+#define INT14_MAX (static_cast <double> (0x1FFF))
 #define INT18_MAX (static_cast <double> (0x1FFFF))
 #define UINT28_MAX (static_cast <double> (0xFFFFFFF))
 #define INT28_MAX (static_cast <double> (0x7FFFFFF))
@@ -151,6 +152,9 @@ public:
     virtual ErrorCodes_t startWasher(uint16_t speedIdx);
     virtual ErrorCodes_t updateWasherState();
     virtual ErrorCodes_t updateWasherPresetSpeeds();
+
+    ErrorCodes_t setDebugBit(uint16_t byteOffset, uint16_t bitOffset, bool status);
+    ErrorCodes_t setDebugByte(uint16_t byteOffset, uint16_t byteValue);
 
     /****************\
      *  Rx methods  *
@@ -410,6 +414,9 @@ protected:
 
     bool nanionTemperatureControllerFlag = false;
     bool washerControlFlag = false;
+
+    BoolArrayCoder * bitDebugCoder = nullptr;
+    BoolArrayCoder * byteDebugCoder = nullptr;
 
     /***************\
      *  Variables  *

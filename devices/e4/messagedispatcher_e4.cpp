@@ -34,6 +34,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     \**********************/
 
     /*! Current ranges */
+    independentCurrentRangesFlag = false;
     currentRangesNum = CurrentRangesNum;
     currentRangesArray.resize(currentRangesNum);
     currentRangesArray[CurrentRange200pA].min = -200.0;
@@ -41,19 +42,16 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     currentRangesArray[CurrentRange200pA].step = currentRangesArray[CurrentRange200pA].max/SHORT_MAX;
     currentRangesArray[CurrentRange200pA].prefix = UnitPfxPico;
     currentRangesArray[CurrentRange200pA].unit = "A";
-    currentRangesArray.resize(currentRangesNum);
     currentRangesArray[CurrentRange2nA].min = -2.0;
     currentRangesArray[CurrentRange2nA].max = 2.0;
     currentRangesArray[CurrentRange2nA].step = currentRangesArray[CurrentRange2nA].max/SHORT_MAX;
     currentRangesArray[CurrentRange2nA].prefix = UnitPfxNano;
     currentRangesArray[CurrentRange2nA].unit = "A";
-    currentRangesArray.resize(currentRangesNum);
     currentRangesArray[CurrentRange20nA].min = -20.0;
     currentRangesArray[CurrentRange20nA].max = 20.0;
     currentRangesArray[CurrentRange20nA].step = currentRangesArray[CurrentRange20nA].max/SHORT_MAX;
     currentRangesArray[CurrentRange20nA].prefix = UnitPfxNano;
     currentRangesArray[CurrentRange20nA].unit = "A";
-    currentRangesArray.resize(currentRangesNum);
     currentRangesArray[CurrentRange200nA].min = -200.0;
     currentRangesArray[CurrentRange200nA].max = 200.0;
     currentRangesArray[CurrentRange200nA].step = currentRangesArray[CurrentRange200nA].max/SHORT_MAX;
@@ -199,11 +197,6 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].min = -2000.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].max = 2000.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].step = 0.0625;
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].prefix = UnitPfxMilli;
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].unit = "V";
 
     /*! Time ranges */
     protocolTimeRangesArray.resize(ProtocolTimeRangesNum);
@@ -618,7 +611,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
     currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
     currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200pA    -> 0b111 */
+    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 0;
@@ -762,7 +755,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
     dacIntFilterCoder->addMapItem(0); /*!< 10kHz  -> 0b0 */
 
-    /*! Protocol voltages */
+    /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
@@ -803,7 +796,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     txStatus.resize(txDataBytes);
 
     txStatus[0] = txSyncWord; // HDR
-    txStatus[1] = 0x20; // CG0
+    txStatus[1] = 0x20; // CFG0
     txStatus[2] = 0x03; // CFG1
     txStatus[3] = 0x00; // CFG2
     txStatus[4] = 0x00; // CFG3

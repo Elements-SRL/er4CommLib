@@ -74,7 +74,6 @@ protected:
 
     enum ProtocolVoltageRanges {
         ProtocolVoltageRange500mV,
-        ProtocolVoltageRange2V,
         ProtocolVoltageRangesNum
     };
 

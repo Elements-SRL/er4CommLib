@@ -14,6 +14,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},             //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},          //    3,  5,135 : e16 2020 release
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
+    {DeviceVersionPrototype, DeviceSubversionE2HC, 1, DeviceE2HC},      //  254, 14,  1 : e2HC
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
 
@@ -931,6 +932,30 @@ ErrorCodes_t MessageDispatcher::updateWasherPresetSpeeds() {
     return ErrorFeatureNotImplemented;
 }
 
+ErrorCodes_t MessageDispatcher::setDebugBit(uint16_t byteOffset, uint16_t bitOffset, bool status) {
+    BoolCoder::CoderConfig_t boolConfig;
+    boolConfig.initialByte = byteOffset;
+    boolConfig.initialBit = bitOffset;
+    boolConfig.bitsNum = 1;
+    bitDebugCoder = new BoolArrayCoder(boolConfig);
+    bitDebugCoder->encode(status ? 1 : 0, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    delete bitDebugCoder;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::setDebugByte(uint16_t byteOffset, uint16_t byteValue) {
+    BoolCoder::CoderConfig_t boolConfig;
+    boolConfig.initialByte = byteOffset;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 7;
+    byteDebugCoder = new BoolArrayCoder(boolConfig);
+    byteDebugCoder->encode(byteValue, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    delete byteDebugCoder;
+    return Success;
+}
+
 /****************\
  *  Rx methods  *
 \****************/
@@ -991,12 +1016,12 @@ ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int pa
     ErrorCodes_t ret = Success;
 
     if (packetsNumber > outputBufferAvailablePackets) {
-        ret = WarningNotEnoughAvailable;
+        ret = WarningNotEnoughDataAvailable;
         packetsNumber = outputBufferAvailablePackets;
     }
 
     if (packetsNumber > maxOutputPacketsNum) {
-        ret = WarningNotEnoughAvailable;
+        ret = WarningNotEnoughDataAvailable;
         packetsNumber = maxOutputPacketsNum;
     }
 

@@ -1,5 +1,5 @@
-#ifndef MESSAGEDISPATCHER_E4E_H
-#define MESSAGEDISPATCHER_E4E_H
+#ifndef MESSAGEDISPATCHER_E2HC_H
+#define MESSAGEDISPATCHER_E2HC_H
 
 #include "messagedispatcher.h"
 
@@ -7,10 +7,10 @@
 
 using namespace std;
 
-class MessageDispatcher_e4e : public MessageDispatcher {
+class MessageDispatcher_e2HC : public MessageDispatcher {
 public:
-    MessageDispatcher_e4e(string di);
-    virtual ~MessageDispatcher_e4e();
+    MessageDispatcher_e2HC(string di);
+    virtual ~MessageDispatcher_e2HC();
 
 protected:
     typedef struct {
@@ -18,10 +18,8 @@ protected:
     } InfoStruct_t;
 
     enum CurrentRanges {
-        CurrentRange200pA,
-        CurrentRange2nA,
-        CurrentRange20nA,
         CurrentRange200nA,
+        CurrentRange4uA,
         CurrentRangesNum
     };
 
@@ -31,13 +29,8 @@ protected:
     };
 
     enum SamplingRates {
-        SamplingRate1_25kHz,
-        SamplingRate5kHz,
-        SamplingRate10kHz,
-        SamplingRate20kHz,
-        SamplingRate50kHz,
-        SamplingRate100kHz,
-        SamplingRate200kHz,
+        SamplingRate62_5kHz,
+        SamplingRate250kHz,
         SamplingRatesNum
     };
 
@@ -47,7 +40,6 @@ protected:
     };
 
     enum VoltageStimulusLpfs {
-        VoltageStimulusLpf1kHz,
         VoltageStimulusLpf10kHz,
         VoltageStimulusLpfsNum
     };
@@ -114,10 +106,12 @@ protected:
 
     void initializeDevice() override;
     bool checkProtocolValidity(string &message) override;
-    virtual void setFerdParameters() override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
+
+    const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
+    const double stimulusVoltageReference = 1.1; /*! voltage reference for stimuli [V] */
 };
 
-#endif // MESSAGEDISPATCHER_E4E_H
+#endif // MESSAGEDISPATCHER_E2HC_H

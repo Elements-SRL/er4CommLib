@@ -43,6 +43,7 @@ SOURCES += \
     messagedispatcher.cpp \
     commandcoder.cpp \
     devices/eNPR/messagedispatcher_enpr.cpp \
+    devices/e2/messagedispatcher_e2hc.cpp \
     devices/e4/messagedispatcher_e4.cpp \
     devices/fake/messagedispatcher_fake_e16n.cpp \
     devices/e16/messagedispatcher_e16n.cpp
@@ -57,6 +58,7 @@ HEADERS += \
     messagedispatcher.h \
     commandcoder.h \
     devices/eNPR/messagedispatcher_enpr.h \
+    devices/e2/messagedispatcher_e2hc.h \
     devices/e4/messagedispatcher_e4.h \
     devices/fake/messagedispatcher_fake_e16n.h \
     devices/e16/messagedispatcher_e16n.h
@@ -69,6 +71,7 @@ unix {
 INCLUDEPATH += ./ \
     devices \
     devices/eNPR \
+    devices/e2 \
     devices/e4 \
     devices/e16 \
     devices/fake
@@ -76,6 +79,7 @@ INCLUDEPATH += ./ \
 DEPENDPATH += ./ \
     devices \
     devices/eNPR \
+    devices/e2 \
     devices/e4 \
     devices/e16 \
     devices/fake

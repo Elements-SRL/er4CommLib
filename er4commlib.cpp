@@ -4,6 +4,7 @@
 
 #include "messagedispatcher.h"
 #include "messagedispatcher_enpr.h"
+#include "messagedispatcher_e2hc.h"
 #include "messagedispatcher_e4.h"
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_fake_e16n.h"
@@ -147,6 +148,10 @@ ErrorCodes_t connect(
 
         case DeviceDlp:
             messageDispatcher = new MessageDispatcher_dlp(deviceId);
+            break;
+
+        case DeviceE2HC:
+            messageDispatcher = new MessageDispatcher_e2HC(deviceId);
             break;
 
         case DeviceFakeE16n:
@@ -648,6 +653,33 @@ ErrorCodes_t resetDevice() {
 //    }
 //    return ret;
 //}
+
+ErrorCodes_t setDebugBit(
+        uint16_t byteOffset,
+        uint16_t bitOffset,
+        bool status) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setDebugBit(byteOffset, bitOffset, status);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setDebugByte(
+        uint16_t byteOffset,
+        uint16_t byteValue) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setDebugByte(byteOffset, byteValue);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
 
 /****************\
  *  Rx methods  *

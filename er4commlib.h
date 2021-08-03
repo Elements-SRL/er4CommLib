@@ -448,6 +448,30 @@ ErrorCodes_t resetDevice(
 //ErrorCodes_t resetDigitalOffsetCompensation(
 //        ER4CL_ARGIN bool reset);
 
+/*! \brief Set a bit of the communication protocol for debug purposes.
+ *
+ * \param byteOffset [in] Offset of the byte the bit belongs to.
+ * \param bitOffset [in] Offset of the bit within the byte.
+ * \param status [in] Status of the bit.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setDebugBit(
+        ER4CL_ARGIN uint16_t byteOffset,
+        ER4CL_ARGIN uint16_t bitOffset,
+        ER4CL_ARGIN bool status);
+
+/*! \brief Set a byte of the communication protocol for debug purposes.
+ *
+ * \param byteOffset [in] Offset of the byte to set.
+ * \param byteValue [in] Value of the byte.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setDebugByte(
+        ER4CL_ARGIN uint16_t byteOffset,
+        ER4CL_ARGIN uint16_t byteValue);
+
 /****************\
  *  Rx methods  *
 \****************/

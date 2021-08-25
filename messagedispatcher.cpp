@@ -878,6 +878,9 @@ ErrorCodes_t MessageDispatcher::checkVoltageOffset(unsigned int idx, Measurement
 
 ErrorCodes_t MessageDispatcher::applyInsertionPulse(Measurement_t voltage, Measurement_t duration) {
     if (insertionPulseImplemented) {
+        this->selectVoltageProtocol(0, false);
+        this->applyVoltageProtocol();
+
         voltage.convertValue(insertionPulseVoltageRange.prefix);
         duration.convertValue(insertionPulseDurationRange.prefix);
 

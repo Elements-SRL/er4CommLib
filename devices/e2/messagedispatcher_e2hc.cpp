@@ -457,7 +457,7 @@ MessageDispatcher_e2HC::MessageDispatcher_e2HC(string di) :
             "\n"
             "Amplifier Setup\n"
             "Range: %currentRange%\n" // 200 pA
-            "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
+            "Sampling frequency (SR): %samplingRate%\n" // 62.5 kHz
             "Final Bandwidth: SR/2 (no filter)\n"
             "\n"
             "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
@@ -569,11 +569,11 @@ MessageDispatcher_e2HC::MessageDispatcher_e2HC(string di) :
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;
-    boolConfig.initialBit = 3;
-    boolConfig.bitsNum = 2;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(2); /*!< 62.5kHz      -> 0b10 */
-    samplingRateCoder->addMapItem(1); /*!< 250kHz       -> 0b01 */
+    samplingRateCoder->addMapItem(17); /*!< 62.5kHz      -> 0b10001 */
+    samplingRateCoder->addMapItem(8);  /*!< 250kHz       -> 0b01000 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 4;
@@ -700,7 +700,7 @@ MessageDispatcher_e2HC::MessageDispatcher_e2HC(string di) :
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 11;
+    doubleConfig.bitsNum = 14;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;

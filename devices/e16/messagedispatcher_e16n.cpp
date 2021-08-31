@@ -581,6 +581,7 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     /*! Digital offset compensations */
     digitalOffsetCompensationFlag = true;
     singleChannelDOCFlag = true;
+    selectableDOCAutostopFlag = true;
 
     boolConfig.initialByte = 6;
     boolConfig.initialBit = 0;
@@ -596,6 +597,11 @@ MessageDispatcher_e16n::MessageDispatcher_e16n(string di) :
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 1;
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 8;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 1;
+    digitalOffsetCompensationAutostopCoder = new BoolArrayCoder(boolConfig);
 
     /*! Zap */
     zappableDeviceFlag = true;

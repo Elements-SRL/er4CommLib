@@ -571,6 +571,18 @@ ErrorCodes_t digitalOffsetCompensation(
     return ret;
 }
 
+ErrorCodes_t digitalOffsetCompensationAutostop(
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->digitalOffsetCompensationAutostop(on);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t zap(
         uint16_t channelIdx) {
     ErrorCodes_t ret;
@@ -984,10 +996,11 @@ ErrorCodes_t hasSelectStimulusChannel(
 
 ErrorCodes_t hasDigitalOffsetCompensation(
         bool &digitalOffsetCompensationFlag,
-        bool &singleChannelDOCFlag) {
+        bool &singleChannelDOCFlag,
+        bool &selectableDOCAutostopFlag) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->hasDigitalOffsetCompensation(digitalOffsetCompensationFlag, singleChannelDOCFlag);
+        ret = messageDispatcher->hasDigitalOffsetCompensation(digitalOffsetCompensationFlag, singleChannelDOCFlag, selectableDOCAutostopFlag);
 
     } else {
         ret = ErrorDeviceNotConnected;

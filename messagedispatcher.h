@@ -117,6 +117,7 @@ public:
 
     virtual ErrorCodes_t selectStimulusChannel(uint16_t channelIdx, bool on, bool applyFlag = true);
     virtual ErrorCodes_t digitalOffsetCompensation(uint16_t channelIdx, bool on, bool applyFlag = true);
+    virtual ErrorCodes_t digitalOffsetCompensationAutostop(bool on, bool applyFlag = true);
     ErrorCodes_t zap(uint16_t channelIdx, bool applyFlag = true);
     ErrorCodes_t switchChannelOn(uint16_t channelIdx, bool on, bool applyFlag = true);
     ErrorCodes_t switchVcSel0(bool on);
@@ -186,7 +187,7 @@ public:
     ErrorCodes_t getVoltageReferenceLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption);
 
     ErrorCodes_t hasSelectStimulusChannel(bool &selectStimulusChannelFlag, bool &singleChannelSSCFlag);
-    ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag);
+    ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag, bool &selectableDOCAutostopFlag);
     ErrorCodes_t hasZap(bool &zappableDeviceFlag, bool &singleChannelZapFlag);
     ErrorCodes_t hasChannelOn(bool &channelOnFlag, bool &singleChannelOnFlag);
 
@@ -308,6 +309,7 @@ protected:
     bool singleChannelSSCFlag = false;
     bool digitalOffsetCompensationFlag = false;
     bool singleChannelDOCFlag = false;
+    bool selectableDOCAutostopFlag = false;
     bool zappableDeviceFlag = false;
     bool singleChannelZapFlag = false;
     bool channelOnFlag = false;
@@ -318,6 +320,7 @@ protected:
 
     BoolArrayCoder * deviceResetCoder;
     BoolArrayCoder * digitalOffsetCompensationCoder;
+    BoolArrayCoder * digitalOffsetCompensationAutostopCoder;
     vector <bool> digitalOffsetCompensationStates;
     BoolArrayCoder * digitalOffsetCompensationResetCoder;
 

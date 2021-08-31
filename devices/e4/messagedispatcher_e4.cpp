@@ -558,6 +558,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     /*! Digital offset compensations */
     digitalOffsetCompensationFlag = true;
     singleChannelDOCFlag = true;
+    selectableDOCAutostopFlag = false;
 
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 5;

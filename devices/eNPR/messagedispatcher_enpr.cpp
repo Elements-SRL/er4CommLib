@@ -556,6 +556,7 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     /*! Digital offset compensations */
     digitalOffsetCompensationFlag = true;
     singleChannelDOCFlag = true;
+    selectableDOCAutostopFlag = false;
 
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 3;

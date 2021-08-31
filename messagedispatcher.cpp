@@ -13,6 +13,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},         //    8,  2,129 : eNPR
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},             //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},          //    3,  5,135 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},          //    3,  5,136 : e16 2020 release
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
     {DeviceVersionPrototype, DeviceSubversionE2HC, 1, DeviceE2HC},      //  254, 14,  1 : e2HC
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
@@ -579,6 +580,20 @@ ErrorCodes_t MessageDispatcher::digitalOffsetCompensation(uint16_t channelIdx, b
         } else {
             return ErrorValueOutOfRange;
         }
+    }
+}
+
+ErrorCodes_t MessageDispatcher::digitalOffsetCompensationAutostop(bool on, bool applyFlag) {
+    if (selectableDOCAutostopFlag) {
+        digitalOffsetCompensationAutostopCoder->encode(on, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
     }
 }
 
@@ -1152,9 +1167,10 @@ ErrorCodes_t MessageDispatcher::hasSelectStimulusChannel(bool &selectStimulusCha
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag) {
+ErrorCodes_t MessageDispatcher::hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag, bool &selectableDOCAutostopFlag) {
     digitalOffsetCompensationFlag = this->digitalOffsetCompensationFlag;
     singleChannelDOCFlag = this->singleChannelDOCFlag;
+    selectableDOCAutostopFlag = this->selectableDOCAutostopFlag;
     return Success;
 }
 

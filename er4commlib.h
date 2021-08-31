@@ -390,6 +390,15 @@ ErrorCodes_t digitalOffsetCompensation(
         ER4CL_ARGIN uint16_t channelIdx,
         ER4CL_ARGIN bool on);
 
+/*! \brief Activate autostop feature for digital offset compensation.
+ *
+ * \param on [in] False disables the digital offset compensation's autostop, true enables it.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t digitalOffsetCompensationAutostop(
+        ER4CL_ARGIN bool on);
+
 /*! \brief Zap.
  * A big voltage is applied in order to break the membrane.
  *
@@ -726,12 +735,14 @@ ErrorCodes_t hasSelectStimulusChannel(
  *
  * \param digitalOffsetCompensationFlag [out] True if the device has the digital offset compensation feature.
  * \param singleChannelDOCFlag [out] True if the device can apply digital offset compesantion to single channels independently.
+ * \param selectableDOCAutostop [out] True if the device can select the autostop feature for the digital offset compesantion.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasDigitalOffsetCompensation(
         ER4CL_ARGOUT bool &digitalOffsetCompensationFlag,
-        ER4CL_ARGOUT bool &singleChannelDOCFlag);
+        ER4CL_ARGOUT bool &singleChannelDOCFlag,
+        ER4CL_ARGOUT bool &selectableDOCAutostopFlag);
 
 /*! \brief Get the zap feature availability.
  *

@@ -28,6 +28,10 @@ typedef struct {
                         *   This flag is reset after a call to getQueueStatus or to purgeData. */
     bool saturationFlag; /*!< This flag is true if some data saturates the front end range.
                           *   This flag is reset after a call to getQueueStatus or to purgeData. */
+    bool currentRangeIncreaseFlag; /*!< This flag is true if any current channel is above the threshold that suggests an increase of front end current range.
+                                    *   This flag is reset after a call to getQueueStatus or to purgeData. */
+    bool currentRangeDecreaseFlag; /*!< This flag is true if all current channels are below the threshold that suggests a decrease of front end current range.
+                                    *   This flag is reset after a call to getQueueStatus or to purgeData. */
     bool communicationErrorFlag; /*!< This flag is true after a communication error with the device.
                                   *   This flag is reset if the communication restarts successfully. */
 } QueueStatus_t;

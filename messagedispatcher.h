@@ -36,6 +36,10 @@ using namespace er4CommLib;
 
 #define UINT16_POSITIVE_SATURATION 0x7FFE
 #define UINT16_NEGATIVE_SATURATION 0x8000 /*! \todo FCON dovrebbe essere 0x8001 */
+#define UINT16_CURRENT_RANGE_INCREASE_MINIMUM_THRESHOLD 0x7800 /*!< Equivalent to 15/16 of range */
+#define UINT16_CURRENT_RANGE_INCREASE_MAXIMUM_THRESHOLD 0x8800 /*!< Equivalent to -15/16 of range */
+#define UINT16_CURRENT_RANGE_DECREASE_MINIMUM_THRESHOLD 0xF800 /*!< Equivalent to 1/16 of range */
+#define UINT16_CURRENT_RANGE_DECREASE_MAXIMUM_THRESHOLD 0x0800 /*!< Equivalent to -1/16 of range */
 
 #define LSB_NOISE_ARRAY_SIZE 0x40000 /*! \todo FCON valutare che questo numero sia adeguato */ // ~250k
 #define LSB_NOISE_ARRAY_MASK (LSB_NOISE_ARRAY_SIZE-1) // 0b11...1 for all bits of the array indexes
@@ -164,7 +168,7 @@ public:
     ErrorCodes_t isDeviceUpgradable(string &upgradeNotes, string &notificationTag);
     ErrorCodes_t getDeviceInfo(uint8_t &deviceVersion, uint8_t &deviceSubversion, uint32_t &firmwareVersion);
 
-    ErrorCodes_t getQueueStatus(unsigned int * availableDataPackets, bool * bufferOverflowFlag, bool * dataLossFlag, bool * saturationFlag, bool * communicationErrorFlag);
+    ErrorCodes_t getQueueStatus(QueueStatus_t &status);
     ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int * packetsRead);
     ErrorCodes_t purgeData();
 
@@ -284,6 +288,7 @@ protected:
     uint16_t totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
     uint32_t currentRangesNum;
+    uint32_t selectedCurrentRangeIdx = 0;
     vector <RangedMeasurement_t> currentRangesArray;
     vector <uint16_t> defaultCurrentRangesIdx;
     vector <BoolRandomArrayCoder *> currentRangeCoders;
@@ -459,6 +464,8 @@ protected:
     unsigned int outputBufferAvailablePackets = 0; /*!< Number of packets available for the user to read */
     bool outputBufferOverflowFlag = false; /*!< Set to true by an overflow of outputDataBuffer, reset by a status read by the user */
     bool bufferSaturationFlag = false; /*!< Set to true by data saturating the front end range */
+    bool bufferIncreaseCurrentRangeFlag = false; /*!< Set to true by data indicating that the front end range might be increased */
+    bool bufferDecreaseCurrentRangeFlag = false; /*!< Set to true by data indicating that the front end range might be decreased */
     bool deviceCommunicationErrorFlag = false; /*!< Set to true by failures in communication with the device */
 
     /*! Write data buffer management */

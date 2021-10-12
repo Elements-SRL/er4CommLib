@@ -766,7 +766,7 @@ ErrorCodes_t getQueueStatus(
         QueueStatus_t &status) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getQueueStatus(&(status.availableDataPackets), &(status.bufferOverflowFlag), &(status.lostDataFlag), &(status.saturationFlag), &(status.communicationErrorFlag));
+        ret = messageDispatcher->getQueueStatus(status);
 
     } else {
         ret = ErrorDeviceNotConnected;

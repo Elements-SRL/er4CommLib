@@ -399,6 +399,7 @@ ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool a
 
 ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag) {
     if (currentRangeIdx < currentRangesNum) {
+        selectedCurrentRangeIdx = currentRangeIdx; /*! \todo FCON funziona solo con un range */
         if (channelIdx < currentChannelsNum) {
             selectedCurrentRangesIdx[channelIdx] = currentRangeIdx;
             currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
@@ -1001,27 +1002,42 @@ ErrorCodes_t MessageDispatcher::getDeviceInfo(uint8_t &deviceVersion, uint8_t &d
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::getQueueStatus(unsigned int * availableDataPackets, bool * bufferOverflowFlag, bool * dataLossFlag, bool * saturationFlag, bool * communicationErrorFlag) {
+ErrorCodes_t MessageDispatcher::getQueueStatus(QueueStatus_t &status) {
     unique_lock <mutex> readDataMtxLock (readDataMtx);
     if (outputBufferAvailablePackets > maxOutputPacketsNum) {
-        * availableDataPackets = maxOutputPacketsNum;
+        status.availableDataPackets = maxOutputPacketsNum;
 
     } else {
-        * availableDataPackets = outputBufferAvailablePackets;
+        status.availableDataPackets = outputBufferAvailablePackets;
     }
-    * bufferOverflowFlag = outputBufferOverflowFlag;
-    * dataLossFlag = bufferDataLossFlag;
-    * saturationFlag = bufferSaturationFlag;
-    * communicationErrorFlag = deviceCommunicationErrorFlag;
+    status.bufferOverflowFlag = outputBufferOverflowFlag;
+    status.lostDataFlag = bufferDataLossFlag;
+    status.saturationFlag = bufferSaturationFlag;
+    if (selectedCurrentRangeIdx < currentRangesNum+1) {
+        status.currentRangeIncreaseFlag = bufferIncreaseCurrentRangeFlag;
+
+    } else {
+        status.currentRangeIncreaseFlag = false;
+    }
+
+    if (selectedCurrentRangeIdx > 0) {
+        status.currentRangeDecreaseFlag = bufferDecreaseCurrentRangeFlag;
+
+    } else {
+        status.currentRangeDecreaseFlag = false;
+    }
+    status.communicationErrorFlag = deviceCommunicationErrorFlag;
 
     outputBufferOverflowFlag = false;
     bufferDataLossFlag = false;
     bufferSaturationFlag = false;
+    bufferIncreaseCurrentRangeFlag = false;
+    bufferDecreaseCurrentRangeFlag = false;
 
     if (deviceCommunicationErrorFlag) {
         return ErrorDeviceCommunicationFailed;
 
-    } else if (* availableDataPackets == 0) {
+    } else if (status.availableDataPackets == 0) {
         return WarningNoDataAvailable;
 
     } else {
@@ -1767,6 +1783,9 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
     uint16_t value;
     uint8_t infoIndex;
     uint8_t infoValue;
+    bool increaseRangeFlag;
+    bool decreaseRangeFlag = true;
+    bufferIncreaseCurrentRangeFlag = true;
 
     for (unsigned int frameIdx = 0; frameIdx < framesNum; frameIdx++) {
         /*! Skips the sync word at the beginning of each packet */
@@ -1792,15 +1811,30 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                     bufferReadOffset = (bufferReadOffset+1)&FTD_RX_BUFFER_MASK;
                 }
 
-                if (channelIdx >= voltageChannelsNum) {
-                    if ((value == UINT16_POSITIVE_SATURATION) || (value == UINT16_NEGATIVE_SATURATION)) {
-                        bufferSaturationFlag = true;
+                if (channelIdx < voltageChannelsNum) {
+                    increaseRangeFlag = false;
+
+                } else {
+                    if ((value > UINT16_CURRENT_RANGE_INCREASE_MINIMUM_THRESHOLD) && (value < UINT16_CURRENT_RANGE_INCREASE_MAXIMUM_THRESHOLD)) {
+                        /*! Suggest to increase range if any of the channels is above the threshold */
+                        increaseRangeFlag = true;
+                        if ((value == UINT16_POSITIVE_SATURATION) || (value == UINT16_NEGATIVE_SATURATION)) {
+                            bufferSaturationFlag = true;
+                        }
+
+                    } else if ((value < UINT16_CURRENT_RANGE_DECREASE_MINIMUM_THRESHOLD) && (value > UINT16_CURRENT_RANGE_DECREASE_MAXIMUM_THRESHOLD)) {
+                        /*! Suggest to decrease range only if all the channels are below the threshold in the whole frame (otherwise noise could bring all values within threshold and trigger spurious changes) */
+                        decreaseRangeFlag = false;
                     }
+
                     this->processCurrentData(channelIdx, value);
                 }
 
                 outputDataBuffer[outputBufferWriteOffset][channelIdx] = value;
             }
+
+            /*! Check that in each packet at least one channel is above threshold for the whole frame */
+            bufferIncreaseCurrentRangeFlag &= increaseRangeFlag;
 
             if (++ferdIdx >= ferdL) {
                 /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
@@ -1817,6 +1851,10 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
             outputBufferWriteOffset = (outputBufferWriteOffset+1)&ER4CL_OUTPUT_BUFFER_MASK;
             outputBufferAvailablePackets++;
         }
+    }
+
+    if (decreaseRangeFlag) {
+        bufferDecreaseCurrentRangeFlag = true;
     }
 
     /*! If too many packets are written but not read from the user the buffer saturates */

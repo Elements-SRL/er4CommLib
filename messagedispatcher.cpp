@@ -1,3 +1,20 @@
+//  Copyright (C) 2021 Filippo Cona
+//
+//  This file is part of EDR4.
+//
+//  EDR4 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  EDR4 is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "messagedispatcher.h"
 
 #include <iostream>
@@ -10,12 +27,13 @@
 #include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},         //    8,  2,129 : eNPR
-    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},             //    4,  8,129 : e4 Elements version
-    {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},          //    3,  5,135 : e16 2020 release
-    {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},          //    3,  5,136 : e16 2020 release
-    {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},              //    6,  3,  4 : debug dlp
-    {DeviceVersionPrototype, DeviceSubversionE2HC, 1, DeviceE2HC},      //  254, 14,  1 : e2HC
+    {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                 //    8,  2,129 : eNPR
+    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                     //    4,  8,129 : e4 Elements version
+    {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                  //    3,  5,135 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                  //    3,  5,136 : e16 2020 release
+    {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                      //    6,  3,  4 : debug dlp
+    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},  //  254, 14,  1 : e2HC with external ADC
+    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},  //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
 

@@ -1,3 +1,20 @@
+//  Copyright (C) 2021 Filippo Cona
+//
+//  This file is part of EDR4.
+//
+//  EDR4 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  EDR4 is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+
 /*! \file er4commlib_global.h
  * \brief Defines global macros and typedefs.
  * \note \a ER4COMMLIB_LIBRARY should be defined only during the library compilation.
@@ -81,7 +98,8 @@ typedef enum {
     DeviceE4e,                  /*!< e4 Elements version. */
     DeviceE16n,                 /*!< e16 2020 release. */
     DeviceDlp,                  /*!< debug dlp. */
-    DeviceE2HC,                 /*!< e2HC prototype. */
+    DeviceE2HCExtAdc,           /*!< e2HC prototype (external ADC). */
+    DeviceE2HCIntAdc,           /*!< e2HC prototype (internal ADC). */
     DeviceFakeE16n,             /*!< Fake e16 2020 release. */
     DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */
     DevicesNum

@@ -1,3 +1,20 @@
+//  Copyright (C) 2021 Filippo Cona
+//
+//  This file is part of EDR4.
+//
+//  EDR4 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  EDR4 is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef MESSAGEDISPATCHER_E2HC_H
 #define MESSAGEDISPATCHER_E2HC_H
 
@@ -7,10 +24,10 @@
 
 using namespace std;
 
-class MessageDispatcher_e2HC : public MessageDispatcher {
+class MessageDispatcher_e2HC_V00 : public MessageDispatcher {
 public:
-    MessageDispatcher_e2HC(string di);
-    virtual ~MessageDispatcher_e2HC();
+    MessageDispatcher_e2HC_V00(string di);
+    virtual ~MessageDispatcher_e2HC_V00();
 
 protected:
     typedef struct {
@@ -26,12 +43,6 @@ protected:
     enum VoltageRanges {
         VoltageRange500mV,
         VoltageRangesNum
-    };
-
-    enum SamplingRates {
-        SamplingRate62_5kHz,
-        SamplingRate250kHz,
-        SamplingRatesNum
     };
 
     enum OveramplingRatios {
@@ -112,6 +123,27 @@ protected:
 
     const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
     const double stimulusVoltageReference = 1.1; /*! voltage reference for stimuli [V] */
+
+private:
+    enum SamplingRates {
+        SamplingRate62_5kHz,
+        SamplingRate250kHz,
+        SamplingRatesNum
+    };
+};
+
+class MessageDispatcher_e2HC_V01 : public MessageDispatcher_e2HC_V00 {
+public:
+    MessageDispatcher_e2HC_V01(string di);
+    virtual ~MessageDispatcher_e2HC_V01();
+
+private:
+    enum SamplingRates {
+        SamplingRate50kHz,
+        SamplingRate25kHz,
+        SamplingRate12_5kHz,
+        SamplingRatesNum
+    };
 };
 
 #endif // MESSAGEDISPATCHER_E2HC_H

@@ -1,6 +1,23 @@
+//  Copyright (C) 2021 Filippo Cona
+//
+//  This file is part of EDR4.
+//
+//  EDR4 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  EDR4 is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "messagedispatcher_e2hc.h"
 
-MessageDispatcher_e2HC::MessageDispatcher_e2HC(string di) :
+MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -791,11 +808,11 @@ MessageDispatcher_e2HC::MessageDispatcher_e2HC(string di) :
     txStatus[50] = 0x00;
 }
 
-MessageDispatcher_e2HC::~MessageDispatcher_e2HC() {
+MessageDispatcher_e2HC_V00::~MessageDispatcher_e2HC_V00() {
 
 }
 
-void MessageDispatcher_e2HC::initializeDevice() {
+void MessageDispatcher_e2HC_V00::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -821,7 +838,7 @@ void MessageDispatcher_e2HC::initializeDevice() {
     }
 }
 
-bool MessageDispatcher_e2HC::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e2HC_V00::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1018,4 +1035,60 @@ bool MessageDispatcher_e2HC::checkProtocolValidity(string &message) {
         break;
     }
     return validFlag;
+}
+
+MessageDispatcher_e2HC_V01::MessageDispatcher_e2HC_V01(string di) :
+    MessageDispatcher_e2HC_V00(di) {
+
+    /*! Sampling rates */
+    samplingRatesNum = SamplingRatesNum;
+    samplingRatesArray.resize(samplingRatesNum);
+    samplingRatesArray[SamplingRate50kHz].value = 50.0;
+    samplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate50kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate25kHz].value = 25.0;
+    samplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate25kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate12_5kHz].value = 12.5;
+    samplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
+    defaultSamplingRateIdx = SamplingRate25kHz;
+
+    realSamplingRatesArray.resize(samplingRatesNum);
+    realSamplingRatesArray[SamplingRate50kHz].value = 50.0e6/(8.0*128.0); /*!< 48.8kHz */
+    realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate25kHz].value = 50.0e6/(8.0*256.0); /*!< 24.4kHz */
+    realSamplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate25kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate12_5kHz].value = 50.0e6/(8.0*512.0); /*!< 12.2kHz */
+    realSamplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
+
+    integrationStepArray.resize(samplingRatesNum);
+    integrationStepArray[SamplingRate50kHz].value = 20.48;
+    integrationStepArray[SamplingRate50kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate50kHz].unit = "s";
+    integrationStepArray[SamplingRate25kHz].value = 40.96;
+    integrationStepArray[SamplingRate25kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate25kHz].unit = "s";
+    integrationStepArray[SamplingRate12_5kHz].value = 81.92;
+    integrationStepArray[SamplingRate12_5kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate12_5kHz].unit = "s";
+
+    /**********\
+     * Coders *
+    \**********/
+
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+
+    /*! Sampling rate */
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 5;
+    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
+    samplingRateCoder->addMapItem(1);  /*!< 50kHz        -> 0b00001 */
+    samplingRateCoder->addMapItem(9);  /*!< 25kHz        -> 0b01001 */
+    samplingRateCoder->addMapItem(17); /*!< 12.5kHz      -> 0b10001 */
 }

@@ -1092,3 +1092,7 @@ MessageDispatcher_e2HC_V01::MessageDispatcher_e2HC_V01(string di) :
     samplingRateCoder->addMapItem(9);  /*!< 25kHz        -> 0b01001 */
     samplingRateCoder->addMapItem(17); /*!< 12.5kHz      -> 0b10001 */
 }
+
+MessageDispatcher_e2HC_V01::~MessageDispatcher_e2HC_V01() {
+
+}

@@ -1055,13 +1055,13 @@ MessageDispatcher_e2HC_V01::MessageDispatcher_e2HC_V01(string di) :
     defaultSamplingRateIdx = SamplingRate25kHz;
 
     realSamplingRatesArray.resize(samplingRatesNum);
-    realSamplingRatesArray[SamplingRate50kHz].value = 50.0e6/(8.0*128.0); /*!< 48.8kHz */
+    realSamplingRatesArray[SamplingRate50kHz].value = 50.0e3/(8.0*128.0); /*!< 48.8kHz */
     realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate25kHz].value = 50.0e6/(8.0*256.0); /*!< 24.4kHz */
+    realSamplingRatesArray[SamplingRate25kHz].value = 50.0e3/(8.0*256.0); /*!< 24.4kHz */
     realSamplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate25kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate12_5kHz].value = 50.0e6/(8.0*512.0); /*!< 12.2kHz */
+    realSamplingRatesArray[SamplingRate12_5kHz].value = 50.0e3/(8.0*512.0); /*!< 12.2kHz */
     realSamplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
 

@@ -95,6 +95,7 @@ namespace er4CommLib {
  */
 typedef enum {
     DeviceENPR,                 /*!< eNPR. */
+    DeviceENPRHC,               /*!< eNPR-HC. */
     DeviceE4e,                  /*!< e4 Elements version. */
     DeviceE16n,                 /*!< e16 2020 release. */
     DeviceDlp,                  /*!< debug dlp. */
@@ -596,17 +597,6 @@ inline Measurement_t operator / (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN
     Measurement_t c = a;
     c.value /= (double)b;
     return c;
-}
-
-/*! \brief Overloaded division between #Measurement_t and a constant.
- *
- * \param a [in] First operand.
- * \param b [in] Second operand.
- * \return A #Measurement_t whose value is the ratio of the values and the unit equals the unit of the second operand.
-*/
-template <class T>
-inline Measurement_t operator / (ER4CL_ARGIN const double &a, ER4CL_ARGIN const Measurement_t &b) {
-    return b/a;
 }
 
 /*! \struct RangedMeasurement_t

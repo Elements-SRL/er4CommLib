@@ -452,6 +452,15 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t switchVcSel1(
         ER4CL_ARGIN bool on);
 
+/*! \brief Turn on the digital output.
+ *
+ * \param on [in] True to turn on the digital output, false to turn it off.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t turnOnDigitalOutput(
+        ER4CL_ARGIN bool on);
+
 /*! \brief Enable the front end reset denoiser.
  *
  * \param on [in] True to enable, false to disable.
@@ -786,6 +795,14 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasChannelOn(
         ER4CL_ARGOUT bool &channelOnFlag,
         ER4CL_ARGOUT bool &singleChannelOnFlag);
+
+/*! \brief Get the digital output availability.
+ *
+ * \return Return an error code if the feature is not available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasDigitalOutput(
+        ER4CL_ARGVOID);
 
 /*! \brief Get the front end reset denoiser feature availability.
  *

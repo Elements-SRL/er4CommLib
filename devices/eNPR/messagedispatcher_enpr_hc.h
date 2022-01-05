@@ -15,17 +15,17 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MESSAGEDISPATCHER_E2HC_H
-#define MESSAGEDISPATCHER_E2HC_H
+#ifndef MESSAGEDISPATCHER_ENPR_HC_H
+#define MESSAGEDISPATCHER_ENPR_HC_H
 
 #include "messagedispatcher.h"
 
 using namespace std;
 
-class MessageDispatcher_e2HC_V00 : public MessageDispatcher {
+class MessageDispatcher_eNPR_HC_V00 : public MessageDispatcher {
 public:
-    MessageDispatcher_e2HC_V00(string di);
-    virtual ~MessageDispatcher_e2HC_V00();
+    MessageDispatcher_eNPR_HC_V00(string di);
+    virtual ~MessageDispatcher_eNPR_HC_V00();
 
 protected:
     typedef struct {
@@ -39,8 +39,19 @@ protected:
     };
 
     enum VoltageRanges {
-        VoltageRange500mV,
+        VoltageRange700mV,
+        VoltageRange2V,
         VoltageRangesNum
+    };
+
+    enum SamplingRates {
+        SamplingRate1_5kHz,
+        SamplingRate6_25kHz,
+        SamplingRate12_5kHz,
+        SamplingRate25kHz,
+        SamplingRate50kHz,
+        SamplingRate100kHz,
+        SamplingRatesNum
     };
 
     enum OveramplingRatios {
@@ -49,16 +60,18 @@ protected:
     };
 
     enum VoltageStimulusLpfs {
-        VoltageStimulusLpf10kHz,
-        VoltageStimulusLpfsNum
+        VoltageStimulusLpfsNum = 0
     };
 
     enum VoltageReferenceLpfs {
-        VoltageReferenceLpfsNum = 0
+        VoltageReferenceLpf3Hz,
+        VoltageReferenceLpf180kHz,
+        VoltageReferenceLpfsNum
     };
 
     enum ProtocolVoltageRanges {
-        ProtocolVoltageRange500mV,
+        ProtocolVoltageRange700mV,
+        ProtocolVoltageRange2V,
         ProtocolVoltageRangesNum
     };
 
@@ -118,30 +131,6 @@ protected:
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
-
-    const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
-    const double stimulusVoltageReference = 1.1; /*! voltage reference for stimuli [V] */
-
-private:
-    enum SamplingRates {
-        SamplingRate62_5kHz,
-        SamplingRate250kHz,
-        SamplingRatesNum
-    };
 };
 
-class MessageDispatcher_e2HC_V01 : public MessageDispatcher_e2HC_V00 {
-public:
-    MessageDispatcher_e2HC_V01(string di);
-    virtual ~MessageDispatcher_e2HC_V01();
-
-private:
-    enum SamplingRates {
-        SamplingRate50kHz,
-        SamplingRate25kHz,
-        SamplingRate12_5kHz,
-        SamplingRatesNum
-    };
-};
-
-#endif // MESSAGEDISPATCHER_E2HC_H
+#endif // MESSAGEDISPATCHER_ENPR_HC_H

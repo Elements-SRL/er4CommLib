@@ -28,6 +28,7 @@
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                 //    8,  2,129 : eNPR
+    {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},             //    8,  8,129 : eNPR-HC
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                     //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                  //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                  //    3,  5,136 : e16 2020 release
@@ -700,12 +701,22 @@ ErrorCodes_t MessageDispatcher::switchVcSel1(bool on) {
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::enableFrontEndResetDenoiser(bool flag) {
+ErrorCodes_t MessageDispatcher::turnOnDigitalOutput(bool on) {
+    if (!digOutImplementedFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    digOutCoder->encode(on ? 1 : 0, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::enableFrontEndResetDenoiser(bool on) {
     if (!ferdImplementedFlag) {
         return ErrorFeatureNotImplemented;
     }
 
-    ferdFlag = flag;
+    ferdFlag = on;
     return Success;
 }
 
@@ -1218,6 +1229,14 @@ ErrorCodes_t MessageDispatcher::hasChannelOn(bool &channelOnFlag, bool &singleCh
     channelOnFlag = this->channelOnFlag;
     singleChannelOnFlag = this->singleChannelOnFlag;
     return Success;
+}
+
+ErrorCodes_t MessageDispatcher::hasDigitalOutput() {
+    ErrorCodes_t ret = ErrorFeatureNotImplemented;
+    if (digOutImplementedFlag) {
+        ret = Success;
+    }
+    return ret;
 }
 
 ErrorCodes_t MessageDispatcher::hasFrontEndResetDenoiser() {

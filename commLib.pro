@@ -54,6 +54,7 @@ SOURCES += \
     messagedispatcher.cpp \
     commandcoder.cpp \
     devices/eNPR/messagedispatcher_enpr.cpp \
+    devices/eNPR/messagedispatcher_enpr_hc.cpp \
     devices/e2/messagedispatcher_e2hc.cpp \
     devices/e4/messagedispatcher_e4.cpp \
     devices/fake/messagedispatcher_fake_e16n.cpp \
@@ -69,6 +70,7 @@ HEADERS += \
     messagedispatcher.h \
     commandcoder.h \
     devices/eNPR/messagedispatcher_enpr.h \
+    devices/eNPR/messagedispatcher_enpr_hc.h \
     devices/e2/messagedispatcher_e2hc.h \
     devices/e4/messagedispatcher_e4.h \
     devices/fake/messagedispatcher_fake_e16n.h \

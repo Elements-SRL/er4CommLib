@@ -21,6 +21,7 @@
 
 #include "messagedispatcher.h"
 #include "messagedispatcher_enpr.h"
+#include "messagedispatcher_enpr_hc.h"
 #include "messagedispatcher_e2hc.h"
 #include "messagedispatcher_e4.h"
 #include "messagedispatcher_e16n.h"
@@ -153,6 +154,10 @@ ErrorCodes_t connect(
         switch (deviceType) {
         case DeviceENPR:
             messageDispatcher = new MessageDispatcher_eNPR(deviceId);
+            break;
+
+        case DeviceENPRHC:
+            messageDispatcher = new MessageDispatcher_eNPR_HC_V00(deviceId);
             break;
 
         case DeviceE4e:
@@ -653,6 +658,18 @@ ErrorCodes_t switchVcSel1(
     return ret;
 }
 
+ErrorCodes_t turnOnDigitalOutput(
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->turnOnDigitalOutput(on);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t enableFrontEndResetDenoiser(
         bool on) {
     ErrorCodes_t ret;
@@ -1048,6 +1065,17 @@ ErrorCodes_t hasChannelOn(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->hasChannelOn(channelOnFlag, singleChannelOnFlag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasDigitalOutput() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasDigitalOutput();
 
     } else {
         ret = ErrorDeviceNotConnected;

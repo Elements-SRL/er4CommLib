@@ -144,7 +144,8 @@ public:
     ErrorCodes_t switchVcSel0(bool on);
     ErrorCodes_t switchVcSel1(bool on);
 
-    ErrorCodes_t enableFrontEndResetDenoiser(bool flag);
+    ErrorCodes_t turnOnDigitalOutput(bool on);
+    ErrorCodes_t enableFrontEndResetDenoiser(bool on);
 
     ErrorCodes_t resetDevice();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
@@ -212,6 +213,7 @@ public:
     ErrorCodes_t hasZap(bool &zappableDeviceFlag, bool &singleChannelZapFlag);
     ErrorCodes_t hasChannelOn(bool &channelOnFlag, bool &singleChannelOnFlag);
 
+    ErrorCodes_t hasDigitalOutput();
     ErrorCodes_t hasFrontEndResetDenoiser();
 
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
@@ -354,6 +356,7 @@ protected:
 
     BoolArrayCoder * VcSel0Coder;
     BoolArrayCoder * VcSel1Coder;
+    BoolArrayCoder * digOutCoder;
 
     vector <RangedMeasurement_t> protocolVoltageRangesArray;
     vector <RangedMeasurement_t> protocolTimeRangesArray;
@@ -419,6 +422,9 @@ protected:
     /*! Filter */
     RangedMeasurement_t rawDataFilterCutoffFrequencyRange;
     Measurement_t rawDataFilterCutoffFrequencyDefault;
+
+    /*! Digital output */
+    bool digOutImplementedFlag = false;
 
     /*! Front end denoiser */
     bool ferdImplementedFlag = false;

@@ -608,7 +608,7 @@ MessageDispatcher_eNPR_HC_V00::MessageDispatcher_eNPR_HC_V00(string di) :
     samplingRateCoder->addMapItem(7);  /*!< 12.5kHz     -> 0b00111 */
     samplingRateCoder->addMapItem(9);  /*!< 25kHz       -> 0b01001 */
     samplingRateCoder->addMapItem(11); /*!< 50kHz       -> 0b01011 */
-    samplingRateCoder->addMapItem(14); /*!< 100kHz      -> 0b01110 */
+    samplingRateCoder->addMapItem(12); /*!< 100kHz      -> 0b01100 */
 
     /*! Oversampling ratio */
     boolConfig.initialByte = 4;

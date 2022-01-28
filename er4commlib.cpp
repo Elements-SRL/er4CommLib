@@ -180,6 +180,10 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
             break;
 
+        case DeviceENPRFairyLight:
+            messageDispatcher = new MessageDispatcher_eNPR_FL(deviceId);
+            break;
+
         case DeviceFakeE16n:
             messageDispatcher = new MessageDispatcher_fake_e16n(deviceId);
             break;
@@ -441,6 +445,18 @@ ErrorCodes_t setRawDataFilter(
     return ret;
 }
 
+ErrorCodes_t applyDacExt(
+        Measurement_t voltage) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->applyDacExt(voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t resetWasherError() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -663,6 +679,19 @@ ErrorCodes_t turnOnDigitalOutput(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->turnOnDigitalOutput(on);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t turnLedOn(
+        uint16_t ledIndex,
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->turnLedOn(ledIndex, on);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1233,6 +1262,43 @@ ErrorCodes_t getRawDataFilterCutoffFrequency(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getRawDataFilterCutoffFrequency(range, defaultValue);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getLedsNumber(
+        uint16_t &ledsNum) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getLedsNumber(ledsNum);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getLedsColors(
+        vector <uint32_t> &ledsColors) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getLedsColors(ledsColors);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getDacExtRange(
+        RangedMeasurement_t &range,
+        Measurement_t &defaultValue) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getDacExtRange(range, defaultValue);
 
     } else {
         ret = ErrorDeviceNotConnected;

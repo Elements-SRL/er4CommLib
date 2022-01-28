@@ -145,6 +145,7 @@ public:
     ErrorCodes_t switchVcSel1(bool on);
 
     ErrorCodes_t turnOnDigitalOutput(bool on);
+    ErrorCodes_t turnLedOn(uint16_t ledIndex, bool on);
     ErrorCodes_t enableFrontEndResetDenoiser(bool on);
 
     ErrorCodes_t resetDevice();
@@ -167,6 +168,7 @@ public:
     ErrorCodes_t applyInsertionPulse(Measurement_t voltage, Measurement_t duration);
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
+    ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
 
     /*! Device specific controls */
 
@@ -229,6 +231,9 @@ public:
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
+    ErrorCodes_t getLedsNumber(uint16_t &ledsNumber);
+    ErrorCodes_t getLedsColors(vector <uint32_t> &ledsColors);
+    ErrorCodes_t getDacExtRange(RangedMeasurement_t &range, Measurement_t &defaultValue);
 
     /*! Device specific controls */
 
@@ -440,6 +445,15 @@ protected:
     uint16_t voltageReferenceLpfOptionsNum = 0;
     uint16_t voltageReferenceLpfDefaultOption = 0;
     BoolRandomArrayCoder * dacExtFilterCoder;
+
+    uint16_t ledsNum = 0;
+    vector <BoolArrayCoder *> ledsCoders;
+    vector <uint32_t> ledsColorsArray;
+
+    bool dacExtControllableFlag = false; /*! This is true if the voltage applied on the external DAC is directly controllable by the user, not through protocols */
+    RangedMeasurement_t dacExtRange;
+    DoubleOffsetBinaryCoder * dacExtCoder;
+    Measurement_t dacExtDefault;
 
     /*! Device specific parameters */
 

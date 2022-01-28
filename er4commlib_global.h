@@ -101,6 +101,7 @@ typedef enum {
     DeviceDlp,                  /*!< debug dlp. */
     DeviceE2HCExtAdc,           /*!< e2HC prototype (external ADC). */
     DeviceE2HCIntAdc,           /*!< e2HC prototype (internal ADC). */
+    DeviceENPRFairyLight,       /*!< eNPR prototype for Fairy Light project. */
     DeviceFakeE16n,             /*!< Fake e16 2020 release. */
     DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */
     DevicesNum

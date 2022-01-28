@@ -285,6 +285,15 @@ ErrorCodes_t setRawDataFilter(
         ER4CL_ARGIN bool lowPassFlag,
         ER4CL_ARGIN bool activeFlag);
 
+/*! \brief Apply voltage on the external DAC.
+ *
+ * \param value [in] Voltage applied on the external DAC.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t applyDacExt(
+        ER4CL_ARGIN Measurement_t voltage);
+
 /*! \brief Reset the error status for the Orbit washer.
  *
  * \return Error code.
@@ -459,6 +468,18 @@ ErrorCodes_t switchVcSel1(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t turnOnDigitalOutput(
+        ER4CL_ARGIN bool on);
+
+/*! \brief Turn on/off a specific LED.
+ *
+ * \param ledIndex [in] Index of the LED to turn on/off.
+ *        See the device documentation for an enumeration of the single LEDs.
+ * \param on [in] True to turn the LED on, false to turn it off.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t turnLedOn(
+        ER4CL_ARGIN uint16_t ledIndex,
         ER4CL_ARGIN bool on);
 
 /*! \brief Enable the front end reset denoiser.
@@ -938,6 +959,35 @@ ErrorCodes_t getEdhFormat(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getRawDataFilterCutoffFrequency(
+        ER4CL_ARGOUT RangedMeasurement_t &range,
+        ER4CL_ARGOUT Measurement_t &defaultValue);
+
+/*! \brief Get the number of LEDs for the device.
+ *
+ * \param ledsNum [out] Number of LEDs.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getLedsNumber(
+        ER4CL_ARGOUT uint16_t &ledsNum);
+
+/*! \brief Get the LEDs colors for the device.
+ *
+ * \param ledsColors [out] Array containing the colors of the LEDs.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getLedsColors(
+        ER4CL_ARGOUT std::vector <uint32_t> &ledsColors);
+
+/*! \brief Get applicable voltage range on the external DAC.
+ *
+ * \param value [out] Applicable voltage range on the external DAC.
+ * \param defaultValue [out] Default value.
+ * \return Success if external DAC control is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getDacExtRange(
         ER4CL_ARGOUT RangedMeasurement_t &range,
         ER4CL_ARGOUT Measurement_t &defaultValue);
 

@@ -42,12 +42,6 @@ protected:
         CurrentRangesNum
     };
 
-    enum VoltageRanges {
-        VoltageRange700mV,
-        VoltageRange2V,
-        VoltageRangesNum
-    };
-
     enum SamplingRates {
         SamplingRate1_25kHz,
         SamplingRate5kHz,
@@ -75,12 +69,6 @@ protected:
         VoltageReferenceLpf3Hz,
         VoltageReferenceLpf180kHz,
         VoltageReferenceLpfsNum
-    };
-
-    enum ProtocolVoltageRanges {
-        ProtocolVoltageRange700mV,
-        ProtocolVoltageRange2V,
-        ProtocolVoltageRangesNum
     };
 
     enum ProtocolTimeRanges {
@@ -140,6 +128,42 @@ protected:
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
+
+private:
+    enum VoltageRanges {
+        VoltageRange700mV,
+        VoltageRange2V,
+        VoltageRangesNum
+    };
+
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange700mV,
+        ProtocolVoltageRange2V,
+        ProtocolVoltageRangesNum
+    };
+};
+
+class MessageDispatcher_eNPR_FL : public MessageDispatcher_eNPR {
+public:
+    MessageDispatcher_eNPR_FL(string di);
+    virtual ~MessageDispatcher_eNPR_FL();
+
+protected:
+    enum Leds {
+        LedBlue,
+        LedsNum
+    };
+
+private:
+    enum VoltageRanges {
+        VoltageRange700mV,
+        VoltageRangesNum
+    };
+
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange700mV,
+        ProtocolVoltageRangesNum
+    };
 };
 
 #endif // MESSAGEDISPATCHER_ENPR_H

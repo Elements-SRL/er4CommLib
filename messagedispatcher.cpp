@@ -27,14 +27,17 @@
 #include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                 //    8,  2,129 : eNPR
-    {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},             //    8,  8,129 : eNPR-HC
-    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                     //    4,  8,129 : e4 Elements version
-    {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                  //    3,  5,135 : e16 2020 release
-    {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                  //    3,  5,136 : e16 2020 release
-    {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                      //    6,  3,  4 : debug dlp
-    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},  //  254, 14,  1 : e2HC with external ADC
-    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},  //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
+    {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                             //    8,  2,129 : eNPR
+    {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                         //    8,  8,129 : eNPR-HC
+    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                 //    4,  8,129 : e4 Elements version
+    {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                              //    3,  5,135 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                              //    3,  5,136 : e16 2020 release
+    {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                  //    6,  3,  4 : debug dlp
+    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},              //  254, 14,  1 : e2HC with external ADC
+    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 129, DeviceE2HCExtAdc},            //  254, 14,129 : e2HC with external ADC
+    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},              //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
+    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},            //  254, 15,129 : e2HC with internal (delta-sigma) ADC
+    {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight},    //  254, 15,129 : eNPR prototype for Fairy Light project
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
 
@@ -711,6 +714,16 @@ ErrorCodes_t MessageDispatcher::turnOnDigitalOutput(bool on) {
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::turnLedOn(uint16_t ledIndex, bool on) {
+    if (ledIndex >= ledsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ledsCoders[ledIndex]->encode(on ? 1 : 0, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::enableFrontEndResetDenoiser(bool on) {
     if (!ferdImplementedFlag) {
         return ErrorFeatureNotImplemented;
@@ -958,6 +971,20 @@ ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, 
     }
 
     return ret;
+}
+
+ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFlag) {
+    if (!dacExtControllableFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    voltage.convertValue(dacExtRange.prefix);
+    dacExtCoder->encode(voltage.value, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::resetWasherError() {
@@ -1345,6 +1372,27 @@ ErrorCodes_t MessageDispatcher::getEdhFormat(string &format) {
 ErrorCodes_t MessageDispatcher::getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue) {
     range = rawDataFilterCutoffFrequencyRange;
     defaultValue = rawDataFilterCutoffFrequencyDefault;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getLedsNumber(uint16_t &ledsNumber) {
+    ErrorCodes_t ret = (ledsNum > 0 ? Success : ErrorFeatureNotImplemented);
+    ledsNumber = ledsNum;
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::getLedsColors(vector <uint32_t> &ledsColors) {
+    ledsColors = ledsColorsArray;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getDacExtRange(RangedMeasurement_t &range, Measurement_t &defaultValue) {
+    if (!dacExtControllableFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    range = dacExtRange;
+    defaultValue = dacExtDefault;
     return Success;
 }
 

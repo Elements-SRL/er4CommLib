@@ -73,7 +73,7 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     voltageRangesArray.resize(voltageRangesNum);
     voltageRangesArray[VoltageRange500mV].min = -500.0;
     voltageRangesArray[VoltageRange500mV].max = 500.0;
-    voltageRangesArray[VoltageRange500mV].step = voltageRangesArray[VoltageRange500mV].max/(SHORT_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;;
+    voltageRangesArray[VoltageRange500mV].step = voltageRangesArray[VoltageRange500mV].max/(SHORT_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
@@ -908,7 +908,7 @@ bool MessageDispatcher_e2HC_V00::checkProtocolValidity(string &message) {
         } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
-            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
+            message = "Vhold+Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;

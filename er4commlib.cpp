@@ -20,6 +20,7 @@
 #include <algorithm>
 
 #include "messagedispatcher.h"
+#include "messagedispatcher_e1plus.h"
 #include "messagedispatcher_enpr.h"
 #include "messagedispatcher_enpr_hc.h"
 #include "messagedispatcher_e2hc.h"
@@ -152,6 +153,10 @@ ErrorCodes_t connect(
         }
 
         switch (deviceType) {
+        case DeviceE1PlusEL03fEDR3:
+            messageDispatcher = new MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(deviceId);
+            break;
+
         case DeviceENPR:
             messageDispatcher = new MessageDispatcher_eNPR(deviceId);
             break;

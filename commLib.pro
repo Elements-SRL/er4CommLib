@@ -53,6 +53,7 @@ SOURCES += \
     ftdieepromdemo.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
+    devices/e1/messagedispatcher_e1plus.cpp \
     devices/eNPR/messagedispatcher_enpr.cpp \
     devices/eNPR/messagedispatcher_enpr_hc.cpp \
     devices/e2/messagedispatcher_e2hc.cpp \
@@ -69,6 +70,7 @@ HEADERS += \
     ftdieepromdemo.h \
     messagedispatcher.h \
     commandcoder.h \
+    devices/e1/messagedispatcher_e1plus.h \
     devices/eNPR/messagedispatcher_enpr.h \
     devices/eNPR/messagedispatcher_enpr_hc.h \
     devices/e2/messagedispatcher_e2hc.h \
@@ -83,6 +85,7 @@ unix {
 
 INCLUDEPATH += ./ \
     devices \
+    devices/e1 \
     devices/eNPR \
     devices/e2 \
     devices/e4 \
@@ -91,6 +94,7 @@ INCLUDEPATH += ./ \
 
 DEPENDPATH += ./ \
     devices \
+    devices/e1 \
     devices/eNPR \
     devices/e2 \
     devices/e4 \

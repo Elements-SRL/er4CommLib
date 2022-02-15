@@ -966,7 +966,7 @@ bool MessageDispatcher_e4e::checkProtocolValidity(string &message) {
         } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
-            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
+            message = "Vhold+Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;

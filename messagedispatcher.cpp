@@ -27,6 +27,7 @@
 #include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
+    {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},               //    9,  8,  1 : e1+ EL03f chip (Legacy version fo EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                             //    8,  2,129 : eNPR
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                         //    8,  8,129 : eNPR-HC
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                 //    4,  8,129 : e4 Elements version
@@ -2062,4 +2063,92 @@ double MessageDispatcher::applyFilter(uint16_t channelIdx, double x) {
 
     iirY[channelIdx][iirOff] = y;
     return y;
+}
+
+MessageDispatcherLegacyEdr3::MessageDispatcherLegacyEdr3(string deviceId) :
+    MessageDispatcher(deviceId) {
+
+}
+
+MessageDispatcherLegacyEdr3::~MessageDispatcherLegacyEdr3() {
+
+}
+
+void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
+    uint16_t value;
+    bool increaseRangeFlag;
+    bool decreaseRangeFlag = true;
+    bufferIncreaseCurrentRangeFlag = true;
+
+    for (unsigned int frameIdx = 0; frameIdx < framesNum; frameIdx++) {
+        /*! Skips the sync word at the beginning of each packet */
+        bufferReadOffset = (bufferReadOffset+(unsigned long)FTD_RX_SYNC_WORD_SIZE)&FTD_RX_BUFFER_MASK;
+
+        /*! Get current and voltage data */
+        for (int packetIdx = 0; packetIdx < packetsPerFrame; packetIdx++) {
+            for (unsigned short channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+                value = 0;
+
+                for (unsigned int byteIdx = 0; byteIdx < FTD_RX_WORD_SIZE; byteIdx++) {
+                    value <<= 8;
+                    value += *(readDataBuffer+bufferReadOffset);
+                    bufferReadOffset = (bufferReadOffset+1)&FTD_RX_BUFFER_MASK;
+                }
+
+                if (channelIdx < voltageChannelsNum) {
+                    value -= rawVoltageZero; /*! Offset binary conversion to 2's complement */
+
+                    increaseRangeFlag = false;
+
+                } else {
+                    value -= 0x8000; /*! Offset binary conversion to 2's complement */
+
+                    if ((value > UINT16_CURRENT_RANGE_INCREASE_MINIMUM_THRESHOLD) && (value < UINT16_CURRENT_RANGE_INCREASE_MAXIMUM_THRESHOLD)) {
+                        /*! Suggest to increase range if any of the channels is above the threshold */
+                        increaseRangeFlag = true;
+                        if ((value == UINT16_POSITIVE_SATURATION) || (value == UINT16_NEGATIVE_SATURATION)) {
+                            bufferSaturationFlag = true;
+                        }
+
+                    } else if ((value < UINT16_CURRENT_RANGE_DECREASE_MINIMUM_THRESHOLD) && (value > UINT16_CURRENT_RANGE_DECREASE_MAXIMUM_THRESHOLD)) {
+                        /*! Suggest to decrease range only if all the channels are below the threshold in the whole frame (otherwise noise could bring all values within threshold and trigger spurious changes) */
+                        decreaseRangeFlag = false;
+                    }
+
+                    this->processCurrentData(channelIdx, value);
+                }
+
+                outputDataBuffer[outputBufferWriteOffset][channelIdx] = value;
+            }
+
+            /*! Check that in each packet at least one channel is above threshold for the whole frame */
+            bufferIncreaseCurrentRangeFlag &= increaseRangeFlag;
+
+            if (++ferdIdx >= ferdL) {
+                /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
+                ferdIdx = 0;
+            }
+
+            if (iirOff < 1) {
+                iirOff = IIR_ORD;
+
+            } else {
+                iirOff--;
+            }
+
+            outputBufferWriteOffset = (outputBufferWriteOffset+1)&ER4CL_OUTPUT_BUFFER_MASK;
+            outputBufferAvailablePackets++;
+        }
+    }
+
+    if (decreaseRangeFlag) {
+        bufferDecreaseCurrentRangeFlag = true;
+    }
+
+    /*! If too many packets are written but not read from the user the buffer saturates */
+    if (outputBufferAvailablePackets > ER4CL_OUTPUT_BUFFER_SIZE/totalChannelsNum) {
+        outputBufferAvailablePackets = ER4CL_OUTPUT_BUFFER_SIZE/totalChannelsNum; /*!< Saturates available packets */
+        outputBufferReadOffset = outputBufferWriteOffset; /*! Move read offset just on top of the write offset so that it can read up to 1 position before after a full buffer read */
+        outputBufferOverflowFlag = true;
+    }
 }

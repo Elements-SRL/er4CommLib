@@ -773,6 +773,7 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     doubleConfig.resolution = protocolAdimensionalRanges[ProtocolNR].step;
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
+    /*! Internal DAC filter */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
@@ -780,6 +781,7 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
     dacIntFilterCoder->addMapItem(0); /*!< 10kHz -> 0b0 */
 
+    /*! External DAC filter */
     boolConfig.initialByte = 6;
     boolConfig.initialBit = 6;
     boolConfig.bitsNum = 1;
@@ -974,7 +976,7 @@ bool MessageDispatcher_eNPR::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vhold-Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
 
-        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
             message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
@@ -1159,8 +1161,8 @@ MessageDispatcher_eNPR_FL::MessageDispatcher_eNPR_FL(string di) :
     /*! External DAC */
     dacExtControllableFlag = true;
     dacExtRange.step = 0.0625;
-    dacExtRange.min = 0.0;
-    dacExtRange.max = 4096.0-dacExtRange.step;
+    dacExtRange.min = -1250.0;
+    dacExtRange.max = 1250.0;
     dacExtRange.prefix = UnitPfxMilli;
     dacExtRange.unit = "V";
 
@@ -1198,9 +1200,9 @@ MessageDispatcher_eNPR_FL::MessageDispatcher_eNPR_FL(string di) :
     doubleConfig.initialByte = 49;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 16;
-    doubleConfig.minValue = dacExtRange.min;
-    doubleConfig.maxValue = dacExtRange.max;
     doubleConfig.resolution = dacExtRange.step;
+    doubleConfig.minValue = 0.0-1950.0;
+    doubleConfig.maxValue = 4096-dacExtRange.step-1950.0;
     dacExtCoder = new DoubleOffsetBinaryCoder(doubleConfig);
 
     boolConfig.initialByte = 1;

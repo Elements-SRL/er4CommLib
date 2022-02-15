@@ -279,7 +279,7 @@ protected:
     virtual void setFerdParameters();
     double frontEndResetDenoise(uint16_t channelIdx, double x);
 
-    void storeDataFrames(unsigned int framesNum);
+    virtual void storeDataFrames(unsigned int framesNum);
     void stackOutgoingMessage(vector <uint8_t> &txDataMessage);
 
     inline void int322uint16(int32_t from, vector <uint16_t> &to, size_t offset);
@@ -588,6 +588,17 @@ protected:
 #ifdef DEBUG_PRINT
     FILE * fid;
 #endif
+};
+
+class MessageDispatcherLegacyEdr3 : public MessageDispatcher {
+public:
+    MessageDispatcherLegacyEdr3(string deviceId);
+    virtual ~MessageDispatcherLegacyEdr3();
+
+protected:
+    virtual void storeDataFrames(unsigned int framesNum) override;
+
+    uint16_t rawVoltageZero = 0;
 };
 
 #endif // MESSAGEDISPATCHER_H

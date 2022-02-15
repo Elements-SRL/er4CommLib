@@ -94,6 +94,7 @@ namespace er4CommLib {
  * \brief Enumerates the device types that can be handled by er4CommLib.
  */
 typedef enum {
+    DeviceE1PlusEL03fEDR3,      /*!< e1+ EL03f chip (Legacy version fo EDR3). */
     DeviceENPR,                 /*!< eNPR. */
     DeviceENPRHC,               /*!< eNPR-HC. */
     DeviceE4e,                  /*!< e4 Elements version. */

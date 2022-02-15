@@ -59,6 +59,7 @@ SOURCES += \
     devices/e2/messagedispatcher_e2hc.cpp \
     devices/e4/messagedispatcher_e4.cpp \
     devices/fake/messagedispatcher_fake_e16n.cpp \
+    devices/e16/messagedispatcher_e16e.cpp \
     devices/e16/messagedispatcher_e16n.cpp
 
 HEADERS += \
@@ -76,6 +77,7 @@ HEADERS += \
     devices/e2/messagedispatcher_e2hc.h \
     devices/e4/messagedispatcher_e4.h \
     devices/fake/messagedispatcher_fake_e16n.h \
+    devices/e16/messagedispatcher_e16e.h \
     devices/e16/messagedispatcher_e16n.h
 
 unix {

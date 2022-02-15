@@ -28,6 +28,7 @@
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},               //    9,  8,  1 : e1+ EL03f chip (Legacy version fo EDR3)
+    {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                           //    3,  8, 11 : e16e (Legacy version for EDR3).
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                             //    8,  2,129 : eNPR
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                         //    8,  8,129 : eNPR-HC
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                 //    4,  8,129 : e4 Elements version

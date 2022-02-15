@@ -26,6 +26,7 @@
 #include "messagedispatcher_e2hc.h"
 #include "messagedispatcher_e4.h"
 #include "messagedispatcher_e16n.h"
+#include "messagedispatcher_e16e.h"
 #include "messagedispatcher_fake_e16n.h"
 
 #ifdef _WIN32
@@ -155,6 +156,10 @@ ErrorCodes_t connect(
         switch (deviceType) {
         case DeviceE1PlusEL03fEDR3:
             messageDispatcher = new MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(deviceId);
+            break;
+
+        case DeviceE16eEDR3:
+            messageDispatcher = new Messagedispatcher_e16e_LegacyEdr3_V00(deviceId);
             break;
 
         case DeviceENPR:

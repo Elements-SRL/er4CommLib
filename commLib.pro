@@ -47,12 +47,15 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
+    devices/e1/messagedispatcher_e1hc.cpp \
+    devices/e4/messagedispatcher_e4l.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
     ftdieeprom56.cpp \
     ftdieepromdemo.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
+    devices/e1/messagedispatcher_e1light.cpp \
     devices/e1/messagedispatcher_e1plus.cpp \
     devices/eNPR/messagedispatcher_enpr.cpp \
     devices/eNPR/messagedispatcher_enpr_hc.cpp \
@@ -63,6 +66,9 @@ SOURCES += \
     devices/e16/messagedispatcher_e16n.cpp
 
 HEADERS += \
+    devices/e1/messagedispatcher_e1hc.h \
+    devices/e1/messagedispatcher_e1light.h \
+    devices/e4/messagedispatcher_e4l.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \

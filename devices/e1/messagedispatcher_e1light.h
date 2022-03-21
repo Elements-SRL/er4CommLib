@@ -1,4 +1,4 @@
-//  Copyright (C) 2022 Filippo Cona
+//  Copyright (C) 2022 Benedetta Capozucchi
 //
 //  This file is part of EDR4.
 //
@@ -14,16 +14,15 @@
 //
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
-
-#ifndef MESSAGEDISPATCHER_E1PLUS_H
-#define MESSAGEDISPATCHER_E1PLUS_H
+#ifndef MESSAGEDISPATCHER_E1LIGHT_H
+#define MESSAGEDISPATCHER_E1LIGHT_H
 
 #include "messagedispatcher.h"
 
-class MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00 : public MessageDispatcherLegacyEdr3 {
+class MessageDispatcher_e1Light_El03f_LegacyEdr3_V01 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(string id);
-    virtual ~MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00();
+    MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(string id);
+    virtual ~MessageDispatcher_e1Light_El03f_LegacyEdr3_V01();
 
 protected:
     typedef struct {
@@ -32,14 +31,12 @@ protected:
 
     enum CurrentRanges {
         CurrentRange200pA,
-        CurrentRange2nA,
-        CurrentRange20nA,
         CurrentRange200nA,
         CurrentRangesNum
     };
 
     enum VoltageRanges {
-        VoltageRange2000mV,
+        VoltageRange500mV,
         VoltageRangesNum
     };
 
@@ -70,7 +67,7 @@ protected:
     };
 
     enum ProtocolVoltageRanges {
-        ProtocolVoltageRange2000mV,
+        ProtocolVoltageRange500mV,
         ProtocolVoltageRangesNum
     };
 
@@ -133,6 +130,8 @@ protected:
     InfoStruct_t infoStruct;
 };
 
-class MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00 : public MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00 {};
-//class MessageDispatcher_e1b_El03c_LegacyEdr3_V00 : public MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00 {};
-#endif // MESSAGEDISPATCHER_E1PLUS_H
+class MessageDispatcher_e1Light_El03c_LegacyEdr3_V02 : public MessageDispatcher_e1Light_El03f_LegacyEdr3_V01 {
+public:
+    MessageDispatcher_e1Light_El03c_LegacyEdr3_V02(string id);
+};
+#endif // MESSAGEDISPATCHER_E1LIGHT_H

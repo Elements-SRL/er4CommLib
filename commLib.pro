@@ -48,6 +48,7 @@ VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
     devices/e1/messagedispatcher_e1hc.cpp \
+    devices/e16/messagedispatcher_e16eth.cpp \
     devices/e4/messagedispatcher_e4l.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
@@ -63,11 +64,13 @@ SOURCES += \
     devices/e4/messagedispatcher_e4.cpp \
     devices/fake/messagedispatcher_fake_e16n.cpp \
     devices/e16/messagedispatcher_e16e.cpp \
-    devices/e16/messagedispatcher_e16n.cpp
+    devices/e16/messagedispatcher_e16n.cpp \
+    devices/e16/messagedispatcher_e16eth.cpp
 
 HEADERS += \
     devices/e1/messagedispatcher_e1hc.h \
     devices/e1/messagedispatcher_e1light.h \
+    devices/e16/messagedispatcher_e16eth.h \
     devices/e4/messagedispatcher_e4l.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
@@ -84,7 +87,8 @@ HEADERS += \
     devices/e4/messagedispatcher_e4.h \
     devices/fake/messagedispatcher_fake_e16n.h \
     devices/e16/messagedispatcher_e16e.h \
-    devices/e16/messagedispatcher_e16n.h
+    devices/e16/messagedispatcher_e16n.h \
+    devices/e16/messagedispatcher_e16eth.h
 
 unix {
     target.path = /usr/lib

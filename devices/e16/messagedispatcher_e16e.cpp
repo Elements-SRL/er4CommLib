@@ -531,7 +531,7 @@ Messagedispatcher_e16e_LegacyEdr3_V00::Messagedispatcher_e16e_LegacyEdr3_V00(str
     edhFormat =
             "EDH Version: 2.0\n"
             "\n"
-            "Elements e16\n"
+            "Elements e16 elements\n"
             "Channels: 16\n"
             "\n"
             "Data header file\n"

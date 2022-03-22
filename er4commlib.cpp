@@ -29,6 +29,7 @@
 #include "messagedispatcher_e4.h"
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_e16e.h"
+#include "messagedispatcher_e16eth.h"
 #include "messagedispatcher_fake_e16n.h"
 
 #ifdef _WIN32
@@ -182,6 +183,10 @@ ErrorCodes_t connect(
 
         case DeviceE16n:
             messageDispatcher = new MessageDispatcher_e16n(deviceId);
+            break;
+
+        case DeviceE16ETHEDR3:
+            messageDispatcher = new Messagedispatcher_e16ETH_LegacyEdr3_V01(deviceId);
             break;
 
         case DeviceDlp:

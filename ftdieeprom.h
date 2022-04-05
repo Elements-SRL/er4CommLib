@@ -69,6 +69,7 @@ typedef enum {
 
     /*! Subversions used for ver = 06 */
     DeviceSubversionDlp = 3,
+    DeviceSubversionEL06b = 5,
 
     /*! Subversions used for ver = FD */
     DeviceSubversionDemo = 1,

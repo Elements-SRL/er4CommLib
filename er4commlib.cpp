@@ -31,6 +31,7 @@
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16eth.h"
 #include "messagedispatcher_fake_e16n.h"
+#include "messagedispatcher_el06b.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -191,6 +192,10 @@ ErrorCodes_t connect(
 
         case DeviceDlp:
             messageDispatcher = new MessageDispatcher_dlp(deviceId);
+            break;
+
+        case TestboardEL06b:
+            messageDispatcher = new MessageDispatcher_EL06b(deviceId);
             break;
 
         case DeviceE2HCExtAdc:

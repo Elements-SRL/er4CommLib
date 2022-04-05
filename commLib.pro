@@ -50,6 +50,7 @@ SOURCES += \
     devices/e1/messagedispatcher_e1hc.cpp \
     devices/e16/messagedispatcher_e16eth.cpp \
     devices/e4/messagedispatcher_e4l.cpp \
+    devices/testboard/messagedispatcher_el06b.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
     ftdieeprom56.cpp \
@@ -72,6 +73,7 @@ HEADERS += \
     devices/e1/messagedispatcher_e1light.h \
     devices/e16/messagedispatcher_e16eth.h \
     devices/e4/messagedispatcher_e4l.h \
+    devices/testboard/messagedispatcher_el06b.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
@@ -102,7 +104,8 @@ INCLUDEPATH += ./ \
     devices/e2 \
     devices/e4 \
     devices/e16 \
-    devices/fake
+    devices/fake \
+    devices/testboard
 
 DEPENDPATH += ./ \
     devices \
@@ -111,7 +114,8 @@ DEPENDPATH += ./ \
     devices/e2 \
     devices/e4 \
     devices/e16 \
-    devices/fake
+    devices/fake \
+    devices/testboard
 
 macx: INCLUDEPATH += /usr/local/include
 macx: DEPENDPATH += /usr/local/include

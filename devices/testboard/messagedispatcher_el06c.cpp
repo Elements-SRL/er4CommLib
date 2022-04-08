@@ -54,7 +54,7 @@ MessageDispatcher_EL06c::MessageDispatcher_EL06c(string id) :
     voltageRangesArray.resize(voltageRangesNum);
     voltageRangesArray[VoltageRange500mV].min = -500.0;
     voltageRangesArray[VoltageRange500mV].max = 500.0;
-    voltageRangesArray[VoltageRange500mV].step = 0.0625;
+    voltageRangesArray[VoltageRange500mV].step = 0.03125;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
@@ -560,8 +560,8 @@ boolConfig.initialByte = 2;
 boolConfig.initialBit = 3;
 boolConfig.bitsNum = 2;
 samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-samplingRateCoder->addMapItem(17); /*!< 62.5kHz      -> 0b10001 */
-samplingRateCoder->addMapItem(8);  /*!< 250kHz       -> 0b01000 */
+samplingRateCoder->addMapItem(0); /*!< 50kHz      -> 0b00 */
+
 
 /*! Protocol selection */
 boolConfig.initialByte = 4;
@@ -598,7 +598,7 @@ doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
 doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
 doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
 protocolVoltageCoders[ProtocolVStep] = new DoubleSignAbsCoder(doubleConfig);
-doubleConfig.initialByte = 9241;
+doubleConfig.initialByte = 92;
 doubleConfig.initialBit = 0;
 doubleConfig.bitsNum = 2;
 doubleConfig.resolution = protocolVoltageRanges[ProtocolVPk].step;

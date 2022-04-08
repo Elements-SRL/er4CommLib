@@ -107,6 +107,8 @@ typedef enum {
     DeviceE16n,                 /*!< e16 2020 release. */
     DeviceDlp,                  /*!< debug dlp. */
     TestboardEL06b,             /*!< testboard chip EL06b */
+    TestboardEL06c,             /*!< testboard chip EL06c */
+    TestboardEL06dEL06e,        /*!< testboard chip EL06d and EL06e */
     DeviceE2HCExtAdc,           /*!< e2HC prototype (external ADC). */
     DeviceE2HCIntAdc,           /*!< e2HC prototype (internal ADC). */
     DeviceENPRFairyLight,       /*!< eNPR prototype for Fairy Light project. */

@@ -30,41 +30,55 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     txDataBytes = 106;
 
 
+    /*! Current ranges */
+    independentCurrentRangesFlag = false;
+    currentRangesNum = CurrentRangesNum;
+    currentRangesArray.resize(currentRangesNum);
+    currentRangesArray[CurrentRange200nA].min = -200.0;
+    currentRangesArray[CurrentRange200nA].max = 200.0;
+    currentRangesArray[CurrentRange200nA].step = currentRangesArray[CurrentRange200nA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange200nA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange200nA].unit = "A";
+    currentRangesArray[CurrentRange4uA].min = -4.0;
+    currentRangesArray[CurrentRange4uA].max = 4.0;
+    currentRangesArray[CurrentRange4uA].step = currentRangesArray[CurrentRange4uA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange4uA].prefix = UnitPfxMicro;
+    currentRangesArray[CurrentRange4uA].unit = "A";
+    defaultCurrentRangesIdx.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        defaultCurrentRangesIdx[channelIdx] = CurrentRange200nA;
+    }
+
+    /*! Voltage ranges */
+    voltageRangesNum = VoltageRangesNum;
+    voltageRangesArray.resize(voltageRangesNum);
+    voltageRangesArray[VoltageRange500mV].min = -511.0;
+    voltageRangesArray[VoltageRange500mV].max = 511.0;
+    voltageRangesArray[VoltageRange500mV].step = 0.0625;
+    voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
+    voltageRangesArray[VoltageRange500mV].unit = "V";
+    defaultVoltageRangeIdx = VoltageRange500mV;
+
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);
     samplingRatesArray[SamplingRate50kHz].value = 50.0;
     samplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate50kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate25kHz].value = 25.0;
-    samplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate25kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate12_5kHz].value = 12.5;
-    samplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
-    defaultSamplingRateIdx = SamplingRate25kHz;
+    defaultSamplingRateIdx = SamplingRate50kHz;
 
     realSamplingRatesArray.resize(samplingRatesNum);
     realSamplingRatesArray[SamplingRate50kHz].value = 50.0e3/(8.0*128.0); /*!< 48.8kHz */
     realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate25kHz].value = 50.0e3/(8.0*256.0); /*!< 24.4kHz */
-    realSamplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate25kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate12_5kHz].value = 50.0e3/(8.0*512.0); /*!< 12.2kHz */
-    realSamplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
+
+
 
     integrationStepArray.resize(samplingRatesNum);
     integrationStepArray[SamplingRate50kHz].value = 20.48;
     integrationStepArray[SamplingRate50kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate50kHz].unit = "s";
-    integrationStepArray[SamplingRate25kHz].value = 40.96;
-    integrationStepArray[SamplingRate25kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate25kHz].unit = "s";
-    integrationStepArray[SamplingRate12_5kHz].value = 81.92;
-    integrationStepArray[SamplingRate12_5kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate12_5kHz].unit = "s";
+
 
 
     /*! Overampling ratios */

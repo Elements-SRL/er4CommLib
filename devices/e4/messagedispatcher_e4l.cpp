@@ -1,7 +1,24 @@
+//  Copyright (C) 2021 Filippo Cona
+//
+//  This file is part of EDR4.
+//
+//  EDR4 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  EDR4 is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "messagedispatcher_e4l.h"
 
 MessageDispatcher_e4L_El03c_LegacyEdr3_V00::MessageDispatcher_e4L_El03c_LegacyEdr3_V00(string id) :
-    MessageDispatcherLegacyEdr3(id){
+    MessageDispatcherLegacyEdr3(id) {
     /************************\
      * Communication format *
     \************************/
@@ -10,7 +27,7 @@ MessageDispatcher_e4L_El03c_LegacyEdr3_V00::MessageDispatcher_e4L_El03c_LegacyEd
     rxChannel = 'B';
     txChannel = 'B';
 
-    rxSyncWord = 0x7FFF0000;
+    rxSyncWord = 0xFFFF0000;
     txSyncWord = 0x80;
 
     packetsPerFrame = 16;
@@ -632,7 +649,6 @@ MessageDispatcher_e4L_El03c_LegacyEdr3_V00::MessageDispatcher_e4L_El03c_LegacyEd
     samplingRateCoder->addMapItem(8); /*!< 50kHz    -> 0b1000 */
     samplingRateCoder->addMapItem(9); /*!< 100kHz   -> 0b1001 */
     samplingRateCoder->addMapItem(10); /*!< 200kHz  -> 0b1010 */
-
 
     /*! Protocol selection */
     boolConfig.initialByte = 4;

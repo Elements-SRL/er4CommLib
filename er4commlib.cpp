@@ -27,6 +27,7 @@
 #include "messagedispatcher_enpr_hc.h"
 #include "messagedispatcher_e2hc.h"
 #include "messagedispatcher_e4.h"
+#include "messagedispatcher_e4l.h"
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16eth.h"
@@ -176,6 +177,10 @@ ErrorCodes_t connect(
 
         case DeviceENPRHC:
             messageDispatcher = new MessageDispatcher_eNPR_HC_V00(deviceId);
+            break;
+
+        case DeviceE4nEDR3:
+            messageDispatcher = new MessageDispatcher_e4L_El03c_LegacyEdr3_V00(deviceId);
             break;
 
         case DeviceE4e:

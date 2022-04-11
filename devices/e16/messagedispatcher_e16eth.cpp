@@ -80,7 +80,6 @@ Messagedispatcher_e16ETH_LegacyEdr3_V01::Messagedispatcher_e16ETH_LegacyEdr3_V01
         defaultCurrentRangesIdx[channelIdx] = CurrentRange200pA;
     }
 
-
     /*! Voltage ranges */
     voltageRangesNum = VoltageRangesNum;
     voltageRangesArray.resize(voltageRangesNum);
@@ -170,7 +169,6 @@ Messagedispatcher_e16ETH_LegacyEdr3_V01::Messagedispatcher_e16ETH_LegacyEdr3_V01
     oversamplingRatiosArray.resize(oversamplingRatiosNum);
     oversamplingRatiosArray[OversamplingRatioX1] = 1;
 
-
     /*! Voltage filters */
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
@@ -218,7 +216,6 @@ Messagedispatcher_e16ETH_LegacyEdr3_V01::Messagedispatcher_e16ETH_LegacyEdr3_V01
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
-
 
     /*! Time ranges */
     protocolTimeRangesArray.resize(ProtocolTimeRangesNum);
@@ -333,7 +330,6 @@ Messagedispatcher_e16ETH_LegacyEdr3_V01::Messagedispatcher_e16ETH_LegacyEdr3_V01
     protocolsAvailableTimes[ProtocolCyclicVoltammetry].push_back(ProtocolTRamp);
     protocolsAvailableAdimensionals[ProtocolCyclicVoltammetry].push_back(ProtocolN);
     protocolsAvailableAdimensionals[ProtocolCyclicVoltammetry].push_back(ProtocolNR);
-
 
     /*! Protocol voltages */
     protocolVoltagesNum = ProtocolVoltagesNum;

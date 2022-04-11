@@ -436,12 +436,12 @@ MessageDispatcher_EL06c::MessageDispatcher_EL06c(string id) :
 
 
 
-/**************\
+    /**************\
  * EDH format *
 \**************/
 
-edhFormat =
-        "EDH Version: 2.0\n"
+    edhFormat =
+            "EDH Version: 2.0\n"
         "\n"
         "Elements e2HC\n"
         "Channels: 2\n"
@@ -450,271 +450,271 @@ edhFormat =
         "\n"
         "Amplifier Setup\n"
         "Range: %currentRange%\n" // 200 pA
-        "Sampling frequency (SR): %samplingRate%\n" // 62.5 kHz
-        "Final Bandwidth: SR/2 (no filter)\n"
+            "Sampling frequency (SR): %samplingRate%\n" // 62.5 kHz
+            "Final Bandwidth: SR/2 (no filter)\n"
         "\n"
         "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
-        "\n"
+            "\n"
         "Active channels: %activeChannels%\n"; // 2
 
-/****************************\
+    /****************************\
  * Device specific controls *
 \****************************/
 
-/**********\
+    /**********\
  * Coders *
 \**********/
 
-/*! Input controls */
-BoolCoder::CoderConfig_t boolConfig;
-DoubleCoder::CoderConfig_t doubleConfig;
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+    DoubleCoder::CoderConfig_t doubleConfig;
 
-/*! Device reset */
-boolConfig.initialByte = 1;
-boolConfig.initialBit = 0;
-boolConfig.bitsNum = 1;
-deviceResetCoder = new BoolArrayCoder(boolConfig);
+    /*! Device reset */
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    deviceResetCoder = new BoolArrayCoder(boolConfig);
 
-/*! Select stimulus channel */
-selectStimulusChannelFlag = true;
-singleChannelSSCFlag = true;
+    /*! Select stimulus channel */
+    selectStimulusChannelFlag = true;
+    singleChannelSSCFlag = true;
 
-boolConfig.initialByte = 8;
-boolConfig.initialBit = 0;
-boolConfig.bitsNum = 16;
-selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 8;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 16;
+    selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
 
-selectStimulusChannelStates.resize(currentChannelsNum);
-for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-    selectStimulusChannelStates[currentIdx] = false;
-}
+    selectStimulusChannelStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        selectStimulusChannelStates[currentIdx] = false;
+    }
 
-/*! Digital offset compensations */
-digitalOffsetCompensationFlag = true;
-singleChannelDOCFlag = true;
-selectableDOCAutostopFlag = false;
+    /*! Digital offset compensations */
+    digitalOffsetCompensationFlag = true;
+    singleChannelDOCFlag = true;
+    selectableDOCAutostopFlag = false;
 
-boolConfig.initialByte = 5;
-boolConfig.initialBit = 0;
-boolConfig.bitsNum = 16;
-digitalOffsetCompensationCoder = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 16;
+    digitalOffsetCompensationCoder = new BoolArrayCoder(boolConfig);
 
-digitalOffsetCompensationStates.resize(currentChannelsNum);
-for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-    digitalOffsetCompensationStates[currentIdx] = false;
-}
+    digitalOffsetCompensationStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        digitalOffsetCompensationStates[currentIdx] = false;
+    }
 
-boolConfig.initialByte = 7;
-boolConfig.initialBit = 2;
-boolConfig.bitsNum = 1;
-digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 7;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 1;
+    digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
-/*! Zap */
-zappableDeviceFlag = false;
-singleChannelZapFlag = false;
+    /*! Zap */
+    zappableDeviceFlag = false;
+    singleChannelZapFlag = false;
 
-//    boolConfig.initialByte = 3;
-//    boolConfig.initialBit = 0;
-//    boolConfig.bitsNum = 4;
-//    zapCoder = new BoolArrayCoder(boolConfig);
+    //    boolConfig.initialByte = 3;
+    //    boolConfig.initialBit = 0;
+    //    boolConfig.bitsNum = 4;
+    //    zapCoder = new BoolArrayCoder(boolConfig);
 
-//    zapStates.resize(currentChannelsNum);
-//    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-//        zapStates[currentIdx] = false;
-//    }
+    //    zapStates.resize(currentChannelsNum);
+    //    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+    //        zapStates[currentIdx] = false;
+    //    }
 
-/*! Channel off */
-channelOnFlag = false;
-singleChannelOnFlag = false;
+    /*! Channel off */
+    channelOnFlag = false;
+    singleChannelOnFlag = false;
 
-//    boolConfig.initialByte = 5;
-//    boolConfig.initialBit = 0;
-//    boolConfig.bitsNum = 4;
-//    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
+    //    boolConfig.initialByte = 5;
+    //    boolConfig.initialBit = 0;
+    //    boolConfig.bitsNum = 4;
+    //    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
 
-//    channelOnStates.resize(currentChannelsNum);
-//    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-//        channelOnStates[currentIdx] = false;
-//    }
+    //    channelOnStates.resize(currentChannelsNum);
+    //    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+    //        channelOnStates[currentIdx] = false;
+    //    }
 
-/*! Current range */
-currentRangeCoders.resize(currentChannelsNum);
+    /*! Current range */
+    currentRangeCoders.resize(currentChannelsNum);
 
-boolConfig.initialByte = 1;
-boolConfig.initialBit = 1;
-boolConfig.bitsNum = 1;
-currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-currentRangeCoders[0]->addMapItem(1); /*!< 200nA  -> 0b1 */
-currentRangeCoders[0]->addMapItem(0); /*!< 4uA    -> 0b0 */
-
-
-/*! Voltage range */
-boolConfig.initialByte = 0;
-boolConfig.initialBit = 0;
-boolConfig.bitsNum = 1;
-voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
-
-/*! Sampling rate */
-boolConfig.initialByte = 2;
-boolConfig.initialBit = 3;
-boolConfig.bitsNum = 2;
-samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-samplingRateCoder->addMapItem(0); /*!< 50kHz      -> 0b00 */
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 1;
+    currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
+    currentRangeCoders[0]->addMapItem(1); /*!< 200nA  -> 0b1 */
+    currentRangeCoders[0]->addMapItem(0); /*!< 4uA    -> 0b0 */
 
 
-/*! Protocol selection */
-boolConfig.initialByte = 4;
-boolConfig.initialBit = 2;
-boolConfig.bitsNum = 4;
-protocolsSelectCoder = new BoolArrayCoder(boolConfig);
+    /*! Voltage range */
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
 
-/*! Protocol start */
-boolConfig.initialByte = 4;
-boolConfig.initialBit = 6;
-boolConfig.bitsNum = 1;
-protocolStartCoder = new BoolArrayCoder(boolConfig);
+    /*! Sampling rate */
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 3;
+    boolConfig.bitsNum = 2;
+    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
+    samplingRateCoder->addMapItem(0); /*!< 50kHz      -> 0b00 */
 
-/*! Protocol voltages */
-protocolVoltageCoders.resize(ProtocolVoltagesNum);
-doubleConfig.initialByte = 14;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 16;
-doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
-doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
-doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
-doubleConfig.initialByte = 65;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 16;
-doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
-doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
-doubleConfig.resolution = protocolVoltageRanges[ProtocolVPulse].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
-doubleConfig.initialByte = 71;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 16;
-doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
-doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
-doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-protocolVoltageCoders[ProtocolVStep] = new DoubleSignAbsCoder(doubleConfig);
-doubleConfig.initialByte = 92;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 2;
-doubleConfig.resolution = protocolVoltageRanges[ProtocolVPk].step;
-doubleConfig.minValue = protocolVoltageRanges[ProtocolVPk].min;
-doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPk].max;
-protocolVoltageCoders[ProtocolVPk] = new DoubleSignAbsCoder(doubleConfig);
-doubleConfig.initialByte = 98;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 16;
-doubleConfig.minValue = protocolVoltageRanges[ProtocolVFinal].min;
-doubleConfig.maxValue = protocolVoltageRanges[ProtocolVFinal].max;
-doubleConfig.resolution = protocolVoltageRanges[ProtocolVFinal].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-protocolVoltageCoders[ProtocolVFinal] = new DoubleSignAbsCoder(doubleConfig);
-doubleConfig.initialByte = 101;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 16;
-doubleConfig.minValue = protocolVoltageRanges[ProtocolVInit].min;
-doubleConfig.maxValue = protocolVoltageRanges[ProtocolVInit].max;
-doubleConfig.resolution = protocolVoltageRanges[ProtocolVInit].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-protocolVoltageCoders[ProtocolVInit] = new DoubleSignAbsCoder(doubleConfig);
 
-/*! Protocol times */
-protocolTimeCoders.resize(ProtocolTimesNum);
-doubleConfig.initialByte = 74;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 28;
-doubleConfig.resolution = protocolTimeRanges[ProtocolTHold].step;
-doubleConfig.minValue = protocolTimeRanges[ProtocolTHold].min;
-doubleConfig.maxValue = protocolTimeRanges[ProtocolTHold].max;
-protocolTimeCoders[ProtocolTHold] = new DoubleTwosCompCoder(doubleConfig);
-doubleConfig.initialByte = 78;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 28;
-doubleConfig.resolution = protocolTimeRanges[ProtocolTPulse].step;
-doubleConfig.minValue = protocolTimeRanges[ProtocolTPulse].min;
-doubleConfig.maxValue = protocolTimeRanges[ProtocolTPulse].max;
-protocolTimeCoders[ProtocolTPulse] = new DoubleTwosCompCoder(doubleConfig);
-doubleConfig.initialByte = 84;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 28;
-doubleConfig.resolution = protocolTimeRanges[ProtocolTStep].step;
-doubleConfig.minValue = protocolTimeRanges[ProtocolTStep].min;
-doubleConfig.maxValue = protocolTimeRanges[ProtocolTStep].max;
-protocolTimeCoders[ProtocolTStep] = new DoubleSignAbsCoder(doubleConfig);
-doubleConfig.initialByte = 94;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 28;
-doubleConfig.resolution = protocolTimeRanges[ProtocolTRamp].step;
-doubleConfig.minValue = protocolTimeRanges[ProtocolTRamp].min;
-doubleConfig.maxValue = protocolTimeRanges[ProtocolTRamp].max;
-protocolTimeCoders[ProtocolTRamp] = new DoubleSignAbsCoder(doubleConfig);
-doubleConfig.initialByte = 92;
-doubleConfig.initialBit = 2;
-doubleConfig.bitsNum = 10;
-doubleConfig.resolution = protocolTimeRanges[ProtocolTPe].step;
-doubleConfig.minValue = protocolTimeRanges[ProtocolTPe].min;
-doubleConfig.maxValue = protocolTimeRanges[ProtocolTPe].max;
-protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
+    /*! Protocol selection */
+    boolConfig.initialByte = 4;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 4;
+    protocolsSelectCoder = new BoolArrayCoder(boolConfig);
 
-/*! Protocol slope */
-protocolSlopeCoders.resize(ProtocolSlopesNum);
+    /*! Protocol start */
+    boolConfig.initialByte = 4;
+    boolConfig.initialBit = 6;
+    boolConfig.bitsNum = 1;
+    protocolStartCoder = new BoolArrayCoder(boolConfig);
 
-/*! Protocol Adimensionals */
-protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
-doubleConfig.initialByte = 88;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 10;
-doubleConfig.resolution = protocolAdimensionalRanges[ProtocolN].step;
-doubleConfig.minValue = protocolAdimensionalRanges[ProtocolN].min;
-doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolN].max;
-protocolAdimensionalCoders[ProtocolN] = new DoubleTwosCompCoder(doubleConfig);
-doubleConfig.initialByte = 90;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 10;
-doubleConfig.resolution = protocolAdimensionalRanges[ProtocolNR].step;
-doubleConfig.minValue = protocolAdimensionalRanges[ProtocolNR].min;
-doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolNR].max;
-protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
+    /*! Protocol voltages */
+    protocolVoltageCoders.resize(ProtocolVoltagesNum);
+    doubleConfig.initialByte = 14;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
+    doubleConfig.resolution = 0.03125;
+    protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 65;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
+    doubleConfig.resolution = 0.03125;
+    protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 71;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
+    doubleConfig.resolution = 0.03125;
+    protocolVoltageCoders[ProtocolVStep] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 92;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 2;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVPk].step;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVPk].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPk].max;
+    protocolVoltageCoders[ProtocolVPk] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 98;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVFinal].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVFinal].max;
+    doubleConfig.resolution = 0.03125;
+    protocolVoltageCoders[ProtocolVFinal] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 101;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVInit].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVInit].max;
+    doubleConfig.resolution = 0.03125;
+    protocolVoltageCoders[ProtocolVInit] = new DoubleSignAbsCoder(doubleConfig);
 
-boolConfig.initialByte = 1;
-boolConfig.initialBit = 5;
-boolConfig.bitsNum = 1;
-dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-dacIntFilterCoder->addMapItem(1); /*!< 10kHz     -> 0b1 */
-/*! DON'T USE  0b0: the filter must be active because the DAC is a 3rd order DS and this filter accounts for the 4th order filtering */
+    /*! Protocol times */
+    protocolTimeCoders.resize(ProtocolTimesNum);
+    doubleConfig.initialByte = 74;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 28;
+    doubleConfig.resolution = protocolTimeRanges[ProtocolTHold].step;
+    doubleConfig.minValue = protocolTimeRanges[ProtocolTHold].min;
+    doubleConfig.maxValue = protocolTimeRanges[ProtocolTHold].max;
+    protocolTimeCoders[ProtocolTHold] = new DoubleTwosCompCoder(doubleConfig);
+    doubleConfig.initialByte = 78;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 28;
+    doubleConfig.resolution = protocolTimeRanges[ProtocolTPulse].step;
+    doubleConfig.minValue = protocolTimeRanges[ProtocolTPulse].min;
+    doubleConfig.maxValue = protocolTimeRanges[ProtocolTPulse].max;
+    protocolTimeCoders[ProtocolTPulse] = new DoubleTwosCompCoder(doubleConfig);
+    doubleConfig.initialByte = 84;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 28;
+    doubleConfig.resolution = protocolTimeRanges[ProtocolTStep].step;
+    doubleConfig.minValue = protocolTimeRanges[ProtocolTStep].min;
+    doubleConfig.maxValue = protocolTimeRanges[ProtocolTStep].max;
+    protocolTimeCoders[ProtocolTStep] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 94;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 28;
+    doubleConfig.resolution = protocolTimeRanges[ProtocolTRamp].step;
+    doubleConfig.minValue = protocolTimeRanges[ProtocolTRamp].min;
+    doubleConfig.maxValue = protocolTimeRanges[ProtocolTRamp].max;
+    protocolTimeCoders[ProtocolTRamp] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 92;
+    doubleConfig.initialBit = 2;
+    doubleConfig.bitsNum = 10;
+    doubleConfig.resolution = protocolTimeRanges[ProtocolTPe].step;
+    doubleConfig.minValue = protocolTimeRanges[ProtocolTPe].min;
+    doubleConfig.maxValue = protocolTimeRanges[ProtocolTPe].max;
+    protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
 
-/*! Voltage offsets */
-voltageOffsetCoders.resize(currentChannelsNum);
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 17;
-doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
-doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
-doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-    doubleConfig.initialByte = 16+2*channelIdx;
-    voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
-}
+    /*! Protocol slope */
+    protocolSlopeCoders.resize(ProtocolSlopesNum);
 
-/*! Insertion pulse */
-doubleConfig.initialByte = 68;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 16;
-doubleConfig.minValue = insertionPulseVoltageRange.min;
-doubleConfig.maxValue = insertionPulseVoltageRange.max;
-doubleConfig.resolution = insertionPulseVoltageRange.max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-insertionPulseVoltageCoder = new DoubleSignAbsCoder(doubleConfig);
-doubleConfig.initialByte = 82;
-doubleConfig.initialBit = 0;
-doubleConfig.bitsNum = 16;
-doubleConfig.resolution = insertionPulseDurationRange.step;
-doubleConfig.minValue = insertionPulseDurationRange.min;
-doubleConfig.maxValue = insertionPulseDurationRange.max;
-insertionPulseDurationCoder = new DoubleTwosCompCoder(doubleConfig);
-boolConfig.initialByte = 4;
-boolConfig.initialBit = 2;
-boolConfig.bitsNum = 1;
-insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
+    /*! Protocol Adimensionals */
+    protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
+    doubleConfig.initialByte = 88;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 10;
+    doubleConfig.resolution = protocolAdimensionalRanges[ProtocolN].step;
+    doubleConfig.minValue = protocolAdimensionalRanges[ProtocolN].min;
+    doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolN].max;
+    protocolAdimensionalCoders[ProtocolN] = new DoubleTwosCompCoder(doubleConfig);
+    doubleConfig.initialByte = 90;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 10;
+    doubleConfig.resolution = protocolAdimensionalRanges[ProtocolNR].step;
+    doubleConfig.minValue = protocolAdimensionalRanges[ProtocolNR].min;
+    doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolNR].max;
+    protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
+
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 5;
+    boolConfig.bitsNum = 1;
+    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
+    dacIntFilterCoder->addMapItem(1); /*!< 10kHz     -> 0b1 */
+    /*! DON'T USE  0b0: the filter must be active because the DAC is a 3rd order DS and this filter accounts for the 4th order filtering */
+
+    /*! Voltage offsets */
+    voltageOffsetCoders.resize(currentChannelsNum);
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 17;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
+    doubleConfig.resolution = 0.03125;
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        doubleConfig.initialByte = 16+2*channelIdx;
+        voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
+    }
+
+    /*! Insertion pulse */
+    doubleConfig.initialByte = 68;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.minValue = insertionPulseVoltageRange.min;
+    doubleConfig.maxValue = insertionPulseVoltageRange.max;
+    doubleConfig.resolution = 0.03125;
+    insertionPulseVoltageCoder = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 82;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.resolution = insertionPulseDurationRange.step;
+    doubleConfig.minValue = insertionPulseDurationRange.min;
+    doubleConfig.maxValue = insertionPulseDurationRange.max;
+    insertionPulseDurationCoder = new DoubleTwosCompCoder(doubleConfig);
+    boolConfig.initialByte = 4;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 1;
+    insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
 
 }

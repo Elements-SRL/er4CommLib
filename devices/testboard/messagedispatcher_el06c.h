@@ -122,7 +122,7 @@ protected:
     InfoStruct_t infoStruct;
 
     const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
-    const double stimulusVoltageReference = 1.1; /*! voltage reference for stimuli [V] */
+    const double stimulusVoltageReference = 0.7; /*! voltage reference for stimuli [V] */
 
 private:
     enum SamplingRates {

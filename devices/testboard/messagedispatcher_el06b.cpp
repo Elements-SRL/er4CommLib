@@ -581,21 +581,21 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     doubleConfig.bitsNum = 16;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
+    doubleConfig.resolution = 0.0625;
     protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 65;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 16;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVPulse].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
+    doubleConfig.resolution = 0.0625;
     protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 71;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 16;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
+    doubleConfig.resolution = 0.0625;
     protocolVoltageCoders[ProtocolVStep] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 92;
     doubleConfig.initialBit = 0;
@@ -609,14 +609,14 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     doubleConfig.bitsNum = 16;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVFinal].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVFinal].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVFinal].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
+    doubleConfig.resolution = 0.0625;
     protocolVoltageCoders[ProtocolVFinal] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 101;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 16;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVInit].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVInit].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVInit].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
+    doubleConfig.resolution = 0.0625;
     protocolVoltageCoders[ProtocolVInit] = new DoubleSignAbsCoder(doubleConfig);
 
     /*! Protocol times */
@@ -690,7 +690,7 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     doubleConfig.bitsNum = 17;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
+    doubleConfig.resolution = 0.0625;
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
         doubleConfig.initialByte = 16+2*channelIdx;
         voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
@@ -702,7 +702,7 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     doubleConfig.bitsNum = 16;
     doubleConfig.minValue = insertionPulseVoltageRange.min;
     doubleConfig.maxValue = insertionPulseVoltageRange.max;
-    doubleConfig.resolution = insertionPulseVoltageRange.max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
+    doubleConfig.resolution = 0.0625;
     insertionPulseVoltageCoder = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 82;
     doubleConfig.initialBit = 0;

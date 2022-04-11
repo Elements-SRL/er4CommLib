@@ -18,7 +18,7 @@
 #include "messagedispatcher_e16eth.h"
 #include "messagedispatcher.h"
 
-Messagedispatcher_e16ETH_LegacyEdr3_V01::Messagedispatcher_e16ETH_LegacyEdr3_V01(string id):
+MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01(string id):
     MessageDispatcherLegacyEdr3(id){
 
     /************************\
@@ -920,11 +920,11 @@ Messagedispatcher_e16ETH_LegacyEdr3_V01::Messagedispatcher_e16ETH_LegacyEdr3_V01
     txStatus[txStatusIdx++] = 0x00;
 }
 
-Messagedispatcher_e16ETH_LegacyEdr3_V01::~Messagedispatcher_e16ETH_LegacyEdr3_V01() {
+MessageDispatcher_e16ETH_LegacyEdr3_V01::~MessageDispatcher_e16ETH_LegacyEdr3_V01() {
 
 }
 
-void Messagedispatcher_e16ETH_LegacyEdr3_V01::initializeDevice() {
+void MessageDispatcher_e16ETH_LegacyEdr3_V01::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -951,7 +951,7 @@ void Messagedispatcher_e16ETH_LegacyEdr3_V01::initializeDevice() {
 
 }
 
-bool Messagedispatcher_e16ETH_LegacyEdr3_V01::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e16ETH_LegacyEdr3_V01::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1150,7 +1150,7 @@ bool Messagedispatcher_e16ETH_LegacyEdr3_V01::checkProtocolValidity(string &mess
     return validFlag;
 }
 
-void Messagedispatcher_e16ETH_LegacyEdr3_V01::setFerdParameters() {
+void MessageDispatcher_e16ETH_LegacyEdr3_V01::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {

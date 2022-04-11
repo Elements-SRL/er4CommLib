@@ -34,11 +34,11 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                           //    3,  8, 11 : e16e (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                             //    8,  2,129 : eNPR
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                         //    8,  8,129 : eNPR-HC
-    {DeviceVersionE4, DeviceSubversionE4n, 15, DeviceE4e},                                  //    4,  3, 15 : e4 Nanion version (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                 //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                              //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                              //    3,  5,136 : e16 2020 release
-    {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3, 9, 4 : e16eth (Legacy Version for EDR3)
+    {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                  //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 1, TestboardEL06b},                           //    6,  5,  1 : testboard EL06b
     {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},              //  254, 14,  1 : e2HC with external ADC

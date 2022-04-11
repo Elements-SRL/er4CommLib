@@ -15,8 +15,8 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MESSAGEDISPATCHER_E4E_H
-#define MESSAGEDISPATCHER_E4E_H
+#ifndef MESSAGEDISPATCHER_E4_H
+#define MESSAGEDISPATCHER_E4_H
 
 #include "messagedispatcher.h"
 
@@ -137,4 +137,4 @@ protected:
     InfoStruct_t infoStruct;
 };
 
-#endif // MESSAGEDISPATCHER_E4E_H
+#endif // MESSAGEDISPATCHER_E4_H

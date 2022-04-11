@@ -103,7 +103,7 @@ typedef enum {
     DeviceE16ETHEDR3,           /*!< e16ETH (LegacyVersion for EDR3) */
     DeviceENPR,                 /*!< eNPR. */
     DeviceENPRHC,               /*!< eNPR-HC. */
-    DeviceE4nEDR3,              /*!< e4 Nanion version (Legacy version for EDR3). */
+    DeviceE4eEDR3,              /*!< e4 Elements (Legacy version for EDR3). */
     DeviceE4e,                  /*!< e4 Elements version. */
     DeviceE16n,                 /*!< e16 2020 release. */
     DeviceDlp,                  /*!< debug dlp. */

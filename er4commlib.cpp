@@ -27,12 +27,12 @@
 #include "messagedispatcher_enpr_hc.h"
 #include "messagedispatcher_e2hc.h"
 #include "messagedispatcher_e4.h"
-#include "messagedispatcher_e4l.h"
+#include "messagedispatcher_e4e.h"
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16eth.h"
-#include "messagedispatcher_fake_e16n.h"
 #include "messagedispatcher_el06b.h"
+#include "messagedispatcher_fake_e16n.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -168,7 +168,7 @@ ErrorCodes_t connect(
             break;
 
         case DeviceE16eEDR3:
-            messageDispatcher = new Messagedispatcher_e16e_LegacyEdr3_V00(deviceId);
+            messageDispatcher = new MessageDispatcher_e16e_LegacyEdr3_V00(deviceId);
             break;
 
         case DeviceENPR:
@@ -179,8 +179,8 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_eNPR_HC_V00(deviceId);
             break;
 
-        case DeviceE4nEDR3:
-            messageDispatcher = new MessageDispatcher_e4L_El03c_LegacyEdr3_V00(deviceId);
+        case DeviceE4eEDR3:
+            messageDispatcher = new MessageDispatcher_e4e_El03c_LegacyEdr3_V00(deviceId);
             break;
 
         case DeviceE4e:
@@ -192,7 +192,7 @@ ErrorCodes_t connect(
             break;
 
         case DeviceE16ETHEDR3:
-            messageDispatcher = new Messagedispatcher_e16ETH_LegacyEdr3_V01(deviceId);
+            messageDispatcher = new MessageDispatcher_e16ETH_LegacyEdr3_V01(deviceId);
             break;
 
         case DeviceDlp:

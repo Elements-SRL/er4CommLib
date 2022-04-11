@@ -15,10 +15,11 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "messagedispatcher_e4l.h"
+#include "messagedispatcher_e4e.h"
 
-MessageDispatcher_e4L_El03c_LegacyEdr3_V00::MessageDispatcher_e4L_El03c_LegacyEdr3_V00(string id) :
+MessageDispatcher_e4e_El03c_LegacyEdr3_V00::MessageDispatcher_e4e_El03c_LegacyEdr3_V00(string id) :
     MessageDispatcherLegacyEdr3(id) {
+
     /************************\
      * Communication format *
     \************************/
@@ -868,11 +869,11 @@ MessageDispatcher_e4L_El03c_LegacyEdr3_V00::MessageDispatcher_e4L_El03c_LegacyEd
 
 }
 
-MessageDispatcher_e4L_El03c_LegacyEdr3_V00::~MessageDispatcher_e4L_El03c_LegacyEdr3_V00() {
+MessageDispatcher_e4e_El03c_LegacyEdr3_V00::~MessageDispatcher_e4e_El03c_LegacyEdr3_V00() {
 
 }
 
-void MessageDispatcher_e4L_El03c_LegacyEdr3_V00::initializeDevice() {
+void MessageDispatcher_e4e_El03c_LegacyEdr3_V00::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -898,7 +899,7 @@ void MessageDispatcher_e4L_El03c_LegacyEdr3_V00::initializeDevice() {
     }
 }
 
-bool MessageDispatcher_e4L_El03c_LegacyEdr3_V00::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e4e_El03c_LegacyEdr3_V00::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1097,7 +1098,7 @@ bool MessageDispatcher_e4L_El03c_LegacyEdr3_V00::checkProtocolValidity(string &m
     return validFlag;
 }
 
-void MessageDispatcher_e4L_El03c_LegacyEdr3_V00::setFerdParameters() {
+void MessageDispatcher_e4e_El03c_LegacyEdr3_V00::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {

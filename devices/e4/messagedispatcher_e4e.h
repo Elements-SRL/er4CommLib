@@ -15,8 +15,8 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MESSAGEDISPATCHER_E4L_H
-#define MESSAGEDISPATCHER_E4L_H
+#ifndef MESSAGEDISPATCHER_E4E_H
+#define MESSAGEDISPATCHER_E4E_H
 
 #include "messagedispatcher.h"
 
@@ -24,10 +24,10 @@
 
 using namespace std;
 
-class MessageDispatcher_e4L_El03c_LegacyEdr3_V00 : public MessageDispatcherLegacyEdr3 {
+class MessageDispatcher_e4e_El03c_LegacyEdr3_V00 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e4L_El03c_LegacyEdr3_V00(string id);
-    virtual ~MessageDispatcher_e4L_El03c_LegacyEdr3_V00();
+    MessageDispatcher_e4e_El03c_LegacyEdr3_V00(string id);
+    virtual ~MessageDispatcher_e4e_El03c_LegacyEdr3_V00();
 
 protected:
     typedef struct {
@@ -138,4 +138,4 @@ protected:
     InfoStruct_t infoStruct;
 };
 
-#endif // MESSAGEDISPATCHER_E4L_H
+#endif // MESSAGEDISPATCHER_E4E_H

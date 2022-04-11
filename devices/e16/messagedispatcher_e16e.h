@@ -20,13 +20,10 @@
 
 #include "messagedispatcher.h"
 
-
-
-class Messagedispatcher_e16e_LegacyEdr3_V00: public MessageDispatcherLegacyEdr3
-{
+class MessageDispatcher_e16e_LegacyEdr3_V00: public MessageDispatcherLegacyEdr3 {
 public:
-    Messagedispatcher_e16e_LegacyEdr3_V00(string id);
-    virtual ~Messagedispatcher_e16e_LegacyEdr3_V00();
+    MessageDispatcher_e16e_LegacyEdr3_V00(string id);
+    virtual ~MessageDispatcher_e16e_LegacyEdr3_V00();
 
 protected:
 

@@ -47,12 +47,6 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
-    devices/e1/messagedispatcher_e1hc.cpp \
-    devices/e16/messagedispatcher_e16eth.cpp \
-    devices/e4/messagedispatcher_e4l.cpp \
-    devices/testboard/messagedispatcher_el06b.cpp \
-    devices/testboard/messagedispatcher_el06c.cpp \
-    devices/testboard/messagedispatcher_el06d_el06e.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
     ftdieeprom56.cpp \
@@ -61,23 +55,21 @@ SOURCES += \
     commandcoder.cpp \
     devices/e1/messagedispatcher_e1light.cpp \
     devices/e1/messagedispatcher_e1plus.cpp \
+    devices/e1/messagedispatcher_e1hc.cpp \
     devices/eNPR/messagedispatcher_enpr.cpp \
     devices/eNPR/messagedispatcher_enpr_hc.cpp \
     devices/e2/messagedispatcher_e2hc.cpp \
     devices/e4/messagedispatcher_e4.cpp \
-    devices/fake/messagedispatcher_fake_e16n.cpp \
+    devices/e4/messagedispatcher_e4e.cpp \
     devices/e16/messagedispatcher_e16e.cpp \
     devices/e16/messagedispatcher_e16n.cpp \
-    devices/e16/messagedispatcher_e16eth.cpp
+    devices/e16/messagedispatcher_e16eth.cpp \
+    devices/testboard/messagedispatcher_el06b.cpp \
+    devices/testboard/messagedispatcher_el06c.cpp \
+    devices/testboard/messagedispatcher_el06d_el06e.cpp \
+    devices/fake/messagedispatcher_fake_e16n.cpp
 
 HEADERS += \
-    devices/e1/messagedispatcher_e1hc.h \
-    devices/e1/messagedispatcher_e1light.h \
-    devices/e16/messagedispatcher_e16eth.h \
-    devices/e4/messagedispatcher_e4l.h \
-    devices/testboard/messagedispatcher_el06b.h \
-    devices/testboard/messagedispatcher_el06c.h \
-    devices/testboard/messagedispatcher_el06d_el06e.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
@@ -86,15 +78,21 @@ HEADERS += \
     ftdieepromdemo.h \
     messagedispatcher.h \
     commandcoder.h \
+    devices/e1/messagedispatcher_e1light.h \
     devices/e1/messagedispatcher_e1plus.h \
+    devices/e1/messagedispatcher_e1hc.h \
     devices/eNPR/messagedispatcher_enpr.h \
     devices/eNPR/messagedispatcher_enpr_hc.h \
     devices/e2/messagedispatcher_e2hc.h \
     devices/e4/messagedispatcher_e4.h \
-    devices/fake/messagedispatcher_fake_e16n.h \
+    devices/e4/messagedispatcher_e4e.h \
     devices/e16/messagedispatcher_e16e.h \
     devices/e16/messagedispatcher_e16n.h \
-    devices/e16/messagedispatcher_e16eth.h
+    devices/e16/messagedispatcher_e16eth.h \
+    devices/testboard/messagedispatcher_el06b.h \
+    devices/testboard/messagedispatcher_el06c.h \
+    devices/testboard/messagedispatcher_el06d_el06e.h \
+    devices/fake/messagedispatcher_fake_e16n.h
 
 unix {
     target.path = /usr/lib

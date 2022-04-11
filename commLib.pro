@@ -51,6 +51,8 @@ SOURCES += \
     devices/e16/messagedispatcher_e16eth.cpp \
     devices/e4/messagedispatcher_e4l.cpp \
     devices/testboard/messagedispatcher_el06b.cpp \
+    devices/testboard/messagedispatcher_el06c.cpp \
+    devices/testboard/messagedispatcher_el06d_el06e.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
     ftdieeprom56.cpp \
@@ -74,6 +76,8 @@ HEADERS += \
     devices/e16/messagedispatcher_e16eth.h \
     devices/e4/messagedispatcher_e4l.h \
     devices/testboard/messagedispatcher_el06b.h \
+    devices/testboard/messagedispatcher_el06c.h \
+    devices/testboard/messagedispatcher_el06d_el06e.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \

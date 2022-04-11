@@ -15,19 +15,21 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MESSAGEDISPATCHER_EL06B_H
-#define MESSAGEDISPATCHER_EL06B_H
+#ifndef MESSAGEDISPATCHER_EL06C_H
+#define MESSAGEDISPATCHER_EL0C6_H
+
 
 #include "messagedispatcher.h"
 
 using namespace std;
 
-class MessageDispatcher_EL06b : public MessageDispatcher {
+class MessageDispatcher_EL06c : public MessageDispatcher {
 public:
-    MessageDispatcher_EL06b(string di);
-    virtual ~MessageDispatcher_EL06b();
+    MessageDispatcher_EL06c(string di);
+    virtual ~MessageDispatcher_EL06c();
 
 protected:
+
     typedef struct {
         uint8_t unused;
     } InfoStruct_t;
@@ -125,12 +127,9 @@ protected:
 private:
     enum SamplingRates {
         SamplingRate50kHz,
-        SamplingRate25kHz,
-        SamplingRate12_5kHz,
         SamplingRatesNum
     };
+
 };
 
-
-
-#endif // MESSAGEDISPATCHER_EL06B_H
+#endif // MESSAGEDISPATCHER_EL06C_H

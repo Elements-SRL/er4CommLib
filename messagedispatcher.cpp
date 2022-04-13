@@ -41,6 +41,9 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                  //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 1, TestboardEL06b},                           //    6,  5,  1 : testboard EL06b
+    {DeviceVersionDlp, DeviceSubversionEL06c, 1, TestboardEL06c},                           //    6,  6,  1 : testboard EL06c
+    {DeviceVersionDlp, DeviceSubversionEL06d, 1, TestboardEL06dEL06e},                      //    6,  7,  1 : testboard EL06d
+    {DeviceVersionDlp, DeviceSubversionEL06e, 1, TestboardEL06dEL06e},                      //    6,  8,  1 : testboard EL06e
     {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},              //  254, 14,  1 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 129, DeviceE2HCExtAdc},            //  254, 14,129 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},              //  254, 15,  1 : e2HC with internal (delta-sigma) ADC

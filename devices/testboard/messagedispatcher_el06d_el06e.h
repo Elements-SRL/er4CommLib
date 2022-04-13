@@ -28,7 +28,6 @@ public:
     virtual ~MessageDispatcher_EL06d_EL06e();
 
 protected:
-
     typedef struct {
         uint8_t unused;
     } InfoStruct_t;
@@ -127,7 +126,6 @@ private:
         SamplingRate50kHz,
         SamplingRatesNum
     };
-
 };
 
 #endif // MESSAGEDISPATCHER_EL06D_EL06E_H

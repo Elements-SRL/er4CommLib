@@ -18,7 +18,6 @@
 #ifndef MESSAGEDISPATCHER_EL06C_H
 #define MESSAGEDISPATCHER_EL0C6_H
 
-
 #include "messagedispatcher.h"
 
 using namespace std;
@@ -29,7 +28,6 @@ public:
     virtual ~MessageDispatcher_EL06c();
 
 protected:
-
     typedef struct {
         uint8_t unused;
     } InfoStruct_t;

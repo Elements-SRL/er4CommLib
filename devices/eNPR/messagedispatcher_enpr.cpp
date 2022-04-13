@@ -1202,7 +1202,7 @@ MessageDispatcher_eNPR_FL::MessageDispatcher_eNPR_FL(string di) :
     doubleConfig.bitsNum = 16;
     doubleConfig.resolution = dacExtRange.step;
     doubleConfig.minValue = 0.0-1950.0;
-    doubleConfig.maxValue = 4096-dacExtRange.step-1950.0;
+    doubleConfig.maxValue = 4096.0-dacExtRange.step-1950.0;
     dacExtCoder = new DoubleOffsetBinaryCoder(doubleConfig);
 
     boolConfig.initialByte = 1;

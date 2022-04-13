@@ -1,3 +1,20 @@
+//  Copyright (C) 2022 Benedetta Capozucchi
+//
+//  This file is part of EDR4.
+//
+//  EDR4 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  EDR4 is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "messagedispatcher_el06d_el06e.h"
 
 MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
@@ -17,7 +34,7 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     packetsPerFrame = 16;
 
     voltageChannelsNum = 1;
-    currentChannelsNum = 2;
+    currentChannelsNum = 16;
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
     readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
@@ -27,8 +44,7 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
-    txDataBytes = 106;
-
+    txDataBytes = 107;
 
     /*! Current ranges */
     independentCurrentRangesFlag = false;
@@ -58,6 +74,14 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
+
+    /*! External DAC */
+    dacExtControllableFlag = true;
+    dacExtRange.step = 0.0625;
+    dacExtRange.min = -1650.0;
+    dacExtRange.max = 4000.0-1650;
+    dacExtRange.prefix = UnitPfxMilli;
+    dacExtRange.unit = "V";
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
@@ -547,13 +571,21 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     currentRangeCoders[0]->addMapItem(1); /*!< 200nA  -> 0b1 */
     currentRangeCoders[0]->addMapItem(0); /*!< 4uA    -> 0b0 */
 
-
     /*! Voltage range */
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+
+    /*! External DAC */
+    doubleConfig.initialByte = 104;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.resolution = dacExtRange.step;
+    doubleConfig.minValue = 0.0-1650.0;
+    doubleConfig.maxValue = 4096.0-dacExtRange.step-1650.0;
+    dacExtCoder = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;

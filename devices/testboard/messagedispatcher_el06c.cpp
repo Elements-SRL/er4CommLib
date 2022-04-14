@@ -720,7 +720,7 @@ MessageDispatcher_EL06c::MessageDispatcher_EL06c(string id) :
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     doubleConfig.resolution = 0.03125;
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        doubleConfig.initialByte = 17+2*channelIdx;
+        doubleConfig.initialByte = 17+3*channelIdx;
         voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
     }
 

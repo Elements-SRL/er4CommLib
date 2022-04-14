@@ -719,12 +719,12 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 17;
+    doubleConfig.bitsNum = 16;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     doubleConfig.resolution = 1.0;
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        doubleConfig.initialByte = 16+2*channelIdx;
+        doubleConfig.initialByte = 17+2*channelIdx;
         voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
     }
 

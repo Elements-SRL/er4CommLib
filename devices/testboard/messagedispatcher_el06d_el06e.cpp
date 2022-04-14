@@ -465,21 +465,21 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     \**************/
 
     edhFormat =
-            "EDH Version: 2.0\n"
-            "\n"
-            "Elements e2HC\n"
-            "Channels: 2\n"
-            "\n"
-            "Data header file\n"
-            "\n"
-            "Amplifier Setup\n"
-            "Range: %currentRange%\n" // 200 pA
-            "Sampling frequency (SR): %samplingRate%\n" // 62.5 kHz
-            "Final Bandwidth: SR/2 (no filter)\n"
-            "\n"
-            "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
-            "\n"
-            "Active channels: %activeChannels%\n"; // 2
+        "EDH Version: 2.0\n"
+        "\n"
+        "Elements Testboard EL06bcde\n"
+        "Channels: 16\n"
+        "\n"
+        "Data header file\n"
+        "\n"
+        "Amplifier Setup\n"
+        "Range: %currentRange%\n" // 200 pA
+        "Sampling frequency (SR): %samplingRate%\n" // 62.5 kHz
+        "Final Bandwidth: SR/2 (no filter)\n"
+        "\n"
+        "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
+        "\n"
+        "Active channels: %activeChannels%\n"; // 2
 
     /****************************\
      * Device specific controls *
@@ -503,7 +503,7 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     selectStimulusChannelFlag = true;
     singleChannelSSCFlag = true;
 
-    boolConfig.initialByte = 8;
+    boolConfig.initialByte = 11;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 12;
     selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
@@ -758,17 +758,18 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
 
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
-    txStatus[txStatusIdx++] = 0x3A; // CFG0
+    txStatus[txStatusIdx++] = 0x22; // CFG0
     txStatus[txStatusIdx++] = 0x01; // CFG1
     txStatus[txStatusIdx++] = 0x05; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
-    txStatus[txStatusIdx++] = 0x03; // CFG4
-    txStatus[txStatusIdx++] = 0x03; // CFG5
-    txStatus[txStatusIdx++] = 0x03; // CFG6
-    txStatus[txStatusIdx++] = 0x03; // CFG7
-    txStatus[txStatusIdx++] = 0x03; // CFG8
+    txStatus[txStatusIdx++] = 0x00; // CFG4
+    txStatus[txStatusIdx++] = 0x00; // CFG5
+    txStatus[txStatusIdx++] = 0x00; // CFG6
+    txStatus[txStatusIdx++] = 0x7F; // CFG7
+    txStatus[txStatusIdx++] = 0x7F; // CFG8
     txStatus[txStatusIdx++] = 0x03; // CFG9
-    txStatus[txStatusIdx++] = 0x03; // CFG11
+    txStatus[txStatusIdx++] = 0x7F; // CFG10
+    txStatus[txStatusIdx++] = 0x7F; // CFG11
     txStatus[txStatusIdx++] = 0x03; // CFG12
     txStatus[txStatusIdx++] = 0x00; // Vhold
     txStatus[txStatusIdx++] = 0x00;

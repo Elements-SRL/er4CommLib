@@ -1,3 +1,20 @@
+//  Copyright (C) 2022 Benedetta Capozucchi
+//
+//  This file is part of EDR4.
+//
+//  EDR4 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  EDR4 is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "messagedispatcher_el06d_el06e.h"
 
 MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
@@ -17,7 +34,7 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     packetsPerFrame = 16;
 
     voltageChannelsNum = 1;
-    currentChannelsNum = 2;
+    currentChannelsNum = 16;
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
     readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
@@ -27,8 +44,7 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
-    txDataBytes = 106;
-
+    txDataBytes = 107;
 
     /*! Current ranges */
     independentCurrentRangesFlag = false;
@@ -58,6 +74,14 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
+
+    /*! External DAC */
+    dacExtControllableFlag = true;
+    dacExtRange.step = 0.0625;
+    dacExtRange.min = -1650.0;
+    dacExtRange.max = 4000.0-1650;
+    dacExtRange.prefix = UnitPfxMilli;
+    dacExtRange.unit = "V";
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
@@ -441,21 +465,21 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     \**************/
 
     edhFormat =
-            "EDH Version: 2.0\n"
-            "\n"
-            "Elements e2HC\n"
-            "Channels: 2\n"
-            "\n"
-            "Data header file\n"
-            "\n"
-            "Amplifier Setup\n"
-            "Range: %currentRange%\n" // 200 pA
-            "Sampling frequency (SR): %samplingRate%\n" // 62.5 kHz
-            "Final Bandwidth: SR/2 (no filter)\n"
-            "\n"
-            "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
-            "\n"
-            "Active channels: %activeChannels%\n"; // 2
+        "EDH Version: 2.0\n"
+        "\n"
+        "Elements Testboard EL06bcde\n"
+        "Channels: 16\n"
+        "\n"
+        "Data header file\n"
+        "\n"
+        "Amplifier Setup\n"
+        "Range: %currentRange%\n" // 200 pA
+        "Sampling frequency (SR): %samplingRate%\n" // 62.5 kHz
+        "Final Bandwidth: SR/2 (no filter)\n"
+        "\n"
+        "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
+        "\n"
+        "Active channels: %activeChannels%\n"; // 2
 
     /****************************\
      * Device specific controls *
@@ -479,7 +503,7 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     selectStimulusChannelFlag = true;
     singleChannelSSCFlag = true;
 
-    boolConfig.initialByte = 8;
+    boolConfig.initialByte = 11;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 12;
     selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
@@ -547,13 +571,21 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     currentRangeCoders[0]->addMapItem(1); /*!< 200nA  -> 0b1 */
     currentRangeCoders[0]->addMapItem(0); /*!< 4uA    -> 0b0 */
 
-
     /*! Voltage range */
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+
+    /*! External DAC */
+    doubleConfig.initialByte = 104;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.resolution = dacExtRange.step;
+    doubleConfig.minValue = 0.0-1650.0;
+    doubleConfig.maxValue = 4096.0-dacExtRange.step-1650.0;
+    dacExtCoder = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;
@@ -687,12 +719,12 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 17;
+    doubleConfig.bitsNum = 16;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     doubleConfig.resolution = 1.0;
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        doubleConfig.initialByte = 16+2*channelIdx;
+        doubleConfig.initialByte = 17+3*channelIdx;
         voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
     }
 
@@ -725,112 +757,113 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     txStatus.resize(txDataBytes);
 
     int txStatusIdx = 0;
-    txStatus[txStatusIdx] = txSyncWord; // HDR
-    txStatus[txStatusIdx] = 0x3A; // CFG0
-    txStatus[txStatusIdx] = 0x01; // CFG1
-    txStatus[txStatusIdx] = 0x05; // CFG2
-    txStatus[txStatusIdx] = 0x00; // CFG3
-    txStatus[txStatusIdx] = 0x03; // CFG4
-    txStatus[txStatusIdx] = 0x03; // CFG5
-    txStatus[txStatusIdx] = 0x03; // CFG6
-    txStatus[txStatusIdx] = 0x03; // CFG7
-    txStatus[txStatusIdx] = 0x03; // CFG8
-    txStatus[txStatusIdx] = 0x03; // CFG9
-    txStatus[txStatusIdx] = 0x03; // CFG11
-    txStatus[txStatusIdx] = 0x03; // CFG12
-    txStatus[txStatusIdx] = 0x00; // Vhold
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs1
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs2
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs3
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs4
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs5
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs6
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs7
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs8
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs9
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs10
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs11
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs12
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs13
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs14
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs15
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VOfs16
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VPulse
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VInsPulse
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VStep
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // THold
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // TPulse
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // TInsPulse
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // TStep
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // N
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // NR
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // Triangular
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // TRamp
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // Vfinal
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // VInit
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00; // DacExt
-    txStatus[txStatusIdx] = 0x00;
-    txStatus[txStatusIdx] = 0x00;
+    txStatus[txStatusIdx++] = txSyncWord; // HDR
+    txStatus[txStatusIdx++] = 0x22; // CFG0
+    txStatus[txStatusIdx++] = 0x01; // CFG1
+    txStatus[txStatusIdx++] = 0x05; // CFG2
+    txStatus[txStatusIdx++] = 0x00; // CFG3
+    txStatus[txStatusIdx++] = 0x00; // CFG4
+    txStatus[txStatusIdx++] = 0x00; // CFG5
+    txStatus[txStatusIdx++] = 0x00; // CFG6
+    txStatus[txStatusIdx++] = 0x7F; // CFG7
+    txStatus[txStatusIdx++] = 0x7F; // CFG8
+    txStatus[txStatusIdx++] = 0x03; // CFG9
+    txStatus[txStatusIdx++] = 0x7F; // CFG10
+    txStatus[txStatusIdx++] = 0x7F; // CFG11
+    txStatus[txStatusIdx++] = 0x03; // CFG12
+    txStatus[txStatusIdx++] = 0x00; // Vhold
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs1
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs2
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs3
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs4
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs5
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs6
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs7
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs8
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs9
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs10
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs11
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs12
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs13
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs14
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs15
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VOfs16
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VPulse
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VInsPulse
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VStep
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // THold
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // TPulse
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // TInsPulse
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // TStep
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // N
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // NR
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // Triangular
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // TRamp
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // Vfinal
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VInit
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // DacExt
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
 }
 
 MessageDispatcher_EL06d_EL06e::~MessageDispatcher_EL06d_EL06e() {

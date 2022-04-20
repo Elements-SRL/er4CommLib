@@ -125,12 +125,8 @@ protected:
 private:
     enum SamplingRates {
         SamplingRate50kHz,
-        SamplingRate25kHz,
-        SamplingRate12_5kHz,
         SamplingRatesNum
     };
 };
-
-
 
 #endif // MESSAGEDISPATCHER_EL06B_H

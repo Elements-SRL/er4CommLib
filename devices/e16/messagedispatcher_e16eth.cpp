@@ -525,21 +525,21 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     \**************/
 
     edhFormat =
-            "EDH Version: 2.0\n"
-            "\n"
-            "Elements e16 ETH\n"
-            "Channels: 16\n"
-            "\n"
-            "Data header file\n"
-            "\n"
-            "Amplifier Setup\n"
-            "Range: %currentRange%\n" // 200 pA
-            "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
-            "Final Bandwidth: SR/2 (no filter)\n"
-            "\n"
-            "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
-            "\n"
-            "Active channels: %activeChannels%\n"; // 2 3 4
+        "EDH Version: 2.0\n"
+        "\n"
+        "Elements e16 ETH\n"
+        "Channels: 16\n"
+        "\n"
+        "Data header file\n"
+        "\n"
+        "Amplifier Setup\n"
+        "Range: %currentRange%\n" // 200 pA
+        "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
+        "Final Bandwidth: SR/2 (no filter)\n"
+        "\n"
+        "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
+        "\n"
+        "Active channels: %activeChannels%\n"; // 2 3 4
 
     /****************************\
      * Device specific controls *
@@ -621,7 +621,6 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
         channelOnStates[currentIdx] = false;
     }
 
-
     /*! Current range */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 1;
@@ -632,7 +631,6 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
     currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
     currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
-
 
     /*! Voltage range */
     boolConfig.initialByte = 0;
@@ -659,7 +657,6 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 4;
     protocolsSelectCoder = new BoolArrayCoder(boolConfig);
-
 
     /*! Protocol start */
     boolConfig.initialByte = 9;

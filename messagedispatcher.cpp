@@ -998,6 +998,67 @@ ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFla
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::setWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
+    if (idx < protocolVoltagesNum) {
+        voltage.convertValue(protocolVoltageRanges[idx].prefix);
+        protocolVoltageCoders[idx]->encode(voltage.value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::setWave1Time(unsigned int idx, Measurement_t time, bool applyFlag) {
+    if (idx < protocolTimesNum) {
+        time.convertValue(protocolTimeRanges[idx].prefix);
+        protocolTimeCoders[idx]->encode(time.value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+
+ErrorCodes_t MessageDispatcher::setWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
+    if (idx < protocolVoltagesNum) {
+        voltage.convertValue(protocolVoltageRanges[idx].prefix);
+        protocolVoltageCoders[idx]->encode(voltage.value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::setWave1Time(unsigned int idx, Measurement_t time, bool applyFlag) {
+    if (idx < protocolTimesNum) {
+        time.convertValue(protocolTimeRanges[idx].prefix);
+        protocolTimeCoders[idx]->encode(time.value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::resetWasherError() {
     return ErrorFeatureNotImplemented;
 }

@@ -1047,6 +1047,74 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getWasherPresetSpeeds(
         ER4CL_ARGOUT std::vector <int8_t> &speedValue);
 
+
+/*! \brief Set a protocol voltage value.
+ *
+ * \param idx [in] Index of the voltage set.
+ * \param voltage [in] Value of the voltage set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setWave1Voltage(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t voltage);
+
+/*! \brief Set a protocol time value.
+ *
+ * \param idx [in] Index of the time set.
+ * \param time [in] Value of the time set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setWave1Time(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t time);
+
+/*! \brief Set a protocol voltage value.
+ *
+ * \param idx [in] Index of the voltage set.
+ * \param voltage [in] Value of the voltage set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setWave2Voltage(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t voltage);
+
+/*! \brief Set a protocol time value.
+ *
+ * \param idx [in] Index of the time set.
+ * \param time [in] Value of the time set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setWave2Time(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t time);
+
+/*! \brief Set a protocol time value.
+ *
+ * \param idx [in] Index of the time set.
+ * \param time [in] Value of the time set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setWave2Time(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t time);
+
+/*! \brief Set a protocol time value.
+ *
+ * \param idx [in] Index of the time set.
+ * \param time [in] Value of the time set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setWave2Duration(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t time);
+
 }
+
 
 #endif // ER4COMMLIB_H

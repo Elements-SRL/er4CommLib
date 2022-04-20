@@ -169,6 +169,11 @@ public:
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
+    ErrorCodes_t setWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
+    ErrorCodes_t setWave1Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
+    ErrorCodes_t setWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
+    ErrorCodes_t setWave2Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
+    ErrorCodes_t setWave2Duration(unsigned int idx, Measurement_t time, bool applyFlag = false);
 
     /*! Device specific controls */
 
@@ -421,6 +426,33 @@ protected:
     DoubleCoder * insertionPulseVoltageCoder;
     DoubleCoder * insertionPulseDurationCoder;
     BoolCoder * insertionPulseApplyCoder;
+
+    bool referencePulseImplemented = false;
+    RangedMeasurement_t referencePulseVoltageRange;
+    RangedMeasurement_t referencePulseDurationRange;
+    DoubleCoder * referencePulseVoltageCoder;
+    DoubleCoder * referencePulseDurationCoder;
+    BoolCoder * referencePulseApplyCoder;
+
+
+    CompensationControl_t cFastCompensationControl;
+    vector <DoubleCoder *> cFastControlCoders;
+   vector <BoolArrayCoder *> cFastOnCoders;
+
+
+    bool fastPulseProtocolImplementation = false;
+    vector <DoubleCoder *> fastPulseW1VoltageCoder;
+    RangedMeasurement_t fastPulseW1VoltageRange;
+    vector <DoubleCoder *> fastPulseW1TimeCoder;
+    RangedMeasurement_t fastPulseW1TimeRange;
+
+    vector <DoubleCoder *> fastPulseW2VoltageCoder;
+    RangedMeasurement_t fastPulseW2VoltageRange;
+    vector <DoubleCoder *> fastPulseW2TimeCoder;
+    RangedMeasurement_t fastPulseW2TimeRange;
+    vector <DoubleCoder *> fastPulseW2DurationCoder;
+    RangedMeasurement_t fastPulseW2DurationRange;
+
 
     string edhFormat;
 

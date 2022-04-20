@@ -1411,6 +1411,75 @@ ErrorCodes_t getWasherPresetSpeeds(
 
 } // namespace er4CommLib
 
+ErrorCodes_t setWave1Voltage(
+        unsigned int idx,
+        Measurement_t voltage) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setWave1Voltage(idx, voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+
+ErrorCodes_t setW1Time(
+        unsigned int idx,
+        Measurement_t time) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setProtocolTime(idx, time);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+
+ErrorCodes_t setWave2Voltage(
+        unsigned int idx,
+        Measurement_t voltage) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setWave1Voltage(idx, voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+
+ErrorCodes_t setW2Time(
+        unsigned int idx,
+        Measurement_t time) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setProtocolTime(idx, time);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setW2Durationmm(
+        unsigned int idx,
+        Measurement_t time) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setProtocolTime(idx, time);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+
 /*! Private functions */
 string getDeviceSerial(
         uint32_t index) {

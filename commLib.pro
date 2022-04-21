@@ -47,7 +47,6 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
-    devices/e16/messagedispatcher_e16_orbit.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
     ftdieeprom56.cpp \
@@ -62,6 +61,7 @@ SOURCES += \
     devices/e2/messagedispatcher_e2hc.cpp \
     devices/e4/messagedispatcher_e4.cpp \
     devices/e4/messagedispatcher_e4e.cpp \
+    devices/e16/messagedispatcher_e16illumina.cpp \
     devices/e16/messagedispatcher_e16e.cpp \
     devices/e16/messagedispatcher_e16n.cpp \
     devices/e16/messagedispatcher_e16eth.cpp \
@@ -71,7 +71,6 @@ SOURCES += \
     devices/fake/messagedispatcher_fake_e16n.cpp
 
 HEADERS += \
-    devices/e16/messagedispatcher_e16_orbit.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
@@ -88,6 +87,7 @@ HEADERS += \
     devices/e2/messagedispatcher_e2hc.h \
     devices/e4/messagedispatcher_e4.h \
     devices/e4/messagedispatcher_e4e.h \
+    devices/e16/messagedispatcher_e16illumina.h \
     devices/e16/messagedispatcher_e16e.h \
     devices/e16/messagedispatcher_e16n.h \
     devices/e16/messagedispatcher_e16eth.h \

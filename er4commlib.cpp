@@ -745,7 +745,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
         Measurement_t voltage) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFastReferencePulseProtocolWave1Voltage(idx, voltage);
+        ret = messageDispatcher->setFastReferencePulseProtocolWave2Voltage(idx, voltage);
 
     } else {
         ret = ErrorDeviceNotConnected;

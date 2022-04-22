@@ -585,7 +585,7 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
     fastPulseW1VoltageRange.prefix = UnitPfxMilli;
 
     fastPulseW1TimeRange.min = 0.0;
-    fastPulseW1TimeRange.max = 265.0e6;
+    fastPulseW1TimeRange.max = 10000.0;
     fastPulseW1TimeRange.step = 1.0;
     fastPulseW1TimeRange.unit = "s";
     fastPulseW1TimeRange.prefix = UnitPfxMilli;
@@ -598,13 +598,13 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
     fastPulseW2VoltageRange.prefix = UnitPfxMilli;
 
     fastPulseW2TimeRange.min = 0.0;
-    fastPulseW2TimeRange.max = 265.0e6;
+    fastPulseW2TimeRange.max = 10000.0;
     fastPulseW2TimeRange.step = 1.0;
     fastPulseW2TimeRange.unit = "s";
     fastPulseW2TimeRange.prefix = UnitPfxMilli;
 
     fastPulseW2DurationRange.min = 1.0;
-    fastPulseW2DurationRange.max = 1.0e6;
+    fastPulseW2DurationRange.max = 10000.0;
     fastPulseW2DurationRange.step = 0.1;
     fastPulseW2DurationRange.unit = "s";
     fastPulseW2DurationRange.prefix = UnitPfxMicro;
@@ -2164,26 +2164,26 @@ MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_Lega
     fastPulseW1VoltageRange.prefix = UnitPfxMilli;
 
     fastPulseW1TimeRange.min = 0.0;
-    fastPulseW1TimeRange.max = 265.0e6;
+    fastPulseW1TimeRange.max = 10000.0;
     fastPulseW1TimeRange.step = 1.0;
     fastPulseW1TimeRange.unit = "s";
     fastPulseW1TimeRange.prefix = UnitPfxMilli;
 
     /*! Waveform 2*/
-    fastPulseW2VoltageRange.min = -1250.0;
-    fastPulseW2VoltageRange.max = 1250.0;
+    fastPulseW2VoltageRange.min = -1200.0;
+    fastPulseW2VoltageRange.max = 1200.0;
     fastPulseW2VoltageRange.step = 1250.0/2047.0;
     fastPulseW2VoltageRange.unit = "V";
     fastPulseW2VoltageRange.prefix = UnitPfxMilli;
 
     fastPulseW2TimeRange.min = 0.0;
-    fastPulseW2TimeRange.max = 265.0e6;
+    fastPulseW2TimeRange.max = 10000.0;
     fastPulseW2TimeRange.step = 1.0;
     fastPulseW2TimeRange.unit = "s";
     fastPulseW2TimeRange.prefix = UnitPfxMilli;
 
     fastPulseW2DurationRange.min = 1.0;
-    fastPulseW2DurationRange.max = 1.0e6;
+    fastPulseW2DurationRange.max = 10000.0;
     fastPulseW2DurationRange.step = 0.1;
     fastPulseW2DurationRange.unit = "s";
     fastPulseW2DurationRange.prefix = UnitPfxMicro;
@@ -2499,58 +2499,60 @@ MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_Lega
     }
 
     /*! Waveform 1*/
-    fastPulseW1VoltageCoder.resize(8);
+    fastPulseW1num = 8;
+    fastPulseW1VoltageCoder.resize(fastPulseW1num);
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = fastPulseW1VoltageRange.step;
     doubleConfig.minValue = fastPulseW1VoltageRange.min;
     doubleConfig.maxValue = fastPulseW1VoltageRange.max;
-    for (uint16_t idx = 0; idx < 8; idx++) {
+    for (uint16_t idx = 0; idx < fastPulseW1num; idx++) {
         doubleConfig.initialByte = 103+6*idx;
         fastPulseW1VoltageCoder[idx] = new DoubleSignAbsCoder(doubleConfig);
     }
 
-    fastPulseW1TimeCoder.resize(8);
+    fastPulseW1TimeCoder.resize(fastPulseW1num);
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = fastPulseW1TimeRange.step;
     doubleConfig.minValue = fastPulseW1TimeRange.min;
     doubleConfig.maxValue = fastPulseW1TimeRange.max;
-    for (uint16_t idx = 0; idx < 8; idx++) {
+    for (uint16_t idx = 0; idx < fastPulseW1num; idx++) {
         doubleConfig.initialByte = 105+6*idx;
         fastPulseW1TimeCoder[idx] = new DoubleSignAbsCoder(doubleConfig);
     }
 
     /*! Waveform 2*/
-    fastPulseW2VoltageCoder.resize(20);
+    fastPulseW2num = 20;
+    fastPulseW2VoltageCoder.resize(fastPulseW2num);
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 13;
     doubleConfig.resolution = fastPulseW2VoltageRange.step;
     doubleConfig.minValue = fastPulseW2VoltageRange.min;
     doubleConfig.maxValue = fastPulseW2VoltageRange.max;
-    for (uint16_t idx = 0; idx < 20; idx++) {
+    for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
         doubleConfig.initialByte = 151+9*idx;
         fastPulseW2VoltageCoder[idx] = new DoubleSignAbsCoder(doubleConfig);
     }
 
-    fastPulseW2TimeCoder.resize(20);
+    fastPulseW2TimeCoder.resize(fastPulseW2num);
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = fastPulseW2TimeRange.step;
     doubleConfig.minValue = fastPulseW2TimeRange.min;
     doubleConfig.maxValue = fastPulseW2TimeRange.max;
-    for (uint16_t idx = 0; idx < 20; idx++) {
+    for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
         doubleConfig.initialByte = 153+9*idx;
         fastPulseW2TimeCoder[idx] = new DoubleSignAbsCoder(doubleConfig);
     }
 
-    fastPulseW2DurationCoder.resize(20);
+    fastPulseW2DurationCoder.resize(fastPulseW2num);
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 21;
     doubleConfig.resolution = fastPulseW2DurationRange.step;
     doubleConfig.minValue = fastPulseW2DurationRange.min;
     doubleConfig.maxValue = fastPulseW2DurationRange.max;
-    for (uint16_t idx = 0; idx < 20; idx++) {
+    for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
         doubleConfig.initialByte = 157+9*idx;
         fastPulseW2DurationCoder[idx] = new DoubleSignAbsCoder(doubleConfig);
     }

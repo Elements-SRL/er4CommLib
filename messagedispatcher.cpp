@@ -1077,7 +1077,7 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Time(unsigned 
 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
     if (idx < 20) {
-        voltage.convertValue(fastPulseW1VoltageRange.prefix);
+        voltage.convertValue(fastPulseW2VoltageRange.prefix);
         fastPulseW2VoltageCoder[idx]->encode(voltage.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);

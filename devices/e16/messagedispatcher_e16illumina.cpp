@@ -563,6 +563,7 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
     referencePulseDurationRange.prefix = UnitPfxMilli;
     referencePulseDurationRange.unit = "s";
 
+
     /*! C Fast Control */
     cFastCompensationControl.implemented = true;
     cFastCompensationControl.steps = 16;
@@ -671,7 +672,7 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
         zapStates[currentIdx] = false;
     }
 
-    /*! Channel off */
+    /*! Channel on */
     channelOnFlag = true;
     singleChannelOnFlag = true;
 
@@ -684,6 +685,13 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
     for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
         channelOnStates[currentIdx] = false;
     }
+
+    /*! Override reference pulse*/
+    overrideReferencePulseImplemented = true;
+    boolConfig.initialByte = 8;
+    boolConfig.initialBit = 6;
+    boolConfig.bitsNum = 1;
+    overrideReferencePulseApplyCoder = new BoolArrayCoder(boolConfig);
 
     /*! Current range */
     boolConfig.initialByte = 1;

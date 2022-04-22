@@ -127,27 +127,27 @@ ErrorCodes_t MessageDispatcher::init() {
 
 #ifdef DEBUG_PRINT
 #ifdef _WIN32
-        string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
+    string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
 #else
-        string path = string(getenv("HOME"));
+    string path = string(getenv("HOME"));
 #endif
-        stringstream ss;
+    stringstream ss;
 
-        for (size_t i = 0; i < path.length(); ++i) {
-            if (path[i] == '\\') {
-                ss << "\\\\";
+    for (size_t i = 0; i < path.length(); ++i) {
+        if (path[i] == '\\') {
+            ss << "\\\\";
 
-            } else {
-                ss << path[i];
-            }
+        } else {
+            ss << path[i];
         }
+    }
 #ifdef _WIN32
-        ss << "\\\\temp.txt";
+    ss << "\\\\temp.txt";
 #else
-        ss << "/temp.txt";
+    ss << "/temp.txt";
 #endif
 
-        fid = fopen(ss.str().c_str(), "wb");
+    fid = fopen(ss.str().c_str(), "wb");
 #endif
 
     this->computeMinimumPacketNumber();
@@ -761,23 +761,23 @@ ErrorCodes_t MessageDispatcher::resetDevice() {
 
 ErrorCodes_t MessageDispatcher::resetDigitalOffsetCompensation(bool) {
     ErrorCodes_t ret = Success;
-//    uint16_t dataLength = switchesStatusLength;
-//    vector <uint16_t> txDataMessage(dataLength);
-//    this->switches2DataMessage(txDataMessage);
+    //    uint16_t dataLength = switchesStatusLength;
+    //    vector <uint16_t> txDataMessage(dataLength);
+    //    this->switches2DataMessage(txDataMessage);
 
-//    unsigned int resetIdx = ResetIndexDigitalOffsetCompensation;
+    //    unsigned int resetIdx = ResetIndexDigitalOffsetCompensation;
 
-//    if (reset) {
-//        txDataMessage[resetWord[resetIdx]] |= resetByte[resetIdx];
+    //    if (reset) {
+    //        txDataMessage[resetWord[resetIdx]] |= resetByte[resetIdx];
 
-//    } else {
-//        txDataMessage[resetWord[resetIdx]] &= ~resetByte[resetIdx];
-//    }
+    //    } else {
+    //        txDataMessage[resetWord[resetIdx]] &= ~resetByte[resetIdx];
+    //    }
 
-//    ret = this->manageOutgoingMessageLife(MsgDirectionEdrToDevice+MsgTypeIdSwitchCtrl, txDataMessage, dataLength);
-//    if (ret == Success) {
-//        this->dataMessage2Switches(txDataMessage);
-//    }
+    //    ret = this->manageOutgoingMessageLife(MsgDirectionEdrToDevice+MsgTypeIdSwitchCtrl, txDataMessage, dataLength);
+    //    if (ret == Success) {
+    //        this->dataMessage2Switches(txDataMessage);
+    //    }
     return ret;
 }
 
@@ -972,6 +972,46 @@ ErrorCodes_t MessageDispatcher::applyInsertionPulse(Measurement_t voltage, Measu
         return ErrorFeatureNotImplemented;
     }
 }
+
+ErrorCodes_t MessageDispatcher::applyReferencePulse(Measurement_t voltage, Measurement_t duration) {
+    if (referencePulseImplemented) {
+        this->selectVoltageProtocol(0, false);
+        this->applyVoltageProtocol();
+
+        voltage.convertValue(referencePulseVoltageRange.prefix);
+        duration.convertValue(referencePulseDurationRange.prefix);
+
+        referencePulseVoltageCoder->encode(voltage.value, txStatus);
+        referencePulseDurationCoder->encode(duration.value, txStatus);
+        referencePulseApplyCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        referencePulseApplyCoder->encode(0, txStatus);
+
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::overrideReferencePulse(bool flag, bool applyFlag) {
+    if (overrideReferencePulseImplemented) {
+        if(flag){
+            overrideReferencePulseApplyCoder->encode(1, txStatus);
+        }else{
+            overrideReferencePulseApplyCoder->encode(0, txStatus);
+        }
+        if(applyFlag){
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
 
 ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag) {
     ErrorCodes_t ret;
@@ -1554,6 +1594,24 @@ ErrorCodes_t MessageDispatcher::getInsertionPulseControls(RangedMeasurement_t &v
     }
 }
 
+ErrorCodes_t MessageDispatcher::hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented){
+    referencePulseImplemented = this->referencePulseImplemented;
+    overrideReferencePulseImplemented = this->overrideReferencePulseImplemented;
+    return Success;
+
+}
+
+ErrorCodes_t MessageDispatcher::getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange) {
+    if (referencePulseImplemented) {
+        voltageRange = referencePulseVoltageRange;
+        durationRange = referencePulseDurationRange;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::getEdhFormat(string &format) {
     format = edhFormat;
     return Success;
@@ -1724,13 +1782,13 @@ void MessageDispatcher::initializeCompensations() {
 
     cFastCapacitance.resize(currentChannelsNum);
     cFastCompensationFlag.resize(currentChannelsNum);
-//    cFastCompensationOptionIdx.resize(currentChannelsNum);
+    //    cFastCompensationOptionIdx.resize(currentChannelsNum);
 
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
         cFastCapacitance[channelIdx] = 0.0;
         cFastCompensationFlag[channelIdx] = false;
 
-//        cFastCompensationOptionIdx[channelIdx] = 0;
+        //        cFastCompensationOptionIdx[channelIdx] = 0;
     }
 }
 
@@ -2126,7 +2184,7 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
         bufferReadOffset = (bufferReadOffset+1)&FTD_RX_BUFFER_MASK;
 
         infoStructPtr[infoIndex] = infoValue;
-//        printf("%d %d ", infoIndex, infoValue);
+        //        printf("%d %d ", infoIndex, infoValue);
 
         /*! Get current and voltage data */
         for (int packetIdx = 0; packetIdx < packetsPerFrame; packetIdx++) {
@@ -2141,9 +2199,9 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
 
                 if (channelIdx < voltageChannelsNum) {
                     increaseRangeFlag = false;
-//                    if (packetIdx == 0) {
-//                        printf("%d\n", value);
-//                    }
+                    //                    if (packetIdx == 0) {
+                    //                        printf("%d\n", value);
+                    //                    }
 
                 } else {
                     if ((value > UINT16_CURRENT_RANGE_INCREASE_MINIMUM_THRESHOLD) && (value < UINT16_CURRENT_RANGE_INCREASE_MAXIMUM_THRESHOLD)) {

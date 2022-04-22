@@ -481,6 +481,33 @@ ErrorCodes_t applyInsertionPulse(
     return ret;
 }
 
+ErrorCodes_t applyReferencePulse(
+        Measurement_t voltage,
+        Measurement_t duration) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->applyReferencePulse(voltage, duration);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t overrideReferencePulse(
+       bool applyFlag) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->overrideReferencePulse(applyFlag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+
+
 ErrorCodes_t setRawDataFilter(
         Measurement_t cutoffFrequency,
         bool lowPassFlag,
@@ -1400,6 +1427,19 @@ ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange,
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getInsertionPulseControls(voltageRange, durationRange);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+
+ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange,
+        RangedMeasurement_t &durationRange) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getReferencePulseControls(voltageRange, durationRange);
 
     } else {
         ret = ErrorDeviceNotConnected;

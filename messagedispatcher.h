@@ -166,6 +166,9 @@ public:
     ErrorCodes_t setVoltageOffset(unsigned int idx, Measurement_t voltage, bool applyFlag = true);
     ErrorCodes_t checkVoltageOffset(unsigned int idx, Measurement_t voltage, string &message);
     ErrorCodes_t applyInsertionPulse(Measurement_t voltage, Measurement_t duration);
+    ErrorCodes_t applyReferencePulse(Measurement_t voltage, Measurement_t duration);
+    ErrorCodes_t overrideReferencePulse(bool applyFlag = false);
+
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
@@ -239,6 +242,7 @@ public:
     ErrorCodes_t getProtocolAdimensional(vector <string> &adimensionalNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getVoltageOffsetControls(RangedMeasurement_t &voltageRange);
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
+    ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
     ErrorCodes_t getLedsNumber(uint16_t &ledsNumber);
@@ -451,6 +455,9 @@ protected:
     DoubleCoder * referencePulseDurationCoder;
     BoolCoder * referencePulseApplyCoder;
 
+    bool overrideReferencePulseImplemented = false;
+    BoolCoder * overrideReferencePulseApplyCoder;
+
     bool fastPulseProtocolImplementation = false;
     vector <DoubleCoder *> fastPulseW1VoltageCoder;
     RangedMeasurement_t fastPulseW1VoltageRange;
@@ -496,6 +503,7 @@ protected:
     RangedMeasurement_t dacExtRange;
     DoubleOffsetBinaryCoder * dacExtCoder;
     Measurement_t dacExtDefault;
+
     /*! Device specific parameters */
 
     bool nanionTemperatureControllerFlag = false;

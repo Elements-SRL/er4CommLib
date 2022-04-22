@@ -272,6 +272,26 @@ ErrorCodes_t applyInsertionPulse(
         ER4CL_ARGIN Measurement_t voltage,
         ER4CL_ARGIN Measurement_t duration);
 
+/*! \brief Apply the reference pulse if available.
+ *
+ * \param voltage [in] Voltage of the reference pulse to be applied.
+ * \param duration [in] Duration of the reference pulse to be applied.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t applyReferencePulse(
+        ER4CL_ARGIN Measurement_t voltage,
+        ER4CL_ARGIN Measurement_t duration);
+
+/*! \brief Override the voltage reference switch.
+ *
+ * \param applyFlag [in] true: apply the override of voltage reference.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t overrideReferencePulse(
+        ER4CL_ARGIN bool applyFlag);
+
 /*! \brief Set the raw data filter cut off frequency and type.
  *
  * \param cutoffFrequency [in] Cut off frequency of the raw data filter.
@@ -1030,6 +1050,29 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getInsertionPulseControls(
         ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
         ER4CL_ARGOUT RangedMeasurement_t &durationRange);
+
+/*! \brief Get reference pulse controls definition.
+ *
+ * \param voltageRange [out] Range of applicable pulse voltage.
+ * \param durationRange [out] Ranges of applicable pulse duration.
+ * \return Success if the device has the reference pulse feature.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getReferencePulseControls(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange);
+
+/*! \brief Get reference pulse controls definition.
+ *
+ * \param voltageRange [out] Range of applicable pulse voltage.
+ * \param durationRange [out] Ranges of applicable pulse duration.
+ * \return Success if the device has the reference pulse feature.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getReferencePulseControls(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange);
+
 
 /*! \brief Get data header format.
  *

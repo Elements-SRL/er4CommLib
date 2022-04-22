@@ -467,7 +467,7 @@ ErrorCodes_t zap(
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave1Voltage(
+ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t voltage);
 
@@ -478,7 +478,7 @@ ErrorCodes_t setWave1Voltage(
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave1Time(
+ErrorCodes_t setFastReferencePulseProtocolWave1Time(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t time);
 
@@ -489,7 +489,7 @@ ErrorCodes_t setWave1Time(
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave2Voltage(
+ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t voltage);
 
@@ -500,7 +500,7 @@ ErrorCodes_t setWave2Voltage(
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave2Time(
+ErrorCodes_t setFastReferencePulseProtocolWave2Time(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t time);
 
@@ -511,7 +511,7 @@ ErrorCodes_t setWave2Time(
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave2Duration(
+ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t time);
 
@@ -1069,9 +1069,9 @@ ErrorCodes_t getReferencePulseControls(
  * \return Success if the device has the reference pulse feature.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getReferencePulseControls(
-        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
-        ER4CL_ARGOUT RangedMeasurement_t &durationRange);
+ErrorCodes_t hasReferencePulseControls(
+        ER4CL_ARGOUT bool referencePulseImplemented,
+        ER4CL_ARGOUT bool overrideReferencePulseImplemented);
 
 
 /*! \brief Get data header format.

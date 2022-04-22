@@ -167,16 +167,16 @@ public:
     ErrorCodes_t checkVoltageOffset(unsigned int idx, Measurement_t voltage, string &message);
     ErrorCodes_t applyInsertionPulse(Measurement_t voltage, Measurement_t duration);
     ErrorCodes_t applyReferencePulse(Measurement_t voltage, Measurement_t duration);
-    ErrorCodes_t overrideReferencePulse(bool applyFlag = false);
+    ErrorCodes_t overrideReferencePulse(bool flag, bool applyFlag = true);
 
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
-    ErrorCodes_t setWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
-    ErrorCodes_t setWave1Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
-    ErrorCodes_t setWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
-    ErrorCodes_t setWave2Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
-    ErrorCodes_t setWave2Duration(unsigned int idx, Measurement_t time, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave2Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave2Duration(unsigned int idx, Measurement_t time, bool applyFlag = false);
 
     /*! Device specific controls */
 
@@ -242,12 +242,16 @@ public:
     ErrorCodes_t getProtocolAdimensional(vector <string> &adimensionalNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getVoltageOffsetControls(RangedMeasurement_t &voltageRange);
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
+    ErrorCodes_t hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented);
     ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
     ErrorCodes_t getLedsNumber(uint16_t &ledsNumber);
     ErrorCodes_t getLedsColors(vector <uint32_t> &ledsColors);
     ErrorCodes_t getDacExtRange(RangedMeasurement_t &range, Measurement_t &defaultValue);
+    ErrorCodes_t getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t nPulse);
+    ErrorCodes_t getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t nPulse);
+
 
     /*! Device specific controls */
 
@@ -459,11 +463,13 @@ protected:
     BoolCoder * overrideReferencePulseApplyCoder;
 
     bool fastPulseProtocolImplementation = false;
+    uint16_t fastPulseW1num = 0;
     vector <DoubleCoder *> fastPulseW1VoltageCoder;
     RangedMeasurement_t fastPulseW1VoltageRange;
     vector <DoubleCoder *> fastPulseW1TimeCoder;
     RangedMeasurement_t fastPulseW1TimeRange;
 
+    uint16_t fastPulseW2num = 0;
     vector <DoubleCoder *> fastPulseW2VoltageCoder;
     RangedMeasurement_t fastPulseW2VoltageRange;
     vector <DoubleCoder *> fastPulseW2TimeCoder;

@@ -249,8 +249,8 @@ public:
     ErrorCodes_t getLedsNumber(uint16_t &ledsNumber);
     ErrorCodes_t getLedsColors(vector <uint32_t> &ledsColors);
     ErrorCodes_t getDacExtRange(RangedMeasurement_t &range, Measurement_t &defaultValue);
-    ErrorCodes_t getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t nPulse);
-    ErrorCodes_t getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t nPulse);
+    ErrorCodes_t getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse);
+    ErrorCodes_t getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse);
 
 
     /*! Device specific controls */

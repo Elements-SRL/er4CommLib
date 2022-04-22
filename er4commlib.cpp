@@ -1522,6 +1522,35 @@ ErrorCodes_t getDacExtRange(
     return ret;
 }
 
+ErrorCodes_t getFastReferencePulseProtocolWave1Range(
+        RangedMeasurement_t &voltageRange,
+        RangedMeasurement_t &timeRange,
+        uint16_t &nPulse) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getFastReferencePulseProtocolWave1Range(voltageRange, timeRange, nPulse);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getFastReferencePulseProtocolWave2Range(
+        RangedMeasurement_t &voltageRange,
+        RangedMeasurement_t &timeRange,
+        RangedMeasurement_t &durationRange,
+        uint16_t &nPulse) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getFastReferencePulseProtocolWave2Range(voltageRange, timeRange, durationRange, nPulse);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t hasNanionTemperatureController() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {

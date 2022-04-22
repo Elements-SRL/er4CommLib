@@ -1644,7 +1644,7 @@ ErrorCodes_t MessageDispatcher::getDacExtRange(RangedMeasurement_t &range, Measu
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t nPulse){
+ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse){
     if (referencePulseImplemented){
 
         voltageRange = fastPulseW1VoltageRange;
@@ -1656,7 +1656,7 @@ ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave1Range(RangedMe
     }
 }
 
-ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t nPulse){
+ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse){
     if (referencePulseImplemented){
 
         voltageRange = fastPulseW2VoltageRange;

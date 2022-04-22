@@ -1123,6 +1123,34 @@ ErrorCodes_t getDacExtRange(
         ER4CL_ARGOUT RangedMeasurement_t &range,
         ER4CL_ARGOUT Measurement_t &defaultValue);
 
+/*! \brief Get the range currently applied and the number of pulse.
+ *
+ * \param voltageRange [out] Applicable voltage range.
+ * \param timeRange [out] Applicable voltage range.
+ * \param nPulse [out] number of pulse.
+ * \return Success if external DAC control is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getFastReferencePulseProtocolWave1Range(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &timeRange,
+        ER4CL_ARGOUT uint16_t &nPulse);
+
+/*! \brief Get the range currently applied and the number of pulse.
+ *
+ * \param voltageRange [out] Applicable voltage range.
+ * \param timeRange [out] Applicable time range.
+ * \param durationRange [out] Applicable duration range.
+ * \param nPulse [out] number of pulse.
+ * \return Success if external DAC control is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getFastReferencePulseProtocolWave2Range(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &timeRange,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange,
+        ER4CL_ARGOUT uint16_t &nPulse);
+
 /*! \brief Availability of Nanion's temperature controller.
  *
  * \return Success if the Nanion's temperature controller is available with this device.

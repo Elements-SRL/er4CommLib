@@ -36,6 +36,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                         //    8,  8,129 : eNPR-HC
     {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                 //    4,  8,129 : e4 Elements version
+    {DeviceVersionE16, DeviceSubversionE16Illumina, 129, DeviceE16Illumina},                //    3,  4,129 : e16 Orbit customized for Illumina
+    {DeviceVersionE16, DeviceSubversionE16Illumina, 4, DeviceE16IlluminaEDR3},              //    3,  4,  4 : e16 Orbit customized for Illumina (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                              //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                              //    3,  5,136 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
@@ -76,6 +78,9 @@ MessageDispatcher::MessageDispatcher(string deviceId) :
     rawDataFilterCutoffFrequencyDefault.prefix = UnitPfxKilo;
     rawDataFilterCutoffFrequencyDefault.unit = "Hz";
     rawDataFilterCutoffFrequency = rawDataFilterCutoffFrequencyDefault;
+
+    cFastCompensationOptions.clear();
+    cFastCompensationControl.implemented = false;
 }
 
 MessageDispatcher::~MessageDispatcher() {
@@ -122,27 +127,27 @@ ErrorCodes_t MessageDispatcher::init() {
 
 #ifdef DEBUG_PRINT
 #ifdef _WIN32
-        string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
+    string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
 #else
-        string path = string(getenv("HOME"));
+    string path = string(getenv("HOME"));
 #endif
-        stringstream ss;
+    stringstream ss;
 
-        for (size_t i = 0; i < path.length(); ++i) {
-            if (path[i] == '\\') {
-                ss << "\\\\";
+    for (size_t i = 0; i < path.length(); ++i) {
+        if (path[i] == '\\') {
+            ss << "\\\\";
 
-            } else {
-                ss << path[i];
-            }
+        } else {
+            ss << path[i];
         }
+    }
 #ifdef _WIN32
-        ss << "\\\\temp.txt";
+    ss << "\\\\temp.txt";
 #else
-        ss << "/temp.txt";
+    ss << "/temp.txt";
 #endif
 
-        fid = fopen(ss.str().c_str(), "wb");
+    fid = fopen(ss.str().c_str(), "wb");
 #endif
 
     this->computeMinimumPacketNumber();
@@ -240,6 +245,8 @@ ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
 
     /*! Calculate the LSB noise vector */
     this->initializeLsbNoise();
+
+    this->initializeCompensations();
 
     this->initializeFerdMemory();
 
@@ -754,23 +761,23 @@ ErrorCodes_t MessageDispatcher::resetDevice() {
 
 ErrorCodes_t MessageDispatcher::resetDigitalOffsetCompensation(bool) {
     ErrorCodes_t ret = Success;
-//    uint16_t dataLength = switchesStatusLength;
-//    vector <uint16_t> txDataMessage(dataLength);
-//    this->switches2DataMessage(txDataMessage);
+    //    uint16_t dataLength = switchesStatusLength;
+    //    vector <uint16_t> txDataMessage(dataLength);
+    //    this->switches2DataMessage(txDataMessage);
 
-//    unsigned int resetIdx = ResetIndexDigitalOffsetCompensation;
+    //    unsigned int resetIdx = ResetIndexDigitalOffsetCompensation;
 
-//    if (reset) {
-//        txDataMessage[resetWord[resetIdx]] |= resetByte[resetIdx];
+    //    if (reset) {
+    //        txDataMessage[resetWord[resetIdx]] |= resetByte[resetIdx];
 
-//    } else {
-//        txDataMessage[resetWord[resetIdx]] &= ~resetByte[resetIdx];
-//    }
+    //    } else {
+    //        txDataMessage[resetWord[resetIdx]] &= ~resetByte[resetIdx];
+    //    }
 
-//    ret = this->manageOutgoingMessageLife(MsgDirectionEdrToDevice+MsgTypeIdSwitchCtrl, txDataMessage, dataLength);
-//    if (ret == Success) {
-//        this->dataMessage2Switches(txDataMessage);
-//    }
+    //    ret = this->manageOutgoingMessageLife(MsgDirectionEdrToDevice+MsgTypeIdSwitchCtrl, txDataMessage, dataLength);
+    //    if (ret == Success) {
+    //        this->dataMessage2Switches(txDataMessage);
+    //    }
     return ret;
 }
 
@@ -966,6 +973,46 @@ ErrorCodes_t MessageDispatcher::applyInsertionPulse(Measurement_t voltage, Measu
     }
 }
 
+ErrorCodes_t MessageDispatcher::applyReferencePulse(Measurement_t voltage, Measurement_t duration) {
+    if (referencePulseImplemented) {
+        this->selectVoltageProtocol(0, false);
+        this->applyVoltageProtocol();
+
+        voltage.convertValue(referencePulseVoltageRange.prefix);
+        duration.convertValue(referencePulseDurationRange.prefix);
+
+        referencePulseVoltageCoder->encode(voltage.value, txStatus);
+        referencePulseDurationCoder->encode(duration.value, txStatus);
+        referencePulseApplyCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        referencePulseApplyCoder->encode(0, txStatus);
+
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::overrideReferencePulse(bool flag, bool applyFlag) {
+    if (overrideReferencePulseImplemented) {
+        if(flag){
+            overrideReferencePulseApplyCoder->encode(1, txStatus);
+        }else{
+            overrideReferencePulseApplyCoder->encode(0, txStatus);
+        }
+        if(applyFlag){
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+
 ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag) {
     ErrorCodes_t ret;
 
@@ -998,10 +1045,10 @@ ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFla
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::setWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
-    if (idx < protocolVoltagesNum) {
-        voltage.convertValue(protocolVoltageRanges[idx].prefix);
-        protocolVoltageCoders[idx]->encode(voltage.value, txStatus);
+ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
+    if (idx < 8) {
+        voltage.convertValue(fastPulseW1VoltageRange.prefix);
+        fastPulseW1VoltageCoder[idx]->encode(voltage.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -1013,10 +1060,10 @@ ErrorCodes_t MessageDispatcher::setWave1Voltage(unsigned int idx, Measurement_t 
     }
 }
 
-ErrorCodes_t MessageDispatcher::setWave1Time(unsigned int idx, Measurement_t time, bool applyFlag) {
+ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag) {
     if (idx < protocolTimesNum) {
         time.convertValue(protocolTimeRanges[idx].prefix);
-        protocolTimeCoders[idx]->encode(time.value, txStatus);
+        fastPulseW1TimeCoder[idx]->encode(time.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -1028,11 +1075,10 @@ ErrorCodes_t MessageDispatcher::setWave1Time(unsigned int idx, Measurement_t tim
     }
 }
 
-
-ErrorCodes_t MessageDispatcher::setWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
-    if (idx < protocolVoltagesNum) {
-        voltage.convertValue(protocolVoltageRanges[idx].prefix);
-        protocolVoltageCoders[idx]->encode(voltage.value, txStatus);
+ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
+    if (idx < 20) {
+        voltage.convertValue(fastPulseW2VoltageRange.prefix);
+        fastPulseW2VoltageCoder[idx]->encode(voltage.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -1044,10 +1090,25 @@ ErrorCodes_t MessageDispatcher::setWave1Voltage(unsigned int idx, Measurement_t 
     }
 }
 
-ErrorCodes_t MessageDispatcher::setWave1Time(unsigned int idx, Measurement_t time, bool applyFlag) {
-    if (idx < protocolTimesNum) {
-        time.convertValue(protocolTimeRanges[idx].prefix);
-        protocolTimeCoders[idx]->encode(time.value, txStatus);
+ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Time(unsigned int idx, Measurement_t time, bool applyFlag) {
+    if (idx < 20) {
+        time.convertValue(fastPulseW2TimeRange.prefix);
+        fastPulseW2TimeCoder[idx]->encode(time.value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Duration(unsigned int idx, Measurement_t time, bool applyFlag) {
+    if (idx < 20) {
+        time.convertValue(fastPulseW2DurationRange.prefix);
+        fastPulseW2DurationCoder[idx]->encode(time.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -1077,6 +1138,103 @@ ErrorCodes_t MessageDispatcher::updateWasherState() {
 
 ErrorCodes_t MessageDispatcher::updateWasherPresetSpeeds() {
     return ErrorFeatureNotImplemented;
+}
+
+
+ErrorCodes_t MessageDispatcher::setCompensationsChannel(uint16_t channelIdx) {
+    compensationsSettingChannel = channelIdx;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::turnCFastCompensationOn(bool on) {
+    ErrorCodes_t ret;
+    if (cFastCompensationControl.implemented) {
+        if (compensationsSettingChannel < currentChannelsNum) {
+            compensationsEnabledArray[CompensationCFast][compensationsSettingChannel] = on;
+            cFastOnCoders[compensationsSettingChannel]->encode(on ? 1 : 0, txStatus);
+
+            this->stackOutgoingMessage(txStatus);
+
+            ret = Success;
+
+        } else if (compensationsSettingChannel == currentChannelsNum) {
+            vector <bool> flags = compensationsEnabledArray[CompensationCFast];
+            for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+                compensationsEnabledArray[CompensationCFast][channelIdx] = on;
+                cFastOnCoders[channelIdx]->encode(on ? 1 : 0, txStatus);
+            }
+
+            this->stackOutgoingMessage(txStatus);
+
+            ret = Success;
+
+        } else {
+            ret = ErrorValueOutOfRange;
+        }
+
+    } else {
+        ret = ErrorFeatureNotImplemented;
+    }
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::setCFastCompensationOptions(uint16_t optionIdx) {
+    ErrorCodes_t ret;
+    if (cFastCompensationControl.implemented) {
+        if (optionIdx < cFastCompensationOptions.size()) {
+            //        uint16_t originalIdx = cFastCompensationOptionIdx[compensationsSettingChannel];
+            //        cFastCompensationOptionIdx[compensationsSettingChannel] = optionIdx;
+            //        ErrorCodes_t ret = this->setCompensationsOptions();
+            //        if (ret != Success) {
+            //            cFastCompensationOptionIdx[compensationsSettingChannel] = originalIdx;
+            //        }
+            //        return ret;
+
+            //    } else if (optionIdx == 0) {
+            ret = ErrorCommandNotImplemented;
+
+        } else {
+            ret = ErrorValueOutOfRange;
+        }
+
+    } else {
+        ret = ErrorCommandNotImplemented;
+    }
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::setCFastCapacitance(Measurement_t capacitance) {
+    ErrorCodes_t ret;
+    if (cFastCompensationControl.implemented) {
+        capacitance.convertValue(cFastCompensationControl.prefix);
+
+        if (compensationsSettingChannel < currentChannelsNum) {
+            cFastCapacitance[compensationsSettingChannel] = capacitance.value;
+            cFastControlCoders[compensationsSettingChannel]->encode(capacitance.value, txStatus);
+
+            this->stackOutgoingMessage(txStatus);
+
+            ret = Success;
+
+        } else if (compensationsSettingChannel == currentChannelsNum) {
+            for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+                cFastCapacitance[channelIdx] = capacitance.value;
+                cFastControlCoders[channelIdx]->encode(capacitance.value, txStatus);
+            }
+
+            this->stackOutgoingMessage(txStatus);
+
+            ret = Success;
+
+        } else {
+            ret = ErrorValueOutOfRange;
+        }
+
+    } else {
+        ret = ErrorFeatureNotImplemented;
+    }
+
+    return ret;
 }
 
 ErrorCodes_t MessageDispatcher::setDebugBit(uint16_t byteOffset, uint16_t bitOffset, bool status) {
@@ -1436,6 +1594,24 @@ ErrorCodes_t MessageDispatcher::getInsertionPulseControls(RangedMeasurement_t &v
     }
 }
 
+ErrorCodes_t MessageDispatcher::hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented){
+    referencePulseImplemented = this->referencePulseImplemented;
+    overrideReferencePulseImplemented = this->overrideReferencePulseImplemented;
+    return Success;
+
+}
+
+ErrorCodes_t MessageDispatcher::getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange) {
+    if (referencePulseImplemented) {
+        voltageRange = referencePulseVoltageRange;
+        durationRange = referencePulseDurationRange;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::getEdhFormat(string &format) {
     format = edhFormat;
     return Success;
@@ -1466,6 +1642,32 @@ ErrorCodes_t MessageDispatcher::getDacExtRange(RangedMeasurement_t &range, Measu
     range = dacExtRange;
     defaultValue = dacExtDefault;
     return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse){
+    if (referencePulseImplemented){
+
+        voltageRange = fastPulseW1VoltageRange;
+        timeRange = fastPulseW1TimeRange;
+        nPulse = fastPulseW1num;
+        return Success;
+    } else{
+        return ErrorCommandNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse){
+    if (referencePulseImplemented){
+
+        voltageRange = fastPulseW2VoltageRange;
+        timeRange = fastPulseW2TimeRange;
+        durationRange = fastPulseW2DurationRange;
+        nPulse = fastPulseW2num;
+        return Success;
+
+    } else{
+        return ErrorCommandNotImplemented;
+    }
 }
 
 ErrorCodes_t MessageDispatcher::hasNanionTemperatureController() {
@@ -1499,6 +1701,37 @@ ErrorCodes_t MessageDispatcher::getWasherStatus(WasherStatus_t &, WasherError_t 
 }
 
 ErrorCodes_t MessageDispatcher::getWasherPresetSpeeds(vector <int8_t> &) {
+    return ErrorFeatureNotImplemented;
+}
+
+ErrorCodes_t MessageDispatcher::hasCFastCompensation() {
+    ErrorCodes_t ret = ErrorFeatureNotImplemented;
+    if (cFastCompensationControl.implemented) {
+        ret = Success;
+    }
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::getCFastCompensationOptions(vector <string> &options) {
+    if (cFastCompensationOptions.size() > 0) {
+        options = cFastCompensationOptions;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::getCFastCapacitanceControl(CompensationControl_t &control) {
+    ErrorCodes_t ret = ErrorFeatureNotImplemented;
+    if (cFastCompensationControl.implemented) {
+        control = cFastCompensationControl;
+        ret = Success;
+    }
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::updateVoltageOffsetCompensations(vector <Measurement_t> &) {
     return ErrorFeatureNotImplemented;
 }
 
@@ -1561,6 +1794,27 @@ void MessageDispatcher::initializeLsbNoise(bool nullValues) {
         for (int32_t i = 0; i < LSB_NOISE_ARRAY_SIZE; i++) {
             lsbNoiseArray[i] = ((double)mtRng())/den-0.5;
         }
+    }
+}
+
+void MessageDispatcher::initializeCompensations() {
+    for (uint16_t compensationIdx = 0; compensationIdx < CompensationsNum; compensationIdx++) {
+        /*! Assuming patch devices always have the same number of voltage and current channels */
+        compensationsEnabledArray[compensationIdx].resize(currentChannelsNum);
+        for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+            compensationsEnabledArray[compensationIdx][channelIdx] = false;
+        }
+    }
+
+    cFastCapacitance.resize(currentChannelsNum);
+    cFastCompensationFlag.resize(currentChannelsNum);
+    //    cFastCompensationOptionIdx.resize(currentChannelsNum);
+
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        cFastCapacitance[channelIdx] = 0.0;
+        cFastCompensationFlag[channelIdx] = false;
+
+        //        cFastCompensationOptionIdx[channelIdx] = 0;
     }
 }
 
@@ -1956,6 +2210,7 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
         bufferReadOffset = (bufferReadOffset+1)&FTD_RX_BUFFER_MASK;
 
         infoStructPtr[infoIndex] = infoValue;
+        //        printf("%d %d ", infoIndex, infoValue);
 
         /*! Get current and voltage data */
         for (int packetIdx = 0; packetIdx < packetsPerFrame; packetIdx++) {
@@ -1970,6 +2225,9 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
 
                 if (channelIdx < voltageChannelsNum) {
                     increaseRangeFlag = false;
+                    //                    if (packetIdx == 0) {
+                    //                        printf("%d\n", value);
+                    //                    }
 
                 } else {
                     if ((value > UINT16_CURRENT_RANGE_INCREASE_MINIMUM_THRESHOLD) && (value < UINT16_CURRENT_RANGE_INCREASE_MAXIMUM_THRESHOLD)) {

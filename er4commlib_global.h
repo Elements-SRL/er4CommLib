@@ -105,6 +105,8 @@ typedef enum {
     DeviceENPRHC,               /*!< eNPR-HC. */
     DeviceE4eEDR3,              /*!< e4 Elements (Legacy version for EDR3). */
     DeviceE4e,                  /*!< e4 Elements version. */
+    DeviceE16Illumina,          /*!< e16 Orbit customized for Illumina. */
+    DeviceE16IlluminaEDR3,      /*!< e16 Orbit customized for Illumina (Legacy version for EDR3). */
     DeviceE16n,                 /*!< e16 2020 release. */
     DeviceDlp,                  /*!< debug dlp. */
     TestboardEL06b,             /*!< testboard chip EL06b */

@@ -28,6 +28,7 @@
 #include "messagedispatcher_e2hc.h"
 #include "messagedispatcher_e4.h"
 #include "messagedispatcher_e4e.h"
+#include "messagedispatcher_e16illumina.h"
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16eth.h"
@@ -187,6 +188,14 @@ ErrorCodes_t connect(
 
         case DeviceE4e:
             messageDispatcher = new MessageDispatcher_e4e(deviceId);
+            break;
+
+        case DeviceE16Illumina:
+            messageDispatcher = new MessageDispatcher_e16Illumina_V01(deviceId);
+            break;
+
+        case DeviceE16IlluminaEDR3:
+            messageDispatcher = new MessageDispatcher_e16Illumina_LegacyEdr3_V03(deviceId);
             break;
 
         case DeviceE16n:
@@ -472,6 +481,33 @@ ErrorCodes_t applyInsertionPulse(
     return ret;
 }
 
+ErrorCodes_t applyReferencePulse(
+        Measurement_t voltage,
+        Measurement_t duration) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->applyReferencePulse(voltage, duration);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t overrideReferencePulse(
+       bool applyFlag) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->overrideReferencePulse(applyFlag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+
+
 ErrorCodes_t setRawDataFilter(
         Measurement_t cutoffFrequency,
         bool lowPassFlag,
@@ -678,6 +714,71 @@ ErrorCodes_t zap(
     return ret;
 }
 
+ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
+        unsigned int idx,
+        Measurement_t voltage) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setFastReferencePulseProtocolWave1Voltage(idx, voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setFastReferencePulseProtocolWave1Time(
+        unsigned int idx,
+        Measurement_t time) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setFastReferencePulseProtocolWave1Time(idx, time);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
+        unsigned int idx,
+        Measurement_t voltage) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setFastReferencePulseProtocolWave2Voltage(idx, voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setFastReferencePulseProtocolWave2Time(
+        unsigned int idx,
+        Measurement_t time) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setFastReferencePulseProtocolWave2Time(idx, time);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
+        unsigned int idx,
+        Measurement_t time) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setFastReferencePulseProtocolWave2Duration(idx, time);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t switchChannelOn(
         uint16_t channelIdx,
         bool on) {
@@ -756,6 +857,54 @@ ErrorCodes_t resetDevice() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->resetDevice();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setCompensationsChannel(
+        uint16_t channelIdx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setCompensationsChannel(channelIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t turnCFastCompensationOn(
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->turnCFastCompensationOn(on);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setCFastCompensationOptions(
+        uint16_t optionIdx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setCFastCompensationOptions(optionIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setCFastCapacitance(
+        Measurement_t value) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setCFastCapacitance(value);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1285,6 +1434,32 @@ ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange,
     return ret;
 }
 
+ErrorCodes_t hasReferencePulseControls(
+        bool &referencePulseImplemented,
+        bool &overrideReferencePulseImplemented) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasReferencePulseControls(referencePulseImplemented, overrideReferencePulseImplemented);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange,
+        RangedMeasurement_t &durationRange) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getReferencePulseControls(voltageRange, durationRange);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+
 ErrorCodes_t getEdhFormat(
         string &format) {
     ErrorCodes_t ret;
@@ -1340,6 +1515,35 @@ ErrorCodes_t getDacExtRange(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getDacExtRange(range, defaultValue);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getFastReferencePulseProtocolWave1Range(
+        RangedMeasurement_t &voltageRange,
+        RangedMeasurement_t &timeRange,
+        uint16_t &nPulse) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getFastReferencePulseProtocolWave1Range(voltageRange, timeRange, nPulse);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getFastReferencePulseProtocolWave2Range(
+        RangedMeasurement_t &voltageRange,
+        RangedMeasurement_t &timeRange,
+        RangedMeasurement_t &durationRange,
+        uint16_t &nPulse) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getFastReferencePulseProtocolWave2Range(voltageRange, timeRange, durationRange, nPulse);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1419,76 +1623,55 @@ ErrorCodes_t getWasherPresetSpeeds(
     return ret;
 }
 
+
+ErrorCodes_t hasCFastCompensation() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasCFastCompensation();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getCFastCompensationOptions(
+        vector <string> &options) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getCFastCompensationOptions(options);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getCFastCapacitanceControl(
+        CompensationControl_t &control) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getCFastCapacitanceControl(control);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getVoltageOffsetCompensations(
+        vector <Measurement_t> &offsets) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->updateVoltageOffsetCompensations(offsets);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 } // namespace er4CommLib
-
-ErrorCodes_t setWave1Voltage(
-        unsigned int idx,
-        Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setWave1Voltage(idx, voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-
-ErrorCodes_t setW1Time(
-        unsigned int idx,
-        Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setProtocolTime(idx, time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-
-ErrorCodes_t setWave2Voltage(
-        unsigned int idx,
-        Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setWave1Voltage(idx, voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-
-ErrorCodes_t setW2Time(
-        unsigned int idx,
-        Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setProtocolTime(idx, time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t setW2Durationmm(
-        unsigned int idx,
-        Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setProtocolTime(idx, time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
 
 /*! Private functions */
 string getDeviceSerial(

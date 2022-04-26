@@ -272,6 +272,26 @@ ErrorCodes_t applyInsertionPulse(
         ER4CL_ARGIN Measurement_t voltage,
         ER4CL_ARGIN Measurement_t duration);
 
+/*! \brief Apply the reference pulse if available.
+ *
+ * \param voltage [in] Voltage of the reference pulse to be applied.
+ * \param duration [in] Duration of the reference pulse to be applied.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t applyReferencePulse(
+        ER4CL_ARGIN Measurement_t voltage,
+        ER4CL_ARGIN Measurement_t duration);
+
+/*! \brief Override the voltage reference switch.
+ *
+ * \param applyFlag [in] true: apply the override of voltage reference.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t overrideReferencePulse(
+        ER4CL_ARGIN bool applyFlag);
+
 /*! \brief Set the raw data filter cut off frequency and type.
  *
  * \param cutoffFrequency [in] Cut off frequency of the raw data filter.
@@ -440,6 +460,61 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t zap(
         ER4CL_ARGIN uint16_t channelIdx);
 
+/*! \brief Set the voltage of a waveform 1 item for the fast pulses protocol.
+ *
+ * \param idx [in] Index of the time set.
+ * \param time [in] Value of the time set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t voltage);
+
+/*! \brief Set the duration of a waveform 1 item for the fast pulses protocol.
+ *
+ * \param idx [in] Index of the voltage set.
+ * \param voltage [in] Value of the voltage set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setFastReferencePulseProtocolWave1Time(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t time);
+
+/*! \brief Set the voltage of a waveform 2 item for the fast pulses protocol.
+ *
+ * \param idx [in] Index of the time set.
+ * \param time [in] Value of the time set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t voltage);
+
+/*! \brief Set the waiting time of a waveform 2 item for the fast pulses protocol.
+ *
+ * \param idx [in] Index of the time set.
+ * \param time [in] Value of the time set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setFastReferencePulseProtocolWave2Time(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t time);
+
+/*! \brief Set the duration of a waveform 2 item for the fast pulses protocol.
+ *
+ * \param idx [in] Index of the time set.
+ * \param time [in] Value of the time set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t time);
+
 /*! \brief Channel on.
  * Switch on the channel. Switched off channel do not send data and are constantly compensated to reduce current offset.
  *
@@ -499,6 +574,40 @@ ErrorCodes_t enableFrontEndResetDenoiser(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t resetDevice(
         ER4CL_ARGVOID);
+
+/*! \brief Select the channel for compesantions settings.
+ *  Call this method before other compensations control methods, in order to select which channel
+ *  those methods should apply to.
+ *
+ * \param channelIdx [in] Channel index that compensations methods will be applied to.
+ * \return Error code.
+ */
+ErrorCodes_t setCompensationsChannel(
+        ER4CL_ARGIN uint16_t channelIdx);
+
+/*! \brief Turn on/off cFast compensation.
+ *
+ * \param on [in] True to turn the cFast compensation on, false to turn it off.
+ * \return Error code.
+ */
+ErrorCodes_t turnCFastCompensationOn(
+        ER4CL_ARGIN bool on);
+
+/*! \brief Set options for cFast compensation (voltage clamp).
+ *
+ * \param optionIdx [in] Option index.
+ * \return Error code.
+ */
+ErrorCodes_t setCFastCompensationOptions(
+        ER4CL_ARGIN uint16_t optionIdx);
+
+/*! \brief Sets the value of the cFast capacitance.
+ *
+ * \param value [in] Value of the cFast capacitance.
+ * \return Error code.
+ */
+ErrorCodes_t setCFastCapacitance(
+        ER4CL_ARGIN Measurement_t value);
 
 ///*! \brief Reset the device's digital offset compensation.
 // *
@@ -942,6 +1051,29 @@ ErrorCodes_t getInsertionPulseControls(
         ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
         ER4CL_ARGOUT RangedMeasurement_t &durationRange);
 
+/*! \brief Get reference pulse controls definition.
+ *
+ * \param voltageRange [out] Range of applicable pulse voltage.
+ * \param durationRange [out] Ranges of applicable pulse duration.
+ * \return Success if the device has the reference pulse feature.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getReferencePulseControls(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange);
+
+/*! \brief Get reference pulse controls definition.
+ *
+ * \param voltageRange [out] Range of applicable pulse voltage.
+ * \param durationRange [out] Ranges of applicable pulse duration.
+ * \return Success if the device has the reference pulse feature.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasReferencePulseControls(
+        ER4CL_ARGOUT bool referencePulseImplemented,
+        ER4CL_ARGOUT bool overrideReferencePulseImplemented);
+
+
 /*! \brief Get data header format.
  *
  * \param format [out] Format of the data header.
@@ -990,6 +1122,34 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getDacExtRange(
         ER4CL_ARGOUT RangedMeasurement_t &range,
         ER4CL_ARGOUT Measurement_t &defaultValue);
+
+/*! \brief Get the range currently applied and the number of pulse.
+ *
+ * \param voltageRange [out] Applicable voltage range.
+ * \param timeRange [out] Applicable voltage range.
+ * \param nPulse [out] number of pulse.
+ * \return Success if external DAC control is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getFastReferencePulseProtocolWave1Range(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &timeRange,
+        ER4CL_ARGOUT uint16_t &nPulse);
+
+/*! \brief Get the range currently applied and the number of pulse.
+ *
+ * \param voltageRange [out] Applicable voltage range.
+ * \param timeRange [out] Applicable time range.
+ * \param durationRange [out] Applicable duration range.
+ * \param nPulse [out] number of pulse.
+ * \return Success if external DAC control is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getFastReferencePulseProtocolWave2Range(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &timeRange,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange,
+        ER4CL_ARGOUT uint16_t &nPulse);
 
 /*! \brief Availability of Nanion's temperature controller.
  *
@@ -1047,74 +1207,37 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getWasherPresetSpeeds(
         ER4CL_ARGOUT std::vector <int8_t> &speedValue);
 
-
-/*! \brief Set a protocol voltage value.
+/*! \brief Tell if the device implements CFast compensation.
  *
- * \param idx [in] Index of the voltage set.
- * \param voltage [in] Value of the voltage set.
+ * \return Success if the device implements CFast compensation.
+ */
+ErrorCodes_t hasCFastCompensation(
+        ER4CL_ARGVOID);
+
+/*! \brief Get options for the CFast compensation.
+ *
+ * \param option [out]: vector of strings of the available options.
+ * \return Success if the device has options for CFast compensation.
+ */
+ErrorCodes_t getCFastCompensationOptions(
+        ER4CL_ARGOUT std::vector <std::string> &options);
+
+/*! \brief Get the specifications of the control for the CFast capacitance.
+ *
+ * \param control [in] Specifications of the control for the CFast capacitance.
+ * \return Success if the device implements CFast capacitance control.
+ */
+ErrorCodes_t getCFastCapacitanceControl(
+        ER4CL_ARGOUT CompensationControl_t &control);
+
+/*! \brief Get the voltage offset compensated with the digital compensation.
+ *
+ * \param offsets [out] Vector of applied offsets.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave1Voltage(
-        ER4CL_ARGIN unsigned int idx,
-        ER4CL_ARGIN Measurement_t voltage);
-
-/*! \brief Set a protocol time value.
- *
- * \param idx [in] Index of the time set.
- * \param time [in] Value of the time set.
- * \return Error code.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave1Time(
-        ER4CL_ARGIN unsigned int idx,
-        ER4CL_ARGIN Measurement_t time);
-
-/*! \brief Set a protocol voltage value.
- *
- * \param idx [in] Index of the voltage set.
- * \param voltage [in] Value of the voltage set.
- * \return Error code.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave2Voltage(
-        ER4CL_ARGIN unsigned int idx,
-        ER4CL_ARGIN Measurement_t voltage);
-
-/*! \brief Set a protocol time value.
- *
- * \param idx [in] Index of the time set.
- * \param time [in] Value of the time set.
- * \return Error code.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave2Time(
-        ER4CL_ARGIN unsigned int idx,
-        ER4CL_ARGIN Measurement_t time);
-
-/*! \brief Set a protocol time value.
- *
- * \param idx [in] Index of the time set.
- * \param time [in] Value of the time set.
- * \return Error code.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave2Time(
-        ER4CL_ARGIN unsigned int idx,
-        ER4CL_ARGIN Measurement_t time);
-
-/*! \brief Set a protocol time value.
- *
- * \param idx [in] Index of the time set.
- * \param time [in] Value of the time set.
- * \return Error code.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t setWave2Duration(
-        ER4CL_ARGIN unsigned int idx,
-        ER4CL_ARGIN Measurement_t time);
-
+ErrorCodes_t getVoltageOffsetCompensations(
+        ER4CL_ARGOUT std::vector <Measurement_t> &offsets);
 }
-
 
 #endif // ER4COMMLIB_H

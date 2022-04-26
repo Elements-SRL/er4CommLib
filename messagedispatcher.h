@@ -166,14 +166,17 @@ public:
     ErrorCodes_t setVoltageOffset(unsigned int idx, Measurement_t voltage, bool applyFlag = true);
     ErrorCodes_t checkVoltageOffset(unsigned int idx, Measurement_t voltage, string &message);
     ErrorCodes_t applyInsertionPulse(Measurement_t voltage, Measurement_t duration);
+    ErrorCodes_t applyReferencePulse(Measurement_t voltage, Measurement_t duration);
+    ErrorCodes_t overrideReferencePulse(bool flag, bool applyFlag = true);
+
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
-    ErrorCodes_t setWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
-    ErrorCodes_t setWave1Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
-    ErrorCodes_t setWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
-    ErrorCodes_t setWave2Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
-    ErrorCodes_t setWave2Duration(unsigned int idx, Measurement_t time, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave2Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
+    ErrorCodes_t setFastReferencePulseProtocolWave2Duration(unsigned int idx, Measurement_t time, bool applyFlag = false);
 
     /*! Device specific controls */
 
@@ -182,6 +185,11 @@ public:
     virtual ErrorCodes_t startWasher(uint16_t speedIdx);
     virtual ErrorCodes_t updateWasherState();
     virtual ErrorCodes_t updateWasherPresetSpeeds();
+
+    ErrorCodes_t setCompensationsChannel(uint16_t channelIdx);
+    ErrorCodes_t turnCFastCompensationOn(bool on);
+    ErrorCodes_t setCFastCompensationOptions(uint16_t optionIdx);
+    ErrorCodes_t setCFastCapacitance(Measurement_t capacitance);
 
     ErrorCodes_t setDebugBit(uint16_t byteOffset, uint16_t bitOffset, bool status);
     ErrorCodes_t setDebugByte(uint16_t byteOffset, uint16_t byteValue);
@@ -234,11 +242,16 @@ public:
     ErrorCodes_t getProtocolAdimensional(vector <string> &adimensionalNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getVoltageOffsetControls(RangedMeasurement_t &voltageRange);
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
+    ErrorCodes_t hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented);
+    ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
     ErrorCodes_t getLedsNumber(uint16_t &ledsNumber);
     ErrorCodes_t getLedsColors(vector <uint32_t> &ledsColors);
     ErrorCodes_t getDacExtRange(RangedMeasurement_t &range, Measurement_t &defaultValue);
+    ErrorCodes_t getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse);
+    ErrorCodes_t getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse);
+
 
     /*! Device specific controls */
 
@@ -248,6 +261,12 @@ public:
     virtual ErrorCodes_t getWasherSpeedRange(RangedMeasurement_t &range);
     virtual ErrorCodes_t getWasherStatus(WasherStatus_t &status, WasherError_t &error);
     virtual ErrorCodes_t getWasherPresetSpeeds(vector <int8_t> &speedValue);
+
+    ErrorCodes_t hasCFastCompensation();
+    ErrorCodes_t getCFastCompensationOptions(vector <string> &options);
+    ErrorCodes_t getCFastCapacitanceControl(CompensationControl_t &control);
+
+    virtual ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets);
 
 protected:
     typedef enum {
@@ -268,6 +287,11 @@ protected:
         FtdStatusBufferFinished
     } FtdBufferAnalaysisStatus_t;
 
+    enum CompensationsTypes {
+        CompensationCFast,
+        CompensationsNum
+    };
+
     /*************\
      *  Methods  *
     \*************/
@@ -277,6 +301,7 @@ protected:
     virtual bool checkProtocolValidity(string &message) = 0;
 
     void initializeLsbNoise(bool nullValues = true);
+    void initializeCompensations();
 
     void processCurrentData(uint16_t channelIdx, uint16_t &x);
 
@@ -434,25 +459,23 @@ protected:
     DoubleCoder * referencePulseDurationCoder;
     BoolCoder * referencePulseApplyCoder;
 
-
-    CompensationControl_t cFastCompensationControl;
-    vector <DoubleCoder *> cFastControlCoders;
-   vector <BoolArrayCoder *> cFastOnCoders;
-
+    bool overrideReferencePulseImplemented = false;
+    BoolCoder * overrideReferencePulseApplyCoder;
 
     bool fastPulseProtocolImplementation = false;
+    uint16_t fastPulseW1num = 0;
     vector <DoubleCoder *> fastPulseW1VoltageCoder;
     RangedMeasurement_t fastPulseW1VoltageRange;
     vector <DoubleCoder *> fastPulseW1TimeCoder;
     RangedMeasurement_t fastPulseW1TimeRange;
 
+    uint16_t fastPulseW2num = 0;
     vector <DoubleCoder *> fastPulseW2VoltageCoder;
     RangedMeasurement_t fastPulseW2VoltageRange;
     vector <DoubleCoder *> fastPulseW2TimeCoder;
     RangedMeasurement_t fastPulseW2TimeRange;
     vector <DoubleCoder *> fastPulseW2DurationCoder;
     RangedMeasurement_t fastPulseW2DurationRange;
-
 
     string edhFormat;
 
@@ -491,6 +514,17 @@ protected:
 
     bool nanionTemperatureControllerFlag = false;
     bool washerControlFlag = false;
+
+    vector <bool> compensationsEnabledArray[CompensationsNum]; /*! Compensations actually enabled on device */
+
+    uint16_t compensationsSettingChannel = 0;
+
+    vector <double> cFastCapacitance;
+    vector <bool> cFastCompensationFlag;
+    CompensationControl_t cFastCompensationControl;
+    vector <string> cFastCompensationOptions;
+    vector <DoubleCoder *> cFastControlCoders;
+    vector <BoolArrayCoder *> cFastOnCoders;
 
     BoolArrayCoder * bitDebugCoder = nullptr;
     BoolArrayCoder * byteDebugCoder = nullptr;
@@ -555,6 +589,8 @@ protected:
 
     double voltageOffsetCorrected = 0.0; /*!< Value currently corrected in applied voltages by the device (expressed in the unit of the liquid junction control) */
     double voltageOffsetCorrection = 0.0; /*!< Value to be used to correct the measured votlage values (expressed in the unit of current voltage range) */
+
+    Measurement_t voltageOffsetCompensationGain = {1.0, UnitPfxNone, "V"};
 
     uint16_t selectedVoltageRangeIdx = 0;
     vector <uint16_t> selectedCurrentRangesIdx;

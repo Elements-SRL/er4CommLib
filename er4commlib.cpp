@@ -495,10 +495,10 @@ ErrorCodes_t applyReferencePulse(
 }
 
 ErrorCodes_t overrideReferencePulse(
-       bool applyFlag) {
+      bool flag) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->overrideReferencePulse(applyFlag);
+        ret = messageDispatcher->overrideReferencePulse(flag);
 
     } else {
         ret = ErrorDeviceNotConnected;

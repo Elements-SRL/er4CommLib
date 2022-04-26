@@ -557,10 +557,10 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
     referencePulseVoltageRange.max = 1250.00;
     referencePulseVoltageRange.prefix = UnitPfxMilli;
     referencePulseVoltageRange.unit = "V";
-    referencePulseDurationRange.step = 1.0;
+    referencePulseDurationRange.step = 0.1;
     referencePulseDurationRange.min = 1.0;
     referencePulseDurationRange.max = 15000.0;
-    referencePulseDurationRange.prefix = UnitPfxMilli;
+    referencePulseDurationRange.prefix = UnitPfxMicro;
     referencePulseDurationRange.unit = "s";
 
 
@@ -2137,10 +2137,10 @@ MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_Lega
     referencePulseVoltageRange.max = 1250.00;
     referencePulseVoltageRange.prefix = UnitPfxMilli;
     referencePulseVoltageRange.unit = "V";
-    referencePulseDurationRange.step = 1.0;
+    referencePulseDurationRange.step = 0.1;
     referencePulseDurationRange.min = 1.0;
     referencePulseDurationRange.max = 15000.0;
-    referencePulseDurationRange.prefix = UnitPfxMilli;
+    referencePulseDurationRange.prefix = UnitPfxMicro;
     referencePulseDurationRange.unit = "s";
 
     /*! C Fast Control */

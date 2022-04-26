@@ -290,7 +290,7 @@ ErrorCodes_t applyReferencePulse(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t overrideReferencePulse(
-        ER4CL_ARGIN bool applyFlag);
+        ER4CL_ARGIN bool flag);
 
 /*! \brief Set the raw data filter cut off frequency and type.
  *

@@ -395,6 +395,7 @@ protected:
 
     vector <RangedMeasurement_t> protocolVoltageRangesArray;
     vector <RangedMeasurement_t> protocolTimeRangesArray;
+    vector <RangedMeasurement_t> protocolSlopeRangesArray;
 
     vector <string> protocolsNames;
     vector <string> protocolsImages;

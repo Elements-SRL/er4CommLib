@@ -15,8 +15,8 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MESSAGEDISPATCHER_E4_H
-#define MESSAGEDISPATCHER_E4_H
+#ifndef MESSAGEDISPATCHER_E4N_H
+#define MESSAGEDISPATCHER_E4N_H
 
 #include "messagedispatcher.h"
 
@@ -24,10 +24,12 @@
 
 using namespace std;
 
-class MessageDispatcher_e4e : public MessageDispatcher {
+class MessageDispatcher_e4n_El03c_LegacyEdr3_V04 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e4e(string di);
-    virtual ~MessageDispatcher_e4e();
+    MessageDispatcher_e4n_El03c_LegacyEdr3_V04(string id);
+    virtual ~MessageDispatcher_e4n_El03c_LegacyEdr3_V04();
+
+    ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
 
 protected:
     typedef struct {
@@ -88,6 +90,11 @@ protected:
         ProtocolTimeRangesNum
     };
 
+    enum ProtocolSlopeRanges {
+        ProtocolSlopeRange2_10mVms,
+        ProtocolSlopeRangesNum
+    };
+
     enum Protocols {
         ProtocolConstant,
         ProtocolTriangular,
@@ -105,8 +112,8 @@ protected:
         ProtocolVPulse,
         ProtocolVStep,
         ProtocolVPk,
-        ProtocolVFinal,
-        ProtocolVInit,
+        ProtocolVMax,
+        ProtocolVMin,
         ProtocolVoltagesNum
     };
 
@@ -114,13 +121,13 @@ protected:
         ProtocolTHold,
         ProtocolTPulse,
         ProtocolTStep,
-        ProtocolTRamp,
         ProtocolTPe,
         ProtocolTimesNum
     };
 
     enum ProtocolSlopes {
-        ProtocolSlopesNum = 0
+        ProtocolSlope,
+        ProtocolSlopesNum
     };
 
     enum ProtocolAdimensionals {
@@ -131,10 +138,13 @@ protected:
 
     void initializeDevice() override;
     bool checkProtocolValidity(string &message) override;
-    virtual void setFerdParameters() override;
+
 
     /*! Device specific controls */
+    int minControllerTemperature = -10;
+    int maxControllerTemperature = 60;
+
     InfoStruct_t infoStruct;
 };
 
-#endif // MESSAGEDISPATCHER_E4_H
+#endif // MESSAGEDISPATCHER_E4N_H

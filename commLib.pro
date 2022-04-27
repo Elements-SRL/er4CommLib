@@ -59,7 +59,7 @@ SOURCES += \
     devices/eNPR/messagedispatcher_enpr.cpp \
     devices/eNPR/messagedispatcher_enpr_hc.cpp \
     devices/e2/messagedispatcher_e2hc.cpp \
-    devices/e4/messagedispatcher_e4.cpp \
+    devices/e4/messagedispatcher_e4n.cpp \
     devices/e4/messagedispatcher_e4e.cpp \
     devices/e16/messagedispatcher_e16illumina.cpp \
     devices/e16/messagedispatcher_e16e.cpp \
@@ -85,7 +85,7 @@ HEADERS += \
     devices/eNPR/messagedispatcher_enpr.h \
     devices/eNPR/messagedispatcher_enpr_hc.h \
     devices/e2/messagedispatcher_e2hc.h \
-    devices/e4/messagedispatcher_e4.h \
+    devices/e4/messagedispatcher_e4n.h \
     devices/e4/messagedispatcher_e4e.h \
     devices/e16/messagedispatcher_e16illumina.h \
     devices/e16/messagedispatcher_e16e.h \

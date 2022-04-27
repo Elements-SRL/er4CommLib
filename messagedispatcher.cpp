@@ -34,6 +34,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                           //    3,  8, 11 : e16e (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                             //    8,  2,129 : eNPR
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                         //    8,  8,129 : eNPR-HC
+    {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nV04EDR3},                           //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nV04EDR3},                           //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                 //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16Illumina, 129, DeviceE16Illumina},                //    3,  4,129 : e16 Orbit customized for Illumina
@@ -1644,28 +1646,27 @@ ErrorCodes_t MessageDispatcher::getDacExtRange(RangedMeasurement_t &range, Measu
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse){
-    if (referencePulseImplemented){
-
+ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse) {
+    if (referencePulseImplemented) {
         voltageRange = fastPulseW1VoltageRange;
         timeRange = fastPulseW1TimeRange;
         nPulse = fastPulseW1num;
         return Success;
-    } else{
+
+    } else {
         return ErrorCommandNotImplemented;
     }
 }
 
-ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse){
-    if (referencePulseImplemented){
-
+ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse) {
+    if (referencePulseImplemented) {
         voltageRange = fastPulseW2VoltageRange;
         timeRange = fastPulseW2TimeRange;
         durationRange = fastPulseW2DurationRange;
         nPulse = fastPulseW2num;
         return Success;
 
-    } else{
+    } else {
         return ErrorCommandNotImplemented;
     }
 }

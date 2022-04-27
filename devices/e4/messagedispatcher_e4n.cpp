@@ -326,14 +326,14 @@ MessageDispatcher_e4n_El03c_LegacyEdr3_V04::MessageDispatcher_e4n_El03c_LegacyEd
     protocolsAvailableVoltages[ProtocolRamp].push_back(ProtocolVMin);
     protocolsAvailableTimes[ProtocolRamp].push_back(ProtocolTHold);
     protocolsAvailableTimes[ProtocolRamp].push_back(ProtocolTPulse);
-    protocolsAvailableTimes[ProtocolRamp].push_back(ProtocolSlope);
+    protocolsAvailableSlopes[ProtocolRamp].push_back(ProtocolSlope);
     protocolsAvailableAdimensionals[ProtocolRamp].push_back(ProtocolNR);
 
     protocolsAvailableVoltages[ProtocolCyclicVoltammetry].push_back(ProtocolVHold);
     protocolsAvailableVoltages[ProtocolCyclicVoltammetry].push_back(ProtocolVMax);
     protocolsAvailableVoltages[ProtocolCyclicVoltammetry].push_back(ProtocolVMin);
     protocolsAvailableTimes[ProtocolCyclicVoltammetry].push_back(ProtocolTHold);
-    protocolsAvailableTimes[ProtocolCyclicVoltammetry].push_back(ProtocolSlope);
+    protocolsAvailableSlopes[ProtocolCyclicVoltammetry].push_back(ProtocolSlope);
     protocolsAvailableAdimensionals[ProtocolCyclicVoltammetry].push_back(ProtocolN);
     protocolsAvailableAdimensionals[ProtocolCyclicVoltammetry].push_back(ProtocolNR);
 
@@ -1094,13 +1094,13 @@ bool MessageDispatcher_e4n_El03c_LegacyEdr3_V04::checkProtocolValidity(string &m
             validFlag = false;
             message = "Vmin\nmust be within [-500,500]mV";
 
-        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_25].includes(selectedProtocolTime[ProtocolSlope]))) {
+        } else if (!(protocolSlopeRangesArray[ProtocolSlopeRange2_10mVms].includes(selectedProtocolSlope[ProtocolSlope]))) {
             validFlag = false;
-            message = "Tramp\nmust be within [1, 30e6]ms";
+            message = "Slope\nmust be within [0, 1000]mV/ms";
 
         } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
             validFlag = false;
-            message = "Slope\nmust be within [0, 1000]mV/ms";
+            message = "N\nmust at least 1";
 
         } else {
             validFlag = true;

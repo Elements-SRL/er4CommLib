@@ -1202,6 +1202,7 @@ MessageDispatcher_e4e_El03c_LegacyEdr3_V00::MessageDispatcher_e4e_El03c_LegacyEd
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
+    rawVoltageZero = 8192;
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;

@@ -544,18 +544,18 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     //    }
 
     /*! Channel off */
-    channelOnFlag = false;
-    singleChannelOnFlag = false;
+    channelOnFlag = true;
+    singleChannelOnFlag = true;
 
-    //    boolConfig.initialByte = 5;
-    //    boolConfig.initialBit = 0;
-    //    boolConfig.bitsNum = 4;
-    //    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
+    boolConfig.initialByte = 8;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 16;
+    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
 
-    //    channelOnStates.resize(currentChannelsNum);
-    //    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-    //        channelOnStates[currentIdx] = false;
-    //    }
+    channelOnStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        channelOnStates[currentIdx] = false;
+    }
 
     /*! Current range */
     currentRangeCoders.resize(currentChannelsNum);

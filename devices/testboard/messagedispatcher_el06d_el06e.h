@@ -123,7 +123,7 @@ protected:
 
 private:
     enum SamplingRates {
-        SamplingRate50kHz,
+        SamplingRate100kHz,
         SamplingRatesNum
     };
 };

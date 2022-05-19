@@ -86,22 +86,22 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);
-    samplingRatesArray[SamplingRate50kHz].value = 50.0;
-    samplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate50kHz].unit = "Hz";
-    defaultSamplingRateIdx = SamplingRate50kHz;
+    samplingRatesArray[SamplingRate100kHz].value = 100.0;
+    samplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate100kHz].unit = "Hz";
+    defaultSamplingRateIdx = SamplingRate100kHz;
 
     realSamplingRatesArray.resize(samplingRatesNum);
-    realSamplingRatesArray[SamplingRate50kHz].value = 50.0e3/(8.0*128.0); /*!< 48.8kHz */
-    realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate100kHz].value = 100.0e3/(8.0*128.0); /*!< 48.8kHz */
+    realSamplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate100kHz].unit = "Hz";
 
 
 
     integrationStepArray.resize(samplingRatesNum);
-    integrationStepArray[SamplingRate50kHz].value = 20.48;
-    integrationStepArray[SamplingRate50kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate50kHz].unit = "s";
+    integrationStepArray[SamplingRate100kHz].value = 10.24;
+    integrationStepArray[SamplingRate100kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate100kHz].unit = "s";
 
 
 
@@ -504,8 +504,8 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     singleChannelSSCFlag = true;
 
     boolConfig.initialByte = 11;
-    boolConfig.initialBit = 4;
-    boolConfig.bitsNum = 12;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 16;
     selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
 
     selectStimulusChannelStates.resize(currentChannelsNum);
@@ -519,8 +519,8 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     selectableDOCAutostopFlag = false;
 
     boolConfig.initialByte = 5;
-    boolConfig.initialBit = 4;
-    boolConfig.bitsNum = 12;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 16;
     digitalOffsetCompensationCoder = new BoolArrayCoder(boolConfig);
 
     digitalOffsetCompensationStates.resize(currentChannelsNum);
@@ -548,18 +548,18 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     //    }
 
     /*! Channel off */
-    channelOnFlag = false;
-    singleChannelOnFlag = false;
+    channelOnFlag = true;
+    singleChannelOnFlag = true;
 
-    //    boolConfig.initialByte = 5;
-    //    boolConfig.initialBit = 0;
-    //    boolConfig.bitsNum = 4;
-    //    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
+    boolConfig.initialByte = 8;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 16;
+    channelOnCoder = new BoolArrayCoder(boolConfig);
 
-    //    channelOnStates.resize(currentChannelsNum);
-    //    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-    //        channelOnStates[currentIdx] = false;
-    //    }
+    channelOnStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        channelOnStates[currentIdx] = false;
+    }
 
     /*! Current range */
     currentRangeCoders.resize(currentChannelsNum);
@@ -718,8 +718,8 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 16;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     doubleConfig.resolution = 1.0;

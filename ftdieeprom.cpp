@@ -84,6 +84,24 @@ ErrorCodes_t FtdiEeprom::readEepromWord(DWORD address, LPWORD result) {
     return ret;
 }
 
+ErrorCodes_t FtdiEeprom::writeEepromWord(DWORD address, WORD value) {
+    ErrorCodes_t ret;
+    if (connectionOpened) {
+        FT_STATUS ftRet = FT_WriteEE(handler, address, value);
+        if (ftRet != FT_OK) {
+            ret = ErrorEepromWriteFailed;
+
+        } else {
+            ret = Success;
+        }
+
+    } else {
+        ret = ErrorEepromNotConnected;
+    }
+    return ret;
+}
+
+
 DeviceTuple_t FtdiEeprom::getDeviceTuple() {
     return deviceTuple;
 }
@@ -91,3 +109,5 @@ DeviceTuple_t FtdiEeprom::getDeviceTuple() {
 uint16_t FtdiEeprom::getVcOffset() {
     return vcOffset;
 }
+
+

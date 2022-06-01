@@ -29,6 +29,8 @@ public:
     FtdiEeprom56(string deviceId);
     ~FtdiEeprom56();
 
+    ErrorCodes_t setVcOffset(unsigned short value) override;
+
 protected:
     /*! FtdiEeprom interface */
     ErrorCodes_t loadData() override;

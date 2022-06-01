@@ -27,9 +27,10 @@ public:
 
     ErrorCodes_t openConnection(char channel = 'A') override;
     ErrorCodes_t closeConnection() override;
-
+    ErrorCodes_t setVcOffset(uint16_t value) override;
 protected:
     /*! FtdiEeprom interface */
+
     ErrorCodes_t loadData() override;
     ErrorCodes_t loadDeviceTuple() override;
     ErrorCodes_t loadVcOffset() override;

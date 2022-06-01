@@ -27,6 +27,28 @@ FtdiEeprom56::~FtdiEeprom56() {
 
 }
 
+
+ErrorCodes_t FtdiEeprom56::setVcOffset(unsigned short value) {
+    ErrorCodes_t ret;
+    ret = this->openConnection();
+    if ((ret != Success) && (ret != ErrorEepromAlreadyConnected)) {
+        return ret;
+    }
+
+    ret = this->writeEepromWord(E56_VC_OFFSET_ADDR, value);
+    if (ret != Success) {
+        return ret;
+    }
+    vcOffset = value;
+
+    ret = this->closeConnection();
+    if (ret != Success) {
+        return ret;
+    }
+
+    return ret;
+}
+
 ErrorCodes_t FtdiEeprom56::loadData() {
     ErrorCodes_t ret;
     ret = this->openConnection();

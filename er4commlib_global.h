@@ -623,6 +623,14 @@ typedef struct {
     UnitPfx_t prefix = UnitPfxNone; /*!< Unit prefix in the range [femto, Peta]. */
     std::string unit = ""; /*!< Unit. \note Can be any string, the library is not aware of real units meaning. */
 
+    /*! \brief Returns the number of steps in the range.
+     *
+     * \return Number of steps in the range.
+     */
+    uint32_t steps(ER4CL_ARGVOID) {
+        return static_cast <uint32_t> (round(1.0+(max-min)/step));
+    }
+
     /*! \brief Returns the string corresponding to the prefix.
      *
      * \return String corresponding to the prefix.
@@ -833,6 +841,18 @@ typedef struct {
         return extreme;
     }
 
+    /*! \brief Returns a Measurement_t equivalent to the x-th step of the range.
+     *
+     * \return Measurement_t equivalent to the x-th step of the range.
+     */
+    Measurement_t getXth(ER4CL_ARGIN uint32_t x) {
+        Measurement_t xth;
+        xth.value = min+step*static_cast <double> (x);
+        xth.prefix = prefix;
+        xth.unit = unit;
+        return xth;
+    }
+
     /*! \brief Checks if a Measurement_t is within the range.
      *
      * \return true if the Measurement_t is within the range, false otherwise.
@@ -923,6 +943,52 @@ typedef struct {
         }
     }
 } CompensationControl_t;
+
+
+typedef struct {
+    uint32_t address;
+    uint32_t bitSize;
+    bool signedFlag;
+    uint32_t byteSize;
+    double lsb;
+} CalibrationValueInfo_t;
+
+typedef struct {
+    uint32_t adcRangeIdx;
+    uint32_t dacRangeIdx;
+    uint32_t samplingRateIdx;
+    uint32_t channelIdx;
+    RangedMeasurement_t dacRange;
+    Measurement_t resistance;
+    uint32_t csvColumn;
+} CharacterizationSetting_t;
+
+typedef struct {
+    uint32_t calibrationVoltageRangesNum;
+    uint32_t calibrationCurrentRangesNum;
+    uint32_t calibrationSamplingRatesNum;
+    std::vector <uint32_t> calibrationSamplingRates;
+    bool vGainRdac;
+    std::vector <RangedMeasurement_t> vGainRanges;
+    std::vector <RangedMeasurement_t> vOffsetRanges;
+    std::vector <RangedMeasurement_t> iGainRanges;
+    std::vector <RangedMeasurement_t> iOffsetRanges;
+    std::vector <Measurement_t> vGainResistances;
+    std::vector <Measurement_t> vOffsetResistances;
+    std::vector <Measurement_t> iGainResistances;
+    std::vector <Measurement_t> iOffsetResistances;
+    std::vector <CalibrationValueInfo_t> vGains;
+    std::vector <CalibrationValueInfo_t> vOffsets;
+    std::vector <CalibrationValueInfo_t> iGains;
+    std::vector <CalibrationValueInfo_t> iOffsets;
+    CalibrationValueInfo_t dacExtOffset;
+    uint32_t characterizationCsvColumns;
+    uint32_t gainCharacterizationStepsNum;
+    uint32_t offsetCharacterizationStepsNum;
+    std::vector <CharacterizationSetting_t> gainCharSettings;
+    std::vector <CharacterizationSetting_t> offsetCharSettings;
+} CalibrationConfiguration_t;
+
 
 /******************************\
  *  Device specific typedefs  *

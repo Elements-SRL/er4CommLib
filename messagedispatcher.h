@@ -29,6 +29,7 @@
 #include "ftdieeprom.h"
 #include "ftdieeprom56.h"
 #include "ftdieepromdemo.h"
+#include "calibrationeeprom.h"
 #include "commandcoder.h"
 
 using namespace std;
@@ -120,6 +121,18 @@ public:
     void sendCommandsToDevice();
 
     static ErrorCodes_t getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type);
+
+
+    /*************************\
+     *  Calibration methods  *
+    \*************************/
+
+    ErrorCodes_t getCalibrationConfiguration(CalibrationConfiguration_t * &calibrationConfiguration);
+    ErrorCodes_t getCalibrationEepromSize(uint32_t &size);
+    ErrorCodes_t writeCalibrationEeprom(vector <uint32_t> value, vector <uint32_t> address, vector <uint32_t> size);
+    ErrorCodes_t readCalibrationEeprom(vector <uint32_t> &value, vector <uint32_t> address, vector <uint32_t> size);
+    ErrorCodes_t writeDacExtOffset(uint16_t value);
+    ErrorCodes_t getDacExtOffset(uint16_t &value);
 
     /****************\
      *  Tx methods  *
@@ -536,6 +549,7 @@ protected:
 
     string deviceId;
 
+    CalibrationEeprom * calEeprom = nullptr;
     FtdiEeprom * ftdiEeprom = nullptr;
     FT_HANDLE * ftdiRxHandle = nullptr;
     FT_HANDLE * ftdiTxHandle = nullptr;
@@ -636,6 +650,13 @@ protected:
     double liquidJunctionResolution = 1.0;
     double liquidJunctionOffsetBinary = 0.0;
 
+    /****************************\
+     *  Calibration parameters  *
+    \****************************/
+
+    CalibrationConfiguration_t * calConf = nullptr;
+
+
     /********************************************\
      *  Multi-thread synchronization variables  *
     \********************************************/
@@ -645,6 +666,8 @@ protected:
 
     condition_variable rxMsgBufferNotEmpty;
     condition_variable rxMsgBufferNotFull;
+
+    mutable mutex connectionMutex;
 
     mutable mutex txMutex;
     condition_variable txMsgBufferNotEmpty;

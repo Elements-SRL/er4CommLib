@@ -376,6 +376,12 @@ ErrorCodes_t MessageDispatcher::pauseConnection(bool pauseFlag) {
     return ret;
 }
 
+
+/*************************\
+ *  Calibration methods  *
+\*************************/
+
+
 ErrorCodes_t MessageDispatcher::getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type) {
     bool deviceFound = false;
     for (unsigned int mappingIdx = 0; mappingIdx < deviceTupleMapping.size(); mappingIdx++) {
@@ -394,6 +400,130 @@ ErrorCodes_t MessageDispatcher::getDeviceType(DeviceTuple_t tuple, DeviceTypes_t
     } else {
         return ErrorDeviceTypeNotRecognized;
     }
+}
+
+ErrorCodes_t MessageDispatcher::getCalibrationConfiguration(CalibrationConfiguration_t * &calibrationConfiguration) {
+    calibrationConfiguration = calConf;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getCalibrationEepromSize(uint32_t &size) {
+    ErrorCodes_t ret;
+    if (calEeprom != nullptr) {
+        size = calEeprom->getMemorySize();
+        ret = Success;
+
+    } else {
+        size = 0;
+        ret = ErrorEepromNotConnected;
+    }
+
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::writeCalibrationEeprom(vector <uint32_t> value, vector <uint32_t> address, vector <uint32_t> size) {
+    ErrorCodes_t ret;
+    if (calEeprom != nullptr) {
+        unique_lock <mutex> connectionMutexLock(connectionMutex);
+
+        ret = this->pauseConnection(true);
+        calEeprom->openConnection();
+
+        unsigned char eepromBuffer[4];
+        for (unsigned int itemIdx = 0; itemIdx < value.size(); itemIdx++) {
+            for (uint32_t bufferIdx = 0; bufferIdx < size[itemIdx]; bufferIdx++) {
+                eepromBuffer[size[itemIdx]-bufferIdx-1] = value[itemIdx] & 0x000000FF;
+                value[itemIdx] >>= 8;
+            }
+
+            ret = calEeprom->writeBytes(eepromBuffer, address[itemIdx], size[itemIdx]);
+        }
+
+        calEeprom->closeConnection();
+        this->pauseConnection(false);
+
+        connectionMutexLock.unlock();
+
+        /*! Make a chip reset to force resynchronization of chip states. This is important when the FPGA has just been reset */
+        this->resetDevice();
+        this_thread::sleep_for(chrono::milliseconds(100));
+        this->resetDevice();
+
+    } else {
+        ret = ErrorEepromNotConnected;
+    }
+
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::readCalibrationEeprom(vector <uint32_t> &value, vector <uint32_t> address, vector <uint32_t> size) {
+    ErrorCodes_t ret;
+    if (calEeprom != nullptr) {
+        unique_lock <mutex> connectionMutexLock(connectionMutex);
+
+        ret = this->pauseConnection(true);
+        calEeprom->openConnection();
+
+        if (value.size() != address.size()) {
+            value.resize(address.size());
+        }
+
+        unsigned char eepromBuffer[4];
+        for (unsigned int itemIdx = 0; itemIdx < value.size(); itemIdx++) {
+            ret = calEeprom->readBytes(eepromBuffer, address[itemIdx], size[itemIdx]);
+
+            value[itemIdx] = 0;
+            for (uint32_t bufferIdx = 0; bufferIdx < size[itemIdx]; bufferIdx++) {
+                value[itemIdx] <<= 8;
+                value[itemIdx] += static_cast <uint32_t> (eepromBuffer[bufferIdx]);
+            }
+        }
+
+        calEeprom->closeConnection();
+        this->pauseConnection(false);
+
+        connectionMutexLock.unlock();
+
+        /*! Make a chip reset to force resynchronization of chip states. This is important when the FPGA has just been reset */
+        this->resetDevice();
+        this_thread::sleep_for(chrono::milliseconds(100));
+        this->resetDevice();
+
+    } else {
+        ret = ErrorEepromNotConnected;
+    }
+
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::writeDacExtOffset(uint16_t value) {
+    ErrorCodes_t ret;
+    if (calEeprom != nullptr) {
+        unique_lock <mutex> connectionMutexLock(connectionMutex);
+
+        this->pauseConnection(true);
+
+        ret = ftdiEeprom->setVcOffset(value);
+
+        this->pauseConnection(false);
+
+        connectionMutexLock.unlock();
+
+        /*! Make a chip reset to force resynchronization of chip states. This is important when the FPGA has just been reset */
+        this->resetDevice();
+        this_thread::sleep_for(chrono::milliseconds(100));
+        this->resetDevice();
+
+    } else {
+        ret = ErrorEepromNotConnected;
+    }
+
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::getDacExtOffset(uint16_t &value) {
+    value = ftdiEeprom->getVcOffset();
+    return Success;
 }
 
 /****************\

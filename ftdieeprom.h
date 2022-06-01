@@ -120,6 +120,9 @@ public:
     DeviceTuple_t getDeviceTuple();
     uint16_t getVcOffset();
     ErrorCodes_t readEepromWord(DWORD address, LPWORD result);
+    ErrorCodes_t writeEepromWord(DWORD address, WORD result);
+
+    virtual ErrorCodes_t setVcOffset(unsigned short value) = 0;
 
 protected:
     string deviceId;

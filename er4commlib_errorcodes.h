@@ -50,7 +50,9 @@ typedef enum {
     ErrorEepromDisconnectionFailed =    ErrorGroupEepromCommunication +  0x00000003, /*!< Error returned when disconnection from a device eeprom fails. */
     ErrorEepromNotConnected =           ErrorGroupEepromCommunication +  0x00000004, /*!< Error returned when trying to communicate with a device eeprom if none is connected. */
     ErrorEepromReadFailed =             ErrorGroupEepromCommunication +  0x00000005, /*!< Error returned when reading from a device eeprom fails. */
-    ErrorEepromNotRecognized =          ErrorGroupEepromCommunication +  0x00000006, /*!< Error returned when the eeprom is not recognized. */
+    ErrorEepromWriteFailed =            ErrorGroupEepromCommunication +  0x00000006, /*!< Error returned when reading from a device eeprom fails. */
+    ErrorEepromNotRecognized =          ErrorGroupEepromCommunication +  0x00000007, /*!< Error returned when the eeprom is not recognized. */
+    ErrorEepromInvalidAddress =         ErrorGroupEepromCommunication +  0x00000008, /*!< Error returned when trying to read or write an invalid eeprom address. */
 
     ErrorInitializationFailed =         ErrorGroupDeviceConnection +    0x00000001, /*!< Error returned if the communication library intitialization fails. */
     ErrorDeviceTypeNotRecognized =      ErrorGroupDeviceConnection +    0x00000002, /*!< Error returned when the device type is not recognized. */

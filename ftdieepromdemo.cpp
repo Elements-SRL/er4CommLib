@@ -68,6 +68,10 @@ ErrorCodes_t FtdiEepromDemo::closeConnection() {
     return ret;
 }
 
+ErrorCodes_t FtdiEepromDemo::setVcOffset(uint16_t) {
+    return Success;
+}
+
 ErrorCodes_t FtdiEepromDemo::loadData() {
     ErrorCodes_t ret;
     ret = this->openConnection();

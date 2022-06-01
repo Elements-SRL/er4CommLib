@@ -286,6 +286,86 @@ ErrorCodes_t disconnect() {
     return ret;
 }
 
+/*************************\
+ *  Calibration methods  *
+\*************************/
+
+ErrorCodes_t getCalibrationConfiguration(
+        CalibrationConfiguration_t * &calibrationConfiguration) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getCalibrationConfiguration(calibrationConfiguration);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getCalibrationEepromSize(
+        uint32_t &size) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getCalibrationEepromSize(size);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t writeCalibrationEeprom(
+        vector <uint32_t> value,
+        vector <uint32_t> address,
+        vector <uint32_t> size) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->writeCalibrationEeprom(value, address, size);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t readCalibrationEeprom(
+        vector <uint32_t> &value,
+        vector <uint32_t> address,
+        vector <uint32_t> size) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->readCalibrationEeprom(value, address, size);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t writeDacExtOffset(
+        uint16_t value) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->writeDacExtOffset(value);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getDacExtOffset(
+        uint16_t &value) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getDacExtOffset(value);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 /****************\
  *  Tx methods  *
 \****************/

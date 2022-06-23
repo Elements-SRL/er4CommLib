@@ -86,20 +86,20 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);
-    samplingRatesArray[SamplingRate100kHz].value = 100.0;
+    samplingRatesArray[SamplingRate100kHz].value = 100.0/2.0;
     samplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate100kHz].unit = "Hz";
     defaultSamplingRateIdx = SamplingRate100kHz;
 
     realSamplingRatesArray.resize(samplingRatesNum);
-    realSamplingRatesArray[SamplingRate100kHz].value = 100.0e3/(8.0*128.0); /*!< 48.8kHz */
+    realSamplingRatesArray[SamplingRate100kHz].value = 100.0e3/(8.0*128.0)/2.0; /*!< 48.8kHz */
     realSamplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate100kHz].unit = "Hz";
 
 
 
     integrationStepArray.resize(samplingRatesNum);
-    integrationStepArray[SamplingRate100kHz].value = 10.24;
+    integrationStepArray[SamplingRate100kHz].value = 10.24*2.0;
     integrationStepArray[SamplingRate100kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate100kHz].unit = "s";
 
@@ -868,6 +868,14 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
 
 MessageDispatcher_EL06d_EL06e::~MessageDispatcher_EL06d_EL06e() {
 
+}
+
+ErrorCodes_t MessageDispatcher_EL06d_EL06e::setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
+    MessageDispatcher::setProtocolVoltage(idx, voltage, applyFlag);
+    if (idx == 0) {
+        return this->setVoltageOffset(currentChannelsNum, voltage, applyFlag);
+    }
+    return Success;
 }
 
 void MessageDispatcher_EL06d_EL06e::initializeDevice() {

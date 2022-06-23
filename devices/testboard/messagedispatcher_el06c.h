@@ -27,6 +27,8 @@ public:
     MessageDispatcher_EL06c(string di);
     virtual ~MessageDispatcher_EL06c();
 
+    ErrorCodes_t setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false) override;
+
 protected:
     typedef struct {
         uint8_t unused;

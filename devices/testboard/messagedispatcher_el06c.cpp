@@ -756,7 +756,7 @@ MessageDispatcher_EL06c::MessageDispatcher_EL06c(string id) :
     txStatus[txStatusIdx++] = txSyncWord; // HDR
     txStatus[txStatusIdx++] = 0x22; // CFG0
     txStatus[txStatusIdx++] = 0x01; // CFG1
-    txStatus[txStatusIdx++] = 0x05; // CFG2
+    txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
     txStatus[txStatusIdx++] = 0x00; // CFG4
     txStatus[txStatusIdx++] = 0x00; // CFG5
@@ -864,6 +864,14 @@ MessageDispatcher_EL06c::MessageDispatcher_EL06c(string id) :
 
 MessageDispatcher_EL06c::~MessageDispatcher_EL06c() {
 
+}
+
+ErrorCodes_t MessageDispatcher_EL06c::setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
+    MessageDispatcher::setProtocolVoltage(idx, voltage, applyFlag);
+    if (idx == 0) {
+        return this->setVoltageOffset(currentChannelsNum, voltage, applyFlag);
+    }
+    return Success;
 }
 
 void MessageDispatcher_EL06c::initializeDevice() {

@@ -154,7 +154,7 @@ public:
     ErrorCodes_t sendCommands();
     ErrorCodes_t selectVoltageProtocol(unsigned int idx, bool applyFlag = false);
     ErrorCodes_t applyVoltageProtocol();
-    ErrorCodes_t setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
+    virtual ErrorCodes_t setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
     ErrorCodes_t setProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag = false);
     ErrorCodes_t setProtocolSlope(unsigned int idx, Measurement_t slope, bool applyFlag = false);
     ErrorCodes_t setProtocolAdimensional(unsigned int idx, Measurement_t adimensional, bool applyFlag = false);
@@ -168,7 +168,6 @@ public:
     ErrorCodes_t applyInsertionPulse(Measurement_t voltage, Measurement_t duration);
     ErrorCodes_t applyReferencePulse(Measurement_t voltage, Measurement_t duration);
     ErrorCodes_t overrideReferencePulse(bool flag, bool applyFlag = true);
-
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);

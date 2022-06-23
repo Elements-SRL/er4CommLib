@@ -917,7 +917,18 @@ ErrorCodes_t MessageDispatcher::checkProtocolAdimensional(unsigned int idx, Meas
 }
 
 ErrorCodes_t MessageDispatcher::setVoltageOffset(unsigned int idx, Measurement_t voltage, bool applyFlag) {
-    if (idx < currentChannelsNum) {
+    if (idx == currentChannelsNum) {
+        for (idx = 0; idx < currentChannelsNum; idx++) {
+            voltage.convertValue(selectedVoltageOffset[idx].prefix);
+            voltageOffsetCoders[idx]->encode(voltage.value, txStatus);
+        }
+
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+        return Success;
+
+    } else if (idx < currentChannelsNum) {
         voltage.convertValue(selectedVoltageOffset[idx].prefix);
         voltageOffsetCoders[idx]->encode(voltage.value, txStatus);
         if (applyFlag) {

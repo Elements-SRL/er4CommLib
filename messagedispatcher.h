@@ -149,6 +149,7 @@ public:
     ErrorCodes_t enableFrontEndResetDenoiser(bool on);
 
     ErrorCodes_t resetDevice();
+    ErrorCodes_t resetCalib();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
 
     ErrorCodes_t sendCommands();
@@ -169,7 +170,8 @@ public:
     ErrorCodes_t applyReferencePulse(Measurement_t voltage, Measurement_t duration);
     ErrorCodes_t overrideReferencePulse(bool flag, bool applyFlag = true);
 
-    ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
+    ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);    
+    ErrorCodes_t setVoltageDacExt(Measurement_t voltage);
     ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
     ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
     ErrorCodes_t setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
@@ -377,6 +379,7 @@ protected:
     vector <bool> selectStimulusChannelStates;
 
     BoolArrayCoder * deviceResetCoder;
+    BoolArrayCoder * calibResetCoder;
     BoolArrayCoder * digitalOffsetCompensationCoder;
     BoolArrayCoder * digitalOffsetCompensationAutostopCoder;
     vector <bool> digitalOffsetCompensationStates;
@@ -451,6 +454,10 @@ protected:
     DoubleCoder * insertionPulseVoltageCoder;
     DoubleCoder * insertionPulseDurationCoder;
     BoolCoder * insertionPulseApplyCoder;
+
+    bool voltageExternalDacImplemented = false;
+    DoubleCoder * voltageExternalDacCoder;
+    RangedMeasurement_t voltageExternalDacRange;
 
     bool referencePulseImplemented = false;
     RangedMeasurement_t referencePulseVoltageRange;

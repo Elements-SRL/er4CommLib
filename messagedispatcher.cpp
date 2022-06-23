@@ -43,6 +43,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                              //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                              //    3,  5,136 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
+    {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC},
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                  //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                         //    6,  5,129 : testboard EL06b
     {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                         //    6,  6,129 : testboard EL06c
@@ -761,6 +762,14 @@ ErrorCodes_t MessageDispatcher::resetDevice() {
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::resetCalib() {
+    calibResetCoder->encode(1, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    calibResetCoder->encode(0, txStatus);
+
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::resetDigitalOffsetCompensation(bool) {
     ErrorCodes_t ret = Success;
     //    uint16_t dataLength = switchesStatusLength;
@@ -1043,6 +1052,7 @@ ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, 
 
     return ret;
 }
+
 
 ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFlag) {
     if (!dacExtControllableFlag) {

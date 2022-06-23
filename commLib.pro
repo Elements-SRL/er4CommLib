@@ -47,6 +47,7 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
+    devices/e16/messagedispatcher_e16hc.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
     ftdieeprom56.cpp \
@@ -71,6 +72,7 @@ SOURCES += \
     devices/fake/messagedispatcher_fake_e16n.cpp
 
 HEADERS += \
+    devices/e16/messagedispatcher_e16hc.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \

@@ -15,21 +15,20 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "messagedispatcher_e16eth.h"
+#include "messagedispatcher_e16hc.h"
 #include "messagedispatcher.h"
 
-MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01(string id):
-    MessageDispatcherLegacyEdr3(id){
-
+MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
+    MessageDispatcher(id) {
     /************************\
      * Communication format *
     \************************/
 
     ftdiEepromId = FtdiEepromId56;
-    rxChannel = 'B';
-    txChannel = 'B';
+    rxChannel = 'A';
+    txChannel = 'A';
 
-    rxSyncWord = 0xFFFF0000;
+    rxSyncWord = 0x7FFF8000;
     txSyncWord = 0x80;
 
     packetsPerFrame = 16;
@@ -38,14 +37,15 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     currentChannelsNum = 16;
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
-    readFrameLength =FTD_RX_SYNC_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
+    readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
 
     infoStructSize = sizeof(InfoStruct_t);
     infoStructPtr = (uint8_t *)&infoStruct;
 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
-    txDataBytes = 100;
+    txDataBytes = 89;
+
 
     /**********************\
      * Available settings *
@@ -55,29 +55,19 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     independentCurrentRangesFlag = false;
     currentRangesNum = CurrentRangesNum;
     currentRangesArray.resize(currentRangesNum);
-    currentRangesArray[CurrentRange200pA].min = -200.0;
-    currentRangesArray[CurrentRange200pA].max = 200.0;
-    currentRangesArray[CurrentRange200pA].step = currentRangesArray[CurrentRange200pA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange200pA].prefix = UnitPfxPico;
-    currentRangesArray[CurrentRange200pA].unit = "A";
-    currentRangesArray[CurrentRange2nA].min = -2.0;
-    currentRangesArray[CurrentRange2nA].max = 2.0;
-    currentRangesArray[CurrentRange2nA].step = currentRangesArray[CurrentRange2nA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange2nA].prefix = UnitPfxNano;
-    currentRangesArray[CurrentRange2nA].unit = "A";
-    currentRangesArray[CurrentRange20nA].min = -20.0;
-    currentRangesArray[CurrentRange20nA].max = 20.0;
-    currentRangesArray[CurrentRange20nA].step = currentRangesArray[CurrentRange20nA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange20nA].prefix = UnitPfxNano;
-    currentRangesArray[CurrentRange20nA].unit = "A";
     currentRangesArray[CurrentRange200nA].min = -200.0;
     currentRangesArray[CurrentRange200nA].max = 200.0;
     currentRangesArray[CurrentRange200nA].step = currentRangesArray[CurrentRange200nA].max/SHORT_MAX;
     currentRangesArray[CurrentRange200nA].prefix = UnitPfxNano;
     currentRangesArray[CurrentRange200nA].unit = "A";
+    currentRangesArray[CurrentRange4uA].min = -4.0;
+    currentRangesArray[CurrentRange4uA].max = 4.0;
+    currentRangesArray[CurrentRange4uA].step = currentRangesArray[CurrentRange4uA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange4uA].prefix = UnitPfxMicro;
+    currentRangesArray[CurrentRange4uA].unit = "A";
     defaultCurrentRangesIdx.resize(currentChannelsNum);
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        defaultCurrentRangesIdx[channelIdx] = CurrentRange200pA;
+        defaultCurrentRangesIdx[channelIdx] = CurrentRange200nA;
     }
 
     /*! Voltage ranges */
@@ -89,7 +79,6 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
-    rawVoltageZero = 8192;
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
@@ -163,14 +152,14 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate200kHz].unit = "s";
 
-    /*! Overampling ratios */
+    /*! Oversampling ratios */
     oversamplingImplemented = false;
     oversamplingRatiosNum = OversamplingRatiosNum;
     oversamplingRatiosArray.resize(oversamplingRatiosNum);
     oversamplingRatiosArray[OversamplingRatioX1] = 1;
 
     /*! Voltage filters */
-    dacIntFilterAvailable = true;
+    dacIntFilterAvailable = false;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
     voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].value = 100.0;
@@ -185,7 +174,7 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     voltageReferenceLpfOptions.resize(voltageReferenceLpfOptionsNum);
 
     /*! Front end denoiser */
-    ferdImplementedFlag = true;
+    ferdImplementedFlag = false;
     maxFerdSize = 512;
 
     /*! Default values */
@@ -212,7 +201,7 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     /*! Voltage ranges */
     protocolVoltageRangesArray.resize(ProtocolVoltageRangesNum);
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].min = -511.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].max = 511.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].max = 512.0;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
@@ -525,20 +514,20 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     \**************/
 
     edhFormat =
-        "EDH Version: 2.0\n"
+            "EDH Version: 2.0\n"
         "\n"
-        "Elements e16 ETH\n"
+        "Elements e16 HC\n"
         "Channels: 16\n"
         "\n"
         "Data header file\n"
         "\n"
         "Amplifier Setup\n"
         "Range: %currentRange%\n" // 200 pA
-        "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
-        "Final Bandwidth: SR/2 (no filter)\n"
+            "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
+            "Final Bandwidth: SR/2 (no filter)\n"
         "\n"
         "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
-        "\n"
+            "\n"
         "Active channels: %activeChannels%\n"; // 2 3 4
 
     /****************************\
@@ -559,6 +548,12 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     boolConfig.bitsNum = 1;
     deviceResetCoder = new BoolArrayCoder(boolConfig);
 
+    /*! Calibration reset */
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 6;
+    boolConfig.bitsNum = 1;
+    calibResetCoder = new BoolArrayCoder(boolConfig);
+
     /*! Select stimulus channel */
     selectStimulusChannelFlag = true;
     singleChannelSSCFlag = true;
@@ -576,7 +571,7 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     /*! Digital offset compensations */
     digitalOffsetCompensationFlag = true;
     singleChannelDOCFlag = true;
-    selectableDOCAutostopFlag = false;
+    selectableDOCAutostopFlag = true;
 
     boolConfig.initialByte = 6;
     boolConfig.initialBit = 0;
@@ -589,18 +584,19 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     }
 
     boolConfig.initialByte = 8;
-    boolConfig.initialBit = 2;
+    boolConfig.initialBit = 3;
     boolConfig.bitsNum = 1;
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
-    /*! Zap */
-    zappableDeviceFlag = true;
-    singleChannelZapFlag = true;
+    boolConfig.initialByte = 8;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 1;
+    digitalOffsetCompensationAutostopCoder = new BoolArrayCoder(boolConfig);
 
-    boolConfig.initialByte = 3;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 16;
-    zapCoder = new BoolArrayCoder(boolConfig);
+
+    /*! Zap */
+    zappableDeviceFlag = false;
+    singleChannelZapFlag = false;
 
     zapStates.resize(currentChannelsNum);
     for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
@@ -627,10 +623,8 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
-    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
+    currentRangeCoders[0]->addMapItem(1); /*!< 200nA    -> 0b1*/
+    currentRangeCoders[0]->addMapItem(0); /*!< 4uA      -> 0b0*/
 
     /*! Voltage range */
     boolConfig.initialByte = 0;
@@ -640,8 +634,8 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
 
     /*! Sampling rate */
-    boolConfig.initialByte = 2;
-    boolConfig.initialBit = 3;
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 2;
     boolConfig.bitsNum = 4;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
     samplingRateCoder->addMapItem(0); /*!< 1.25kHz  -> 0b0000 */
@@ -673,35 +667,35 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 66;
+    doubleConfig.initialByte = 50;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVPulse].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
     protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 70;
+    doubleConfig.initialByte = 54;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
     protocolVoltageCoders[ProtocolVStep] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 90;
+    doubleConfig.initialByte = 74;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 2;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVPk].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVPk].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPk].max;
     protocolVoltageCoders[ProtocolVPk] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 96;
+    doubleConfig.initialByte = 80;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVFinal].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVFinal].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVFinal].max;
     protocolVoltageCoders[ProtocolVFinal] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 98;
+    doubleConfig.initialByte = 83;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVInit].step;
@@ -711,35 +705,35 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
 
     /*! Protocol times */
     protocolTimeCoders.resize(ProtocolTimesNum);
-    doubleConfig.initialByte = 72;
+    doubleConfig.initialByte = 56;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTHold].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTHold].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTHold].max;
     protocolTimeCoders[ProtocolTHold] = new DoubleTwosCompCoder(doubleConfig);
-    doubleConfig.initialByte = 76;
+    doubleConfig.initialByte = 60;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTPulse].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTPulse].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPulse].max;
     protocolTimeCoders[ProtocolTPulse] = new DoubleTwosCompCoder(doubleConfig);
-    doubleConfig.initialByte = 82;
+    doubleConfig.initialByte = 66;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTStep].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTStep].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTStep].max;
     protocolTimeCoders[ProtocolTStep] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 92;
+    doubleConfig.initialByte = 76;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 28;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTRamp].step;
     doubleConfig.minValue = protocolTimeRanges[ProtocolTRamp].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTRamp].max;
     protocolTimeCoders[ProtocolTRamp] = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 90;
+    doubleConfig.initialByte = 74;
     doubleConfig.initialBit = 2;
     doubleConfig.bitsNum = 10;
     doubleConfig.resolution = protocolTimeRanges[ProtocolTPe].step;
@@ -753,14 +747,14 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
 
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
-    doubleConfig.initialByte = 86;
+    doubleConfig.initialByte = 70;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 10;
     doubleConfig.resolution = protocolAdimensionalRanges[ProtocolN].step;
     doubleConfig.minValue = protocolAdimensionalRanges[ProtocolN].min;
     doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolN].max;
     protocolAdimensionalCoders[ProtocolN] = new DoubleTwosCompCoder(doubleConfig);
-    doubleConfig.initialByte = 88;
+    doubleConfig.initialByte = 72;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 10;
     doubleConfig.resolution = protocolAdimensionalRanges[ProtocolNR].step;
@@ -778,7 +772,7 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 16;
+    doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
@@ -786,15 +780,16 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
         doubleConfig.initialByte = 18+3*channelIdx;
         voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
     }
+
     /*! Insertion pulse */
-    doubleConfig.initialByte = 68;
+    doubleConfig.initialByte = 52;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = insertionPulseVoltageRange.step;
     doubleConfig.minValue = insertionPulseVoltageRange.min;
     doubleConfig.maxValue = insertionPulseVoltageRange.max;
     insertionPulseVoltageCoder = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 92;
+    doubleConfig.initialByte = 64;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 14;
     doubleConfig.resolution = insertionPulseDurationRange.step;
@@ -805,16 +800,6 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     boolConfig.initialBit = 5;
     boolConfig.bitsNum = 1;
     insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
-
-    /*! voltage DAC Ext*/
-
-    doubleConfig.initialByte = 86;
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 11;
-    doubleConfig.resolution = dacExtRange.step;
-    doubleConfig.minValue = dacExtRange.min;
-    doubleConfig.maxValue = dacExtRange.max;
-    dacExtCoder = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*! Device specific controls */
 
@@ -845,51 +830,35 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs1
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs2
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs3
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs4
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs5
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs6
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs7
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs8
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs9
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs10
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs11
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs12
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs13
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs14
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs15
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs14
-    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VPulse
     txStatus[txStatusIdx++] = 0x00;
@@ -923,15 +892,21 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // Vfinal
     txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;// VInit
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;// VDACext
+    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e16ETH_LegacyEdr3_V01::~MessageDispatcher_e16ETH_LegacyEdr3_V01() {
+
+MessageDispatcher_e16HC::~MessageDispatcher_e16HC(){
 
 }
 
-void MessageDispatcher_e16ETH_LegacyEdr3_V01::initializeDevice() {
+void MessageDispatcher_e16HC::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -958,7 +933,7 @@ void MessageDispatcher_e16ETH_LegacyEdr3_V01::initializeDevice() {
 
 }
 
-bool MessageDispatcher_e16ETH_LegacyEdr3_V01::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e16HC::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1157,7 +1132,7 @@ bool MessageDispatcher_e16ETH_LegacyEdr3_V01::checkProtocolValidity(string &mess
     return validFlag;
 }
 
-void MessageDispatcher_e16ETH_LegacyEdr3_V01::setFerdParameters() {
+void MessageDispatcher_e16HC::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {
@@ -1191,5 +1166,3 @@ void MessageDispatcher_e16ETH_LegacyEdr3_V01::setFerdParameters() {
 
     MessageDispatcher::setFerdParameters();
 }
-
-

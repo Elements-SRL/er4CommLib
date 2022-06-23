@@ -36,6 +36,7 @@
 #include "messagedispatcher_el06c.h"
 #include "messagedispatcher_el06d_el06e.h"
 #include "messagedispatcher_fake_e16n.h"
+#include "messagedispatcher_e16hc.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -208,6 +209,10 @@ ErrorCodes_t connect(
 
         case DeviceE16ETHEDR3:
             messageDispatcher = new MessageDispatcher_e16ETH_LegacyEdr3_V01(deviceId);
+            break;
+
+        case DeviceE16HC:
+            messageDispatcher = new MessageDispatcher_e16HC(deviceId);
             break;
 
         case DeviceDlp:
@@ -531,6 +536,19 @@ ErrorCodes_t applyDacExt(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->applyDacExt(voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+
+ErrorCodes_t setVoltageDacExt(
+        Measurement_t voltage) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setVoltageDacExt(voltage);
 
     } else {
         ret = ErrorDeviceNotConnected;

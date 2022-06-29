@@ -170,8 +170,7 @@ public:
     ErrorCodes_t applyReferencePulse(Measurement_t voltage, Measurement_t duration);
     ErrorCodes_t overrideReferencePulse(bool flag, bool applyFlag = true);
 
-    ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);    
-    ErrorCodes_t setVoltageDacExt(Measurement_t voltage);
+    ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
     ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
     ErrorCodes_t setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag = false);

@@ -543,19 +543,6 @@ ErrorCodes_t applyDacExt(
     return ret;
 }
 
-
-ErrorCodes_t setVoltageDacExt(
-        Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setVoltageDacExt(voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
 ErrorCodes_t resetWasherError() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {

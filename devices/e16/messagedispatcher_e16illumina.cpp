@@ -1600,7 +1600,6 @@ ErrorCodes_t MessageDispatcher_e16Illumina_V01::updateVoltageOffsetCompensations
     return Success;
 }
 
-
 MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_LegacyEdr3_V03(string id):
     MessageDispatcherLegacyEdr3(id) {
 

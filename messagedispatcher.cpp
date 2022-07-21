@@ -43,7 +43,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                              //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                              //    3,  5,136 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC},
+    {DeviceVersionE16, DeviceSubversionE16HC, 1, DeviceE16HC},                              //    3, 10,  1 : e16HC
+    {8, 9, 1, DeviceE16HC},                                                                 //    8,  9,  1 : REMI8 tuple to use e16HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                  //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                         //    6,  5,129 : testboard EL06b
     {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                         //    6,  6,129 : testboard EL06c
@@ -759,13 +760,18 @@ ErrorCodes_t MessageDispatcher::resetDevice() {
     this->stackOutgoingMessage(txStatus);
     deviceResetCoder->encode(0, txStatus);
 
+    this->resetCalib();
+
     return Success;
 }
 
 ErrorCodes_t MessageDispatcher::resetCalib() {
-    calibResetCoder->encode(1, txStatus);
-    this->stackOutgoingMessage(txStatus);
-    calibResetCoder->encode(0, txStatus);
+    if (resetCalibrationFlag) {
+        calibResetCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        calibResetCoder->encode(0, txStatus);
+        this->stackOutgoingMessage(txStatus);
+    }
 
     return Success;
 }
@@ -1060,7 +1066,13 @@ ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFla
     }
 
     voltage.convertValue(dacExtRange.prefix);
-    dacExtCoder->encode(voltage.value, txStatus);
+    if (invertedDacExtFlag) {
+        dacExtCoder->encode(-voltage.value, txStatus);
+
+    } else {
+        dacExtCoder->encode(voltage.value, txStatus);
+    }
+
     if (applyFlag) {
         this->stackOutgoingMessage(txStatus);
     }

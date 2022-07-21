@@ -1161,6 +1161,7 @@ MessageDispatcher_eNPR_FL::MessageDispatcher_eNPR_FL(string di) :
 
     /*! External DAC */
     dacExtControllableFlag = true;
+    invertedDacExtFlag = false;
     dacExtRange.step = 0.0625;
     dacExtRange.min = -1250.0;
     dacExtRange.max = 1250.0;

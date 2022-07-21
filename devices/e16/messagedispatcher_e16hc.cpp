@@ -46,7 +46,6 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
 
     txDataBytes = 89;
 
-
     /**********************\
      * Available settings *
     \**********************/
@@ -152,6 +151,10 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate200kHz].unit = "s";
 
+    voltageOffsetCompensationGain.value = 1.0;
+    voltageOffsetCompensationGain.prefix = UnitPfxMilli;
+    voltageOffsetCompensationGain.unit = "V";
+
     /*! Oversampling ratios */
     oversamplingImplemented = false;
     oversamplingRatiosNum = OversamplingRatiosNum;
@@ -162,16 +165,18 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     dacIntFilterAvailable = false;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].value = 100.0;
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].prefix = UnitPfxNone;
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].unit = "Hz";
-    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
-    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
-    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
 
-    dacExtFilterAvailable = false;
+    dacExtFilterAvailable = true;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
     voltageReferenceLpfOptions.resize(voltageReferenceLpfOptionsNum);
+    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].value = 3.0;
+    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].prefix = UnitPfxNone;
+    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].unit = "Hz";
+    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
+    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
+    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+
+    resetCalibrationFlag = true;
 
     /*! Front end denoiser */
     ferdImplementedFlag = false;
@@ -193,6 +198,15 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     baseSamplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
     samplingRate = baseSamplingRate;
     integrationStep = integrationStepArray[selectedSamplingRateIdx];
+
+    /*! External DAC */
+    dacExtControllableFlag = true;
+    invertedDacExtFlag = true;
+    dacExtRange.step = 0.0625;
+    dacExtRange.min = -1250.0;
+    dacExtRange.max = 1250.0;
+    dacExtRange.prefix = UnitPfxMilli;
+    dacExtRange.unit = "V";
 
     /*************\
      * Protocols *
@@ -487,9 +501,9 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     voltageOffsetControlImplemented = true;
     selectedVoltageOffset.resize(currentChannelsNum);
     voltageOffsetRange.step = 1.0;
-    voltageOffsetRange.min = -15.0;
-    voltageOffsetRange.max = 15.0;
-    voltageOffsetRange.prefix = UnitPfxNone;
+    voltageOffsetRange.min = -512.0;
+    voltageOffsetRange.max = 512.0;
+    voltageOffsetRange.prefix = UnitPfxMilli;
     voltageOffsetRange.unit = "V";
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
         selectedVoltageOffset[channelIdx].value = 0.0;
@@ -509,12 +523,17 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     insertionPulseDurationRange.prefix = UnitPfxMilli;
     insertionPulseDurationRange.unit = "s";
 
+    /*! LEDs */
+    ledsNum = LedsNum;
+    ledsColorsArray.resize(ledsNum);
+    ledsColorsArray[LedGreen] = 0x00FF00;
+
     /**************\
      * EDH format *
     \**************/
 
     edhFormat =
-            "EDH Version: 2.0\n"
+        "EDH Version: 2.0\n"
         "\n"
         "Elements e16 HC\n"
         "Channels: 16\n"
@@ -523,11 +542,11 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
         "\n"
         "Amplifier Setup\n"
         "Range: %currentRange%\n" // 200 pA
-            "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
-            "Final Bandwidth: SR/2 (no filter)\n"
+        "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
+        "Final Bandwidth: SR/2 (no filter)\n"
         "\n"
         "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
-            "\n"
+        "\n"
         "Active channels: %activeChannels%\n"; // 2 3 4
 
     /****************************\
@@ -549,8 +568,8 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     deviceResetCoder = new BoolArrayCoder(boolConfig);
 
     /*! Calibration reset */
-    boolConfig.initialByte = 1;
-    boolConfig.initialBit = 6;
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     calibResetCoder = new BoolArrayCoder(boolConfig);
 
@@ -610,7 +629,7 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     boolConfig.initialByte = 10;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 16;
-    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
+    channelOnCoder = new BoolArrayCoder(boolConfig);
 
     channelOnStates.resize(currentChannelsNum);
     for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
@@ -636,15 +655,15 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     /*! Sampling rate */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 2;
-    boolConfig.bitsNum = 4;
+    boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(0); /*!< 1.25kHz  -> 0b0000 */
-    samplingRateCoder->addMapItem(1); /*!< 5kHz     -> 0b0001 */
-    samplingRateCoder->addMapItem(2); /*!< 10kHz    -> 0b0010 */
-    samplingRateCoder->addMapItem(3); /*!< 20kHz    -> 0b0011 */
-    samplingRateCoder->addMapItem(8); /*!< 50kHz    -> 0b1000 */
-    samplingRateCoder->addMapItem(9); /*!< 100kHz   -> 0b1001 */
-    samplingRateCoder->addMapItem(10); /*!< 200kHz  -> 0b1010 */
+    samplingRateCoder->addMapItem(16); /*!< 1.25kHz  -> 0b10000 */
+    samplingRateCoder->addMapItem(17); /*!< 5kHz     -> 0b10001 */
+    samplingRateCoder->addMapItem(18); /*!< 10kHz    -> 0b10010 */
+    samplingRateCoder->addMapItem(19); /*!< 20kHz    -> 0b10011 */
+    samplingRateCoder->addMapItem(8);  /*!< 50kHz    -> 0b01000 */
+    samplingRateCoder->addMapItem(9);  /*!< 100kHz   -> 0b01001 */
+    samplingRateCoder->addMapItem(10); /*!< 200kHz   -> 0b01010 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 9;
@@ -744,7 +763,6 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     /*! Protocol slope */
     protocolSlopeCoders.resize(ProtocolSlopesNum);
 
-
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
     doubleConfig.initialByte = 70;
@@ -762,12 +780,12 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolNR].max;
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
-    boolConfig.initialByte = 1;
-    boolConfig.initialBit = 4;
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 1;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz  -> 0b0 */
+    dacExtFilterCoder = new BoolRandomArrayCoder(boolConfig);
+    dacExtFilterCoder->addMapItem(0); /*!< 3Hz    -> 0b0 */
+    dacExtFilterCoder->addMapItem(1); /*!< 180kHz -> 0b1 */
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
@@ -777,7 +795,7 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        doubleConfig.initialByte = 18+3*channelIdx;
+        doubleConfig.initialByte = 18+2*channelIdx;
         voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
     }
 
@@ -801,11 +819,26 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     boolConfig.bitsNum = 1;
     insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
 
+    /*! Voltage DAC Ext */
+    doubleConfig.initialByte = 86;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    doubleConfig.resolution = dacExtRange.step;
+    doubleConfig.minValue = 0.0-1650.0;
+    doubleConfig.maxValue = 4096.0-dacExtRange.step-1650.0;
+    dacExtCoder = new DoubleOffsetBinaryCoder(doubleConfig);
+
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 6;
+    boolConfig.bitsNum = 1;
+    ledsCoders.resize(ledsNum);
+    ledsCoders[LedGreen] = new BoolArrayCoder(boolConfig);
+
     /*! Device specific controls */
 
-    /*******************\
-     * Default status  *
-    \*******************/
+    /******************\
+     * Default status *
+    \******************/
 
     txStatus.resize(txDataBytes);
 
@@ -1132,37 +1165,9 @@ bool MessageDispatcher_e16HC::checkProtocolValidity(string &message) {
     return validFlag;
 }
 
-void MessageDispatcher_e16HC::setFerdParameters() {
-    unsigned int rangeCoeff;
-    /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
-    if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {
-        rangeCoeff = 4;
-
-    } else {
-        rangeCoeff = 1;
+ErrorCodes_t MessageDispatcher_e16HC::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
+    for (int idx = 0; idx < currentChannelsNum; idx++) {
+        offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
     }
-
-    if (selectedSamplingRateIdx < SamplingRate20kHz) {
-        /*! sampling rate too low for reset */
-        ferdL = 1;
-        ferdInhibition = true;
-
-    } else if (selectedSamplingRateIdx == SamplingRate20kHz) {
-        if (rangeCoeff == 1) {
-            /*! sampling rate too low for reset (in the highest range the reset is 4 times faster) */
-            ferdL = 1;
-            ferdInhibition = true;
-
-        } else {
-            ferdL = oversamplingRatio*rangeCoeff/2;
-            ferdInhibition = false;
-        }
-
-    } else {
-        ferdL = oversamplingRatio*((unsigned int)round(baseSamplingRate.getNoPrefixValue()/50.0e3))*rangeCoeff*32; /*! It should be osrSR/baseSR*baseSR/50kHz */
-        ferdInhibition = false;
-    }
-    ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
-
-    MessageDispatcher::setFerdParameters();
+    return Success;
 }

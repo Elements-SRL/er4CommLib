@@ -374,6 +374,8 @@ protected:
     bool channelOnFlag = false;
     bool singleChannelOnFlag = false;
 
+    bool resetCalibrationFlag = false;
+
     BoolArrayCoder * selectStimulusChannelCoder;
     vector <bool> selectStimulusChannelStates;
 
@@ -454,10 +456,6 @@ protected:
     DoubleCoder * insertionPulseDurationCoder;
     BoolCoder * insertionPulseApplyCoder;
 
-    bool voltageExternalDacImplemented = false;
-    DoubleCoder * voltageExternalDacCoder;
-    RangedMeasurement_t voltageExternalDacRange;
-
     bool referencePulseImplemented = false;
     RangedMeasurement_t referencePulseVoltageRange;
     RangedMeasurement_t referencePulseDurationRange;
@@ -512,6 +510,7 @@ protected:
     vector <uint32_t> ledsColorsArray;
 
     bool dacExtControllableFlag = false; /*! This is true if the voltage applied on the external DAC is directly controllable by the user, not through protocols */
+    bool invertedDacExtFlag = false; /*! Negate the DAC value before applying it */
     RangedMeasurement_t dacExtRange;
     DoubleOffsetBinaryCoder * dacExtCoder;
     Measurement_t dacExtDefault;

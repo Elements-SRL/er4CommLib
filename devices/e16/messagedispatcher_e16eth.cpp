@@ -750,7 +750,6 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     /*! Protocol slope */
     protocolSlopeCoders.resize(ProtocolSlopesNum);
 
-
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
     doubleConfig.initialByte = 86;
@@ -805,16 +804,6 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     boolConfig.initialBit = 5;
     boolConfig.bitsNum = 1;
     insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
-
-    /*! voltage DAC Ext*/
-
-    doubleConfig.initialByte = 86;
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 11;
-    doubleConfig.resolution = dacExtRange.step;
-    doubleConfig.minValue = dacExtRange.min;
-    doubleConfig.maxValue = dacExtRange.max;
-    dacExtCoder = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*! Device specific controls */
 

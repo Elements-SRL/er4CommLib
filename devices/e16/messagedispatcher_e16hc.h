@@ -7,9 +7,10 @@ class MessageDispatcher_e16HC : public MessageDispatcher {
 public:
     MessageDispatcher_e16HC(string id);
     virtual ~MessageDispatcher_e16HC();
+
 protected:
     typedef struct {
-        uint8_t unused;
+        int16_t offset[16];
     } InfoStruct_t;
 
     enum CurrentRanges {
@@ -39,13 +40,13 @@ protected:
     };
 
     enum VoltageStimulusLpfs {
-        VoltageStimulusLpf100Hz,
-        VoltageStimulusLpf10kHz,
-        VoltageStimulusLpfsNum
+        VoltageStimulusLpfsNum = 0
     };
 
     enum VoltageReferenceLpfs {
-        VoltageReferenceLpfsNum = 0
+        VoltageReferenceLpf3Hz,
+        VoltageReferenceLpf180kHz,
+        VoltageReferenceLpfsNum
     };
 
     enum ProtocolVoltageRanges {
@@ -104,18 +105,20 @@ protected:
         ProtocolAdimensionalsNum
     };
 
+    enum Leds {
+        LedGreen,
+        LedsNum
+    };
+
     void initializeDevice() override;
     bool checkProtocolValidity(string &message) override;
-    virtual void setFerdParameters() override;
+    ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 
     const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
     const double stimulusVoltageReference = 1.1; /*! voltage reference for stimuli [V] */
-
-private:
-
 };
 
 #endif // MESSAGEDISPATCHER_E16HC_H

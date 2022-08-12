@@ -639,7 +639,7 @@ MessageDispatcher_e16HC::MessageDispatcher_e16HC(string id) :
     /*! Current range */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 1;
-    boolConfig.bitsNum = 3;
+    boolConfig.bitsNum = 1;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
     currentRangeCoders[0]->addMapItem(1); /*!< 200nA    -> 0b1*/

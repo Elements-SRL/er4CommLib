@@ -460,6 +460,19 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t zap(
         ER4CL_ARGIN uint16_t channelIdx);
 
+/*! \brief Channel on.
+ * Switch on the channel. Switched off channel do not send data and are constantly compensated to reduce current offset.
+ *
+ * \param channelIdx [in] Index of the channel to switch on.
+ * Set equal to the number of current channels to apply to all channels.
+ * \param on [in] False switches off the channel, true switches it on.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t switchChannelOn(
+        ER4CL_ARGIN uint16_t channelIdx,
+        ER4CL_ARGIN bool on);
+
 /*! \brief Set the voltage of a waveform 1 item for the fast pulses protocol.
  *
  * \param idx [in] Index of the time set.
@@ -514,19 +527,6 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t time);
-
-/*! \brief Channel on.
- * Switch on the channel. Switched off channel do not send data and are constantly compensated to reduce current offset.
- *
- * \param channelIdx [in] Index of the channel to switch on.
- * Set equal to the number of current channels to apply to all channels.
- * \param on [in] False switches off the channel, true switches it on.
- * \return Error code.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t switchChannelOn(
-        ER4CL_ARGIN uint16_t channelIdx,
-        ER4CL_ARGIN bool on);
 
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t switchVcSel0(

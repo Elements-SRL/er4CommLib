@@ -43,8 +43,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                              //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                              //    3,  5,136 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16HC, 1, DeviceE16HC},                              //    3, 10,  1 : e16HC
-    {8, 9, 1, DeviceE16HC},                                                                 //    8,  9,  1 : REMI8 tuple to use e16HC
+    {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC},                              //    3, 10,  4 : e16HC
+    {8, 9, 4, DeviceE16HC},                                                                 //    8,  9,  4 : REMI8 tuple to use e16HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                  //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                         //    6,  5,129 : testboard EL06b
     {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                         //    6,  6,129 : testboard EL06c
@@ -54,7 +54,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 129, DeviceE2HCExtAdc},            //  254, 14,129 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},              //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},            //  254, 15,129 : e2HC with internal (delta-sigma) ADC
-    {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight},    //  254, 15,129 : eNPR prototype for Fairy Light project
+    {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight},    //  254, 16,129 : eNPR prototype for Fairy Light project
     {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
 };
 

@@ -723,6 +723,19 @@ ErrorCodes_t zap(
     return ret;
 }
 
+ErrorCodes_t switchChannelOn(
+        uint16_t channelIdx,
+        bool on) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->switchChannelOn(channelIdx, on);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
         unsigned int idx,
         Measurement_t voltage) {
@@ -781,19 +794,6 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->setFastReferencePulseProtocolWave2Duration(idx, time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t switchChannelOn(
-        uint16_t channelIdx,
-        bool on) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->switchChannelOn(channelIdx, on);
 
     } else {
         ret = ErrorDeviceNotConnected;

@@ -31,7 +31,7 @@ public:
 
 protected:
     typedef struct {
-        uint8_t unused;
+        int16_t offset[4];
     } InfoStruct_t;
 
     enum CurrentRanges {
@@ -132,6 +132,7 @@ protected:
     void initializeDevice() override;
     bool checkProtocolValidity(string &message) override;
     virtual void setFerdParameters() override;
+    ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;

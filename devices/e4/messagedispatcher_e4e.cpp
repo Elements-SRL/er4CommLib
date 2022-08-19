@@ -161,6 +161,10 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate200kHz].unit = "s";
 
+    voltageOffsetCompensationGain.value = 100.0/1023.0;
+    voltageOffsetCompensationGain.prefix = UnitPfxMilli;
+    voltageOffsetCompensationGain.unit = "V";
+
     /*! Overampling ratios */
     oversamplingImplemented = false;
     oversamplingRatiosNum = OversamplingRatiosNum;
@@ -1129,6 +1133,13 @@ void MessageDispatcher_e4e::setFerdParameters() {
     ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
 
     MessageDispatcher::setFerdParameters();
+}
+
+ErrorCodes_t MessageDispatcher_e4e::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
+    for (int idx = 0; idx < currentChannelsNum; idx++) {
+        offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
+    }
+    return Success;
 }
 
 MessageDispatcher_e4e_El03c_LegacyEdr3_V00::MessageDispatcher_e4e_El03c_LegacyEdr3_V00(string id) :

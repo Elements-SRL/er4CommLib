@@ -2452,7 +2452,6 @@ MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_Lega
     boolConfig.bitsNum = 1;
     insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
 
-
     /*! Device specific controls */
 
     /*! Reference pulse */

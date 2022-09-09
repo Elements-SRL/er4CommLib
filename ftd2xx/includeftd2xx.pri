@@ -28,4 +28,4 @@ else:mingw:win32:CONFIG(debug, debug|release) {
 }
 else:msvc:win32:CONFIG(release, debug|release): LIBS += -L$$PWD/win/x64/ -lftd2xx
 else:msvc:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/win/x64/ -lftd2xx
-else:unix: LIBS += -L$$PWD/mac/x64/ -lftd2xx
+else:unix: LIBS += -L/usr/local/lib/ -lftd2xx

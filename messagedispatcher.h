@@ -18,7 +18,8 @@
 #ifndef MESSAGEDISPATCHER_H
 #define MESSAGEDISPATCHER_H
 
-#include <string>
+
+#include <cmath>
 #include <mutex>
 #include <thread>
 #include <condition_variable>
@@ -32,7 +33,6 @@
 #include "commandcoder.h"
 
 using namespace std;
-using namespace er4CommLib;
 
 #define DEBUG_PRINT
 
@@ -77,7 +77,7 @@ using namespace er4CommLib;
 #define FTD_RX_BUFFER_MASK (FTD_RX_BUFFER_SIZE-1)
 #define FTD_DEFAULT_MIN_READ_FRAME_NUMBER 10
 #define FTD_DEFAULT_MIN_STORE_FRAME_NUMBER 10
-#define FTD_DEFAULT_FEW_FRAME_SLEEP 2000
+#define FTD_DEFAULT_FEW_FRAME_SLEEP 2
 #define FTD_FEW_PACKET_COEFF 0.05 /*!< = 50.0/1000.0: 50.0 because I want to get data once every 50ms, 1000 to convert sampling rate from Hz to kHz */
 #define FTD_MAX_BYTES_TO_WAIT_FOR 2048 /*! Max FTDI buffer size = 4k, so wait no more than half full to read it */
 
@@ -90,6 +90,478 @@ using namespace er4CommLib;
 #define FTD_TX_RAW_BUFFER_MASK (FTD_TX_RAW_BUFFER_SIZE-1) // 0b11...1 for all bits of the buffer indexes
 #define FTD_TX_MSG_BUFFER_SIZE 0x100 /*! \todo FCON valutare che questo numero sia adeguato */ // 256
 #define FTD_TX_MSG_BUFFER_MASK (FTD_TX_MSG_BUFFER_SIZE-1)
+
+typedef struct Measurement{
+    double value; /*!< Numerical value. */
+    UnitPfx_t prefix; /*!< Unit prefix in the range [femto, Peta]. */
+    char * unit; /*!< Unit. \note Can be any string, the library is not aware of real units meaning. */
+
+    /*! \brief Returns the value without prefix.
+     *
+     * \return Value without prefix, e.g. for 1.5nA returns 1.5e-9.
+     */
+    double getNoPrefixValue(ER4CL_ARGVOID) {
+        return value*multiplier();
+    }
+
+    /*! \brief Returns the string corresponding to the prefix.
+     *
+     * \return String corresponding to the prefix.
+     */
+    char getPrefix(ER4CL_ARGVOID) {
+        return unitPrefixes[prefix];
+    }
+
+    /*! \brief Returns the prefix multiplier.
+     *
+     * \return Prefix multiplier, e.g. 10^-6 for micro.
+     */
+    double multiplier(ER4CL_ARGVOID) {
+        unsigned int delta;
+        bool deltaPositive;
+
+        if (prefix > UnitPfxNone) {
+            delta = prefix-UnitPfxNone;
+            deltaPositive = true;
+
+        } else {
+            delta = UnitPfxNone-prefix;
+            deltaPositive = false;
+        }
+
+        if (deltaPositive) {
+            return powersOf1000[delta];
+
+        } else {
+            return 1.0/powersOf1000[delta];
+        }
+    }
+
+    /*! \brief Converts #value given the input unit prefix.
+     *
+     * \param newPrefix [in] Desired unit prefix.
+     */
+    void convertValue(ER4CL_ARGIN UnitPfx_t newPrefix) {
+        unsigned int delta;
+        bool deltaPositive;
+
+        if (prefix > newPrefix) {
+            delta = prefix-newPrefix;
+            deltaPositive = true;
+
+        } else {
+            delta = newPrefix-prefix;
+            deltaPositive = false;
+        }
+
+        if (deltaPositive) {
+            value *= powersOf1000[delta];
+
+        } else {
+            value /= powersOf1000[delta];
+        }
+        prefix = newPrefix;
+    }
+
+    /*! \brief Converts #value given the input unit multiplier.
+     *
+     * \param newMultiplier [in] Desired unit multiplier.
+     */
+    void convertValueMult(ER4CL_ARGIN double newMultiplier) {
+        double multiplier = this->multiplier();
+        double gain;
+        bool gainPositive;
+
+        if (multiplier > newMultiplier) {
+            gain = multiplier/newMultiplier;
+            gainPositive = true;
+
+        } else {
+            gain = newMultiplier/multiplier;
+            gainPositive = false;
+        }
+
+        double diff;
+        double minDiff = (std::numeric_limits <double>::max)();
+        unsigned int minDelta = 0;
+        for (unsigned int delta = 0; delta < UnitPfxNum; delta++) {
+            diff = fabs(powersOf1000[delta]-gain);
+            if (diff < minDiff) {
+                minDiff = diff;
+                minDelta = delta;
+            }
+        }
+
+        if (gainPositive) {
+            value *= powersOf1000[minDelta];
+            decrementUnit(prefix, (int)minDelta);
+
+        } else {
+            value /= powersOf1000[minDelta];
+            incrementUnit(prefix, (int)minDelta);
+        }
+    }
+
+
+} Measurement_t;
+
+/*! \brief Overloaded equality check for #Measurement_t. \note No conversion is performed, cause the multiplication can introduce rounding errors.
+ *
+ * \param a [in] First item of the comparison.
+ * \param b [in] Second item of the comparison.
+ * \return true if \p a and \p b have same value, prefix and unit.
+*/
+inline bool operator == (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+    return ((a.value == b.value) && (a.prefix == b.prefix) /*&& (a.unit == b.unit)*/);
+}
+
+/*! \brief Overloaded inequality check for #Measurement_t. \note No conversion is performed, cause the multiplication can introduce rounding errors.
+ *
+ * \param a [in] First item of the comparison.
+ * \param b [in] Second item of the comparison.
+ * \return true if \p a and \p b have different value, prefix or unit.
+*/
+inline bool operator != (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+    return !(a == b);
+}
+
+/*! \brief Overloaded inequality check for #Measurement_t.
+ *
+ * \param a [in] First item of the comparison.
+ * \param b [in] Second item of the comparison.
+ * \return true if \p a is smaller than \p b after they have been converted to have the same prefix. \note Returns false if \p a and \p b have different units.
+*/
+inline bool operator < (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+    if (a.unit != b.unit) {
+        return false;
+
+    } else {
+        /*! Not using convertValue method to avoid changing the input structures */
+        if (a.prefix < b.prefix) {
+            return a.value < (b.value*powersOf1000[b.prefix-a.prefix]);
+
+        } else {
+            return (a.value*powersOf1000[a.prefix-b.prefix]) < b.value;
+        }
+    }
+}
+
+/*! \brief Overloaded inequality check for #Measurement_t.
+ *
+ * \param a [in] First item of the comparison.
+ * \param b [in] Second item of the comparison.
+ * \return true if \p a is smaller than or equal to \p b after they have been converted to have the same prefix. \note Returns false if \p a and \p b have different units.
+*/
+inline bool operator <= (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+        /*! Not using convertValue method to avoid changing the input structures */
+        if (a.prefix < b.prefix) {
+            return a.value <= (b.value*powersOf1000[b.prefix-a.prefix]);
+
+        } else {
+            return (a.value*powersOf1000[a.prefix-b.prefix]) <= b.value;
+        }
+    }
+
+
+/*! \brief Overloaded inequality check for #Measurement_t.
+ *
+ * \param a [in] First item of the comparison.
+ * \param b [in] Second item of the comparison.
+ * \return true if \p a is greater than \p b after they have been converted to have the same prefix. \note Returns false if \p a and \p b have different units.
+*/
+inline bool operator > (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+
+        /*! Not using convertValue method to avoid changing the input structures */
+        if (a.prefix < b.prefix) {
+            return a.value > (b.value*powersOf1000[b.prefix-a.prefix]);
+
+        } else {
+            return (a.value*powersOf1000[a.prefix-b.prefix]) > b.value;
+        }
+    }
+
+
+/*! \brief Overloaded inequality check for #Measurement_t.
+ *
+ * \param a [in] First item of the comparison.
+ * \param b [in] Second item of the comparison.
+ * \return true if \p a is greater than or equal to \p b after they have been converted to have the same prefix. \note Returns false if \p a and \p b have different units.
+*/
+inline bool operator >= (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+        /*! Not using convertValue method to avoid changing the input structures */
+        if (a.prefix < b.prefix) {
+            return a.value >= (b.value*powersOf1000[b.prefix-a.prefix]);
+
+        } else {
+            return (a.value*powersOf1000[a.prefix-b.prefix]) >= b.value;
+        }
+    }
+
+
+/*! \brief Overloaded sum for #Measurement_t.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the sum of the values of the operands converted to the prefix of the first operand, and the unit equals the unit of the second operand.
+ * \note This method assumes the units are compatible and won't check for the sake of speed.
+*/
+inline Measurement_t operator + (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+    Measurement_t c = b;
+    c.convertValue(a.prefix);
+    c.value += a.value;
+    return c;
+}
+
+/*! \brief Overloaded subtraction for #Measurement_t.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the difference of the values of the operands converted to the prefix of the first operand, and the unit equals the unit of the second operand.
+ * \note This method assumes the units are compatible and won't check for the sake of speed.
+*/
+inline Measurement_t operator - (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const Measurement_t &b) {
+    Measurement_t c = b;
+    c.convertValue(a.prefix);
+    c.value = a.value-c.value;
+    return c;
+}
+
+/*! \brief Overloaded multiplication between #Measurement_t and a constant.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the product of the values and the unit equals the unit of the first operand.
+*/
+template <class T>
+inline Measurement_t operator * (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const T &b) {
+    Measurement_t c = a;
+    c.value *= (double)b;
+    return c;
+}
+
+/*! \brief Overloaded multiplication between #Measurement_t and a constant.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the product of the values and the unit equals the unit of the second operand.
+*/
+template <class T>
+inline Measurement_t operator * (ER4CL_ARGIN const T &a, ER4CL_ARGIN const Measurement_t &b) {
+    return b*a;
+}
+
+/*! \brief Overloaded division between #Measurement_t and a constant.
+ *
+ * \param a [in] First operand.
+ * \param b [in] Second operand.
+ * \return A #Measurement_t whose value is the ratio of the values and the unit equals the unit of the first operand.
+*/
+template <class T>
+inline Measurement_t operator / (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN const T &b) {
+    Measurement_t c = a;
+    c.value /= (double)b;
+    return c;
+}
+
+/*! \struct RangedMeasurement_t
+ * \brief Structure used manage physical ranges that define a range with its unit and unit prefix.
+ */
+typedef struct RangedMeasurement{
+    double min; /*!< Minimum value. */
+    double max; /*!< Maximum value. */
+    double step; /*!< Resolution. */
+    UnitPfx_t prefix = UnitPfxNone; /*!< Unit prefix in the range [femto, Peta]. */
+
+    /*! \brief Returns the string corresponding to the prefix.
+     *
+     * \return String corresponding to the prefix.
+     */
+    char getPrefix(ER4CL_ARGVOID) {
+        return unitPrefixes[prefix];
+    }
+
+    /*! \brief Returns the prefix multiplier.
+     *
+     * \return Prefix multiplier, e.g. 10^-6 for micro.
+     */
+    double multiplier(ER4CL_ARGVOID) {
+        unsigned int delta;
+        bool deltaPositive;
+
+        if (prefix > UnitPfxNone) {
+            delta = prefix-UnitPfxNone;
+            deltaPositive = true;
+
+        } else {
+            delta = UnitPfxNone-prefix;
+            deltaPositive = false;
+        }
+
+        if (deltaPositive) {
+            return powersOf1000[delta];
+
+        } else {
+            return 1.0/powersOf1000[delta];
+        }
+    }
+
+    /*! \brief Converts #min, #max and #step given the input unit prefix.
+     *
+     * \param newPrefix [in] Desired unit prefix.
+     */
+    void convertValues(ER4CL_ARGIN UnitPfx_t newPrefix) {
+        unsigned int delta;
+        bool deltaPositive;
+
+        if (prefix > newPrefix) {
+            delta = prefix-newPrefix;
+            deltaPositive = true;
+
+        } else {
+            delta = newPrefix-prefix;
+            deltaPositive = false;
+        }
+
+        if (deltaPositive) {
+            min *= powersOf1000[delta];
+            max *= powersOf1000[delta];
+            step *= powersOf1000[delta];
+
+        } else {
+            min /= powersOf1000[delta];
+            max /= powersOf1000[delta];
+            step /= powersOf1000[delta];
+        }
+        prefix = newPrefix;
+    }
+
+    /*! \brief Converts #min, #max and #step given the input unit multiplier.
+     *
+     * \param newMultiplier [in] Desired unit multiplier.
+     */
+    void convertValuesMult(ER4CL_ARGIN double newMultiplier) {
+        double multiplier = this->multiplier();
+        double gain;
+        bool gainPositive;
+
+        if (multiplier > newMultiplier) {
+            gain = multiplier/newMultiplier;
+            gainPositive = true;
+
+        } else {
+            gain = newMultiplier/multiplier;
+            gainPositive = false;
+        }
+
+        double diff;
+        double minDiff = (std::numeric_limits <double>::max)();
+        unsigned int minDelta = 0;
+        for (unsigned int delta = 0; delta < UnitPfxNum; delta++) {
+            diff = fabs(powersOf1000[delta]-gain);
+            if (diff < minDiff) {
+                minDiff = diff;
+                minDelta = delta;
+            }
+        }
+
+        if (gainPositive) {
+            min *= powersOf1000[minDelta];
+            max *= powersOf1000[minDelta];
+            step *= powersOf1000[minDelta];
+            decrementUnit(prefix, (int)minDelta);
+
+        } else {
+            min /= powersOf1000[minDelta];
+            max /= powersOf1000[minDelta];
+            step /= powersOf1000[minDelta];
+            incrementUnit(prefix, (int)minDelta);
+        }
+    }
+
+    /*! \brief Returns the range width.
+     *
+     * \return Difference between max and min.
+     */
+    double delta(ER4CL_ARGVOID) {
+        return max-min;
+    }
+
+    /*! \brief Returns a reasonable amount of decimals to represent the values in the range.
+     *
+     * \return A reasonable amount of decimals to represent the values in the range.
+     */
+    int decimals(ER4CL_ARGVOID) {
+        int decimals = 0;
+        double temp = step;
+        while ((fabs(temp-round(temp)) > 0.05 || temp < 1.0) &&
+               decimals < 3) { /*!< \todo Rather than asking 3 decimals better asking for 3 digits */
+            decimals++;
+            temp *= 10.0;
+        }
+        return decimals;
+    }
+
+    /*! \brief Returns a Measurement_t equivalent to the max value of the range.
+     *
+     * \return Measurement_t equivalent to the max value of the range.
+     */
+    Measurement_t getMax(ER4CL_ARGVOID) {
+        Measurement_t extreme;
+        extreme.value = max;
+        extreme.prefix = prefix;
+        return extreme;
+    }
+
+    /*! \brief Returns a Measurement_t equivalent to the min value of the range.
+     *
+     * \return Measurement_t equivalent to the min value of the range.
+     */
+    Measurement_t getMin(ER4CL_ARGVOID) {
+        Measurement_t extreme;
+        extreme.value = min;
+        extreme.prefix = prefix;
+        return extreme;
+    }
+
+    /*! \brief Checks if a Measurement_t is within the range.
+     *
+     * \return true if the Measurement_t is within the range, false otherwise.
+     */
+    bool includes(ER4CL_ARGIN const Measurement_t value) {
+        if (value >= getMin() && value <= getMax()) {
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+} RangedMeasurement_t;
+
+/*! \brief Overloaded equality check for #RangedMeasurement_t. \note No conversion is performed, cause the multiplication can introduce rounding errors.
+ *
+ * \param a [in] First item of the comparison.
+ * \param b [in] Second item of the comparison.
+ * \return true if \p a and \p b have same value, prefix and unit.
+*/
+inline bool operator == (const RangedMeasurement_t &a, const RangedMeasurement_t &b) {
+    return ((a.min == b.min) && (a.max == b.max) && (a.step == b.step) && (a.prefix == b.prefix) /*&& (a.unit == b.unit)*/);
+}
+
+/*! \brief Overloaded inequality check for #RangedMeasurement_t. \note No conversion is performed, cause the multiplication can introduce rounding errors.
+ *
+ * \param a [in] First item of the comparison.
+ * \param b [in] Second item of the comparison.
+ * \return true if \p a and \p b have different value, prefix or unit.
+*/
+inline bool operator != (const RangedMeasurement_t &a, const RangedMeasurement_t &b) {
+    return !(a == b);
+}
+
+MeasurementReduced_t toReduceMeasurement(Measurement_t);
+RangedMeasurementReduced_t toReduceRangedMeasurement(RangedMeasurement_t);
+Measurement_t fromReduceMeasurement(MeasurementReduced_t);
+RangedMeasurement_t fromReduceRangedMeasurement(RangedMeasurementReduced_t);
+
 
 /********************************************************************************************\
  *                                                                                          *
@@ -360,7 +832,7 @@ protected:
 
     bool oversamplingImplemented = false;
     uint32_t oversamplingRatiosNum = 1;
-    vector <uint_fast16_t> oversamplingRatiosArray;
+    vector <uint16_t> oversamplingRatiosArray;
     BoolRandomArrayCoder * oversamplingRatioCoder;
 
     bool selectStimulusChannelFlag = false;
@@ -441,8 +913,8 @@ protected:
     vector <Measurement_t> selectedProtocolAdimensional;
 
     vector <Measurement_t> selectedVoltageOffset;
-    Measurement_t minSelectedVoltageOffset = {0, UnitPfxMilli, "V"};
-    Measurement_t maxSelectedVoltageOffset = {0, UnitPfxMilli, "V"};
+    Measurement_t minSelectedVoltageOffset = {0, UnitPfxMilli};
+    Measurement_t maxSelectedVoltageOffset = {0, UnitPfxMilli};
 
     bool voltageOffsetControlImplemented = false;
     RangedMeasurement_t voltageOffsetRange;
@@ -594,7 +1066,7 @@ protected:
     double voltageOffsetCorrected = 0.0; /*!< Value currently corrected in applied voltages by the device (expressed in the unit of the liquid junction control) */
     double voltageOffsetCorrection = 0.0; /*!< Value to be used to correct the measured votlage values (expressed in the unit of current voltage range) */
 
-    Measurement_t voltageOffsetCompensationGain = {1.0, UnitPfxNone, "V"};
+    Measurement_t voltageOffsetCompensationGain = {1.0, UnitPfxNone};
 
     uint16_t selectedVoltageRangeIdx = 0;
     vector <uint16_t> selectedCurrentRangesIdx;
@@ -603,9 +1075,9 @@ protected:
     vector <RangedMeasurement_t> currentRanges;
 
     uint16_t selectedSamplingRateIdx = 0;
-    Measurement_t baseSamplingRate = {1.0, UnitPfxKilo, "Hz"};
-    Measurement_t samplingRate = {1.0, UnitPfxKilo, "Hz"}; /*!< baseSamplingRate*oversamplingRatio */
-    Measurement_t integrationStep = {1.0, UnitPfxMilli, "Hz"};
+    Measurement_t baseSamplingRate = {1.0, UnitPfxKilo};
+    Measurement_t samplingRate = {1.0, UnitPfxKilo}; /*!< baseSamplingRate*oversamplingRatio */
+    Measurement_t integrationStep = {1.0, UnitPfxMilli};
 
     uint16_t selectedOversamplingRatioIdx = 0;
     uint16_t oversamplingRatio = 1;
@@ -613,7 +1085,7 @@ protected:
     /*! Filter */
     bool rawDataFilterLowPassFlag = true;
     bool rawDataFilterActiveFlag = false;
-    Measurement_t rawDataFilterCutoffFrequency = {30.0, UnitPfxKilo, "Hz"};
+    Measurement_t rawDataFilterCutoffFrequency = {30.0, UnitPfxKilo};
     double iirNum[IIR_ORD+1];
     double iirDen[IIR_ORD+1];
 

@@ -32,11 +32,11 @@ TEMPLATE = lib
 CONFIG += c++11
 
 # use as static library
-DEFINES += ER4COMMLIB_STATIC
-CONFIG += staticlib
+#DEFINES += ER4COMMLIB_STATIC
+#CONFIG += staticlib
 
 # or create .dll
-#DEFINES += ER4COMMLIB_LIBRARY
+DEFINES += ER4COMMLIB_LIBRARY
 
 include(../version.pri)
 

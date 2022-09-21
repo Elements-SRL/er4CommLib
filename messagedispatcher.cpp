@@ -14,17 +14,16 @@
 //
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
-
+#define _USE_MATH_DEFINES
 #include "messagedispatcher.h"
 
 #include <iostream>
 #include <sstream>
 #include <ctime>
 #include <thread>
-#include <math.h>
+#include <cmath>
 #include <random>
 #include <algorithm>
-#include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},               //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
@@ -64,6 +63,46 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
  *                                                                                          *
 \********************************************************************************************/
 
+MeasurementReduced_t toReduceMeasurement(Measurement_t meas){
+  MeasurementReduced_t measRed;
+  measRed.value=meas.value;
+  measRed.prefix=meas.prefix;
+
+
+  return measRed;
+}
+
+
+RangedMeasurementReduced_t toReduceRangedMeasurement(RangedMeasurement_t rangedMeas){
+  RangedMeasurementReduced_t rangedMeasRed;
+  rangedMeasRed.min=rangedMeas.min;
+  rangedMeasRed.max=rangedMeas.max;
+  rangedMeasRed.prefix=rangedMeas.prefix;
+  rangedMeasRed.step=rangedMeas.step;
+
+
+  return rangedMeasRed;
+}
+
+
+Measurement_t fromReduceMeasurement(MeasurementReduced_t measRed){
+    Measurement_t meas;
+    meas.value=measRed.value;
+    meas.prefix=measRed.prefix;
+
+      return meas;
+};
+RangedMeasurement_t fromReduceRangedMeasurement(RangedMeasurementReduced_t rangedMeasRed){
+    RangedMeasurement_t rangedMeas;
+    rangedMeas.min=rangedMeasRed.min;
+    rangedMeas.max=rangedMeasRed.max;
+    rangedMeas.prefix=rangedMeasRed.prefix;
+    rangedMeas.step=rangedMeasRed.step;
+
+
+    return rangedMeas;
+};
+
 /*****************\
  *  Ctor / Dtor  *
 \*****************/
@@ -76,11 +115,11 @@ MessageDispatcher::MessageDispatcher(string deviceId) :
     rawDataFilterCutoffFrequencyRange.min = 0.0;
     rawDataFilterCutoffFrequencyRange.max = 100.0;
     rawDataFilterCutoffFrequencyRange.prefix = UnitPfxKilo;
-    rawDataFilterCutoffFrequencyRange.unit = "Hz";
+//    rawDataFilterCutoffFrequencyRange.unit = "Hz";
 
     rawDataFilterCutoffFrequencyDefault.value = 30.0;
     rawDataFilterCutoffFrequencyDefault.prefix = UnitPfxKilo;
-    rawDataFilterCutoffFrequencyDefault.unit = "Hz";
+//    rawDataFilterCutoffFrequencyDefault.unit = "Hz";
     rawDataFilterCutoffFrequency = rawDataFilterCutoffFrequencyDefault;
 
     cFastCompensationOptions.clear();
@@ -256,7 +295,7 @@ ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
 
     stopConnectionFlag = false;
 
-    this->setRawDataFilter({30.0, UnitPfxKilo, "Hz"}, true, false);
+    this->setRawDataFilter({30.0, UnitPfxKilo}, true, false);
 
     rxThread = thread(&MessageDispatcher::readDataFromDevice, this);
 
@@ -759,7 +798,7 @@ ErrorCodes_t MessageDispatcher::resetDevice() {
     deviceResetCoder->encode(1, txStatus);
     this->stackOutgoingMessage(txStatus);
     deviceResetCoder->encode(0, txStatus);
-
+    this->stackOutgoingMessage(txStatus);
     this->resetCalib();
 
     return Success;
@@ -1934,7 +1973,7 @@ void MessageDispatcher::readDataFromDevice() {
     while (!stopConnectionFlag) {
         if (connectionPaused) {
             if (this->pauseConnection(false) != Success) {
-                usleep(100000);
+                Sleep(100);
                 continue;
             }
         }
@@ -1948,7 +1987,7 @@ void MessageDispatcher::readDataFromDevice() {
         if (result != FT_OK) {
             deviceCommunicationErrorFlag = true;
             this->pauseConnection(true);
-            usleep(100000);
+            Sleep(100);
             continue;
         }
 
@@ -1958,7 +1997,7 @@ void MessageDispatcher::readDataFromDevice() {
         /*! If there are not enough frames wait for a minimum frame number,
          *  the ftdi driver will wait for that to decrease overhead */
         if (availableFrames < minReadFrameNumber) {
-            usleep(fewFramesSleep);
+            Sleep(fewFramesSleep);
             continue;
         }
 
@@ -2341,7 +2380,7 @@ void MessageDispatcher::computeMinimumPacketNumber() {
     samplingRateInHz.convertValue(UnitPfxNone);
     minStoreFrameNumber = (unsigned long)ceil(FTD_FEW_PACKET_COEFF*samplingRateInHz.value/((double)packetsPerFrame));
     minReadFrameNumber = (unsigned long)min(minStoreFrameNumber, (unsigned long)ceil(((double)FTD_MAX_BYTES_TO_WAIT_FOR)/(double)readFrameLength));
-    fewFramesSleep = (unsigned int)ceil(((double)(minReadFrameNumber*(unsigned long)packetsPerFrame))/samplingRateInHz.value*1.0e6);
+    fewFramesSleep = (unsigned int)ceil(((double)(minReadFrameNumber*(unsigned long)packetsPerFrame))/samplingRateInHz.value*1.0e3);
 }
 
 void MessageDispatcher::initializeRawDataFilterVariables() {
@@ -2359,7 +2398,7 @@ void MessageDispatcher::initializeRawDataFilterVariables() {
 
 void MessageDispatcher::computeFilterCoefficients() {
     if (rawDataFilterActiveFlag && (rawDataFilterCutoffFrequency < samplingRate*0.5)) {
-        rawDataFilterCutoffFrequency.convertValue(1.0/integrationStep.multiplier());
+        rawDataFilterCutoffFrequency.convertValueMult(1.0/integrationStep.multiplier());
 
         double k1 = tan(M_PI*rawDataFilterCutoffFrequency.value*integrationStep.value);
         double k12 = k1*k1;

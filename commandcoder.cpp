@@ -16,6 +16,7 @@
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "commandcoder.h"
+#include <cmath>
 
 CommandCoder::CommandCoder(uint16_t initialByte, uint8_t initialBit, uint8_t bitsNum):
     initialByte(initialByte),

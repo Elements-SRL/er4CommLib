@@ -36,16 +36,16 @@ MessageDispatcher_fake_e16n::MessageDispatcher_fake_e16n(string di) :
     realSamplingRatesArray.resize(samplingRatesNum);
     realSamplingRatesArray[SamplingRate1_25kHz].value = 1.25;
     realSamplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
+    //realSamplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
     realSamplingRatesArray[SamplingRate5kHz].value = 5.0;
     realSamplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate5kHz].unit = "Hz";
+    //realSamplingRatesArray[SamplingRate5kHz].unit = "Hz";
     realSamplingRatesArray[SamplingRate10kHz].value = 10.0;
     realSamplingRatesArray[SamplingRate10kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate10kHz].unit = "Hz";
+    //realSamplingRatesArray[SamplingRate10kHz].unit = "Hz";
     realSamplingRatesArray[SamplingRate20kHz].value = 20.0;
     realSamplingRatesArray[SamplingRate20kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate20kHz].unit = "Hz";
+    //realSamplingRatesArray[SamplingRate20kHz].unit = "Hz";
 }
 
 MessageDispatcher_fake_e16n::~MessageDispatcher_fake_e16n() {

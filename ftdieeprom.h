@@ -109,7 +109,7 @@ inline bool operator != (const DeviceTuple_t &a, const DeviceTuple_t &b) {
 }
 
 using namespace std;
-using namespace er4CommLib;
+
 
 class FtdiEeprom {
 public:

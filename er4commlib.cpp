@@ -17,7 +17,10 @@
 
 #include "er4commlib.h"
 
+
 #include <algorithm>
+#include <vector>
+#include <string>
 
 #include "messagedispatcher.h"
 #include "messagedispatcher_e1plus.h"
@@ -47,7 +50,6 @@
 using namespace std;
 
 static MessageDispatcher * messageDispatcher = nullptr;
-static uint16_t * buffer_l;
 
 /*! Private functions prototypes */
 string getDeviceSerial(
@@ -56,28 +58,19 @@ string getDeviceSerial(
 bool getDeviceCount(
         DWORD &numDevs);
 
-namespace er4CommLib {
+
 
 /*****************\
  *  Ctor / Dtor  *
 \*****************/
 
 ErrorCodes_t init() {
-    buffer_l = new (nothrow) uint16_t [ER4CL_DATA_ARRAY_SIZE];
-    if (buffer_l == nullptr) {
-        //        delete [] deviceId_l;
-        //        deviceId_l = nullptr;
-        return ErrorInitializationFailed;
-    }
+
 
     return Success;
 }
 
 ErrorCodes_t deinit() {
-    if (buffer_l != nullptr) {
-        delete [] buffer_l;
-        buffer_l = nullptr;
-    }
 
     return Success;
 }
@@ -87,7 +80,7 @@ ErrorCodes_t deinit() {
 \************************/
 
 ErrorCodes_t detectDevices(
-        vector <string> &deviceIds) {
+        char * deviceIds) {
     /*! Gets number of devices */
     DWORD numDevs;
     bool devCountOk = getDeviceCount(numDevs);
@@ -96,46 +89,34 @@ ErrorCodes_t detectDevices(
 
     } else if (numDevs < 2) {
         /*! Each device has 2 channels */
-        deviceIds.clear();
+
         return ErrorNoDeviceFound;
     }
 
-    vector <string> deviceIdsTemp;
-    deviceIds.clear();
-    deviceIdsTemp.clear();
     string deviceName;
 
     /*! Lists all serial numbers */
     for (uint32_t i = 0; i < numDevs; i++) {
         deviceName = getDeviceSerial(i);
-        if (find(deviceIdsTemp.begin(), deviceIdsTemp.end(), deviceName) == deviceIdsTemp.end()) {
-            /*! Devices with an open channel are detected wrongly and their name is an empty string */
-            if (deviceName.size() > 0) {
-                /*! If this device has been found for the first time put it in the temporary list */
-                deviceIdsTemp.push_back(getDeviceSerial(i));
-            }
-
-        } else {
-            /*! Devices with an open channel are detected wrongly and their name is an empty string */
-            if (deviceName.size() > 0) {
-                /*! If this device has been already been found both channels A and B are detected, so add it in the output list */
-                deviceIds.push_back(getDeviceSerial(i));
-            }
-        }
+        sprintf(deviceIds, "%s", deviceName.c_str());
     }
 
     return Success;
 }
 
-ErrorCodes_t connect(
-        string deviceId) {
+ErrorCodes_t connectDevice(
+        char*  deviceId) {
 
     ErrorCodes_t ret = Success;
     if (messageDispatcher == nullptr) {
+        string deviceIdStr(deviceId);
+
+
         /*! Initializes eeprom */
         /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
+
         FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
-        if (deviceId == "e16 Demo") {
+        if ( deviceIdStr=="e16 Demo") {
             ftdiEepromId = FtdiEepromIdDemo;
         }
 
@@ -331,9 +312,11 @@ ErrorCodes_t applyVoltageProtocol() {
 
 ErrorCodes_t setProtocolVoltage(
         unsigned int idx,
-        Measurement_t voltage) {
+        MeasurementReduced_t voltageRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t voltage;
+        voltage=fromReduceMeasurement(voltageRed);
         ret = messageDispatcher->setProtocolVoltage(idx, voltage);
 
     } else {
@@ -344,9 +327,11 @@ ErrorCodes_t setProtocolVoltage(
 
 ErrorCodes_t setProtocolTime(
         unsigned int idx,
-        Measurement_t time) {
+        MeasurementReduced_t timeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t time;
+        time=fromReduceMeasurement(timeRed);
         ret = messageDispatcher->setProtocolTime(idx, time);
 
     } else {
@@ -357,9 +342,11 @@ ErrorCodes_t setProtocolTime(
 
 ErrorCodes_t setProtocolSlope(
         unsigned int idx,
-        Measurement_t slope) {
+        MeasurementReduced_t slopeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t slope;
+        slope=fromReduceMeasurement(slopeRed);
         ret = messageDispatcher->setProtocolSlope(idx, slope);
 
     } else {
@@ -370,9 +357,12 @@ ErrorCodes_t setProtocolSlope(
 
 ErrorCodes_t setProtocolAdimensional(
         unsigned int idx,
-        Measurement_t adimensional) {
+        MeasurementReduced_t adimensionalRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t adimensional;
+        adimensional=fromReduceMeasurement(adimensionalRed);
+
         ret = messageDispatcher->setProtocolAdimensional(idx, adimensional);
 
     } else {
@@ -383,10 +373,16 @@ ErrorCodes_t setProtocolAdimensional(
 
 ErrorCodes_t checkSelectedProtocol(
         unsigned int idx,
-        std::string &message) {
+        char * message) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkSelectedProtocol(idx, message);
+        string messageStr;
+        int messageOffset =0;
+        ret=messageDispatcher->checkSelectedProtocol(idx, messageStr);
+
+        for(uint32_t charIdx=0;charIdx<messageStr.length();charIdx++){
+            message[messageOffset++]=messageStr[charIdx];
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -396,11 +392,20 @@ ErrorCodes_t checkSelectedProtocol(
 
 ErrorCodes_t checkProtocolVoltage(
         unsigned int idx,
-        Measurement_t voltage,
-        std::string &message) {
+        MeasurementReduced_t voltageRed,
+        char * message) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolVoltage(idx, voltage, message);
+
+        Measurement_t voltage;
+        std::string messageStr;
+        int messageOffset =0;
+        voltage = fromReduceMeasurement(voltageRed);
+        ret = messageDispatcher->checkProtocolVoltage(idx, voltage, messageStr);
+
+        for(uint32_t charIdx =0; charIdx<messageStr.length();charIdx++ ){
+            message[messageOffset++] = messageStr[charIdx];
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -410,11 +415,20 @@ ErrorCodes_t checkProtocolVoltage(
 
 ErrorCodes_t checkProtocolTime(
         unsigned int idx,
-        Measurement_t time,
-        std::string &message) {
+        MeasurementReduced_t timeRed,
+        char * message) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolTime(idx, time, message);
+
+        Measurement_t time;
+        string messageStr;
+        int messageOffset = 0;
+        time = fromReduceMeasurement(timeRed);
+        ret = messageDispatcher->checkProtocolTime(idx, time, messageStr);
+
+        for(uint32_t charIdx=0; charIdx<messageStr.length();charIdx++){
+            message[messageOffset++]= messageStr[charIdx];
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -424,11 +438,20 @@ ErrorCodes_t checkProtocolTime(
 
 ErrorCodes_t checkProtocolSlope(
         unsigned int idx,
-        Measurement_t slope,
-        std::string &message) {
+        MeasurementReduced_t slopeRed,
+        char * message) {
+
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolSlope(idx, slope, message);
+        Measurement_t slope;
+        string messageStr;
+        int messageOffset = 0;
+        slope = fromReduceMeasurement(slopeRed);
+        ret = messageDispatcher->checkProtocolSlope(idx, slope, messageStr);
+
+        for(uint32_t charIdx=0; charIdx<messageStr.length(); charIdx++){
+            message[messageOffset++]= messageStr[charIdx];
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -438,11 +461,19 @@ ErrorCodes_t checkProtocolSlope(
 
 ErrorCodes_t checkProtocolAdimensional(
         unsigned int idx,
-        Measurement_t adimensional,
-        std::string &message) {
+        MeasurementReduced_t adimensionalRed,
+        char * message) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolAdimensional(idx, adimensional, message);
+        Measurement_t adimensional;
+        string messageStr;
+        int messageOffset=0;
+        adimensional = fromReduceMeasurement(adimensionalRed);
+        ret = messageDispatcher->checkProtocolAdimensional(idx, adimensional, messageStr);
+
+        for(uint32_t charIdx=0; charIdx<messageStr.length();charIdx++){
+            message[messageOffset++]=messageStr[charIdx];
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -452,10 +483,12 @@ ErrorCodes_t checkProtocolAdimensional(
 
 ErrorCodes_t setVoltageOffset(
         unsigned int idx,
-        Measurement_t voltage) {
+        MeasurementReduced_t voltage) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setVoltageOffset(idx, voltage);
+        Measurement_t voltageOffset;
+        voltageOffset =fromReduceMeasurement(voltage);
+        ret = messageDispatcher->setVoltageOffset(idx, voltageOffset);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -465,12 +498,19 @@ ErrorCodes_t setVoltageOffset(
 
 ErrorCodes_t checkVoltageOffset(
         unsigned int idx,
-        Measurement_t voltage,
-        std::string &message) {
+        MeasurementReduced_t voltageRed,
+        char * message) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkVoltageOffset(idx, voltage, message);
 
+        Measurement_t voltage;
+        string messageStr;
+        int messageOffset = 0;
+        voltage =fromReduceMeasurement(voltageRed);
+        ret = messageDispatcher->checkVoltageOffset(idx,voltage, messageStr);
+        for(uint32_t charIdx=0; charIdx<messageStr.length();charIdx++){
+            message[messageOffset++]=messageStr[charIdx];
+        }
     } else {
         ret = ErrorDeviceNotConnected;
     }
@@ -478,10 +518,14 @@ ErrorCodes_t checkVoltageOffset(
 }
 
 ErrorCodes_t applyInsertionPulse(
-        Measurement_t voltage,
-        Measurement_t duration) {
+        MeasurementReduced_t voltageRed,
+        MeasurementReduced_t durationRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t voltage;
+        Measurement_t duration;
+        voltage=fromReduceMeasurement(voltageRed);
+        duration=fromReduceMeasurement(durationRed);
         ret = messageDispatcher->applyInsertionPulse(voltage, duration);
 
     } else {
@@ -491,10 +535,14 @@ ErrorCodes_t applyInsertionPulse(
 }
 
 ErrorCodes_t applyReferencePulse(
-        Measurement_t voltage,
-        Measurement_t duration) {
+        MeasurementReduced_t voltageRed,
+        MeasurementReduced_t durationRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t voltage;
+        Measurement_t duration;
+        voltage=fromReduceMeasurement(voltageRed);
+        duration=fromReduceMeasurement(durationRed);
         ret = messageDispatcher->applyReferencePulse(voltage, duration);
 
     } else {
@@ -504,7 +552,7 @@ ErrorCodes_t applyReferencePulse(
 }
 
 ErrorCodes_t overrideReferencePulse(
-      bool flag) {
+        bool flag) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->overrideReferencePulse(flag);
@@ -518,11 +566,13 @@ ErrorCodes_t overrideReferencePulse(
 
 
 ErrorCodes_t setRawDataFilter(
-        Measurement_t cutoffFrequency,
+        MeasurementReduced_t cutoffFrequencyRed,
         bool lowPassFlag,
         bool activeFlag) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t cutoffFrequency;
+        cutoffFrequency=fromReduceMeasurement(cutoffFrequencyRed);
         ret = messageDispatcher->setRawDataFilter(cutoffFrequency, lowPassFlag, activeFlag);
 
     } else {
@@ -532,9 +582,11 @@ ErrorCodes_t setRawDataFilter(
 }
 
 ErrorCodes_t applyDacExt(
-        Measurement_t voltage) {
+        MeasurementReduced_t voltageRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t voltage;
+        voltage=fromReduceMeasurement(voltageRed);
         ret = messageDispatcher->applyDacExt(voltage);
 
     } else {
@@ -555,10 +607,19 @@ ErrorCodes_t resetWasherError() {
 }
 
 ErrorCodes_t setWasherPresetSpeeds(
-        vector <int8_t> speedValues) {
+        int8_t * speedValues) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setWasherPresetSpeeds(speedValues);
+        vector<int8_t> speedValuesVec;
+        uint32_t speedValuesOffset = 0;
+        uint32_t protocolsNum= speedValuesVec.size();
+
+        ret = messageDispatcher->setWasherPresetSpeeds(speedValuesVec);
+        for(uint32_t speedValuesIdx =0; speedValuesIdx< protocolsNum; speedValuesIdx++){
+                speedValues[speedValuesOffset++] = speedValuesVec[speedValuesIdx];
+
+        }
+
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -738,9 +799,11 @@ ErrorCodes_t switchChannelOn(
 
 ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
         unsigned int idx,
-        Measurement_t voltage) {
+        MeasurementReduced_t voltageRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t voltage;
+        voltage=fromReduceMeasurement(voltageRed);
         ret = messageDispatcher->setFastReferencePulseProtocolWave1Voltage(idx, voltage);
 
     } else {
@@ -751,9 +814,11 @@ ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
 
 ErrorCodes_t setFastReferencePulseProtocolWave1Time(
         unsigned int idx,
-        Measurement_t time) {
+        MeasurementReduced_t timeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t time;
+        time=fromReduceMeasurement(timeRed);
         ret = messageDispatcher->setFastReferencePulseProtocolWave1Time(idx, time);
 
     } else {
@@ -764,9 +829,11 @@ ErrorCodes_t setFastReferencePulseProtocolWave1Time(
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
         unsigned int idx,
-        Measurement_t voltage) {
+        MeasurementReduced_t voltageRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t voltage;
+        voltage=fromReduceMeasurement(voltageRed);
         ret = messageDispatcher->setFastReferencePulseProtocolWave2Voltage(idx, voltage);
 
     } else {
@@ -777,9 +844,11 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Time(
         unsigned int idx,
-        Measurement_t time) {
+        MeasurementReduced_t timeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t time;
+        time=fromReduceMeasurement(timeRed);
         ret = messageDispatcher->setFastReferencePulseProtocolWave2Time(idx, time);
 
     } else {
@@ -790,9 +859,11 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Time(
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
         unsigned int idx,
-        Measurement_t time) {
+        MeasurementReduced_t timeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t time;
+        time=fromReduceMeasurement(timeRed);
         ret = messageDispatcher->setFastReferencePulseProtocolWave2Duration(idx, time);
 
     } else {
@@ -910,9 +981,11 @@ ErrorCodes_t setCFastCompensationOptions(
 }
 
 ErrorCodes_t setCFastCapacitance(
-        Measurement_t value) {
+        MeasurementReduced_t valueRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t value;
+        value=fromReduceMeasurement(valueRed);
         ret = messageDispatcher->setCFastCapacitance(value);
 
     } else {
@@ -976,7 +1049,7 @@ ErrorCodes_t setDebugByte(
 //    return ret;
 //}
 
-ErrorCodes_t getDeviceInfo(
+ErrorCodes_t getDeviceInfoAlreadyConnect(
         uint8_t &deviceVersion,
         uint8_t &deviceSubversion,
         uint32_t &firmwareVersion) {
@@ -991,15 +1064,16 @@ ErrorCodes_t getDeviceInfo(
 }
 
 ErrorCodes_t getDeviceInfo(
-        string deviceId,
+        char * deviceId,
         uint8_t &deviceVersion,
         uint8_t &deviceSubversion,
         uint32_t &firmwareVersion) {
     ErrorCodes_t ret = Success;
+    string deviceIdStr(deviceId);
     /*! Initializes eeprom */
     /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
     FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
-    if (deviceId == "ePatch Demo") {
+    if (deviceIdStr == "ePatch Demo") {
         ftdiEepromId = FtdiEepromIdDemo;
     }
 
@@ -1079,10 +1153,10 @@ ErrorCodes_t convertCurrentValue(
 ErrorCodes_t readData(
         unsigned int dataToRead,
         unsigned int &dataRead,
-        uint16_t * &buffer) {
+        int16_t buffer []) {
     if (messageDispatcher != nullptr) {
-        buffer = buffer_l;
-        return messageDispatcher->getDataPackets(buffer, dataToRead, &dataRead);
+        uint16_t * tempBuffer=(uint16_t *)buffer;
+        return messageDispatcher->getDataPackets(tempBuffer, dataToRead, &dataRead);
 
     } else {
         return ErrorDeviceNotConnected;
@@ -1099,11 +1173,11 @@ ErrorCodes_t purgeData() {
 }
 
 ErrorCodes_t getCurrentRanges(
-        vector <RangedMeasurement_t> &currentRanges,
-        vector <uint16_t> &defaultOptions) {
+        RangedMeasurementReduced_t *currentRanges,
+        uint16_t* defaultOptions) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCurrentRanges(currentRanges, defaultOptions);
+        //        ret = messageDispatcher->getCurrentRanges(currentRanges, defaultOptions);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1112,12 +1186,13 @@ ErrorCodes_t getCurrentRanges(
 }
 
 ErrorCodes_t getCurrentRange(
-        RangedMeasurement_t &currentRange,
+        RangedMeasurementReduced_t &currentRangeRed,
         uint16_t channelIdx) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        RangedMeasurement_t currentRange;
         ret = messageDispatcher->getCurrentRange(currentRange, channelIdx);
-
+        currentRangeRed=toReduceRangedMeasurement(currentRange);
     } else {
         ret = ErrorDeviceNotConnected;
     }
@@ -1136,11 +1211,20 @@ ErrorCodes_t hasIndependentCurrentRanges() {
 }
 
 ErrorCodes_t getVoltageRanges(
-        vector <RangedMeasurement_t> &voltageRanges,
+         RangedMeasurementReduced_t * voltageRangesRed,
         uint16_t &defaultOption) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getVoltageRanges(voltageRanges, defaultOption);
+        RangedMeasurement_t * voltageRanges;
+        vector <RangedMeasurement_t> voltageRangesVec;
+        uint32_t voltageRangesOffset=0;
+
+        ret = messageDispatcher->getVoltageRanges(voltageRangesVec, defaultOption);
+        int size = voltageRangesVec.size();
+        for(uint32_t idx = 0; idx < size; idx++ ) {
+            voltageRanges[idx] = voltageRangesVec[idx];
+            voltageRangesRed[idx]= toReduceRangedMeasurement(voltageRanges[idx]);
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1149,11 +1233,12 @@ ErrorCodes_t getVoltageRanges(
 }
 
 ErrorCodes_t getVoltageRange(
-        RangedMeasurement_t &voltageRange) {
+        RangedMeasurementReduced_t &voltageRangeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        RangedMeasurement_t voltageRange;
         ret = messageDispatcher->getVoltageRange(voltageRange);
-
+        voltageRangeRed=toReduceRangedMeasurement(voltageRange);
     } else {
         ret = ErrorDeviceNotConnected;
     }
@@ -1161,11 +1246,18 @@ ErrorCodes_t getVoltageRange(
 }
 
 ErrorCodes_t getSamplingRates(
-        vector <Measurement_t> &samplingRates,
+        MeasurementReduced_t * samplingRatesRed,
         uint16_t &defaultOption) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getSamplingRates(samplingRates, defaultOption);
+        Measurement_t * samplingRates;
+        vector<Measurement_t> samplingRatesVec;
+        ret = messageDispatcher->getSamplingRates(samplingRatesVec, defaultOption);
+        int size = samplingRatesVec.size();
+        for(uint32_t idx = 0; idx < size; idx++ ) {
+            samplingRates[idx] = samplingRatesVec[idx];
+            samplingRatesRed[idx]= toReduceMeasurement(samplingRates[idx]);
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1174,11 +1266,12 @@ ErrorCodes_t getSamplingRates(
 }
 
 ErrorCodes_t getSamplingRate(
-        Measurement_t &samplingRate) {
+        MeasurementReduced_t &samplingRateRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t samplingRate;
         ret = messageDispatcher->getSamplingRate(samplingRate);
-
+        samplingRateRed=toReduceMeasurement(samplingRate);
     } else {
         ret = ErrorDeviceNotConnected;
     }
@@ -1186,10 +1279,17 @@ ErrorCodes_t getSamplingRate(
 }
 
 ErrorCodes_t getRealSamplingRates(
-        vector <Measurement_t> &samplingRates) {
+        MeasurementReduced_t * samplingRatesRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getRealSamplingRates(samplingRates);
+        Measurement_t * samplingRates;
+        vector<Measurement_t> samplingRatesVec;
+        ret = messageDispatcher->getRealSamplingRates(samplingRatesVec);
+        int size = samplingRatesVec.size();
+        for(uint32_t idx = 0; idx < size; idx++ ) {
+            samplingRates[idx] = samplingRatesVec[idx];
+            samplingRatesRed[idx]= toReduceMeasurement(samplingRates[idx]);
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1198,10 +1298,16 @@ ErrorCodes_t getRealSamplingRates(
 }
 
 ErrorCodes_t getOversamplingRatios(
-        vector <uint16_t> &oversamplingRatios) {
+        uint16_t * oversamplingRatios) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getOversamplingRatios(oversamplingRatios);
+        vector<uint16_t> overSamplingRatiosVec;
+        ret = messageDispatcher->getOversamplingRatios(overSamplingRatiosVec);
+
+        int size = overSamplingRatiosVec.size();
+        for(uint32_t idx = 0; idx < size; idx++ ) {
+            oversamplingRatios[idx] = overSamplingRatiosVec[idx];
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1222,11 +1328,18 @@ ErrorCodes_t getOversamplingRatio(
 }
 
 ErrorCodes_t getVoltageStimulusLpfs(
-        vector <Measurement_t> &filterOptions,
+        MeasurementReduced_t * filterOptionsRed,
         uint16_t &defaultOption) {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getVoltageStimulusLpfs(filterOptions, defaultOption);
+        Measurement_t * filterOptions;
+        vector<Measurement_t> filterOptionsVec;
+        ret = messageDispatcher->getVoltageStimulusLpfs(filterOptionsVec, defaultOption);
+        int size = filterOptionsVec.size();
+        for(uint32_t idx = 0; idx < size; idx++ ) {
+            filterOptions[idx] = filterOptionsVec[idx];
+            filterOptionsRed[idx]= toReduceMeasurement(filterOptions[idx]);
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1235,11 +1348,18 @@ ErrorCodes_t getVoltageStimulusLpfs(
 }
 
 ErrorCodes_t getVoltageReferenceLpfs(
-        vector <Measurement_t> &filterOptions,
+        MeasurementReduced_t *voltageReferenceRed,
         uint16_t &defaultOption) {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getVoltageReferenceLpfs(filterOptions, defaultOption);
+        Measurement_t * voltageReference;
+        vector<Measurement_t> voltageReferenceVec;
+        ret = messageDispatcher->getVoltageReferenceLpfs(voltageReferenceVec, defaultOption);
+        int size= voltageReferenceVec.size();
+        for(uint32_t idx = 0; idx < size; idx++ ) {
+            voltageReference[idx] = voltageReferenceVec[idx];
+            voltageReferenceRed[idx]= toReduceMeasurement(voltageReference[idx]);
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1323,15 +1443,74 @@ ErrorCodes_t hasFrontEndResetDenoiser() {
 }
 
 ErrorCodes_t getProtocolList(
-        vector <string> &names,
-        vector <string> &images,
-        vector <vector <uint16_t>> &voltages,
-        vector <vector <uint16_t>> &times,
-        vector <vector <uint16_t>> &slopes,
-        vector <vector <uint16_t>> &adimensionals) {
+        char names[],
+        char images[],
+        int16_t voltages[],
+        int16_t times[],
+        int16_t slopes[],
+        int16_t adimensionals[]) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolList(names, images, voltages, times, slopes, adimensionals);
+
+        vector<string> vectorNames;
+        vector<string> vectorImages;
+        vector <vector <uint16_t>> vectorVoltages;
+        vector <vector <uint16_t>> vectorTimes;
+        vector <vector <uint16_t>> vectorSlopes;
+        vector <vector <uint16_t>> vectorAdimensional;
+        uint32_t nameOffset = 0;
+        uint32_t imagesOffset = 0;
+        uint32_t voltagesOffset = 0;
+        uint32_t timesOffset = 0;
+        uint32_t slopesOffset = 0;
+        uint32_t adimensionalOffset = 0;
+
+        ret = messageDispatcher->getProtocolList(vectorNames, vectorImages, vectorVoltages, vectorTimes, vectorSlopes, vectorAdimensional);
+
+        uint32_t protocolsNum=vectorNames.size();
+
+        for(uint32_t namesIdx =0; namesIdx< protocolsNum; namesIdx++){
+            for(uint32_t charIdx =0; charIdx<vectorNames[namesIdx].length();charIdx++ ){
+                names[nameOffset++] = vectorNames[namesIdx][charIdx];
+            }
+            names[nameOffset++] = ',';
+        }
+
+        for(uint32_t imagesIdx =0; imagesIdx< protocolsNum; imagesIdx++){
+            for(uint32_t charIdx =0; charIdx<vectorImages[imagesIdx].length();charIdx++ ){
+                images[nameOffset++] = vectorImages[imagesIdx][charIdx];
+            }
+            images[imagesOffset++] = ',';
+        }
+
+        for(uint32_t voltagesIdx =0; voltagesIdx< protocolsNum; voltagesIdx++){
+            for(uint32_t elementIdx =0; elementIdx< vectorVoltages[voltagesIdx].size(); elementIdx++ ){
+                voltages[voltagesOffset++] = vectorVoltages[voltagesIdx][elementIdx];
+            }
+            voltages[voltagesOffset++] = -1;
+        }
+
+        for(uint32_t timesIdx =0; timesIdx< protocolsNum; timesIdx++){
+            for(uint32_t elementIdx =0; elementIdx< vectorTimes[timesIdx].size(); elementIdx++ ){
+                times[timesOffset++] = vectorTimes[timesIdx][elementIdx];
+            }
+            voltages[voltagesOffset++] = -1;
+        }
+
+        for(uint32_t slopeIdx =0; slopeIdx< protocolsNum; slopeIdx++){
+            for(uint32_t elementIdx =0; elementIdx< vectorSlopes[slopeIdx].size(); elementIdx++ ){
+                slopes[slopesOffset++] = vectorSlopes[slopeIdx][elementIdx];
+            }
+            slopes[slopesOffset++] = -1;
+        }
+
+        for(uint32_t adimensionalIdx =0; adimensionalIdx< protocolsNum; adimensionalIdx++){
+            for(uint32_t elementIdx =0; elementIdx< vectorAdimensional[adimensionalIdx].size(); elementIdx++ ){
+                adimensionals[adimensionalOffset++] = vectorAdimensional[adimensionalIdx][elementIdx];
+            }
+            adimensionals[adimensionalOffset++] = -1;
+        }
+
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1364,12 +1543,40 @@ ErrorCodes_t getSealTestProtocolIdx(
 }
 
 ErrorCodes_t getProtocolVoltage(
-        vector <string> &voltageNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
+        char voltageNames[],
+        RangedMeasurementReduced_t rangesRed[],
+        MeasurementReduced_t defaultValuesRed[]) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolVoltage(voltageNames, ranges, defaultValues);
+        RangedMeasurement_t * ranges;
+        Measurement_t * defaultValues;
+        vector<string> voltageNamesVec;
+        vector<RangedMeasurement_t> rangesVec;
+        vector<Measurement_t> defaultValuesVec;
+        uint32_t voltageNameOffset = 0;
+
+        ret = messageDispatcher->getProtocolVoltage(voltageNamesVec, rangesVec, defaultValuesVec);
+        if(ret==Success){
+            int size = voltageNamesVec.size();
+            for(uint32_t idx =0; idx< size; idx++){
+                for(uint32_t charIdx =0; charIdx<voltageNamesVec[idx].length();charIdx++ ){
+                    voltageNames[voltageNameOffset++] = voltageNamesVec[idx][charIdx];
+                }
+                voltageNames[voltageNameOffset++] = ',';
+            }
+
+            size = rangesVec.size();
+            for(uint32_t idx = 0; idx < size; idx++ ) {
+                ranges[idx] = rangesVec[idx];
+                rangesRed[idx]=toReduceRangedMeasurement(ranges[idx]);
+            }
+            size = defaultValuesVec.size();
+            for(uint32_t idx = 0; idx < size; idx++ ) {
+                defaultValues[idx] = defaultValuesVec[idx];
+                defaultValuesRed[idx]=toReduceMeasurement(defaultValues[idx]);
+            }
+
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1378,12 +1585,42 @@ ErrorCodes_t getProtocolVoltage(
 }
 
 ErrorCodes_t getProtocolTime(
-        vector <string> &timeNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
+        char timeNames[],
+        RangedMeasurementReduced_t rangesRed[],
+        MeasurementReduced_t defaultValuesRed[]) {
     ErrorCodes_t ret;
+    RangedMeasurement_t * ranges;
+    Measurement_t * defaultValues;
+    vector<string> timeNamesVec;
+    vector<RangedMeasurement_t>rangesVec;
+    vector<Measurement_t>defaultValuesVec;
+    uint32_t timeNamesOffset = 0;
+
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolTime(timeNames, ranges, defaultValues);
+        ret = messageDispatcher->getProtocolTime(timeNamesVec, rangesVec, defaultValuesVec);
+
+        if(ret==Success){
+            int size = timeNamesVec.size();
+            for(uint32_t idx =0; idx< size; idx++){
+                for(uint32_t charIdx =0; charIdx<timeNamesVec[idx].length();charIdx++ ){
+                    timeNamesVec[timeNamesOffset++] = timeNamesVec[idx][charIdx];
+                }
+                timeNames[timeNamesOffset++] = ',';
+            }
+
+            size = rangesVec.size();
+            for(uint32_t idx = 0; idx < size; idx++ ) {
+                ranges[idx] = rangesVec[idx];
+                rangesRed[idx]=toReduceRangedMeasurement(ranges[idx]);
+            }
+            size = defaultValuesVec.size();
+            for(uint32_t idx = 0; idx < size; idx++ ) {
+                defaultValues[idx] = defaultValuesVec[idx];
+                defaultValuesRed[idx]=toReduceMeasurement(defaultValues[idx]);
+            }
+
+        }
+
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1392,12 +1629,41 @@ ErrorCodes_t getProtocolTime(
 }
 
 ErrorCodes_t getProtocolSlope(
-        vector <string> &slopeNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
+        char slopeNames[],
+        RangedMeasurementReduced_t rangesRed[],
+        MeasurementReduced_t defaultValuesRed[]) {
     ErrorCodes_t ret;
+    RangedMeasurement_t * ranges;
+    Measurement_t * defaultValues;
+    vector<string> slopeNamesVec;
+    vector<RangedMeasurement_t>rangesVec;
+    vector<Measurement_t>defaultValuesVec;
+    uint32_t slopeNamesOffset = 0;
+
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolSlope(slopeNames, ranges, defaultValues);
+        ret = messageDispatcher->getProtocolSlope(slopeNamesVec, rangesVec, defaultValuesVec);
+
+        if(ret==Success){
+            int size = slopeNamesVec.size();
+            for(uint32_t idx =0; idx< size; idx++){
+                for(uint32_t charIdx =0; charIdx<slopeNamesVec[idx].length();charIdx++ ){
+                    slopeNames[slopeNamesOffset++] = slopeNamesVec[idx][charIdx];
+                }
+                slopeNames[slopeNamesOffset++] = ',';
+            }
+
+            size = rangesVec.size();
+            for(uint32_t idx = 0; idx < size; idx++ ) {
+                ranges[idx] = rangesVec[idx];
+                rangesRed[idx]=toReduceRangedMeasurement(ranges[idx]);
+            }
+            size = defaultValuesVec.size();
+            for(uint32_t idx = 0; idx < size; idx++ ) {
+                defaultValues[idx] = defaultValuesVec[idx];
+                defaultValuesRed[idx]=toReduceMeasurement(defaultValues[idx]);
+            }
+
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1406,12 +1672,41 @@ ErrorCodes_t getProtocolSlope(
 }
 
 ErrorCodes_t getProtocolAdimensional(
-        vector <string> &adimensionalNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
+        char adimensionalNames[],
+        RangedMeasurementReduced_t rangesRed[],
+        MeasurementReduced_t defaultValuesRed[]) {
     ErrorCodes_t ret;
+    RangedMeasurement_t * ranges;
+    Measurement_t * defaultValues;
+    vector<string> adimensionalNamesVec;
+    vector<RangedMeasurement_t>rangesVec;
+    vector<Measurement_t>defaultValuesVec;
+    uint32_t adimensionalNamesOffset = 0;
+
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
+        ret = messageDispatcher->getProtocolAdimensional(adimensionalNamesVec, rangesVec, defaultValuesVec);
+
+        if(ret==Success){
+            int size = adimensionalNamesVec.size();
+            for(uint32_t idx =0; idx< size; idx++){
+                for(uint32_t charIdx =0; charIdx<adimensionalNamesVec[idx].length();charIdx++ ){
+                    adimensionalNames[adimensionalNamesOffset++] = adimensionalNamesVec[idx][charIdx];
+                }
+                adimensionalNames[adimensionalNamesOffset++] = ',';
+            }
+
+            size = rangesVec.size();
+            for(uint32_t idx = 0; idx < size; idx++ ) {
+                ranges[idx] = rangesVec[idx];
+                rangesRed[idx]=toReduceRangedMeasurement(ranges[idx]);
+            }
+            size = defaultValuesVec.size();
+            for(uint32_t idx = 0; idx < size; idx++ ) {
+                defaultValues[idx] = defaultValuesVec[idx];
+                defaultValuesRed[idx]=toReduceMeasurement(defaultValues[idx]);
+            }
+
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1420,10 +1715,12 @@ ErrorCodes_t getProtocolAdimensional(
 }
 
 ErrorCodes_t getVoltageOffsetControls(
-        RangedMeasurement_t &voltageRange) {
+        RangedMeasurementReduced_t &voltageRangeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        RangedMeasurement_t voltageRange;
         ret = messageDispatcher->getVoltageOffsetControls(voltageRange);
+        voltageRangeRed=toReduceRangedMeasurement(voltageRange);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1431,11 +1728,16 @@ ErrorCodes_t getVoltageOffsetControls(
     return ret;
 }
 
-ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &durationRange) {
+ErrorCodes_t getInsertionPulseControls(RangedMeasurementReduced_t &voltageRangeRed,
+                                       RangedMeasurementReduced_t &durationRangeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        RangedMeasurement_t voltageRange;
+        RangedMeasurement_t durationRange;
         ret = messageDispatcher->getInsertionPulseControls(voltageRange, durationRange);
+
+        voltageRangeRed=toReduceRangedMeasurement(voltageRange);
+        durationRangeRed=toReduceRangedMeasurement(durationRange);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1456,11 +1758,17 @@ ErrorCodes_t hasReferencePulseControls(
     return ret;
 }
 
-ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &durationRange) {
+ErrorCodes_t getReferencePulseControls(RangedMeasurementReduced_t &voltageRangeRed,
+                                       RangedMeasurementReduced_t &durationRangeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+
+        RangedMeasurement_t voltageRange;
+        RangedMeasurement_t durationRange;
         ret = messageDispatcher->getReferencePulseControls(voltageRange, durationRange);
+        voltageRangeRed=toReduceRangedMeasurement(voltageRange);
+        durationRangeRed=toReduceRangedMeasurement(durationRange);
+
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1470,10 +1778,16 @@ ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange,
 
 
 ErrorCodes_t getEdhFormat(
-        string &format) {
+        char * format) {
     ErrorCodes_t ret;
+    string formatStr;
+    int formatOffset=0;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getEdhFormat(format);
+        ret = messageDispatcher->getEdhFormat(formatStr);
+        for(uint32_t charIdx=0; charIdx<formatStr.length();charIdx++){
+            format[formatOffset++]=formatStr[charIdx];
+        }
+
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1482,11 +1796,17 @@ ErrorCodes_t getEdhFormat(
 }
 
 ErrorCodes_t getRawDataFilterCutoffFrequency(
-        RangedMeasurement_t &range,
-        Measurement_t &defaultValue) {
+        RangedMeasurementReduced_t &rangeRed,
+        MeasurementReduced_t &defaultValueRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        RangedMeasurement_t range;
+        Measurement_t defaultValue;
+
         ret = messageDispatcher->getRawDataFilterCutoffFrequency(range, defaultValue);
+
+        rangeRed=toReduceRangedMeasurement(range);
+        defaultValueRed=toReduceMeasurement(defaultValue);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1507,10 +1827,10 @@ ErrorCodes_t getLedsNumber(
 }
 
 ErrorCodes_t getLedsColors(
-        vector <uint32_t> &ledsColors) {
+        uint32_t * ledsColors) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getLedsColors(ledsColors);
+        //        ret = messageDispatcher->getLedsColors(ledsColors);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1519,11 +1839,16 @@ ErrorCodes_t getLedsColors(
 }
 
 ErrorCodes_t getDacExtRange(
-        RangedMeasurement_t &range,
-        Measurement_t &defaultValue) {
+        RangedMeasurementReduced_t &rangeRed,
+        MeasurementReduced_t &defaultValueRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        RangedMeasurement_t range;
+        Measurement_t defaultValue;
+
         ret = messageDispatcher->getDacExtRange(range, defaultValue);
+        rangeRed=toReduceRangedMeasurement(range);
+        defaultValueRed=toReduceMeasurement(defaultValue);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1532,13 +1857,17 @@ ErrorCodes_t getDacExtRange(
 }
 
 ErrorCodes_t getFastReferencePulseProtocolWave1Range(
-        RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &timeRange,
+        RangedMeasurementReduced_t &voltageRangeRed,
+        RangedMeasurementReduced_t &timeRangeRed,
         uint16_t &nPulse) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFastReferencePulseProtocolWave1Range(voltageRange, timeRange, nPulse);
 
+        RangedMeasurement_t voltageRange;
+        RangedMeasurement_t timeRange;
+        ret = messageDispatcher->getFastReferencePulseProtocolWave1Range(voltageRange, timeRange, nPulse);
+        voltageRangeRed=toReduceRangedMeasurement(voltageRange);
+        timeRangeRed=toReduceRangedMeasurement(timeRange);
     } else {
         ret = ErrorDeviceNotConnected;
     }
@@ -1546,14 +1875,20 @@ ErrorCodes_t getFastReferencePulseProtocolWave1Range(
 }
 
 ErrorCodes_t getFastReferencePulseProtocolWave2Range(
-        RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &timeRange,
-        RangedMeasurement_t &durationRange,
+        RangedMeasurementReduced_t &voltageRangeRed,
+        RangedMeasurementReduced_t &timeRangeRed,
+        RangedMeasurementReduced_t &durationRangeRed,
         uint16_t &nPulse) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        RangedMeasurement_t voltageRange;
+        RangedMeasurement_t timeRange;
+        RangedMeasurement_t durationRange;
         ret = messageDispatcher->getFastReferencePulseProtocolWave2Range(voltageRange, timeRange, durationRange, nPulse);
 
+        voltageRangeRed=toReduceRangedMeasurement(voltageRange);
+        timeRangeRed=toReduceRangedMeasurement(timeRange);
+        durationRangeRed=toReduceRangedMeasurement(durationRange);
     } else {
         ret = ErrorDeviceNotConnected;
     }
@@ -1596,11 +1931,12 @@ ErrorCodes_t hasWasherControls() {
 }
 
 ErrorCodes_t getWasherSpeedRange(
-        RangedMeasurement_t &range) {
+        RangedMeasurementReduced_t &rangeRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        RangedMeasurement_t range;
         ret = messageDispatcher->getWasherSpeedRange(range);
-
+        rangeRed=toReduceRangedMeasurement(range);
     } else {
         ret = ErrorDeviceNotConnected;
     }
@@ -1621,11 +1957,15 @@ ErrorCodes_t getWasherStatus(
 }
 
 ErrorCodes_t getWasherPresetSpeeds(
-        vector <int8_t> &speedValue) {
+        int8_t * speedValue) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getWasherPresetSpeeds(speedValue);
-
+        vector<int8_t> speedValueVec;
+        ret = messageDispatcher->getWasherPresetSpeeds(speedValueVec);
+        int size=speedValueVec.size();
+        for(uint32_t idx = 0; idx < size; idx++ ) {
+            speedValue[idx] = speedValueVec[idx];
+        }
     } else {
         ret = ErrorDeviceNotConnected;
     }
@@ -1645,10 +1985,21 @@ ErrorCodes_t hasCFastCompensation() {
 }
 
 ErrorCodes_t getCFastCompensationOptions(
-        vector <string> &options) {
+        char *options) {
     ErrorCodes_t ret;
+    vector<string> optionsVec;
+    uint32_t optionOffset=0;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCFastCompensationOptions(options);
+        ret = messageDispatcher->getCFastCompensationOptions(optionsVec);
+
+        if(ret==Success){
+            int size= optionsVec.size();
+            for(uint32_t idx=0;idx<size;idx++){
+                for(uint32_t charIdx=0; charIdx<optionsVec[idx].length(); charIdx++){
+                    options[optionOffset++]=optionsVec[idx][charIdx];
+                }
+            }
+        }
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1669,18 +2020,25 @@ ErrorCodes_t getCFastCapacitanceControl(
 }
 
 ErrorCodes_t getVoltageOffsetCompensations(
-        vector <Measurement_t> &offsets) {
+        MeasurementReduced_t* offsetsRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->updateVoltageOffsetCompensations(offsets);
 
+        Measurement_t* offsets;
+        vector<Measurement_t> offsetsVec;
+        ret = messageDispatcher->updateVoltageOffsetCompensations(offsetsVec);
+
+        int size= offsetsVec.size();
+        for(uint32_t idx = 0; idx < size; idx++ ) {
+            offsets[idx] = offsetsVec[idx];
+            offsetsRed[idx]= toReduceMeasurement(offsets[idx]);
+        }
     } else {
         ret = ErrorDeviceNotConnected;
     }
     return ret;
 }
 
-} // namespace er4CommLib
 
 /*! Private functions */
 string getDeviceSerial(

@@ -21,7 +21,7 @@
 #ifndef ER4COMMLIB_ERRORCODES_H
 #define ER4COMMLIB_ERRORCODES_H
 
-namespace er4CommLib {
+
 
 /*! \enum ErrorGroups_t
  *  \brief Enumerated error groups.
@@ -38,7 +38,7 @@ typedef enum {
 /*! \enum ErrorCodes_t
  *  \brief Enumerated error codes.
  */
-typedef enum {
+typedef enum ErrorCodes{
     Success =                                                           0x00000000, /*!< Method returns with no errors. */
 
     ErrorNoDeviceFound =                ErrorGroupDeviceDetection +     0x00000001, /*!< Error returned when no devices are detected. */
@@ -77,6 +77,6 @@ typedef enum {
     ErrorUnknown =                                                      0xFFFFFFFF  /*!< Undefined error. */
 } ErrorCodes_t;
 
-} // er4CommLib
+
 
 #endif // ER4COMMLIB_ERRORCODES_H

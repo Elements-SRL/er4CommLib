@@ -43,8 +43,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                              //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                              //    3,  5,136 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC},                              //    3, 10,  4 : e16HC
-    {8, 9, 4, DeviceE16HC},                                                                 //    8,  9,  4 : REMI8 tuple to use e16HC
+    {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC_V01},                          //    3, 10,  4 : e16HC No voltage amplifier
+    {DeviceVersionE16, DeviceSubversionE16HC, 5, DeviceE16HC_V02},                          //    3, 10,  5 : e16HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                  //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                         //    6,  5,129 : testboard EL06b
     {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                         //    6,  6,129 : testboard EL06c
@@ -425,7 +425,7 @@ ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool a
     if (voltageRangeIdx < voltageRangesNum) {
         selectedVoltageRangeIdx = voltageRangeIdx;
         voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
-        voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
+        voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step*(double)voltageRangeDivider;
 
         this->setFerdParameters();
 
@@ -433,6 +433,25 @@ ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool a
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::setVoltageReferenceRange(uint16_t voltageRangeIdx, bool applyFlag) {
+    if (voltageRangeIdx < voltageReferenceRangesNum) {
+        selectedVoltageReferenceRangeIdx = voltageRangeIdx;
+        voltageReferenceRange = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
+
+        voltageReferenceRangeCoder->encode(selectedVoltageReferenceRangeIdx, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        this->manageVoltageReference();
 
         return Success;
 
@@ -1025,12 +1044,14 @@ ErrorCodes_t MessageDispatcher::applyReferencePulse(Measurement_t voltage, Measu
 
 ErrorCodes_t MessageDispatcher::overrideReferencePulse(bool flag, bool applyFlag) {
     if (overrideReferencePulseImplemented) {
-        if(flag){
+        if (flag) {
             overrideReferencePulseApplyCoder->encode(1, txStatus);
-        }else{
+
+        } else {
             overrideReferencePulseApplyCoder->encode(0, txStatus);
         }
-        if(applyFlag){
+
+        if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
 
@@ -1066,17 +1087,21 @@ ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFla
         return ErrorFeatureNotImplemented;
     }
 
-    voltage.convertValue(dacExtRange.prefix);
+    voltage.convertValue(voltageReferenceRange.prefix);
+    voltageReference = voltage;
     if (invertedDacExtFlag) {
-        dacExtCoder->encode(-voltage.value, txStatus);
+        dacExtCoders[selectedVoltageReferenceRangeIdx]->encode(-voltage.value, txStatus);
 
     } else {
-        dacExtCoder->encode(voltage.value, txStatus);
+        dacExtCoders[selectedVoltageReferenceRangeIdx]->encode(voltage.value, txStatus);
+        voltageReference.value = -voltageReference.value;
     }
 
     if (applyFlag) {
         this->stackOutgoingMessage(txStatus);
     }
+
+    this->manageVoltageReference();
 
     return Success;
 }
@@ -1441,6 +1466,16 @@ ErrorCodes_t MessageDispatcher::getVoltageRange(RangedMeasurement_t &voltageRang
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::getVoltageReferenceRanges(vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) {
+    if (!dacExtControllableFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    ranges = voltageReferenceRangesArray;
+    defaultOption = defaultVoltageReferenceRangeIdx;
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::getSamplingRates(vector <Measurement_t> &samplingRates, uint16_t &defaultOption) {
     samplingRates = samplingRatesArray;
     defaultOption = defaultSamplingRateIdx;
@@ -1667,16 +1702,6 @@ ErrorCodes_t MessageDispatcher::getLedsNumber(uint16_t &ledsNumber) {
 
 ErrorCodes_t MessageDispatcher::getLedsColors(vector <uint32_t> &ledsColors) {
     ledsColors = ledsColorsArray;
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::getDacExtRange(RangedMeasurement_t &range, Measurement_t &defaultValue) {
-    if (!dacExtControllableFlag) {
-        return ErrorFeatureNotImplemented;
-    }
-
-    range = dacExtRange;
-    defaultValue = dacExtDefault;
     return Success;
 }
 
@@ -2245,7 +2270,6 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
         bufferReadOffset = (bufferReadOffset+1)&FTD_RX_BUFFER_MASK;
 
         infoStructPtr[infoIndex] = infoValue;
-        //        printf("%d %d ", infoIndex, infoValue);
 
         /*! Get current and voltage data */
         for (int packetIdx = 0; packetIdx < packetsPerFrame; packetIdx++) {
@@ -2259,10 +2283,8 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                 }
 
                 if (channelIdx < voltageChannelsNum) {
+                    value = (value+voltageReferenceOffset)/voltageRangeDivider;
                     increaseRangeFlag = false;
-                    //                    if (packetIdx == 0) {
-                    //                        printf("%d\n", value);
-                    //                    }
 
                 } else {
                     if ((value > UINT16_CURRENT_RANGE_INCREASE_MINIMUM_THRESHOLD) && (value < UINT16_CURRENT_RANGE_INCREASE_MAXIMUM_THRESHOLD)) {
@@ -2427,6 +2449,11 @@ double MessageDispatcher::applyFilter(uint16_t channelIdx, double x) {
 
     iirY[channelIdx][iirOff] = y;
     return y;
+}
+
+void MessageDispatcher::manageVoltageReference() {
+    voltageReference.convertValue(voltageRange.prefix);
+    voltageReferenceOffset = (int16_t)voltageReference.value/voltageResolution;
 }
 
 MessageDispatcherLegacyEdr3::MessageDispatcherLegacyEdr3(string deviceId) :

@@ -129,6 +129,7 @@ public:
     ErrorCodes_t convertVoltageValue(uint16_t uintValue, double &fltValue);
     ErrorCodes_t convertCurrentValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue);
     ErrorCodes_t setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag = true);
+    ErrorCodes_t setVoltageReferenceRange(uint16_t voltageRangeIdx, bool applyFlag = true);
     virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag = true);
     virtual ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag = true);
     virtual ErrorCodes_t setOversamplingRatio(uint16_t oversamplingRatioIdx, bool applyFlag = true);
@@ -213,6 +214,7 @@ public:
 
     ErrorCodes_t getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption);
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
+    ErrorCodes_t getVoltageReferenceRanges(vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption);
 
     ErrorCodes_t getSamplingRates(vector <Measurement_t> &samplingRates, uint16_t &defaultOption);
     ErrorCodes_t getSamplingRate(Measurement_t &samplingRate);
@@ -248,7 +250,6 @@ public:
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
     ErrorCodes_t getLedsNumber(uint16_t &ledsNumber);
     ErrorCodes_t getLedsColors(vector <uint32_t> &ledsColors);
-    ErrorCodes_t getDacExtRange(RangedMeasurement_t &range, Measurement_t &defaultValue);
     ErrorCodes_t getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse);
     ErrorCodes_t getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse);
 
@@ -318,6 +319,7 @@ protected:
     void initializeRawDataFilterVariables();
     void computeFilterCoefficients();
     double applyFilter(uint16_t channelIdx, double x);
+    void manageVoltageReference();
 
     /****************\
      *  Parameters  *
@@ -350,6 +352,13 @@ protected:
     vector <RangedMeasurement_t> voltageRangesArray;
     uint16_t defaultVoltageRangeIdx = 0;
     BoolRandomArrayCoder * voltageRangeCoder;
+
+    uint32_t voltageReferenceRangesNum = 0;
+    vector <RangedMeasurement_t> voltageReferenceRangesArray;
+    uint16_t defaultVoltageReferenceRangeIdx = 0;
+    BoolRandomArrayCoder * voltageReferenceRangeCoder;
+
+    uint16_t voltageRangeDivider = 1; /*! Divides the voltage data received from the amplifier */
 
     uint32_t samplingRatesNum;
     vector <Measurement_t> samplingRatesArray;
@@ -510,9 +519,10 @@ protected:
 
     bool dacExtControllableFlag = false; /*! This is true if the voltage applied on the external DAC is directly controllable by the user, not through protocols */
     bool invertedDacExtFlag = false; /*! Negate the DAC value before applying it */
-    RangedMeasurement_t dacExtRange;
-    DoubleOffsetBinaryCoder * dacExtCoder;
+    vector <DoubleOffsetBinaryCoder *> dacExtCoders;
     Measurement_t dacExtDefault;
+    Measurement_t voltageReference;
+    int16_t voltageReferenceOffset = 0; /*! Value added to returned voltage data to accoutn for the voltage applied on the reference */
 
     /*! Device specific parameters */
 
@@ -597,9 +607,11 @@ protected:
     Measurement_t voltageOffsetCompensationGain = {1.0, UnitPfxNone, "V"};
 
     uint16_t selectedVoltageRangeIdx = 0;
+    uint16_t selectedVoltageReferenceRangeIdx = 0;
     vector <uint16_t> selectedCurrentRangesIdx;
     bool independentCurrentRangesFlag = false;
     RangedMeasurement_t voltageRange;
+    RangedMeasurement_t voltageReferenceRange;
     vector <RangedMeasurement_t> currentRanges;
 
     uint16_t selectedSamplingRateIdx = 0;

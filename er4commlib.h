@@ -376,6 +376,15 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageRange(
         ER4CL_ARGIN uint16_t voltageRangeIdx);
 
+/*! \brief Set the voltage range for the reference.
+ *
+ * \param voltageRangeIdx [in] Index of the voltage range to be set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setVoltageReferenceRange(
+        ER4CL_ARGIN uint16_t voltageRangeIdx);
+
 /*! \brief Set the sampling rate.
  *
  * \param samplingRateIdx [in] Index of the sampling rate to be set.
@@ -810,6 +819,17 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRange(
         ER4CL_ARGOUT RangedMeasurement_t &voltageRange);
 
+/*! \brief Get the voltage ranges available for the reference.
+ *
+ * \param voltageRanges [out] Array containing all the available voltage ranges for the reference.
+ * \param defaultValue [out] Default option.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageReferenceRanges(
+        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
+        ER4CL_ARGOUT uint16_t &defaultOption);
+
 /*! \brief Get the sampling rates available for the device.
  *
  * \param samplingRates [out] Array containing all the available sampling rates.
@@ -1111,17 +1131,6 @@ ErrorCodes_t getLedsNumber(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getLedsColors(
         ER4CL_ARGOUT std::vector <uint32_t> &ledsColors);
-
-/*! \brief Get applicable voltage range on the external DAC.
- *
- * \param value [out] Applicable voltage range on the external DAC.
- * \param defaultValue [out] Default value.
- * \return Success if external DAC control is available.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getDacExtRange(
-        ER4CL_ARGOUT RangedMeasurement_t &range,
-        ER4CL_ARGOUT Measurement_t &defaultValue);
 
 /*! \brief Get the range currently applied and the number of pulse.
  *

@@ -160,6 +160,11 @@ private:
         VoltageRangesNum
     };
 
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRangesNum
+    };
+
     enum ProtocolVoltageRanges {
         ProtocolVoltageRange700mV,
         ProtocolVoltageRangesNum

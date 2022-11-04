@@ -45,6 +45,11 @@ protected:
         VoltageRangesNum
     };
 
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRangesNum
+    };
+
     enum OveramplingRatios {
         OversamplingRatioX1,
         OversamplingRatiosNum

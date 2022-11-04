@@ -211,8 +211,12 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e16ETH_LegacyEdr3_V01(deviceId);
             break;
 
-        case DeviceE16HC:
-            messageDispatcher = new MessageDispatcher_e16HC(deviceId);
+        case DeviceE16HC_V01:
+            messageDispatcher = new MessageDispatcher_e16HC_V01(deviceId);
+            break;
+
+        case DeviceE16HC_V02:
+            messageDispatcher = new MessageDispatcher_e16HC_V02(deviceId);
             break;
 
         case DeviceDlp:
@@ -618,6 +622,18 @@ ErrorCodes_t setVoltageRange(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->setVoltageRange(voltageRangeIdx);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setVoltageReferenceRange(
+        uint16_t voltageRangeIdx) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setVoltageReferenceRange(voltageRangeIdx);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1160,6 +1176,19 @@ ErrorCodes_t getVoltageRange(
     return ret;
 }
 
+ErrorCodes_t getVoltageReferenceRanges(
+        vector <RangedMeasurement_t> &ranges,
+        uint16_t &defaultOption) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getVoltageReferenceRanges(ranges, defaultOption);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t getSamplingRates(
         vector <Measurement_t> &samplingRates,
         uint16_t &defaultOption) {
@@ -1511,19 +1540,6 @@ ErrorCodes_t getLedsColors(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getLedsColors(ledsColors);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t getDacExtRange(
-        RangedMeasurement_t &range,
-        Measurement_t &defaultValue) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getDacExtRange(range, defaultValue);
 
     } else {
         ret = ErrorDeviceNotConnected;

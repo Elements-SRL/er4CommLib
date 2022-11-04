@@ -638,7 +638,6 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
     currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
 
-
     /*! Voltage range */
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;

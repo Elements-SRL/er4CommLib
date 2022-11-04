@@ -704,7 +704,6 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
     currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
     currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
 
-
     /*! Voltage range */
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
@@ -2275,14 +2274,12 @@ MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_Lega
     currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
     currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
 
-
     /*! Voltage range */
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
-
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;

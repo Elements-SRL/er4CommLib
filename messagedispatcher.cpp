@@ -1457,12 +1457,16 @@ ErrorCodes_t MessageDispatcher::hasIndependentCurrentRanges() {
 
 ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption) {
     voltageRanges = voltageRangesArray;
+    for (uint16_t idx = 0; idx < voltageRanges.size(); idx++) {
+        voltageRanges[idx].step *= (double)voltageRangeDivider;
+    }
     defaultOption = defaultVoltageRangeIdx;
     return Success;
 }
 
 ErrorCodes_t MessageDispatcher::getVoltageRange(RangedMeasurement_t &voltageRange) {
     voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
+    voltageRange.step *= (double)voltageRangeDivider;
     return Success;
 }
 
@@ -2283,7 +2287,8 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                 }
 
                 if (channelIdx < voltageChannelsNum) {
-                    value = (value+voltageReferenceOffset)/voltageRangeDivider;
+                    /*! Value is an uint, so before dividing cast to int, so that negative numbers are divided correctly */
+                    value = (uint16_t)(((int16_t)value)/((int16_t)voltageRangeDivider)+voltageReferenceOffset);
                     increaseRangeFlag = false;
 
                 } else {
@@ -2453,7 +2458,7 @@ double MessageDispatcher::applyFilter(uint16_t channelIdx, double x) {
 
 void MessageDispatcher::manageVoltageReference() {
     voltageReference.convertValue(voltageRange.prefix);
-    voltageReferenceOffset = (int16_t)voltageReference.value/voltageResolution;
+    voltageReferenceOffset = (int16_t)(voltageReference.value/voltageResolution);
 }
 
 MessageDispatcherLegacyEdr3::MessageDispatcherLegacyEdr3(string deviceId) :

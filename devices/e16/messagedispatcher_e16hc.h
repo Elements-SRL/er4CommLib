@@ -113,6 +113,7 @@ protected:
     void initializeDevice() override;
     bool checkProtocolValidity(string &message) override;
     ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) override;
+    void updateVoltageReferenceOffsetCalibration();
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
@@ -126,6 +127,8 @@ private:
         VoltageReferenceRange15V,
         VoltageReferenceRangesNum
     };
+
+    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"}; /*! \todo FCON aggiungere metodo per leggere il valore dalla eeprom FTDI */
 };
 
 class MessageDispatcher_e16HC_V01 : public MessageDispatcher_e16HC_V02 {

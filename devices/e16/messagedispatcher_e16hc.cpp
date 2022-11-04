@@ -20,6 +20,7 @@
 
 MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
     MessageDispatcher(id) {
+
     /************************\
      * Communication format *
     \************************/
@@ -78,6 +79,7 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
+    voltageRangeDivider = 8;
 
     /*! Voltage reference ranges */
     dacExtControllableFlag = true;
@@ -957,19 +959,20 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
     txStatus[txStatusIdx++] = 0x00; // Vfinal
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;// VInit
+    txStatus[txStatusIdx++] = 0x00; // VInit
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00;// VDACext
+    txStatus[txStatusIdx++] = 0x00; // VDACext
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e16HC_V02::~MessageDispatcher_e16HC_V02(){
+MessageDispatcher_e16HC_V02::~MessageDispatcher_e16HC_V02() {
 
 }
 
 void MessageDispatcher_e16HC_V02::initializeDevice() {
+    this->updateVoltageReferenceOffsetCalibration();
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -1200,6 +1203,35 @@ ErrorCodes_t MessageDispatcher_e16HC_V02::updateVoltageOffsetCompensations(vecto
         offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
     }
     return Success;
+}
+
+void MessageDispatcher_e16HC_V02::updateVoltageReferenceOffsetCalibration() {
+    /*! Voltage DAC Ext */
+    DoubleCoder::CoderConfig_t doubleConfig;
+    doubleConfig.initialByte = 86;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    dacExtCoders.resize(voltageReferenceRangesNum);
+
+    int16_t voltageReferenceOffsetCalibrationInt = (int16_t)ftdiEeprom->getVcOffset();
+    voltageReferenceOffsetCalibration.value = voltageReferenceRangesArray[VoltageReferenceRange2V].step*(double)voltageReferenceOffsetCalibrationInt;
+    voltageReferenceOffsetCalibration.prefix = voltageReferenceRangesArray[VoltageReferenceRange2V].prefix;
+    voltageReferenceOffsetCalibration.convertValue(UnitPfxMilli);
+    double vcm_mV = 1650.0+voltageReferenceOffsetCalibration.value;
+    double maxDacExtVoltage = 4096.0+voltageReferenceOffsetCalibration.value;
+    double voltageAmplifierGain = voltageReferenceRangesArray[VoltageReferenceRange15V].step/voltageReferenceRangesArray[VoltageReferenceRange2V].step;
+
+    unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
+    doubleConfig.resolution = voltageReferenceRangesArray[voltageReferenceIdx].step;
+    doubleConfig.minValue = -vcm_mV;
+    doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
+    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
+
+    voltageReferenceIdx = VoltageReferenceRange15V;
+    doubleConfig.resolution = voltageReferenceRangesArray[voltageReferenceIdx].step;
+    doubleConfig.minValue = -vcm_mV*voltageAmplifierGain;
+    doubleConfig.maxValue = (maxDacExtVoltage-vcm_mV)*voltageAmplifierGain-doubleConfig.resolution;
+    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
 }
 
 MessageDispatcher_e16HC_V01::MessageDispatcher_e16HC_V01(string id) :

@@ -358,7 +358,7 @@ protected:
     uint16_t defaultVoltageReferenceRangeIdx = 0;
     BoolRandomArrayCoder * voltageReferenceRangeCoder;
 
-    uint16_t voltageRangeDivider = 1; /*! Divides the voltage data received from the amplifier */
+    int16_t voltageRangeDivider = 1; /*! Divides the voltage data received from the amplifier */
 
     uint32_t samplingRatesNum;
     vector <Measurement_t> samplingRatesArray;

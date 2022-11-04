@@ -2288,7 +2288,7 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
 
                 if (channelIdx < voltageChannelsNum) {
                     /*! Value is an uint, so before dividing cast to int, so that negative numbers are divided correctly */
-                    value = (uint16_t)(((int16_t)value)/((int16_t)voltageRangeDivider)+voltageReferenceOffset);
+                    value = (uint16_t)(((int16_t)value)/voltageRangeDivider+voltageReferenceOffset);
                     increaseRangeFlag = false;
 
                 } else {
@@ -2493,6 +2493,7 @@ void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
 
                 if (channelIdx < voltageChannelsNum) {
                     value -= rawVoltageZero; /*! Offset binary conversion to 2's complement */
+                    value = (uint16_t)(((int16_t)value)/voltageRangeDivider+voltageReferenceOffset);
 
                     increaseRangeFlag = false;
 

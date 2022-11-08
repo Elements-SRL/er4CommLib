@@ -58,11 +58,11 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
     currentRangesArray[CurrentRange200pA].step = currentRangesArray[CurrentRange200pA].max/SHORT_MAX;
     currentRangesArray[CurrentRange200pA].prefix = UnitPfxPico;
     currentRangesArray[CurrentRange200pA].unit = "A";
-    currentRangesArray[CurrentRange200nA].min = -200.0;
-    currentRangesArray[CurrentRange200nA].max = 200.0;
-    currentRangesArray[CurrentRange200nA].step = currentRangesArray[CurrentRange200nA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange200nA].prefix = UnitPfxNano;
-    currentRangesArray[CurrentRange200nA].unit = "A";
+    currentRangesArray[CurrentRange20nA].min = -20.0;
+    currentRangesArray[CurrentRange20nA].max = 20.0;
+    currentRangesArray[CurrentRange20nA].step = currentRangesArray[CurrentRange20nA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange20nA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange20nA].unit = "A";
     defaultCurrentRangesIdx.resize(currentChannelsNum);
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
         defaultCurrentRangesIdx[channelIdx] = CurrentRange200pA;
@@ -159,19 +159,19 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
     oversamplingRatiosArray[OversamplingRatioX1] = 1;
 
     /*! Voltage filters */
-    dacIntFilterAvailable = false;
+    dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].value = 1.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].prefix = UnitPfxNone;
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].unit = "kHz";
+    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
+    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
 
-    dacExtFilterAvailable = true;
+    dacExtFilterAvailable = false;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
     voltageReferenceLpfOptions.resize(voltageReferenceLpfOptionsNum);
-    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].value = 3.0;
-    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].prefix = UnitPfxNone;
-    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].unit = "Hz";
-    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
-    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
-    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
 
     /*! Front end denoiser */
     ferdImplementedFlag = true;
@@ -206,7 +206,6 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
-
 
     /*! Time ranges */
     protocolTimeRangesArray.resize(ProtocolTimeRangesNum);
@@ -595,9 +594,7 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
     currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
     currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 0;
@@ -676,7 +673,6 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVInit].step;
     protocolVoltageCoders[ProtocolVInit] = new DoubleSignAbsCoder(doubleConfig);
 
-
     /*! Protocol times */
     protocolTimeCoders.resize(ProtocolTimesNum);
     doubleConfig.initialByte = 15;
@@ -743,14 +739,6 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
     dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
     dacIntFilterCoder->addMapItem(0); /*!< 10kHz -> 0b0 */
 
-    /*! External DAC filter */
-    boolConfig.initialByte = 0;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 1;
-    dacExtFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacExtFilterCoder->addMapItem(0); /*!< 3Hz    -> 0b0 */
-    dacExtFilterCoder->addMapItem(1); /*!< 180kHz -> 0b1 */
-
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
 
@@ -788,7 +776,7 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
     txStatus[txStatusIdx++] = 0x00; // Vhold
-    txStatus[txStatusIdx++] = 0x40;
+    txStatus[txStatusIdx++] = 0x04;
     txStatus[txStatusIdx++] = 0x00; //Voff
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VPulse
@@ -825,7 +813,6 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VInit
     txStatus[txStatusIdx++] = 0x00;
-
 }
 
 MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::~MessageDispatcher_e1Light_El03f_LegacyEdr3_V01() {
@@ -1058,12 +1045,7 @@ bool MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::checkProtocolValidity(strin
 void MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
-    if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {
-        rangeCoeff = 4;
-
-    } else {
-        rangeCoeff = 1;
-    }
+    rangeCoeff = 1;
 
     if (selectedSamplingRateIdx < SamplingRate20kHz) {
         /*! sampling rate too low for reset */
@@ -1088,19 +1070,4 @@ void MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::setFerdParameters() {
     ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
 
     MessageDispatcher::setFerdParameters();
-}
-
-MessageDispatcher_e1Light_El03c_LegacyEdr3_V02::MessageDispatcher_e1Light_El03c_LegacyEdr3_V02(string id) :
-    MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(id){
-
-    /*! Input controls */
-    BoolCoder::CoderConfig_t boolConfig;
-
-    /*! Internal DAC filter */
-    boolConfig.initialByte = 0;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz -> 0b0 */
 }

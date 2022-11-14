@@ -525,7 +525,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     \***************/
     calConf = new CalibrationConfiguration_t;
     calConf->calibrationVoltageRangesNum = 1;
-    calConf->calibrationCurrentRangesNum = 2;
+    calConf->calibrationCurrentRangesNum = 4;
     calConf->calibrationSamplingRatesNum = SamplingRatesNum;
     calConf->calibrationSamplingRates.resize(calConf->calibrationSamplingRatesNum);
     calConf->calibrationSamplingRates[0] = SamplingRate1_25kHz;
@@ -534,6 +534,20 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     calConf->calibrationSamplingRates[3] = SamplingRate20kHz;
     calConf->calibrationSamplingRates[4] = SamplingRate100kHz;
     calConf->calibrationSamplingRates[5] = SamplingRate200kHz;
+
+    calConf->iGainRanges.resize(calConf->calibrationVoltageRangesNum);
+    calConf->iGainRanges[VoltageRange500mV].min = -100.0;
+    calConf->iGainRanges[VoltageRange500mV].max = 100.0;
+    calConf->iGainRanges[VoltageRange500mV].step = 50.0;
+    calConf->iGainRanges[VoltageRange500mV].prefix = UnitPfxMilli;
+    calConf->iGainRanges[VoltageRange500mV].unit = "V";
+
+    calConf->iOffsetRanges.resize(calConf->calibrationVoltageRangesNum);
+    calConf->iOffsetRanges[VoltageRange500mV].min = 0.0;
+    calConf->iOffsetRanges[VoltageRange500mV].max = 0.0;
+    calConf->iOffsetRanges[VoltageRange500mV].step = 1.0;
+    calConf->iOffsetRanges[VoltageRange500mV].prefix = UnitPfxMilli;
+    calConf->iOffsetRanges[VoltageRange500mV].unit = "V";
 
     calConf->vGainRdac = false;
     calConf->vGainRanges.resize(calConf->calibrationVoltageRangesNum);
@@ -550,20 +564,6 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     calConf->vOffsetRanges[VoltageRange500mV].prefix = UnitPfxMilli;
     calConf->vOffsetRanges[VoltageRange500mV].unit = "V";
 
-    calConf->iGainRanges.resize(calConf->calibrationVoltageRangesNum);
-    calConf->iGainRanges[VoltageRange500mV].min = -100.0;
-    calConf->iGainRanges[VoltageRange500mV].max = 100.0;
-    calConf->iGainRanges[VoltageRange500mV].step = 50.0;
-    calConf->iGainRanges[VoltageRange500mV].prefix = UnitPfxMilli;
-    calConf->iGainRanges[VoltageRange500mV].unit = "V";
-
-    calConf->iOffsetRanges.resize(calConf->calibrationVoltageRangesNum);
-    calConf->iOffsetRanges[VoltageRange500mV].min = 0.0;
-    calConf->iOffsetRanges[VoltageRange500mV].max = 0.0;
-    calConf->iOffsetRanges[VoltageRange500mV].step = 1.0;
-    calConf->iOffsetRanges[VoltageRange500mV].prefix = UnitPfxMilli;
-    calConf->iOffsetRanges[VoltageRange500mV].unit = "V";
-
     calConf->vGainResistances.resize(calConf->calibrationVoltageRangesNum);
     calConf->vGainResistances[VoltageRange500mV].value = 1.0;
     calConf->vGainResistances[VoltageRange500mV].prefix = UnitPfxPeta;
@@ -575,13 +575,13 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     calConf->vOffsetResistances[VoltageRange500mV].unit = "Ohm";
 
     calConf->iGainResistances.resize(calConf->calibrationCurrentRangesNum);
-    calConf->iGainResistances[CurrentRange200pA].value = 50.0;
-    calConf->iGainResistances[CurrentRange200pA].prefix = UnitPfxKilo;
+    calConf->iGainResistances[CurrentRange200pA].value = 1.0;
+    calConf->iGainResistances[CurrentRange200pA].prefix = UnitPfxGiga;
     calConf->iGainResistances[CurrentRange200pA].unit = "Ohm";
-    calConf->iGainResistances[CurrentRange2nA].value = 1.0;
+    calConf->iGainResistances[CurrentRange2nA].value = 100.0;
     calConf->iGainResistances[CurrentRange2nA].prefix = UnitPfxMega;
     calConf->iGainResistances[CurrentRange2nA].unit = "Ohm";
-    calConf->iGainResistances[CurrentRange20nA].value = 1.0;
+    calConf->iGainResistances[CurrentRange20nA].value = 10.0;
     calConf->iGainResistances[CurrentRange20nA].prefix = UnitPfxMega;
     calConf->iGainResistances[CurrentRange20nA].unit = "Ohm";
     calConf->iGainResistances[CurrentRange200nA].value = 1.0;
@@ -608,20 +608,19 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
         for (uint32_t rangeIdx = 0; rangeIdx < calConf->calibrationVoltageRangesNum; rangeIdx++) {
             uint32_t idx = rangeIdx+calConf->calibrationVoltageRangesNum*channelIdx;
             calConf->vGains[idx].address = 16*idx+0x29;
-            calConf->vGains[idx].bitSize = 18;
-            calConf->vGains[idx].byteSize = 3;
+            calConf->vGains[idx].bitSize = 12;
+            calConf->vGains[idx].byteSize = 2;
             calConf->vGains[idx].signedFlag = false;
             calConf->vGains[idx].lsb = 1.0/131072.0;
 
             calConf->vOffsets[idx].address = 16*idx+0x2D;
-            calConf->vOffsets[idx].bitSize = 24;
-            calConf->vOffsets[idx].byteSize = 3;
+            calConf->vOffsets[idx].bitSize = 12;
+            calConf->vOffsets[idx].byteSize = 2;
             calConf->vOffsets[idx].signedFlag = true;
             calConf->vOffsets[idx].lsb = voltageRangesArray[rangeIdx].step*voltageRangesArray[rangeIdx].multiplier();
             calConf->vOffsets[idx].lsb /= 256.0; /*! The processing in the FPGA is performed with 8 bits more */
         }
     }
-
     calConf->iGains.resize(currentChannelsNum*calConf->calibrationSamplingRatesNum*calConf->calibrationCurrentRangesNum);
     calConf->iOffsets.resize(currentChannelsNum*calConf->calibrationSamplingRatesNum*calConf->calibrationCurrentRangesNum);
     for (uint32_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
@@ -648,6 +647,8 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     calConf->dacExtOffset.byteSize = 2;
     calConf->dacExtOffset.signedFlag = false;
     calConf->dacExtOffset.lsb = dacExtRange.step*dacExtRange.multiplier();
+
+    calConf->characterizationCsvColumns = 0;
 
 
     /**************\
@@ -1765,9 +1766,142 @@ MessageDispatcher_e4e_El03c_LegacyEdr3_V00::MessageDispatcher_e4e_El03c_LegacyEd
     insertionPulseDurationRange.prefix = UnitPfxMilli;
     insertionPulseDurationRange.unit = "s";
 
+    /***************\
+     * Calibration *
+    \***************/
+    calConf = new CalibrationConfiguration_t;
+    calConf->calibrationVoltageRangesNum = 1;
+    calConf->calibrationCurrentRangesNum = 4;
+    calConf->calibrationSamplingRatesNum = SamplingRatesNum;
+    calConf->calibrationSamplingRates.resize(calConf->calibrationSamplingRatesNum);
+    calConf->calibrationSamplingRates[0] = SamplingRate1_25kHz;
+    calConf->calibrationSamplingRates[1] = SamplingRate5kHz;
+    calConf->calibrationSamplingRates[2] = SamplingRate10kHz;
+    calConf->calibrationSamplingRates[3] = SamplingRate20kHz;
+    calConf->calibrationSamplingRates[4] = SamplingRate50kHz;
+    calConf->calibrationSamplingRates[5] = SamplingRate100kHz;
+    calConf->calibrationSamplingRates[6] = SamplingRate200kHz;
+
+    calConf->iGainRanges.resize(calConf->calibrationVoltageRangesNum);
+    calConf->iGainRanges[VoltageRange500mV].min = -100.0;
+    calConf->iGainRanges[VoltageRange500mV].max = 100.0;
+    calConf->iGainRanges[VoltageRange500mV].step = 50.0;
+    calConf->iGainRanges[VoltageRange500mV].prefix = UnitPfxMilli;
+    calConf->iGainRanges[VoltageRange500mV].unit = "V";
+
+    calConf->iOffsetRanges.resize(calConf->calibrationVoltageRangesNum);
+    calConf->iOffsetRanges[VoltageRange500mV].min = 0.0;
+    calConf->iOffsetRanges[VoltageRange500mV].max = 0.0;
+    calConf->iOffsetRanges[VoltageRange500mV].step = 1.0;
+    calConf->iOffsetRanges[VoltageRange500mV].prefix = UnitPfxMilli;
+    calConf->iOffsetRanges[VoltageRange500mV].unit = "V";
+
+    calConf->vGainRdac = false;
+    calConf->vGainRanges.resize(calConf->calibrationVoltageRangesNum);
+    calConf->vGainRanges[VoltageRange500mV].min = -400.0;
+    calConf->vGainRanges[VoltageRange500mV].max = 400.0;
+    calConf->vGainRanges[VoltageRange500mV].step = 200.0;
+    calConf->vGainRanges[VoltageRange500mV].prefix = UnitPfxMilli;
+    calConf->vGainRanges[VoltageRange500mV].unit = "V";
+
+    calConf->vOffsetRanges.resize(calConf->calibrationVoltageRangesNum);
+    calConf->vOffsetRanges[VoltageRange500mV].min = 0.0;
+    calConf->vOffsetRanges[VoltageRange500mV].max = 0.0;
+    calConf->vOffsetRanges[VoltageRange500mV].step = 1.0;
+    calConf->vOffsetRanges[VoltageRange500mV].prefix = UnitPfxMilli;
+    calConf->vOffsetRanges[VoltageRange500mV].unit = "V";
+
+    calConf->vGainResistances.resize(calConf->calibrationVoltageRangesNum);
+    calConf->vGainResistances[VoltageRange500mV].value = 1.0;
+    calConf->vGainResistances[VoltageRange500mV].prefix = UnitPfxPeta;
+    calConf->vGainResistances[VoltageRange500mV].unit = "Ohm";
+
+    calConf->vOffsetResistances.resize(calConf->calibrationVoltageRangesNum);
+    calConf->vOffsetResistances[VoltageRange500mV].value = 1.0;
+    calConf->vOffsetResistances[VoltageRange500mV].prefix = UnitPfxMega;
+    calConf->vOffsetResistances[VoltageRange500mV].unit = "Ohm";
+
+    calConf->iGainResistances.resize(calConf->calibrationCurrentRangesNum);
+    calConf->iGainResistances[CurrentRange200pA].value = 1;
+    calConf->iGainResistances[CurrentRange200pA].prefix = UnitPfxGiga;
+    calConf->iGainResistances[CurrentRange200pA].unit = "Ohm";
+    calConf->iGainResistances[CurrentRange2nA].value = 100.0;
+    calConf->iGainResistances[CurrentRange2nA].prefix = UnitPfxMega;
+    calConf->iGainResistances[CurrentRange2nA].unit = "Ohm";
+    calConf->iGainResistances[CurrentRange20nA].value = 10.0;
+    calConf->iGainResistances[CurrentRange20nA].prefix = UnitPfxMega;
+    calConf->iGainResistances[CurrentRange20nA].unit = "Ohm";
+    calConf->iGainResistances[CurrentRange200nA].value = 1.0;
+    calConf->iGainResistances[CurrentRange200nA].prefix = UnitPfxMega;
+    calConf->iGainResistances[CurrentRange200nA].unit = "Ohm";
+
+    calConf->iOffsetResistances.resize(calConf->calibrationCurrentRangesNum);
+    calConf->iOffsetResistances[CurrentRange200pA].value = 1.0;
+    calConf->iOffsetResistances[CurrentRange200pA].prefix = UnitPfxPeta;
+    calConf->iOffsetResistances[CurrentRange200pA].unit = "Ohm";
+    calConf->iOffsetResistances[CurrentRange2nA].value = 1.0;
+    calConf->iOffsetResistances[CurrentRange2nA].prefix = UnitPfxMega;
+    calConf->iOffsetResistances[CurrentRange2nA].unit = "Ohm";
+    calConf->iOffsetResistances[CurrentRange20nA].value = 1.0;
+    calConf->iOffsetResistances[CurrentRange20nA].prefix = UnitPfxMega;
+    calConf->iOffsetResistances[CurrentRange20nA].unit = "Ohm";
+    calConf->iOffsetResistances[CurrentRange200nA].value = 1.0;
+    calConf->iOffsetResistances[CurrentRange200nA].prefix = UnitPfxPeta;
+    calConf->iOffsetResistances[CurrentRange200nA].unit = "Ohm";
+
+    calConf->vGains.resize(voltageChannelsNum*calConf->calibrationVoltageRangesNum);
+    calConf->vOffsets.resize(voltageChannelsNum*calConf->calibrationVoltageRangesNum);
+    for (uint32_t channelIdx = 0; channelIdx < voltageChannelsNum; channelIdx++) {
+        for (uint32_t rangeIdx = 0; rangeIdx < calConf->calibrationVoltageRangesNum; rangeIdx++) {
+            uint32_t idx = rangeIdx+calConf->calibrationVoltageRangesNum*channelIdx;
+            calConf->vGains[idx].address = 16*idx+0x29;
+            calConf->vGains[idx].bitSize = 12;
+            calConf->vGains[idx].byteSize = 2;
+            calConf->vGains[idx].signedFlag = false;
+            calConf->vGains[idx].lsb = 1.0/131072.0;
+
+            calConf->vOffsets[idx].address = 16*idx+0x2D;
+            calConf->vOffsets[idx].bitSize = 12;
+            calConf->vOffsets[idx].byteSize = 2;
+            calConf->vOffsets[idx].signedFlag = true;
+            calConf->vOffsets[idx].lsb = voltageRangesArray[rangeIdx].step*voltageRangesArray[rangeIdx].multiplier();
+            calConf->vOffsets[idx].lsb /= 256.0; /*! The processing in the FPGA is performed with 8 bits more */
+        }
+    }
+
+    calConf->iGains.resize(currentChannelsNum*calConf->calibrationSamplingRatesNum*calConf->calibrationCurrentRangesNum);
+    calConf->iOffsets.resize(currentChannelsNum*calConf->calibrationSamplingRatesNum*calConf->calibrationCurrentRangesNum);
+    for (uint32_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        for (uint32_t srIdx = 0; srIdx < calConf->calibrationSamplingRatesNum; srIdx++) {
+            for (uint32_t rangeIdx = 0; rangeIdx < calConf->calibrationCurrentRangesNum; rangeIdx++) {
+                uint32_t idx = rangeIdx+calConf->calibrationCurrentRangesNum*(srIdx+calConf->calibrationSamplingRatesNum*channelIdx);
+                calConf->iGains[idx].address = 4*idx+0x00;
+                calConf->iGains[idx].bitSize = 16;
+                calConf->iGains[idx].byteSize = 2;
+                calConf->iGains[idx].signedFlag = false;
+                calConf->iGains[idx].lsb = 1.0/1024.0;
+
+                calConf->iOffsets[idx].address = 4*idx+0x02;
+                calConf->iOffsets[idx].bitSize = 16;
+                calConf->iOffsets[idx].byteSize = 2;
+                calConf->iOffsets[idx].signedFlag = true;
+                calConf->iOffsets[idx].lsb = currentRangesArray[rangeIdx].step*currentRangesArray[rangeIdx].multiplier();
+            }
+        }
+    }
+
+    calConf->dacExtOffset.address = 0x80;
+    calConf->dacExtOffset.bitSize = 16;
+    calConf->dacExtOffset.byteSize = 2;
+    calConf->dacExtOffset.signedFlag = false;
+    calConf->dacExtOffset.lsb = dacExtRange.step*dacExtRange.multiplier();
+
+    calConf->characterizationCsvColumns = 0;
+
+
     /**************\
-     * EDH format *
-    \**************/
+             * EDH format *
+            \**************/
 
     edhFormat =
             "EDH Version: 2.0\n"

@@ -36,6 +36,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                         //    8,  8,129 : eNPR-HC
     {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nV04EDR3},                           //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nV04EDR3},                           //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4e, 11, DeviceE4eEDR3},                              //    4,  8, 11 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                 //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16Illumina, 129, DeviceE16Illumina},                //    3,  4,129 : e16 Orbit customized for Illumina

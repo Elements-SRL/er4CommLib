@@ -1,12 +1,12 @@
-#ifndef MESSAGEDISPATCHER_E16ILLUMINA_H
-#define MESSAGEDISPATCHER_E16ILLUMINA_H
+#ifndef MESSAGEDISPATCHER_E16FASTPULSES_H
+#define MESSAGEDISPATCHER_E16FASTPULSES_H
 
 #include "messagedispatcher.h"
 
-class MessageDispatcher_e16Illumina_V01: public MessageDispatcher {
+class MessageDispatcher_e16FastPulses_V01: public MessageDispatcher {
 public:
-    MessageDispatcher_e16Illumina_V01(string id);
-    virtual ~MessageDispatcher_e16Illumina_V01();
+    MessageDispatcher_e16FastPulses_V01(string id);
+    virtual ~MessageDispatcher_e16FastPulses_V01();
 
 protected:
     typedef struct {
@@ -117,10 +117,10 @@ protected:
     InfoStruct_t infoStruct;
 };
 
-class MessageDispatcher_e16Illumina_LegacyEdr3_V03: public MessageDispatcherLegacyEdr3 {
+class MessageDispatcher_e16FastPulses_LegacyEdr3_V03: public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e16Illumina_LegacyEdr3_V03(string id);
-    virtual ~MessageDispatcher_e16Illumina_LegacyEdr3_V03();
+    MessageDispatcher_e16FastPulses_LegacyEdr3_V03(string id);
+    virtual ~MessageDispatcher_e16FastPulses_LegacyEdr3_V03();
 
 protected:
 
@@ -231,4 +231,4 @@ protected:
     InfoStruct_t infoStruct;
 };
 
-#endif // MESSAGEDISPATCHER_E16ILLUMINA_H
+#endif // MESSAGEDISPATCHER_E16FASTPULSES_H

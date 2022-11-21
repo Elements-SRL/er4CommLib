@@ -39,8 +39,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nV04EDR3},                           //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                 //    4,  8,129 : e4 Elements version
-    {DeviceVersionE16, DeviceSubversionE16Illumina, 129, DeviceE16Illumina},                //    3,  4,129 : e16 Orbit customized for Illumina
-    {DeviceVersionE16, DeviceSubversionE16Illumina, 4, DeviceE16IlluminaEDR3},              //    3,  4,  4 : e16 Orbit customized for Illumina (Legacy version for EDR3)
+    {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses},            //    3,  4,129 : e16 Orbit customized for fast pulses
+    {DeviceVersionE16, DeviceSubversionE16FastPulses, 4, DeviceE16FastPulsesEDR3},          //    3,  4,  4 : e16 Orbit customized for fast pulses (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                              //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                              //    3,  5,136 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)

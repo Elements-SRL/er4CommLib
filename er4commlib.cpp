@@ -28,7 +28,7 @@
 #include "messagedispatcher_e2hc.h"
 #include "messagedispatcher_e4n.h"
 #include "messagedispatcher_e4e.h"
-#include "messagedispatcher_e16illumina.h"
+#include "messagedispatcher_e16fastpulses.h"
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16eth.h"
@@ -195,12 +195,12 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e4e(deviceId);
             break;
 
-        case DeviceE16Illumina:
-            messageDispatcher = new MessageDispatcher_e16Illumina_V01(deviceId);
+        case DeviceE16FastPulses:
+            messageDispatcher = new MessageDispatcher_e16FastPulses_V01(deviceId);
             break;
 
-        case DeviceE16IlluminaEDR3:
-            messageDispatcher = new MessageDispatcher_e16Illumina_LegacyEdr3_V03(deviceId);
+        case DeviceE16FastPulsesEDR3:
+            messageDispatcher = new MessageDispatcher_e16FastPulses_LegacyEdr3_V03(deviceId);
             break;
 
         case DeviceE16n:

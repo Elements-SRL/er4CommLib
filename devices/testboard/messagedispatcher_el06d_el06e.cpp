@@ -75,13 +75,18 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
 //    voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
 
-    /*! External DAC */
+    /*! Voltage reference ranges */
     dacExtControllableFlag = true;
-    dacExtRange.step = 0.0625;
-    dacExtRange.min = -1650.0;
-    dacExtRange.max = 4000.0-1650;
-    dacExtRange.prefix = UnitPfxMilli;
-//    dacExtRange.unit = "V";
+    invertedDacExtFlag = true;
+
+    voltageReferenceRangesNum = VoltageReferenceRangesNum;
+    voltageReferenceRangesArray.resize(voltageReferenceRangesNum);
+    voltageReferenceRangesArray[VoltageReferenceRange2V].min = -1250.0;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].max = 1250.0;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].step = 0.0625;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].prefix = UnitPfxMilli;
+//    voltageReferenceRangesArray[VoltageReferenceRange2V].unit = "V";
+    defaultVoltageReferenceRangeIdx = VoltageReferenceRange2V;
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
@@ -140,6 +145,7 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     }
     voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
     voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
+    voltageReferenceRange = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
     baseSamplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
     samplingRate = baseSamplingRate;
     integrationStep = integrationStepArray[selectedSamplingRateIdx];
@@ -578,14 +584,27 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
 
-    /*! External DAC */
+    /*! Voltage reference range */
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    voltageReferenceRangeCoder->addMapItem(0); /*!< No controls -> 0b0 */
+
+    /*! Voltage DAC Ext */
     doubleConfig.initialByte = 104;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 16;
-    doubleConfig.resolution = dacExtRange.step;
-    doubleConfig.minValue = 0.0-1650.0;
-    doubleConfig.maxValue = 4096.0-dacExtRange.step-1650.0;
-    dacExtCoder = new DoubleOffsetBinaryCoder(doubleConfig);
+    dacExtCoders.resize(voltageReferenceRangesNum);
+
+    double vcm_mV = 1650.0;
+    double maxDacExtVoltage = 4096.0;
+
+    unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
+    doubleConfig.resolution = voltageReferenceRangesArray[voltageReferenceIdx].step;
+    doubleConfig.minValue = -vcm_mV;
+    doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
+    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;

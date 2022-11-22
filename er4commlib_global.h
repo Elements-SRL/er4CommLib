@@ -101,15 +101,16 @@ typedef enum {
     DeviceE1LightEL03fEDR3,     /*!< e1Light EL03f chip (Legacy version for EDR3). */
     DeviceE1HcEL03fEDR3,        /*!< e1HC EL03f chip (Legacy version for EDR3) */
     DeviceE16eEDR3,             /*!< e16e (Legacy version for EDR3). */
-    DeviceE16ETHEDR3,           /*!< e16ETH (LegacyVersion for EDR3) */
-    DeviceE16HC,                /*!< e16HC */
+    DeviceE16ETHEDR3,           /*!< e16ETH (LegacyVersion for EDR3). */
+    DeviceE16HC_V01,            /*!< e16HC (no voltage amplifier). */
+    DeviceE16HC_V02,            /*!< e16HC. */
     DeviceENPR,                 /*!< eNPR. */
     DeviceENPRHC,               /*!< eNPR-HC. */
     DeviceE4nV04EDR3,           /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
     DeviceE4eEDR3,              /*!< e4 Elements (Legacy version for EDR3). */
     DeviceE4e,                  /*!< e4 Elements version. */
-    DeviceE16Illumina,          /*!< e16 Orbit customized for Illumina. */
-    DeviceE16IlluminaEDR3,      /*!< e16 Orbit customized for Illumina (Legacy version for EDR3). */
+    DeviceE16FastPulses,        /*!< e16 Orbit customized for fast pulses. */
+    DeviceE16FastPulsesEDR3,    /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
     DeviceE16n,                 /*!< e16 2020 release. */
     DeviceDlp,                  /*!< debug dlp. */
     TestboardEL06b,             /*!< testboard chip EL06b */

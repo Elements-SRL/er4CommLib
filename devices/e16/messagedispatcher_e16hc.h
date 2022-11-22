@@ -3,10 +3,10 @@
 
 #include "messagedispatcher.h"
 
-class MessageDispatcher_e16HC : public MessageDispatcher {
+class MessageDispatcher_e16HC_V02 : public MessageDispatcher {
 public:
-    MessageDispatcher_e16HC(string id);
-    virtual ~MessageDispatcher_e16HC();
+    MessageDispatcher_e16HC_V02(string id);
+    virtual ~MessageDispatcher_e16HC_V02();
 
 protected:
     typedef struct {
@@ -113,12 +113,34 @@ protected:
     void initializeDevice() override;
     bool checkProtocolValidity(string &message) override;
     ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) override;
+    void updateVoltageReferenceOffsetCalibration();
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 
     const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
     const double stimulusVoltageReference = 1.1; /*! voltage reference for stimuli [V] */
+
+private:
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRange15V,
+        VoltageReferenceRangesNum
+    };
+
+    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone}; /*! \todo FCON aggiungere metodo per leggere il valore dalla eeprom FTDI */
+};
+
+class MessageDispatcher_e16HC_V01 : public MessageDispatcher_e16HC_V02 {
+public:
+    MessageDispatcher_e16HC_V01(string id);
+    virtual ~MessageDispatcher_e16HC_V01();
+
+private:
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRangesNum
+    };
 };
 
 #endif // MESSAGEDISPATCHER_E16HC_H

@@ -49,7 +49,7 @@ typedef enum {
 
 typedef enum {
     /*! Subversions used for ver = 03 */
-    DeviceSubversionE16Illumina = 4,
+    DeviceSubversionE16FastPulses = 4,
     DeviceSubversionE16n = 5,
     DeviceSubversionE16e = 8,
     DeviceSubversionE16eth = 9,

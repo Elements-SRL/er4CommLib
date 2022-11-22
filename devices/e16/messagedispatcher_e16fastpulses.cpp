@@ -15,10 +15,10 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "messagedispatcher_e16illumina.h"
+#include "messagedispatcher_e16fastpulses.h"
 #include "messagedispatcher.h"
 
-MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
+MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string id):
     MessageDispatcher(id) {
 
     /************************\
@@ -530,7 +530,7 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
     edhFormat =
             "EDH Version: 2.0\n"
             "\n"
-            "Elements Orbit Illumina\n"
+            "Elements Orbit\n"
             "Channels: 16\n"
             "\n"
             "Data header file\n"
@@ -703,7 +703,6 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
     currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
     currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
     currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
-
 
     /*! Voltage range */
     boolConfig.initialByte = 0;
@@ -1328,11 +1327,11 @@ MessageDispatcher_e16Illumina_V01::MessageDispatcher_e16Illumina_V01(string id):
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e16Illumina_V01::~MessageDispatcher_e16Illumina_V01() {
+MessageDispatcher_e16FastPulses_V01::~MessageDispatcher_e16FastPulses_V01() {
 
 }
 
-void MessageDispatcher_e16Illumina_V01::initializeDevice() {
+void MessageDispatcher_e16FastPulses_V01::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -1359,7 +1358,7 @@ void MessageDispatcher_e16Illumina_V01::initializeDevice() {
 
 }
 
-bool MessageDispatcher_e16Illumina_V01::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e16FastPulses_V01::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1558,7 +1557,7 @@ bool MessageDispatcher_e16Illumina_V01::checkProtocolValidity(string &message) {
     return validFlag;
 }
 
-void MessageDispatcher_e16Illumina_V01::setFerdParameters() {
+void MessageDispatcher_e16FastPulses_V01::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {
@@ -1593,14 +1592,14 @@ void MessageDispatcher_e16Illumina_V01::setFerdParameters() {
     MessageDispatcher::setFerdParameters();
 }
 
-ErrorCodes_t MessageDispatcher_e16Illumina_V01::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
+ErrorCodes_t MessageDispatcher_e16FastPulses_V01::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
     for (int idx = 0; idx < currentChannelsNum; idx++) {
         offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
     }
     return Success;
 }
 
-MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_LegacyEdr3_V03(string id):
+MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_LegacyEdr3_V03(string id):
     MessageDispatcherLegacyEdr3(id) {
 
     /************************\
@@ -2109,7 +2108,7 @@ MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_Lega
     edhFormat =
             "EDH Version: 2.0\n"
             "\n"
-            "Elements Orbit Illumina\n"
+            "Elements Orbit\n"
             "Channels: 16\n"
             "\n"
             "Data header file\n"
@@ -2275,14 +2274,12 @@ MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_Lega
     currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
     currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
 
-
     /*! Voltage range */
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
-
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;
@@ -2898,11 +2895,11 @@ MessageDispatcher_e16Illumina_LegacyEdr3_V03::MessageDispatcher_e16Illumina_Lega
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e16Illumina_LegacyEdr3_V03::~MessageDispatcher_e16Illumina_LegacyEdr3_V03() {
+MessageDispatcher_e16FastPulses_LegacyEdr3_V03::~MessageDispatcher_e16FastPulses_LegacyEdr3_V03() {
 
 }
 
-void MessageDispatcher_e16Illumina_LegacyEdr3_V03::initializeDevice() {
+void MessageDispatcher_e16FastPulses_LegacyEdr3_V03::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -2929,7 +2926,7 @@ void MessageDispatcher_e16Illumina_LegacyEdr3_V03::initializeDevice() {
 
 }
 
-bool MessageDispatcher_e16Illumina_LegacyEdr3_V03::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e16FastPulses_LegacyEdr3_V03::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -3128,7 +3125,7 @@ bool MessageDispatcher_e16Illumina_LegacyEdr3_V03::checkProtocolValidity(string 
     return validFlag;
 }
 
-void MessageDispatcher_e16Illumina_LegacyEdr3_V03::setFerdParameters() {
+void MessageDispatcher_e16FastPulses_LegacyEdr3_V03::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {

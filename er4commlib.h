@@ -404,6 +404,16 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageRange(
         ER4CL_ARGIN uint16_t voltageRangeIdx);
 
+/*! \brief Set the voltage range for the reference.
+ *
+ * \param voltageRangeIdx [in] Index of the voltage range to be set.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setVoltageReferenceRange(
+        ER4CL_ARGIN uint16_t voltageRangeIdx);
+
 /*! \brief Set the sampling rate.
  *
  * \param samplingRateIdx [in] Index of the sampling rate to be set.
@@ -827,8 +837,8 @@ ErrorCodes_t getChannelsNumber(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRanges(
-        ER4CL_ARGOUT RangedMeasurementReduced_t * currentRanges,
-        ER4CL_ARGOUT uint16_t* defaultOptions);
+        ER4CL_ARGOUT RangedMeasurementReduced_t currentRanges[],
+        ER4CL_ARGOUT uint16_t defaultOptions[]);
 
 /*! \brief Get the current range currently applied on a given channel.
  *
@@ -860,7 +870,7 @@ ErrorCodes_t hasIndependentCurrentRanges(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRanges(
-        ER4CL_ARGOUT RangedMeasurementReduced_t * &voltageRanges,
+        ER4CL_ARGOUT RangedMeasurementReduced_t voltageRanges[],
         ER4CL_ARGOUT uint16_t &defaultOption);
 
 /*! \brief Get the voltage range currently applied.
@@ -872,6 +882,18 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRange(
         ER4CL_ARGOUT RangedMeasurementReduced_t &voltageRange);
+
+/*! \brief Get the voltage ranges available for the reference.
+ *
+ * \param voltageRanges [out] Array containing all the available voltage ranges for the reference.
+ * \param defaultValue [out] Default option.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageReferenceRanges(
+        ER4CL_ARGOUT RangedMeasurementReduced_t ranges[],
+        ER4CL_ARGOUT uint16_t &defaultOption);
 
 /*! \brief Get the sampling rates available for the device.
  *
@@ -1122,7 +1144,7 @@ ErrorCodes_t getProtocolAdimensional(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageOffsetControls(
-        ER4CL_ARGOUT RangedMeasurementReduced_t* &voltageRange);
+        ER4CL_ARGOUT RangedMeasurementReduced_t * &voltageRange);
 
 /*! \brief Get insertion pulse controls definition.
  *
@@ -1202,18 +1224,6 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getLedsColors(
         ER4CL_ARGOUT uint32_t ledsColors);
-
-/*! \brief Get applicable voltage range on the external DAC.
- *
- * \param value [out] Applicable voltage range on the external DAC.
- * \param defaultValue [out] Default value.
- * \return Success if external DAC control is available.
- */
-ER4COMMLIB_NAME_MANGLING
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getDacExtRange(
-        ER4CL_ARGOUT RangedMeasurementReduced_t &range,
-        ER4CL_ARGOUT MeasurementReduced_t &defaultValue);
 
 /*! \brief Get the range currently applied and the number of pulse.
  *

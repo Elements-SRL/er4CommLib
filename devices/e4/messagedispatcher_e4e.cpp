@@ -770,6 +770,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolNR].max;
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
+    /*! Internal DAC filter */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;

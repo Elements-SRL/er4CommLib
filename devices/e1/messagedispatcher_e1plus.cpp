@@ -641,52 +641,50 @@ MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00::MessageDispatcher_e1Plus_El03f_Le
     boolConfig.bitsNum = 1;
     protocolStartCoder = new BoolArrayCoder(boolConfig);
 
-
-        /*! Protocol voltages */
-        protocolVoltageCoders.resize(ProtocolVoltagesNum);
-        doubleConfig.initialByte = 7;
-        doubleConfig.initialBit = 4;
-        doubleConfig.bitsNum = 12;
-        doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
-        doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
-        doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
-        protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
-        doubleConfig.initialByte = 13;
-        doubleConfig.initialBit = 4;
-        doubleConfig.bitsNum = 12;
-        doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
-        doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
-        doubleConfig.resolution = protocolVoltageRanges[ProtocolVPulse].step;
-        protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
-        doubleConfig.initialByte = 19;
-        doubleConfig.initialBit = 4;
-        doubleConfig.bitsNum = 12;
-        doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
-        doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
-        doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].step;
-        protocolVoltageCoders[ProtocolVStep] = new DoubleSignAbsCoder(doubleConfig);
-        doubleConfig.initialByte = 40;
-        doubleConfig.initialBit = 0;
-        doubleConfig.bitsNum = 2;
-        doubleConfig.minValue = protocolVoltageRanges[ProtocolVPk].min;
-        doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPk].max;
-        doubleConfig.resolution = protocolVoltageRanges[ProtocolVPk].step;
-        protocolVoltageCoders[ProtocolVPk] = new DoubleSignAbsCoder(doubleConfig);
-        doubleConfig.initialByte = 46;
-        doubleConfig.initialBit = 4;
-        doubleConfig.bitsNum = 12;
-        doubleConfig.minValue = protocolVoltageRanges[ProtocolVFinal].min;
-        doubleConfig.maxValue = protocolVoltageRanges[ProtocolVFinal].max;
-        doubleConfig.resolution = protocolVoltageRanges[ProtocolVFinal].step;
-        protocolVoltageCoders[ProtocolVFinal] = new DoubleSignAbsCoder(doubleConfig);
-        doubleConfig.initialByte = 49;
-        doubleConfig.initialBit = 4;
-        doubleConfig.bitsNum = 12;
-        doubleConfig.minValue = protocolVoltageRanges[ProtocolVInit].min;
-        doubleConfig.maxValue = protocolVoltageRanges[ProtocolVInit].max;
-        doubleConfig.resolution = protocolVoltageRanges[ProtocolVInit].step;
-        protocolVoltageCoders[ProtocolVInit] = new DoubleSignAbsCoder(doubleConfig);
-
+    /*! Protocol voltages */
+    protocolVoltageCoders.resize(ProtocolVoltagesNum);
+    doubleConfig.initialByte = 7;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
+    protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 13;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVPulse].step;
+    protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 19;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].step;
+    protocolVoltageCoders[ProtocolVStep] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 40;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 2;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVPk].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPk].max;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVPk].step;
+    protocolVoltageCoders[ProtocolVPk] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 46;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVFinal].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVFinal].max;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVFinal].step;
+    protocolVoltageCoders[ProtocolVFinal] = new DoubleSignAbsCoder(doubleConfig);
+    doubleConfig.initialByte = 49;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVInit].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVInit].max;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVInit].step;
+    protocolVoltageCoders[ProtocolVInit] = new DoubleSignAbsCoder(doubleConfig);
 
     /*! Protocol times */
     protocolTimeCoders.resize(ProtocolTimesNum);
@@ -793,14 +791,14 @@ MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00::MessageDispatcher_e1Plus_El03f_Le
 
     txStatus.resize(txDataBytes);
 
-    int txStatusIdx=0;
+    int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
     txStatus[txStatusIdx++] = 0x30; // CFG0
     txStatus[txStatusIdx++] = 0x03; // CFG1
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
     txStatus[txStatusIdx++] = 0x00; // COMP0
-    txStatus[txStatusIdx++] = 0x40; // COMP1
+    txStatus[txStatusIdx++] = 0x00; // COMP1
     txStatus[txStatusIdx++] = 0x00; // Vhold
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;

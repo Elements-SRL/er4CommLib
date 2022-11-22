@@ -31,7 +31,7 @@ protected:
 
     enum CurrentRanges {
         CurrentRange200pA,
-        CurrentRange200nA,
+        CurrentRange20nA,
         CurrentRangesNum
     };
 
@@ -57,13 +57,13 @@ protected:
     };
 
     enum VoltageStimulusLpfs {
-        VoltageStimulusLpfsNum = 0
+        VoltageStimulusLpf1kHz,
+        VoltageStimulusLpf10kHz,
+        VoltageStimulusLpfsNum
     };
 
     enum VoltageReferenceLpfs {
-        VoltageReferenceLpf3Hz,
-        VoltageReferenceLpf180kHz,
-        VoltageReferenceLpfsNum
+        VoltageReferenceLpfsNum = 0
     };
 
     enum ProtocolVoltageRanges {
@@ -128,10 +128,5 @@ protected:
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
-};
-
-class MessageDispatcher_e1Light_El03c_LegacyEdr3_V02 : public MessageDispatcher_e1Light_El03f_LegacyEdr3_V01 {
-public:
-    MessageDispatcher_e1Light_El03c_LegacyEdr3_V02(string id);
 };
 #endif // MESSAGEDISPATCHER_E1LIGHT_H

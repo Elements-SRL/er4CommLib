@@ -55,7 +55,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},              //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},            //  254, 15,129 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight},    //  254, 16,129 : eNPR prototype for Fairy Light project
-    {DeviceVersionDemo, DeviceSubversionDemo, 1, DeviceFakeE16n}
+    {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16n}
 };
 
 /********************************************************************************************\

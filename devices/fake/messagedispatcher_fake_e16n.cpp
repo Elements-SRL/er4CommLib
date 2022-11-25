@@ -68,6 +68,10 @@ ErrorCodes_t MessageDispatcher_fake_e16n::connect(FtdiEeprom * ftdiEeprom) {
     /*! Calculate the LSB noise vector */
     this->initializeLsbNoise();
 
+    this->initializeCompensations();
+
+    this->initializeFerdMemory();
+
     stopConnectionFlag = false;
 
 //    rxThread = thread(&MessageDispatcher_fake_e16n::readAndParseMessagesForGenerator, this);

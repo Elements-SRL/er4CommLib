@@ -214,7 +214,7 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
         currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
     }
     voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
-    voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
+    voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step*(double)voltageRangeDivider;
     voltageReferenceRange = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
     baseSamplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
     samplingRate = baseSamplingRate;

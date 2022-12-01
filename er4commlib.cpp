@@ -1226,6 +1226,18 @@ ErrorCodes_t getRealSamplingRates(
     return ret;
 }
 
+ErrorCodes_t getRealSamplingRate(
+        Measurement_t &samplingRate) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getRealSamplingRate(samplingRate);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t getOversamplingRatios(
         vector <uint16_t> &oversamplingRatios) {
     ErrorCodes_t ret;

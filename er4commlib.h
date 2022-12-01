@@ -928,6 +928,16 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getRealSamplingRates(
         ER4CL_ARGOUT MeasurementReduced_t * &samplingRates);
 
+/*! \brief Get the real sampling rate currently applied.
+ *
+ * \param samplingRate [out] Real sampling rate currently applied.
+ *                           (may slightly differ from displayed sampling rate).
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getRealSamplingRate(
+        ER4CL_ARGOUT Measurement_t &samplingRate);
+
 /*! \brief Get the oversampling ratios available for the device.
  *
  * \param oversamplingRatios [out] Array containing all the available oversampling ratios.

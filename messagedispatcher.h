@@ -691,6 +691,7 @@ public:
     ErrorCodes_t getSamplingRates(vector <Measurement_t> &samplingRates, uint16_t &defaultOption);
     ErrorCodes_t getSamplingRate(Measurement_t &samplingRate);
     ErrorCodes_t getRealSamplingRates(vector <Measurement_t> &samplingRates);
+    ErrorCodes_t getRealSamplingRate(Measurement_t &samplingRate);
     ErrorCodes_t getOversamplingRatios(vector <uint16_t> &oversamplingRatios);
     ErrorCodes_t getOversamplingRatio(uint16_t &oversamplingRatio);
 

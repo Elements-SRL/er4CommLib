@@ -1533,6 +1533,11 @@ ErrorCodes_t MessageDispatcher::getRealSamplingRates(vector <Measurement_t> &sam
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::getRealSamplingRate(Measurement_t &samplingRate) {
+    samplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::getOversamplingRatios(vector <uint16_t> &oversamplingRatios) {
     if (oversamplingImplemented) {
         oversamplingRatios = oversamplingRatiosArray;

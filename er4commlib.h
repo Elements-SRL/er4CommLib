@@ -934,9 +934,10 @@ ErrorCodes_t getRealSamplingRates(
  *                           (may slightly differ from displayed sampling rate).
  * \return Error code.
  */
+ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getRealSamplingRate(
-        ER4CL_ARGOUT Measurement_t &samplingRate);
+        ER4CL_ARGOUT MeasurementReduced_t &samplingRate);
 
 /*! \brief Get the oversampling ratios available for the device.
  *

@@ -1287,13 +1287,11 @@ ErrorCodes_t getSamplingRates(
         uint16_t &defaultOption) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        Measurement_t * samplingRates;
         vector <Measurement_t> samplingRatesVec;
         ret = messageDispatcher->getSamplingRates(samplingRatesVec, defaultOption);
         int size = samplingRatesVec.size();
         for (uint32_t idx = 0; idx < size; idx++ ) {
-            samplingRates[idx] = samplingRatesVec[idx];
-            samplingRatesRed[idx]= toReduceMeasurement(samplingRates[idx]);
+            samplingRatesRed[idx]= toReduceMeasurement(samplingRatesVec[idx]);
         }
 
     } else {
@@ -1319,13 +1317,11 @@ ErrorCodes_t getRealSamplingRates(
         MeasurementReduced_t * samplingRatesRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        Measurement_t * samplingRates;
         vector<Measurement_t> samplingRatesVec;
         ret = messageDispatcher->getRealSamplingRates(samplingRatesVec);
         int size = samplingRatesVec.size();
         for(uint32_t idx = 0; idx < size; idx++ ) {
-            samplingRates[idx] = samplingRatesVec[idx];
-            samplingRatesRed[idx]= toReduceMeasurement(samplingRates[idx]);
+            samplingRatesRed[idx]= toReduceMeasurement(samplingRatesVec[idx]);
         }
 
     } else {
@@ -1335,10 +1331,12 @@ ErrorCodes_t getRealSamplingRates(
 }
 
 ErrorCodes_t getRealSamplingRate(
-        Measurement_t &samplingRate) {
+        MeasurementReduced_t &samplingRateRed) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
+        Measurement_t samplingRate;
         ret = messageDispatcher->getRealSamplingRate(samplingRate);
+        samplingRateRed=toReduceMeasurement(samplingRate);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1381,13 +1379,11 @@ ErrorCodes_t getVoltageStimulusLpfs(
         uint16_t &defaultOption) {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (messageDispatcher != nullptr) {
-        Measurement_t * filterOptions;
         vector<Measurement_t> filterOptionsVec;
         ret = messageDispatcher->getVoltageStimulusLpfs(filterOptionsVec, defaultOption);
         int size = filterOptionsVec.size();
         for(uint32_t idx = 0; idx < size; idx++ ) {
-            filterOptions[idx] = filterOptionsVec[idx];
-            filterOptionsRed[idx]= toReduceMeasurement(filterOptions[idx]);
+            filterOptionsRed[idx]= toReduceMeasurement(filterOptionsVec[idx]);
         }
 
     } else {
@@ -1401,13 +1397,11 @@ ErrorCodes_t getVoltageReferenceLpfs(
         uint16_t &defaultOption) {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (messageDispatcher != nullptr) {
-        Measurement_t * voltageReference;
         vector<Measurement_t> voltageReferenceVec;
         ret = messageDispatcher->getVoltageReferenceLpfs(voltageReferenceVec, defaultOption);
         int size= voltageReferenceVec.size();
         for(uint32_t idx = 0; idx < size; idx++ ) {
-            voltageReference[idx] = voltageReferenceVec[idx];
-            voltageReferenceRed[idx]= toReduceMeasurement(voltageReference[idx]);
+            voltageReferenceRed[idx]= toReduceMeasurement(voltageReferenceVec[idx]);
         }
 
     } else {

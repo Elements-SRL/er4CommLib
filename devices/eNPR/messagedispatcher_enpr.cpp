@@ -1157,8 +1157,8 @@ MessageDispatcher_eNPR_FL_V02::MessageDispatcher_eNPR_FL_V02(string di) :
     \**********/
 
     BoolCoder::CoderConfig_t boolConfig;
-    boolConfig.initialByte = 1;
-    boolConfig.initialBit = 6;
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     ledsCoders.resize(ledsNum);
     ledsCoders[LedBlue] = new BoolArrayCoder(boolConfig);
@@ -1176,7 +1176,7 @@ MessageDispatcher_eNPR_FL_V02::MessageDispatcher_eNPR_FL_V02(string di) :
     txStatus[2] = 0x03; // CFG1
     txStatus[3] = 0x00; // CFG2
     txStatus[4] = 0x00; // CFG3
-    txStatus[5] = 0x00; // COMP0
+    txStatus[5] = 0x01; // COMP0
     txStatus[6] = 0x40; // COMP1
     txStatus[7] = 0x00; // Vhold
     txStatus[8] = 0x00;

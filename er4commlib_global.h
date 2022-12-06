@@ -116,7 +116,8 @@ typedef enum {
     TestboardEL06dEL06e,        /*!< testboard chip EL06d and EL06e */
     DeviceE2HCExtAdc,           /*!< e2HC prototype (external ADC). */
     DeviceE2HCIntAdc,           /*!< e2HC prototype (internal ADC). */
-    DeviceENPRFairyLight,       /*!< eNPR prototype for Fairy Light project. */
+    DeviceENPRFairyLight_V01,   /*!< eNPR prototype for Fairy Light project with DAC ext control and only ULN mode. */
+    DeviceENPRFairyLight_V02,   /*!< eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes. */
     DeviceFakeE16n,             /*!< Fake e16 2020 release. */
     DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */
     DevicesNum

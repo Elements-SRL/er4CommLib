@@ -36,6 +36,7 @@
 #include "messagedispatcher_el06c.h"
 #include "messagedispatcher_el06d_el06e.h"
 #include "messagedispatcher_fake_e16n.h"
+#include "messagedispatcher_fake_e16fastpulses.h"
 #include "messagedispatcher_e16hc.h"
 
 #ifdef _WIN32
@@ -195,8 +196,12 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e4e(deviceId);
             break;
 
-        case DeviceE16FastPulses:
+        case DeviceE16FastPulses_V01:
             messageDispatcher = new MessageDispatcher_e16FastPulses_V01(deviceId);
+            break;
+
+        case DeviceE16FastPulses_V02:
+            messageDispatcher = new MessageDispatcher_e16FastPulses_V02(deviceId);
             break;
 
         case DeviceE16FastPulsesEDR3:
@@ -253,6 +258,10 @@ ErrorCodes_t connect(
 
         case DeviceFakeE16n:
             messageDispatcher = new MessageDispatcher_fake_e16n(deviceId);
+            break;
+
+        case DeviceFakeE16FastPulses:
+            messageDispatcher = new MessageDispatcher_fake_e16FastPulses(deviceId);
             break;
 
         default:
@@ -1501,7 +1510,8 @@ ErrorCodes_t hasReferencePulseControls(
     return ret;
 }
 
-ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange,
+ErrorCodes_t getReferencePulseControls(
+        RangedMeasurement_t &voltageRange,
         RangedMeasurement_t &durationRange) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -1513,6 +1523,33 @@ ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange,
     return ret;
 }
 
+ErrorCodes_t hasReferenceTrainPulseControls(
+        bool &referencePulseImplemented,
+        bool &overrideReferencePulseImplemented) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasReferenceTrainPulseControls(referencePulseImplemented, overrideReferencePulseImplemented);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getReferenceTrainPulseControls(
+        RangedMeasurement_t &voltageRange,
+        RangedMeasurement_t &durationRange,
+        RangedMeasurement_t &waitTimeRange,
+        uint16_t &pulsesNumber) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getReferenceTrainPulseControls(voltageRange, durationRange, waitTimeRange, pulsesNumber);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
 
 ErrorCodes_t getEdhFormat(
         string &format) {
@@ -1585,6 +1622,23 @@ ErrorCodes_t getFastReferencePulseProtocolWave2Range(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getFastReferencePulseProtocolWave2Range(voltageRange, timeRange, durationRange, nPulse);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getFastReferenceTrainPulseProtocolWave2Range(
+        RangedMeasurement_t &voltageRange,
+        RangedMeasurement_t &timeRange,
+        RangedMeasurement_t &durationRange,
+        RangedMeasurement_t &waitTimeRange,
+        uint16_t &pulsesPerTrain,
+        uint16_t &nTrains) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getFastReferenceTrainPulseProtocolWave2Range(voltageRange, timeRange, durationRange, waitTimeRange, pulsesPerTrain, nTrains);
 
     } else {
         ret = ErrorDeviceNotConnected;

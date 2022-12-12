@@ -107,7 +107,8 @@ typedef enum {
     DeviceE4nV04EDR3,           /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
     DeviceE4eEDR3,              /*!< e4 Elements (Legacy version for EDR3). */
     DeviceE4e,                  /*!< e4 Elements version. */
-    DeviceE16FastPulses,        /*!< e16 Orbit customized for fast pulses. */
+    DeviceE16FastPulses_V01,    /*!< e16 Orbit customized for fast pulses. */
+    DeviceE16FastPulses_V02,    /*!< e16 Orbit customized for fast pulse trains. */
     DeviceE16FastPulsesEDR3,    /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
     DeviceE16n,                 /*!< e16 2020 release. */
     DeviceDlp,                  /*!< debug dlp. */
@@ -119,6 +120,7 @@ typedef enum {
     DeviceENPRFairyLight_V01,   /*!< eNPR prototype for Fairy Light project with DAC ext control and only ULN mode. */
     DeviceENPRFairyLight_V02,   /*!< eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes. */
     DeviceFakeE16n,             /*!< Fake e16 2020 release. */
+    DeviceFakeE16FastPulses,    /*!< Fake e16 Orbit customized for fast pulses. */
     DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */
     DevicesNum
 } DeviceTypes_t;

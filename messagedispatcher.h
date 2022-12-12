@@ -247,12 +247,15 @@ public:
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented);
     ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
+    ErrorCodes_t hasReferenceTrainPulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented);
+    ErrorCodes_t getReferenceTrainPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange, RangedMeasurement_t waitTimeRange, uint16_t &pulsesNumber);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
     ErrorCodes_t getLedsNumber(uint16_t &ledsNumber);
     ErrorCodes_t getLedsColors(vector <uint32_t> &ledsColors);
     ErrorCodes_t getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse);
     ErrorCodes_t getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse);
+    ErrorCodes_t getFastReferenceTrainPulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, RangedMeasurement_t &waitTimeRange, uint16_t &pulsesPerTrain, uint16_t &nTrains);
 
     /*! Device specific controls */
 
@@ -466,16 +469,22 @@ protected:
     BoolCoder * insertionPulseApplyCoder;
 
     bool referencePulseImplemented = false;
+    bool referenceTrainPulseImplemented = false;
     RangedMeasurement_t referencePulseVoltageRange;
     RangedMeasurement_t referencePulseDurationRange;
+    RangedMeasurement_t referencePulseWaitTimeRange;
+    uint16_t referencePulseNumber;
     DoubleCoder * referencePulseVoltageCoder;
     DoubleCoder * referencePulseDurationCoder;
+    DoubleCoder * referencePulseWaitTimeCoder;
+    BoolArrayCoder * referencePulseNumberCoder;
     BoolCoder * referencePulseApplyCoder;
 
     bool overrideReferencePulseImplemented = false;
     BoolCoder * overrideReferencePulseApplyCoder;
 
-    bool fastPulseProtocolImplementation = false;
+    bool fastPulseProtocolImplementatedFlag = false;
+    bool fastTrainPulseProtocolImplementatedFlag = false;
     uint16_t fastPulseW1num = 0;
     vector <DoubleCoder *> fastPulseW1VoltageCoder;
     RangedMeasurement_t fastPulseW1VoltageRange;
@@ -489,6 +498,9 @@ protected:
     RangedMeasurement_t fastPulseW2TimeRange;
     vector <DoubleCoder *> fastPulseW2DurationCoder;
     RangedMeasurement_t fastPulseW2DurationRange;
+    vector <DoubleCoder *> fastPulseW2WaitTimeCoder;
+    RangedMeasurement_t fastPulseW2WaitTimeRange;
+    vector <BoolArrayCoder *> fastPulseW2NumberCoder;
 
     string edhFormat;
 

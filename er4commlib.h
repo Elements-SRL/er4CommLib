@@ -1088,9 +1088,9 @@ ErrorCodes_t getInsertionPulseControls(
  * \return Success if the device has the reference pulse feature.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getReferencePulseControls(
-        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
-        ER4CL_ARGOUT RangedMeasurement_t &durationRange);
+ErrorCodes_t hasReferencePulseControls(
+        ER4CL_ARGOUT bool referencePulseImplemented,
+        ER4CL_ARGOUT bool overrideReferencePulseImplemented);
 
 /*! \brief Get reference pulse controls definition.
  *
@@ -1099,10 +1099,35 @@ ErrorCodes_t getReferencePulseControls(
  * \return Success if the device has the reference pulse feature.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t hasReferencePulseControls(
+ErrorCodes_t getReferencePulseControls(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange);
+
+/*! \brief Get reference train pulse controls definition.
+ *
+ * \param voltageRange [out] Range of applicable pulse voltage.
+ * \param durationRange [out] Ranges of applicable pulse duration.
+ * \return Success if the device has the reference pulse feature.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasReferenceTrainPulseControls(
         ER4CL_ARGOUT bool referencePulseImplemented,
         ER4CL_ARGOUT bool overrideReferencePulseImplemented);
 
+/*! \brief Get reference train pulse controls definition.
+ *
+ * \param voltageRange [out] Range of applicable pulse voltage.
+ * \param durationRange [out] Ranges of applicable pulse duration.
+ * \param waitTimeRange [out] Ranges of applicable pulse wait time (the pulses period is the sum of duration and wait time).
+ * \param pulsesNumber [out] Maximum number of pulses per train.
+ * \return Success if the device has the reference train pulse feature.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getReferenceTrainPulseControls(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange,
+        ER4CL_ARGOUT RangedMeasurement_t &waitTimeRange,
+        ER4CL_ARGOUT uint16_t &pulsesNumber);
 
 /*! \brief Get data header format.
  *
@@ -1142,12 +1167,12 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getLedsColors(
         ER4CL_ARGOUT std::vector <uint32_t> &ledsColors);
 
-/*! \brief Get the range currently applied and the number of pulse.
+/*! \brief Get the parameters ranges for waveform 1 in the reference pulse protocol.
  *
  * \param voltageRange [out] Applicable voltage range.
  * \param timeRange [out] Applicable voltage range.
- * \param nPulse [out] number of pulse.
- * \return Success if external DAC control is available.
+ * \param nPulse [out] Number of pulses.
+ * \return Success if the reference pulse protocol is available.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getFastReferencePulseProtocolWave1Range(
@@ -1155,13 +1180,13 @@ ErrorCodes_t getFastReferencePulseProtocolWave1Range(
         ER4CL_ARGOUT RangedMeasurement_t &timeRange,
         ER4CL_ARGOUT uint16_t &nPulse);
 
-/*! \brief Get the range currently applied and the number of pulse.
+/*! \brief Get the parameters ranges for waveform 2 in the reference pulse protocol.
  *
  * \param voltageRange [out] Applicable voltage range.
  * \param timeRange [out] Applicable time range.
  * \param durationRange [out] Applicable duration range.
- * \param nPulse [out] number of pulse.
- * \return Success if external DAC control is available.
+ * \param nPulse [out] Number of pulses.
+ * \return Success if the reference pulse protocol is available.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getFastReferencePulseProtocolWave2Range(
@@ -1169,6 +1194,25 @@ ErrorCodes_t getFastReferencePulseProtocolWave2Range(
         ER4CL_ARGOUT RangedMeasurement_t &timeRange,
         ER4CL_ARGOUT RangedMeasurement_t &durationRange,
         ER4CL_ARGOUT uint16_t &nPulse);
+
+/*! \brief Get the parameters ranges for waveform 2 in the reference train pulse protocol.
+ *
+ * \param voltageRange [out] Applicable voltage range.
+ * \param timeRange [out] Applicable time range.
+ * \param durationRange [out] Applicable duration range.
+ * \param waitTimeRange [out] Applicable wait time range.
+ * \param pulsesPerTrain [out] Maximum number of pulses per train.
+ * \param nTrains [out] Number of trains.
+ * \return Success if the reference pulse protocol is available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getFastReferenceTrainPulseProtocolWave2Range(
+        ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
+        ER4CL_ARGOUT RangedMeasurement_t &timeRange,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange,
+        ER4CL_ARGOUT RangedMeasurement_t &waitTimeRange,
+        ER4CL_ARGOUT uint16_t &pulsesPerTrain,
+        ER4CL_ARGOUT uint16_t &nTrains);
 
 /*! \brief Availability of Nanion's temperature controller.
  *

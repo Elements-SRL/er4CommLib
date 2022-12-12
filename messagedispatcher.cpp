@@ -39,7 +39,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nV04EDR3},                               //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                                  //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                     //    4,  8,129 : e4 Elements version
-    {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses},                //    3,  4,129 : e16 Orbit customized for fast pulses
+    {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses_V01},            //    3,  4,129 : e16 Orbit customized for fast pulses
+    {DeviceVersionE16, DeviceSubversionE16FastPulses, 130, DeviceE16FastPulses_V02},            //    3,  4,130 : e16 Orbit customized for fast pulse trains
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 4, DeviceE16FastPulsesEDR3},              //    3,  4,  4 : e16 Orbit customized for fast pulses (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                                  //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                                  //    3,  5,136 : e16 2020 release
@@ -57,7 +58,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},                //  254, 15,129 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight_V01},    //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},    //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
-    {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16n}
+    {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16FastPulses}
 };
 
 /********************************************************************************************\
@@ -1676,17 +1677,45 @@ ErrorCodes_t MessageDispatcher::getInsertionPulseControls(RangedMeasurement_t &v
     }
 }
 
-ErrorCodes_t MessageDispatcher::hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented){
+ErrorCodes_t MessageDispatcher::hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented) {
     referencePulseImplemented = this->referencePulseImplemented;
     overrideReferencePulseImplemented = this->overrideReferencePulseImplemented;
-    return Success;
+    if (referencePulseImplemented) {
+        return Success;
 
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
 }
 
 ErrorCodes_t MessageDispatcher::getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange) {
     if (referencePulseImplemented) {
         voltageRange = referencePulseVoltageRange;
         durationRange = referencePulseDurationRange;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::hasReferenceTrainPulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented) {
+    referencePulseImplemented = this->referenceTrainPulseImplemented;
+    overrideReferencePulseImplemented = this->overrideReferencePulseImplemented;
+    if (referencePulseImplemented) {
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::getReferenceTrainPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange, RangedMeasurement_t waitTimeRange, uint16_t &pulsesNumber) {
+    if (referenceTrainPulseImplemented) {
+        voltageRange = referencePulseVoltageRange;
+        durationRange = referencePulseDurationRange;
+        waitTimeRange = referencePulseWaitTimeRange;
+        pulsesNumber = referencePulseNumber;
         return Success;
 
     } else {
@@ -1717,7 +1746,7 @@ ErrorCodes_t MessageDispatcher::getLedsColors(vector <uint32_t> &ledsColors) {
 }
 
 ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse) {
-    if (referencePulseImplemented) {
+    if (fastPulseProtocolImplementatedFlag || fastTrainPulseProtocolImplementatedFlag) {
         voltageRange = fastPulseW1VoltageRange;
         timeRange = fastPulseW1TimeRange;
         nPulse = fastPulseW1num;
@@ -1729,11 +1758,26 @@ ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave1Range(RangedMe
 }
 
 ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse) {
-    if (referencePulseImplemented) {
+    if (fastPulseProtocolImplementatedFlag) {
         voltageRange = fastPulseW2VoltageRange;
         timeRange = fastPulseW2TimeRange;
         durationRange = fastPulseW2DurationRange;
         nPulse = fastPulseW2num;
+        return Success;
+
+    } else {
+        return ErrorCommandNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::getFastReferenceTrainPulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, RangedMeasurement_t &waitTimeRange, uint16_t &pulsesPerTrain, uint16_t &nTrains) {
+    if (fastTrainPulseProtocolImplementatedFlag) {
+        voltageRange = fastPulseW2VoltageRange;
+        timeRange = fastPulseW2TimeRange;
+        durationRange = fastPulseW2DurationRange;
+        waitTimeRange = fastPulseW2WaitTimeRange;
+        pulsesPerTrain = referencePulseNumber;
+        nTrains = fastPulseW2num;
         return Success;
 
     } else {

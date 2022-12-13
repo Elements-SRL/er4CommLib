@@ -520,6 +520,21 @@ ErrorCodes_t applyReferencePulse(
     return ret;
 }
 
+ErrorCodes_t applyReferencePulseTrain(
+        Measurement_t voltage,
+        Measurement_t duration,
+        Measurement_t period,
+        uint16_t number) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->applyReferencePulseTrain(voltage, duration, period, number);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t overrideReferencePulse(
       bool flag) {
     ErrorCodes_t ret;
@@ -531,8 +546,6 @@ ErrorCodes_t overrideReferencePulse(
     }
     return ret;
 }
-
-
 
 ErrorCodes_t setRawDataFilter(
         Measurement_t cutoffFrequency,
@@ -766,7 +779,7 @@ ErrorCodes_t switchChannelOn(
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
-        unsigned int idx,
+        uint32_t idx,
         Measurement_t voltage) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -779,7 +792,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave1Time(
-        unsigned int idx,
+        uint32_t idx,
         Measurement_t time) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -792,7 +805,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave1Time(
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
-        unsigned int idx,
+        uint32_t idx,
         Measurement_t voltage) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -805,7 +818,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Time(
-        unsigned int idx,
+        uint32_t idx,
         Measurement_t time) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -818,7 +831,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Time(
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
-        unsigned int idx,
+        uint32_t idx,
         Measurement_t time) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -830,11 +843,12 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
     return ret;
 }
 
-ErrorCodes_t switchVcSel0(
-        bool on) {
+ErrorCodes_t setFastReferencePulseProtocolWave2Period(
+        uint32_t idx,
+        Measurement_t time) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->switchVcSel0(on);
+        ret = messageDispatcher->setFastReferencePulseProtocolWave2Period(idx, time);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -842,11 +856,12 @@ ErrorCodes_t switchVcSel0(
     return ret;
 }
 
-ErrorCodes_t switchVcSel1(
-        bool on) {
+ErrorCodes_t setFastReferencePulseProtocolWave2PulseNumber(
+        uint32_t idx,
+        uint16_t pulseNumber) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->switchVcSel1(on);
+        ret = messageDispatcher->setFastReferencePulseProtocolWave2PulseNumber(idx, pulseNumber);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1523,12 +1538,12 @@ ErrorCodes_t getReferencePulseControls(
     return ret;
 }
 
-ErrorCodes_t hasReferenceTrainPulseControls(
+ErrorCodes_t hasReferencePulseTrainControls(
         bool &referencePulseImplemented,
         bool &overrideReferencePulseImplemented) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->hasReferenceTrainPulseControls(referencePulseImplemented, overrideReferencePulseImplemented);
+        ret = messageDispatcher->hasReferencePulseTrainControls(referencePulseImplemented, overrideReferencePulseImplemented);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1536,14 +1551,14 @@ ErrorCodes_t hasReferenceTrainPulseControls(
     return ret;
 }
 
-ErrorCodes_t getReferenceTrainPulseControls(
+ErrorCodes_t getReferencePulseTrainControls(
         RangedMeasurement_t &voltageRange,
         RangedMeasurement_t &durationRange,
-        RangedMeasurement_t &waitTimeRange,
+        RangedMeasurement_t &periodRange,
         uint16_t &pulsesNumber) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getReferenceTrainPulseControls(voltageRange, durationRange, waitTimeRange, pulsesNumber);
+        ret = messageDispatcher->getReferencePulseTrainControls(voltageRange, durationRange, periodRange, pulsesNumber);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1629,16 +1644,16 @@ ErrorCodes_t getFastReferencePulseProtocolWave2Range(
     return ret;
 }
 
-ErrorCodes_t getFastReferenceTrainPulseProtocolWave2Range(
+ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
         RangedMeasurement_t &voltageRange,
         RangedMeasurement_t &timeRange,
         RangedMeasurement_t &durationRange,
-        RangedMeasurement_t &waitTimeRange,
+        RangedMeasurement_t &periodRange,
         uint16_t &pulsesPerTrain,
         uint16_t &nTrains) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFastReferenceTrainPulseProtocolWave2Range(voltageRange, timeRange, durationRange, waitTimeRange, pulsesPerTrain, nTrains);
+        ret = messageDispatcher->getFastReferencePulseTrainProtocolWave2Range(voltageRange, timeRange, durationRange, periodRange, pulsesPerTrain, nTrains);
 
     } else {
         ret = ErrorDeviceNotConnected;

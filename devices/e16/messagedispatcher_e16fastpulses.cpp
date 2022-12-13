@@ -549,7 +549,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     \****************************/
 
     /*! reference pulse */
-    referenceTrainPulseImplemented = true;
+    referencePulseTrainImplemented = true;
     referencePulseVoltageRange.step = 0.61;
     referencePulseVoltageRange.min = -1250.00;
     referencePulseVoltageRange.max = 1250.00;
@@ -560,11 +560,11 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     referencePulseDurationRange.max = 15000.0;
     referencePulseDurationRange.prefix = UnitPfxMicro;
     referencePulseDurationRange.unit = "s";
-    referencePulseWaitTimeRange.step = 0.1;
-    referencePulseWaitTimeRange.min = 1.0;
-    referencePulseWaitTimeRange.max = 15000.0;
-    referencePulseWaitTimeRange.prefix = UnitPfxMicro;
-    referencePulseWaitTimeRange.unit = "s";
+    referencePulsePeriodRange.step = 0.1;
+    referencePulsePeriodRange.min = 2.0;
+    referencePulsePeriodRange.max = 30000.0;
+    referencePulsePeriodRange.prefix = UnitPfxMicro;
+    referencePulsePeriodRange.unit = "s";
     referencePulseNumber = 15000;
 
     /*! C Fast Control */
@@ -581,7 +581,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     cFastCompensationControl.name = "CFast";
 
     /*! Waveform 1 */
-    referenceTrainPulseImplemented = true;
+    referencePulseTrainImplemented = true;
     fastPulseW1VoltageRange.min = -500.0;
     fastPulseW1VoltageRange.max = 500.0;
     fastPulseW1VoltageRange.step = 1;
@@ -613,11 +613,11 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     fastPulseW2DurationRange.unit = "s";
     fastPulseW2DurationRange.prefix = UnitPfxMicro;
 
-    fastPulseW2WaitTimeRange.min = 1.0;
-    fastPulseW2WaitTimeRange.max = 10000.0;
-    fastPulseW2WaitTimeRange.step = 0.1;
-    fastPulseW2WaitTimeRange.unit = "s";
-    fastPulseW2WaitTimeRange.prefix = UnitPfxMicro;
+    fastPulseW2PeriodRange.min = 2.0;
+    fastPulseW2PeriodRange.max = 20000.0;
+    fastPulseW2PeriodRange.step = 0.1;
+    fastPulseW2PeriodRange.unit = "s";
+    fastPulseW2PeriodRange.prefix = UnitPfxMicro;
 
     /**********\
      * Coders *
@@ -907,9 +907,9 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     doubleConfig.initialByte = 89;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 21;
-    doubleConfig.resolution = referencePulseWaitTimeRange.step;
-    doubleConfig.minValue = referencePulseWaitTimeRange.min;
-    doubleConfig.maxValue = referencePulseWaitTimeRange.max;
+    doubleConfig.resolution = referencePulsePeriodRange.step;
+    doubleConfig.minValue = referencePulsePeriodRange.min-referencePulseDurationRange.min;
+    doubleConfig.maxValue = referencePulsePeriodRange.max-referencePulseDurationRange.max;
     referencePulseWaitTimeCoder = new DoubleTwosCompCoder(doubleConfig);
     boolConfig.initialByte = 92;
     boolConfig.initialBit = 0;
@@ -1003,9 +1003,9 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     fastPulseW2WaitTimeCoder.resize(fastPulseW2num);
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 21;
-    doubleConfig.resolution = fastPulseW2WaitTimeRange.step;
-    doubleConfig.minValue = fastPulseW2WaitTimeRange.min;
-    doubleConfig.maxValue = fastPulseW2WaitTimeRange.max;
+    doubleConfig.resolution = fastPulseW2PeriodRange.step;
+    doubleConfig.minValue = fastPulseW2PeriodRange.min-fastPulseW2DurationRange.min;
+    doubleConfig.maxValue = fastPulseW2PeriodRange.max-fastPulseW2DurationRange.max;
     for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
         doubleConfig.initialByte = 167+14*idx;
         fastPulseW2WaitTimeCoder[idx] = new DoubleSignAbsCoder(doubleConfig);
@@ -1017,6 +1017,26 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
         doubleConfig.initialByte = 170+14*idx;
         fastPulseW2NumberCoder[idx] = new BoolArrayCoder(boolConfig);
+    }
+
+    fastPulseW1Voltages.resize(fastPulseW1num);
+    fastPulseW1Times.resize(fastPulseW1num);
+    for (uint16_t idx = 0; idx < fastPulseW1num; idx++) {
+        fastPulseW1Voltages[idx] = {0.0, UnitPfxNone, "V"};
+        fastPulseW1Times[idx] = fastPulseW1TimeRange.getMin();
+    }
+
+    fastPulseW2Voltages.resize(fastPulseW2num);
+    fastPulseW2Times.resize(fastPulseW2num);
+    fastPulseW2Durations.resize(fastPulseW2num);
+    fastPulseW2Periods.resize(fastPulseW2num);
+    fastPulseW2PulsesNumbers.resize(fastPulseW2num);
+    for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
+        fastPulseW2Voltages[idx] = {0.0, UnitPfxNone, "V"};
+        fastPulseW2Times[idx] = fastPulseW2TimeRange.getMin();
+        fastPulseW2Durations[idx] = fastPulseW2DurationRange.getMin();
+        fastPulseW2Periods[idx] = fastPulseW2PeriodRange.getMin();
+        fastPulseW2PulsesNumbers[idx] = 1;
     }
 
     /*******************\
@@ -2129,7 +2149,7 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
     cFastCompensationControl.name = "CFast";
 
     /*! Waveform 1 */
-    referenceTrainPulseImplemented = true;
+    referencePulseImplemented = true;
     fastPulseW1VoltageRange.min = -500.0;
     fastPulseW1VoltageRange.max = 500.0;
     fastPulseW1VoltageRange.step = 1;
@@ -2534,6 +2554,24 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
     for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
         doubleConfig.initialByte = 157+9*idx;
         fastPulseW2DurationCoder[idx] = new DoubleSignAbsCoder(doubleConfig);
+    }
+
+    fastPulseW1Voltages.resize(fastPulseW1num);
+    fastPulseW1Times.resize(fastPulseW1num);
+    for (uint16_t idx = 0; idx < fastPulseW1num; idx++) {
+        fastPulseW1Voltages[idx] = {0.0, UnitPfxNone, "V"};
+        fastPulseW1Times[idx] = fastPulseW1TimeRange.getMin();
+    }
+
+    fastPulseW2Voltages.resize(fastPulseW2num);
+    fastPulseW2Times.resize(fastPulseW2num);
+    fastPulseW2Durations.resize(fastPulseW2num);
+    fastPulseW2Periods.resize(fastPulseW2num);
+    fastPulseW2PulsesNumbers.resize(fastPulseW2num);
+    for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
+        fastPulseW2Voltages[idx] = {0.0, UnitPfxNone, "V"};
+        fastPulseW2Times[idx] = fastPulseW2TimeRange.getMin();
+        fastPulseW2Durations[idx] = fastPulseW2DurationRange.getMin();
     }
 
     /*******************\
@@ -3705,7 +3743,7 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
     cFastCompensationControl.name = "CFast";
 
     /*! Waveform 1 */
-    referenceTrainPulseImplemented = true;
+    referencePulseImplemented = true;
     fastPulseW1VoltageRange.min = -500.0;
     fastPulseW1VoltageRange.max = 500.0;
     fastPulseW1VoltageRange.step = 1;
@@ -4107,6 +4145,24 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
     for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
         doubleConfig.initialByte = 157+9*idx;
         fastPulseW2DurationCoder[idx] = new DoubleSignAbsCoder(doubleConfig);
+    }
+
+    fastPulseW1Voltages.resize(fastPulseW1num);
+    fastPulseW1Times.resize(fastPulseW1num);
+    for (uint16_t idx = 0; idx < fastPulseW1num; idx++) {
+        fastPulseW1Voltages[idx] = {0.0, UnitPfxNone, "V"};
+        fastPulseW1Times[idx] = fastPulseW1TimeRange.getMin();
+    }
+
+    fastPulseW2Voltages.resize(fastPulseW2num);
+    fastPulseW2Times.resize(fastPulseW2num);
+    fastPulseW2Durations.resize(fastPulseW2num);
+    fastPulseW2Periods.resize(fastPulseW2num);
+    fastPulseW2PulsesNumbers.resize(fastPulseW2num);
+    for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
+        fastPulseW2Voltages[idx] = {0.0, UnitPfxNone, "V"};
+        fastPulseW2Times[idx] = fastPulseW2TimeRange.getMin();
+        fastPulseW2Durations[idx] = fastPulseW2DurationRange.getMin();
     }
 
     /*******************\

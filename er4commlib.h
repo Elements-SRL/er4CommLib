@@ -283,6 +283,21 @@ ErrorCodes_t applyReferencePulse(
         ER4CL_ARGIN Measurement_t voltage,
         ER4CL_ARGIN Measurement_t duration);
 
+/*! \brief Apply the reference pulse train if available.
+ *
+ * \param voltage [in] Voltage of the reference pulses to be applied.
+ * \param duration [in] Duration of the reference pulses to be applied.
+ * \param period [in] Period of the reference pulses to be applied.
+ * \param number [in] Number of the reference pulses to be applied.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t applyReferencePulseTrain(
+        ER4CL_ARGIN Measurement_t voltage,
+        ER4CL_ARGIN Measurement_t duration,
+        ER4CL_ARGIN Measurement_t period,
+        ER4CL_ARGIN uint16_t number);
+
 /*! \brief Override the voltage reference switch.
  *
  * \param applyFlag [in] true: apply the override of voltage reference.
@@ -490,7 +505,7 @@ ErrorCodes_t switchChannelOn(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
-        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN uint32_t idx,
         ER4CL_ARGIN Measurement_t voltage);
 
 /*! \brief Set the duration of a waveform 1 item for the fast pulses protocol.
@@ -501,7 +516,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave1Time(
-        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN uint32_t idx,
         ER4CL_ARGIN Measurement_t time);
 
 /*! \brief Set the voltage of a waveform 2 item for the fast pulses protocol.
@@ -512,7 +527,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave1Time(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
-        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN uint32_t idx,
         ER4CL_ARGIN Measurement_t voltage);
 
 /*! \brief Set the waiting time of a waveform 2 item for the fast pulses protocol.
@@ -523,7 +538,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave2Time(
-        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN uint32_t idx,
         ER4CL_ARGIN Measurement_t time);
 
 /*! \brief Set the duration of a waveform 2 item for the fast pulses protocol.
@@ -534,16 +549,30 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Time(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
-        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN uint32_t idx,
         ER4CL_ARGIN Measurement_t time);
 
+/*! \brief Set the pulse train period of a waveform 2 item for the fast pulses protocol.
+ *
+ * \param idx [in] Index of the time set.
+ * \param time [in] Value of the time set.
+ * \return Error code.
+ */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t switchVcSel0(
-        ER4CL_ARGIN bool on);
+ErrorCodes_t setFastReferencePulseProtocolWave2Period(
+        ER4CL_ARGIN uint32_t idx,
+        ER4CL_ARGIN Measurement_t time);
 
+/*! \brief Set the number of pulses in a pulse train of a waveform 2 item for the fast pulses protocol.
+ *
+ * \param idx [in] Index of the time set.
+ * \param pulseNumber [in] Value of the time set.
+ * \return Error code.
+ */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t switchVcSel1(
-        ER4CL_ARGIN bool on);
+ErrorCodes_t setFastReferencePulseProtocolWave2PulseNumber(
+        ER4CL_ARGIN uint32_t idx,
+        ER4CL_ARGIN uint16_t pulseNumber);
 
 /*! \brief Turn on the digital output.
  *
@@ -1110,7 +1139,7 @@ ErrorCodes_t getReferencePulseControls(
  * \return Success if the device has the reference pulse feature.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t hasReferenceTrainPulseControls(
+ErrorCodes_t hasReferencePulseTrainControls(
         ER4CL_ARGOUT bool referencePulseImplemented,
         ER4CL_ARGOUT bool overrideReferencePulseImplemented);
 
@@ -1118,15 +1147,15 @@ ErrorCodes_t hasReferenceTrainPulseControls(
  *
  * \param voltageRange [out] Range of applicable pulse voltage.
  * \param durationRange [out] Ranges of applicable pulse duration.
- * \param waitTimeRange [out] Ranges of applicable pulse wait time (the pulses period is the sum of duration and wait time).
+ * \param periodRange [out] Ranges of applicable pulse period.
  * \param pulsesNumber [out] Maximum number of pulses per train.
  * \return Success if the device has the reference train pulse feature.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getReferenceTrainPulseControls(
+ErrorCodes_t getReferencePulseTrainControls(
         ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
         ER4CL_ARGOUT RangedMeasurement_t &durationRange,
-        ER4CL_ARGOUT RangedMeasurement_t &waitTimeRange,
+        ER4CL_ARGOUT RangedMeasurement_t &periodRange,
         ER4CL_ARGOUT uint16_t &pulsesNumber);
 
 /*! \brief Get data header format.
@@ -1200,17 +1229,17 @@ ErrorCodes_t getFastReferencePulseProtocolWave2Range(
  * \param voltageRange [out] Applicable voltage range.
  * \param timeRange [out] Applicable time range.
  * \param durationRange [out] Applicable duration range.
- * \param waitTimeRange [out] Applicable wait time range.
+ * \param periodRange [out] Applicable period range.
  * \param pulsesPerTrain [out] Maximum number of pulses per train.
  * \param nTrains [out] Number of trains.
  * \return Success if the reference pulse protocol is available.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getFastReferenceTrainPulseProtocolWave2Range(
+ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
         ER4CL_ARGOUT RangedMeasurement_t &voltageRange,
         ER4CL_ARGOUT RangedMeasurement_t &timeRange,
         ER4CL_ARGOUT RangedMeasurement_t &durationRange,
-        ER4CL_ARGOUT RangedMeasurement_t &waitTimeRange,
+        ER4CL_ARGOUT RangedMeasurement_t &periodRange,
         ER4CL_ARGOUT uint16_t &pulsesPerTrain,
         ER4CL_ARGOUT uint16_t &nTrains);
 

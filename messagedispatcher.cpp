@@ -1045,6 +1045,37 @@ ErrorCodes_t MessageDispatcher::applyReferencePulse(Measurement_t voltage, Measu
     }
 }
 
+ErrorCodes_t MessageDispatcher::applyReferencePulseTrain(Measurement_t voltage, Measurement_t duration, Measurement_t period, uint16_t number) {
+    if (referencePulseTrainImplemented) {
+        this->selectVoltageProtocol(0, false);
+        this->applyVoltageProtocol();
+
+        voltage.convertValue(referencePulseVoltageRange.prefix);
+        duration.convertValue(referencePulseDurationRange.prefix);
+        period.convertValue(referencePulseDurationRange.prefix);
+        if (period <= duration) {
+            return ErrorValueOutOfRange;
+        }
+
+        if (number < 1) {
+            return ErrorValueOutOfRange;
+        }
+
+        referencePulseVoltageCoder->encode(voltage.value, txStatus);
+        referencePulseDurationCoder->encode(duration.value, txStatus);
+        referencePulseWaitTimeCoder->encode(period.value-duration.value, txStatus);
+        referencePulseNumberCoder->encode(number, txStatus);
+        referencePulseApplyCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        referencePulseApplyCoder->encode(0, txStatus);
+
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::overrideReferencePulse(bool flag, bool applyFlag) {
     if (overrideReferencePulseImplemented) {
         if (flag) {
@@ -1084,7 +1115,6 @@ ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, 
     return ret;
 }
 
-
 ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFlag) {
     if (!dacExtControllableFlag) {
         return ErrorFeatureNotImplemented;
@@ -1110,8 +1140,9 @@ ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFla
 }
 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
-    if (idx < 8) {
+    if (idx < fastPulseW1num) {
         voltage.convertValue(fastPulseW1VoltageRange.prefix);
+        fastPulseW1Voltages[idx] = voltage;
         fastPulseW1VoltageCoder[idx]->encode(voltage.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
@@ -1125,8 +1156,9 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Voltage(unsign
 }
 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag) {
-    if (idx < protocolTimesNum) {
+    if (idx < fastPulseW1num) {
         time.convertValue(protocolTimeRanges[idx].prefix);
+        fastPulseW1Times[idx] = time;
         fastPulseW1TimeCoder[idx]->encode(time.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
@@ -1140,8 +1172,9 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Time(unsigned 
 }
 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
-    if (idx < 20) {
+    if (idx < fastPulseW2num) {
         voltage.convertValue(fastPulseW2VoltageRange.prefix);
+        fastPulseW2Voltages[idx] = voltage;
         fastPulseW2VoltageCoder[idx]->encode(voltage.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
@@ -1155,8 +1188,9 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Voltage(unsign
 }
 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Time(unsigned int idx, Measurement_t time, bool applyFlag) {
-    if (idx < 20) {
+    if (idx < fastPulseW2num) {
         time.convertValue(fastPulseW2TimeRange.prefix);
+        fastPulseW2Times[idx] = time;
         fastPulseW2TimeCoder[idx]->encode(time.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
@@ -1170,9 +1204,51 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Time(unsigned 
 }
 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Duration(unsigned int idx, Measurement_t time, bool applyFlag) {
-    if (idx < 20) {
+    if (idx < fastPulseW2num) {
         time.convertValue(fastPulseW2DurationRange.prefix);
+        if (fastPulseTrainProtocolImplementatedFlag) {
+            if (time >= fastPulseW2Periods[idx]) {
+                return ErrorValueOutOfRange;
+            }
+
+            fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-time.value, txStatus);
+        }
+        fastPulseW2Durations[idx] = time;
         fastPulseW2DurationCoder[idx]->encode(time.value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Period(unsigned int idx, Measurement_t time, bool applyFlag) {
+    if (idx < fastPulseW2num) {
+        time.convertValue(fastPulseW2PeriodRange.prefix);
+        if (time <= fastPulseW2Durations[idx]) {
+            return ErrorValueOutOfRange;
+        }
+        fastPulseW2Periods[idx] = time;
+        fastPulseW2WaitTimeCoder[idx]->encode(time.value-fastPulseW2Durations[idx].value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2PulseNumber(unsigned int idx, uint16_t pulsesNumber, bool applyFlag) {
+    if ((idx < fastPulseW2num) && (pulsesNumber > 0)) {
+        fastPulseW2PulsesNumbers[idx] = pulsesNumber;
+        fastPulseW2NumberCoder[idx]->encode(pulsesNumber, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -1699,8 +1775,8 @@ ErrorCodes_t MessageDispatcher::getReferencePulseControls(RangedMeasurement_t &v
     }
 }
 
-ErrorCodes_t MessageDispatcher::hasReferenceTrainPulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented) {
-    referencePulseImplemented = this->referenceTrainPulseImplemented;
+ErrorCodes_t MessageDispatcher::hasReferencePulseTrainControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented) {
+    referencePulseImplemented = this->referencePulseTrainImplemented;
     overrideReferencePulseImplemented = this->overrideReferencePulseImplemented;
     if (referencePulseImplemented) {
         return Success;
@@ -1710,11 +1786,11 @@ ErrorCodes_t MessageDispatcher::hasReferenceTrainPulseControls(bool &referencePu
     }
 }
 
-ErrorCodes_t MessageDispatcher::getReferenceTrainPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange, RangedMeasurement_t waitTimeRange, uint16_t &pulsesNumber) {
-    if (referenceTrainPulseImplemented) {
+ErrorCodes_t MessageDispatcher::getReferencePulseTrainControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange, RangedMeasurement_t periodRange, uint16_t &pulsesNumber) {
+    if (referencePulseTrainImplemented) {
         voltageRange = referencePulseVoltageRange;
         durationRange = referencePulseDurationRange;
-        waitTimeRange = referencePulseWaitTimeRange;
+        periodRange = referencePulsePeriodRange;
         pulsesNumber = referencePulseNumber;
         return Success;
 
@@ -1746,7 +1822,7 @@ ErrorCodes_t MessageDispatcher::getLedsColors(vector <uint32_t> &ledsColors) {
 }
 
 ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave1Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, uint16_t &nPulse) {
-    if (fastPulseProtocolImplementatedFlag || fastTrainPulseProtocolImplementatedFlag) {
+    if (fastPulseProtocolImplementatedFlag || fastPulseTrainProtocolImplementatedFlag) {
         voltageRange = fastPulseW1VoltageRange;
         timeRange = fastPulseW1TimeRange;
         nPulse = fastPulseW1num;
@@ -1770,12 +1846,12 @@ ErrorCodes_t MessageDispatcher::getFastReferencePulseProtocolWave2Range(RangedMe
     }
 }
 
-ErrorCodes_t MessageDispatcher::getFastReferenceTrainPulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, RangedMeasurement_t &waitTimeRange, uint16_t &pulsesPerTrain, uint16_t &nTrains) {
-    if (fastTrainPulseProtocolImplementatedFlag) {
+ErrorCodes_t MessageDispatcher::getFastReferencePulseTrainProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, RangedMeasurement_t &periodRange, uint16_t &pulsesPerTrain, uint16_t &nTrains) {
+    if (fastPulseTrainProtocolImplementatedFlag) {
         voltageRange = fastPulseW2VoltageRange;
         timeRange = fastPulseW2TimeRange;
         durationRange = fastPulseW2DurationRange;
-        waitTimeRange = fastPulseW2WaitTimeRange;
+        periodRange = fastPulseW2PeriodRange;
         pulsesPerTrain = referencePulseNumber;
         nTrains = fastPulseW2num;
         return Success;

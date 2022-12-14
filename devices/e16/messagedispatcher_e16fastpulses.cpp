@@ -581,7 +581,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     cFastCompensationControl.name = "CFast";
 
     /*! Waveform 1 */
-    referencePulseTrainImplemented = true;
+    fastPulseTrainProtocolImplementatedFlag = true;
     fastPulseW1VoltageRange.min = -500.0;
     fastPulseW1VoltageRange.max = 500.0;
     fastPulseW1VoltageRange.step = 1;
@@ -2149,7 +2149,7 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
     cFastCompensationControl.name = "CFast";
 
     /*! Waveform 1 */
-    referencePulseImplemented = true;
+    fastPulseProtocolImplementatedFlag = true;
     fastPulseW1VoltageRange.min = -500.0;
     fastPulseW1VoltageRange.max = 500.0;
     fastPulseW1VoltageRange.step = 1;
@@ -3743,7 +3743,7 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
     cFastCompensationControl.name = "CFast";
 
     /*! Waveform 1 */
-    referencePulseImplemented = true;
+    fastPulseProtocolImplementatedFlag = true;
     fastPulseW1VoltageRange.min = -500.0;
     fastPulseW1VoltageRange.max = 500.0;
     fastPulseW1VoltageRange.step = 1;

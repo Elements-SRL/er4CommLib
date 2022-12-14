@@ -247,8 +247,12 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
             break;
 
-        case DeviceENPRFairyLight:
-            messageDispatcher = new MessageDispatcher_eNPR_FL(deviceId);
+        case DeviceENPRFairyLight_V01:
+            messageDispatcher = new MessageDispatcher_eNPR_FL_V01(deviceId);
+            break;
+
+        case DeviceENPRFairyLight_V02:
+            messageDispatcher = new MessageDispatcher_eNPR_FL_V02(deviceId);
             break;
 
         case DeviceFakeE16n:

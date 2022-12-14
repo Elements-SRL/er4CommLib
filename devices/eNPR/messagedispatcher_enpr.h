@@ -143,10 +143,22 @@ private:
     };
 };
 
-class MessageDispatcher_eNPR_FL : public MessageDispatcher_eNPR {
+class MessageDispatcher_eNPR_FL_V02 : public MessageDispatcher_eNPR {
 public:
-    MessageDispatcher_eNPR_FL(string di);
-    virtual ~MessageDispatcher_eNPR_FL();
+    MessageDispatcher_eNPR_FL_V02(string di);
+    virtual ~MessageDispatcher_eNPR_FL_V02();
+
+protected:
+    enum Leds {
+        LedBlue,
+        LedsNum
+    };
+};
+
+class MessageDispatcher_eNPR_FL_V01 : public MessageDispatcher_eNPR {
+public:
+    MessageDispatcher_eNPR_FL_V01(string di);
+    virtual ~MessageDispatcher_eNPR_FL_V01();
 
 protected:
     enum Leds {

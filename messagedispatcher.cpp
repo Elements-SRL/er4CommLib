@@ -27,35 +27,36 @@
 #include <unistd.h>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},               //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
-    {DeviceVersionE1, DeviceSubversionE1LightEL03F, 1, DeviceE1LightEL03fEDR3},             //    9,  7,  1 : e1Light EL03f chip (Legacy version for EDR3)
-    {DeviceVersionE1, DeviceSubversionE1LightEL03F, 2, DeviceE1LightEL03fEDR3},             //    9,  7,  2 : e1Light EL03f chip (Legacy version for EDR3)
-    {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                     //    9,  1,  4 : e1b EL03f chip (Legacy version for EDR3)
-    {DeviceVersionE1, DeviceSubversionE1HcEL03F, 1, DeviceE1HcEL03fEDR3},                   //    9,  9,  1 : e1HC EL03f chip (Legacy version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                           //    3,  8, 11 : e16e (Legacy version for EDR3)
-    {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                             //    8,  2,129 : eNPR
-    {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                         //    8,  8,129 : eNPR-HC
-    {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nV04EDR3},                           //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nV04EDR3},                           //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                 //    4,  8,129 : e4 Elements version
-    {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses},            //    3,  4,129 : e16 Orbit customized for fast pulses
-    {DeviceVersionE16, DeviceSubversionE16FastPulses, 4, DeviceE16FastPulsesEDR3},          //    3,  4,  4 : e16 Orbit customized for fast pulses (Legacy version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                              //    3,  5,135 : e16 2020 release
-    {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                              //    3,  5,136 : e16 2020 release
-    {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC_V01},                          //    3, 10,  4 : e16HC No voltage amplifier
-    {DeviceVersionE16, DeviceSubversionE16HC, 5, DeviceE16HC_V02},                          //    3, 10,  5 : e16HC
-    {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                  //    6,  3,  4 : debug dlp
-    {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                         //    6,  5,129 : testboard EL06b
-    {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                         //    6,  6,129 : testboard EL06c
-    {DeviceVersionDlp, DeviceSubversionEL06d, 129, TestboardEL06dEL06e},                    //    6,  7,129 : testboard EL06d
-    {DeviceVersionDlp, DeviceSubversionEL06e, 129, TestboardEL06dEL06e},                    //    6,  8,129 : testboard EL06e
-    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},              //  254, 14,  1 : e2HC with external ADC
-    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 129, DeviceE2HCExtAdc},            //  254, 14,129 : e2HC with external ADC
-    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},              //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
-    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},            //  254, 15,129 : e2HC with internal (delta-sigma) ADC
-    {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight},    //  254, 16,129 : eNPR prototype for Fairy Light project
+    {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},                   //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1LightEL03F, 1, DeviceE1LightEL03fEDR3},                 //    9,  7,  1 : e1Light EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1LightEL03F, 2, DeviceE1LightEL03fEDR3},                 //    9,  7,  2 : e1Light EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                         //    9,  1,  4 : e1b EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1HcEL03F, 1, DeviceE1HcEL03fEDR3},                       //    9,  9,  1 : e1HC EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                               //    3,  8, 11 : e16e (Legacy version for EDR3)
+    {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                                 //    8,  2,129 : eNPR
+    {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                             //    8,  8,129 : eNPR-HC
+    {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nV04EDR3},                               //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nV04EDR3},                               //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                                  //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                     //    4,  8,129 : e4 Elements version
+    {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses},                //    3,  4,129 : e16 Orbit customized for fast pulses
+    {DeviceVersionE16, DeviceSubversionE16FastPulses, 4, DeviceE16FastPulsesEDR3},              //    3,  4,  4 : e16 Orbit customized for fast pulses (Legacy version for EDR3)
+    {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                                  //    3,  5,135 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                                  //    3,  5,136 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                            //    3,  9,  4 : e16eth (Legacy Version for EDR3)
+    {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC_V01},                              //    3, 10,  4 : e16HC No voltage amplifier
+    {DeviceVersionE16, DeviceSubversionE16HC, 5, DeviceE16HC_V02},                              //    3, 10,  5 : e16HC
+    {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                      //    6,  3,  4 : debug dlp
+    {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                             //    6,  5,129 : testboard EL06b
+    {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                             //    6,  6,129 : testboard EL06c
+    {DeviceVersionDlp, DeviceSubversionEL06d, 129, TestboardEL06dEL06e},                        //    6,  7,129 : testboard EL06d
+    {DeviceVersionDlp, DeviceSubversionEL06e, 129, TestboardEL06dEL06e},                        //    6,  8,129 : testboard EL06e
+    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},                  //  254, 14,  1 : e2HC with external ADC
+    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 129, DeviceE2HCExtAdc},                //  254, 14,129 : e2HC with external ADC
+    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},                  //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
+    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},                //  254, 15,129 : e2HC with internal (delta-sigma) ADC
+    {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight_V01},    //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
+    {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},    //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16n}
 };
 

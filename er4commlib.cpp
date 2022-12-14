@@ -171,6 +171,10 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(deviceId);
             break;
 
+        case DeviceE1HcEL03fEDR3:
+            messageDispatcher = new MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(deviceId);
+            break;
+
         case DeviceE16eEDR3:
             messageDispatcher = new MessageDispatcher_e16e_LegacyEdr3_V00(deviceId);
             break;

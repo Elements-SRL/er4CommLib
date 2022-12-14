@@ -1786,7 +1786,7 @@ ErrorCodes_t MessageDispatcher::hasReferencePulseTrainControls(bool &referencePu
     }
 }
 
-ErrorCodes_t MessageDispatcher::getReferencePulseTrainControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange, RangedMeasurement_t periodRange, uint16_t &pulsesNumber) {
+ErrorCodes_t MessageDispatcher::getReferencePulseTrainControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange, RangedMeasurement_t &periodRange, uint16_t &pulsesNumber) {
     if (referencePulseTrainImplemented) {
         voltageRange = referencePulseVoltageRange;
         durationRange = referencePulseDurationRange;

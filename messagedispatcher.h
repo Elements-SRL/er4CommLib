@@ -251,7 +251,7 @@ public:
     ErrorCodes_t hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented);
     ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t hasReferencePulseTrainControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented);
-    ErrorCodes_t getReferencePulseTrainControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange, RangedMeasurement_t waitTimeRange, uint16_t &pulsesNumber);
+    ErrorCodes_t getReferencePulseTrainControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange, RangedMeasurement_t &periodRange, uint16_t &pulsesNumber);
     ErrorCodes_t getEdhFormat(string &format);
     ErrorCodes_t getRawDataFilterCutoffFrequency(RangedMeasurement_t &range, Measurement_t &defaultValue);
     ErrorCodes_t getLedsNumber(uint16_t &ledsNumber);

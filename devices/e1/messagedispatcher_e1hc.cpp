@@ -834,7 +834,33 @@ MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::MessageDispatcher_e1Hc_El03c_Legacy
     txStatus[txStatusIdx++] = 0x00;
 }
 
+MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::~MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00() {
 
+}
+
+void MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::initializeDevice() {
+    this->setSamplingRate(defaultSamplingRateIdx, false);
+
+    this->digitalOffsetCompensation(currentChannelsNum, false);
+
+    this->selectVoltageProtocol(defaultProtocol);
+
+    for (unsigned int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
+        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
+    }
+
+    for (unsigned int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
+        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
+    }
+
+    for (unsigned int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
+        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
+    }
+
+    for (unsigned int adimensionalIdx = 0; adimensionalIdx < ProtocolAdimensionalsNum; adimensionalIdx++) {
+        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
+    }
+}
 
 bool MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::checkProtocolValidity(string &message) {
     bool validFlag = true;

@@ -1986,7 +1986,7 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
         RangedMeasurement_t voltageRange;
         RangedMeasurement_t timeRange;
         RangedMeasurement_t durationRange;
-        RangedMeasurement_t period;
+        RangedMeasurement_t periodRange;
         ret = messageDispatcher->getFastReferencePulseTrainProtocolWave2Range(voltageRange, timeRange, durationRange, periodRange, pulsesPerTrain, nTrains);
 
         voltageRangeRed=toReduceRangedMeasurement(voltageRange);

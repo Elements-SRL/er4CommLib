@@ -577,8 +577,8 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     cFastCompensationControl.decimals = 1;
     cFastCompensationControl.value = 0.0;
     cFastCompensationControl.prefix = UnitPfxPico;
-    cFastCompensationControl.unit = "F";
-    cFastCompensationControl.name = "CFast";
+//    cFastCompensationControl.unit = "F";
+//    cFastCompensationControl.name = "CFast";
 
     /*! Waveform 1 */
     referencePulseTrainImplemented = true;

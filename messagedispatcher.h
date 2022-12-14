@@ -18,7 +18,6 @@
 #ifndef MESSAGEDISPATCHER_H
 #define MESSAGEDISPATCHER_H
 
-
 #include <cmath>
 #include <mutex>
 #include <thread>
@@ -91,10 +90,10 @@ using namespace std;
 #define FTD_TX_MSG_BUFFER_SIZE 0x100 /*! \todo FCON valutare che questo numero sia adeguato */ // 256
 #define FTD_TX_MSG_BUFFER_MASK (FTD_TX_MSG_BUFFER_SIZE-1)
 
-typedef struct Measurement{
+typedef struct Measurement {
     double value; /*!< Numerical value. */
     UnitPfx_t prefix; /*!< Unit prefix in the range [femto, Peta]. */
-    char * unit; /*!< Unit. \note Can be any string, the library is not aware of real units meaning. */
+    string unit; /*!< Unit. \note Can be any string, the library is not aware of real units meaning. */
 
     /*! \brief Returns the value without prefix.
      *
@@ -201,8 +200,6 @@ typedef struct Measurement{
             incrementUnit(prefix, (int)minDelta);
         }
     }
-
-
 } Measurement_t;
 
 /*! \brief Overloaded equality check for #Measurement_t. \note No conversion is performed, cause the multiplication can introduce rounding errors.
@@ -366,11 +363,12 @@ inline Measurement_t operator / (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN
 /*! \struct RangedMeasurement_t
  * \brief Structure used manage physical ranges that define a range with its unit and unit prefix.
  */
-typedef struct RangedMeasurement{
+typedef struct RangedMeasurement {
     double min; /*!< Minimum value. */
     double max; /*!< Maximum value. */
     double step; /*!< Resolution. */
     UnitPfx_t prefix = UnitPfxNone; /*!< Unit prefix in the range [femto, Peta]. */
+    string unit = ""; /*!< Unit. \note Can be any string, the library is not aware of real units meaning. */
 
     /*! \brief Returns the string corresponding to the prefix.
      *
@@ -561,7 +559,6 @@ MeasurementReduced_t toReduceMeasurement(Measurement_t);
 RangedMeasurementReduced_t toReduceRangedMeasurement(RangedMeasurement_t);
 Measurement_t fromReduceMeasurement(MeasurementReduced_t);
 RangedMeasurement_t fromReduceRangedMeasurement(RangedMeasurementReduced_t);
-
 
 /********************************************************************************************\
  *                                                                                          *
@@ -929,8 +926,8 @@ protected:
     vector <Measurement_t> selectedProtocolAdimensional;
 
     vector <Measurement_t> selectedVoltageOffset;
-    Measurement_t minSelectedVoltageOffset = {0, UnitPfxMilli};
-    Measurement_t maxSelectedVoltageOffset = {0, UnitPfxMilli};
+    Measurement_t minSelectedVoltageOffset = {0.0, UnitPfxMilli, "V"};
+    Measurement_t maxSelectedVoltageOffset = {0.0, UnitPfxMilli, "V"};
 
     bool voltageOffsetControlImplemented = false;
     RangedMeasurement_t voltageOffsetRange;

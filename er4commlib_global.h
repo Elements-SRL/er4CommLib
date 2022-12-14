@@ -217,16 +217,16 @@ static const double powersOf1000[UnitPfxNum] = {
     1.0e30
 };
 
-/*! \struct Measurement_t
- * \brief Structure used manage physical quantities that define a value with its unit and unit prefix.
+/*! \struct MeasurementReduced_t
+ * \brief Structure used to manage physical quantities that define a value with its unit prefix.
  */
 typedef struct MeasurementReduced {
     double value; /*!< Numerical value. */
     UnitPfx_t prefix; /*!< Unit prefix in the range [femto, Peta]. */
 } MeasurementReduced_t;
 
-/*! \struct Measurement_t
- * \brief Structure used manage physical quantities that define a value with its unit and unit prefix.
+/*! \struct RangedMeasurementReduced_t
+ * \brief Structure used to manage physical ranges that define a range with its unit prefix.
  */
 typedef struct RangedMeasurementReduced {
     double min; /*!< Minimum value.*/
@@ -235,13 +235,11 @@ typedef struct RangedMeasurementReduced {
     UnitPfx_t prefix = UnitPfxNone;
 } RangedMeasurementReduced_t;
 
-
-
 /*! \struct ChannelSources_t
  * \brief Structure used to return available data sources for a channel.
  * \note -1 means that the source is not available.
  */
-typedef struct ChannelSource{
+typedef struct ChannelSource {
     int16_t VoltageFromVoltageClamp = -1; /*!< Get voltage applied by voltage clamp front-end. */
     int16_t CurrentFromVoltageClamp = -1; /*!< Get current read by voltage clamp front-end. */
     int16_t VoltageFromCurrentClamp = -1; /*!< Get voltage read by current clamp front-end. */

@@ -1144,7 +1144,89 @@ void MessageDispatcher_eNPR::setFerdParameters() {
     MessageDispatcher::setFerdParameters();
 }
 
-MessageDispatcher_eNPR_FL::MessageDispatcher_eNPR_FL(string di) :
+MessageDispatcher_eNPR_FL_V02::MessageDispatcher_eNPR_FL_V02(string di) :
+    MessageDispatcher_eNPR(di) {
+
+    /*! LEDs */
+    ledsNum = LedsNum;
+    ledsColorsArray.resize(ledsNum);
+    ledsColorsArray[LedBlue] = 0x0000FF;
+
+    /**********\
+     * Coders *
+    \**********/
+
+    BoolCoder::CoderConfig_t boolConfig;
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    ledsCoders.resize(ledsNum);
+    ledsCoders[LedBlue] = new BoolArrayCoder(boolConfig);
+
+    /*! Device specific controls */
+
+    /*******************\
+     * Default status  *
+    \*******************/
+
+    txStatus.resize(txDataBytes);
+
+    txStatus[0] = txSyncWord; // HDR
+    txStatus[1] = 0x20; // CFG0
+    txStatus[2] = 0x03; // CFG1
+    txStatus[3] = 0x00; // CFG2
+    txStatus[4] = 0x00; // CFG3
+    txStatus[5] = 0x01; // COMP0
+    txStatus[6] = 0x40; // COMP1
+    txStatus[7] = 0x00; // Vhold
+    txStatus[8] = 0x00;
+    txStatus[9] = 0x00;
+    txStatus[10] = 0x00; // VPulse
+    txStatus[11] = 0x00;
+    txStatus[12] = 0x00;
+    txStatus[13] = 0x00; // VInsPulse
+    txStatus[14] = 0x00;
+    txStatus[15] = 0x00;
+    txStatus[16] = 0x00; // VStep
+    txStatus[17] = 0x00;
+    txStatus[18] = 0x00;
+    txStatus[19] = 0x00; // THold
+    txStatus[20] = 0x00;
+    txStatus[21] = 0x00;
+    txStatus[22] = 0x00;
+    txStatus[23] = 0x00; // TPulse
+    txStatus[24] = 0x00;
+    txStatus[25] = 0x00;
+    txStatus[26] = 0x00;
+    txStatus[27] = 0x00; // TInsPulse
+    txStatus[28] = 0x00;
+    txStatus[29] = 0x00; // TStep
+    txStatus[30] = 0x00;
+    txStatus[31] = 0x00;
+    txStatus[32] = 0x00;
+    txStatus[33] = 0x00; // N
+    txStatus[34] = 0x00;
+    txStatus[35] = 0x00; // NR
+    txStatus[36] = 0x00;
+    txStatus[37] = 0x00; // Triangular
+    txStatus[38] = 0x00;
+    txStatus[39] = 0x00; // TRamp
+    txStatus[40] = 0x00;
+    txStatus[41] = 0x00;
+    txStatus[42] = 0x00;
+    txStatus[43] = 0x00; // Vfinal
+    txStatus[44] = 0x00;
+    txStatus[45] = 0x00;
+    txStatus[46] = 0x00; // VInit
+    txStatus[47] = 0x00;
+    txStatus[48] = 0x00;
+}
+
+MessageDispatcher_eNPR_FL_V02::~MessageDispatcher_eNPR_FL_V02() {
+
+}
+
+MessageDispatcher_eNPR_FL_V01::MessageDispatcher_eNPR_FL_V01(string di) :
     MessageDispatcher_eNPR(di) {
 
     txDataBytes = 52;
@@ -1296,6 +1378,6 @@ MessageDispatcher_eNPR_FL::MessageDispatcher_eNPR_FL(string di) :
     txStatus[51] = 0x00;
 }
 
-MessageDispatcher_eNPR_FL::~MessageDispatcher_eNPR_FL() {
+MessageDispatcher_eNPR_FL_V01::~MessageDispatcher_eNPR_FL_V01() {
 
 }

@@ -81,18 +81,6 @@ protected:
         ProtocolTimeRangesNum
     };
 
-    enum Protocols {
-        ProtocolConstant,
-        ProtocolTriangular,
-        ProtocolSquareWave,
-        ProtocolConductance,
-        ProtocolVariableAmplitude,
-        ProtocolVariableDuration,
-        ProtocolRamp,
-        ProtocolCyclicVoltammetry,
-        ProtocolsNum
-    };
-
     enum ProtocolVoltages {
         ProtocolVHold,
         ProtocolVPulse,
@@ -141,6 +129,48 @@ private:
         ProtocolVoltageRange2V,
         ProtocolVoltageRangesNum
     };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+};
+
+class MessageDispatcher_eNPR_2Channels_V01 : public MessageDispatcher_eNPR {
+public:
+    MessageDispatcher_eNPR_2Channels_V01(string di);
+    virtual ~MessageDispatcher_eNPR_2Channels_V01();
+
+private:
+    enum VoltageRanges {
+        VoltageRange500mV,
+        VoltageRangesNum
+    };
+
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange500mV,
+        ProtocolVoltageRangesNum
+    };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolSinusoid,
+        ProtocolsNum
+    };
 };
 
 class MessageDispatcher_eNPR_FL_V02 : public MessageDispatcher_eNPR {
@@ -149,6 +179,18 @@ public:
     virtual ~MessageDispatcher_eNPR_FL_V02();
 
 protected:
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+
     enum Leds {
         LedBlue,
         LedsNum
@@ -161,6 +203,18 @@ public:
     virtual ~MessageDispatcher_eNPR_FL_V01();
 
 protected:
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+
     enum Leds {
         LedBlue,
         LedsNum

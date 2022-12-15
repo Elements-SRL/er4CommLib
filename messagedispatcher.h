@@ -414,12 +414,14 @@ protected:
     vector <RangedMeasurement_t> protocolVoltageRangesArray;
     vector <RangedMeasurement_t> protocolTimeRangesArray;
     vector <RangedMeasurement_t> protocolSlopeRangesArray;
+    vector <RangedMeasurement_t> protocolFrequencyRangesArray;
 
     vector <string> protocolsNames;
     vector <string> protocolsImages;
     vector <vector <uint16_t>> protocolsAvailableVoltages;
     vector <vector <uint16_t>> protocolsAvailableTimes;
     vector <vector <uint16_t>> protocolsAvailableSlopes;
+    vector <vector <uint16_t>> protocolsAvailableFrequencies;
     vector <vector <uint16_t>> protocolsAvailableAdimensionals;
     BoolArrayCoder * protocolsSelectCoder;
     BoolArrayCoder * protocolStartCoder;
@@ -448,6 +450,13 @@ protected:
     vector <DoubleCoder *> protocolSlopeCoders;
     vector <Measurement_t> protocolSlopeDefault;
     vector <Measurement_t> selectedProtocolSlope;
+
+    unsigned int protocolFrequenciesNum;
+    vector <std::string> protocolFrequencyNames;
+    vector <RangedMeasurement_t> protocolFrequencyRanges;
+    vector <DoubleCoder *> protocolFrequencyCoders;
+    vector <Measurement_t> protocolFrequencyDefault;
+    vector <Measurement_t> selectedProtocolFrequency;
 
     unsigned int protocolAdimensionalsNum;
     vector <std::string> protocolAdimensionalNames;

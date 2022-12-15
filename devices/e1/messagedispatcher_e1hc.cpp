@@ -17,7 +17,7 @@
 
 #include "messagedispatcher_e1hc.h"
 
-MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00(string id) :
+MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00::MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(string id) :
     MessageDispatcherLegacyEdr3(id) {
 
     /************************\
@@ -840,11 +840,11 @@ MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::MessageDispatcher_e1Hc_El03c_Legacy
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::~MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00() {
+MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00::~MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00() {
 
 }
 
-void MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::initializeDevice() {
+void MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->digitalOffsetCompensation(currentChannelsNum, false);
@@ -868,7 +868,7 @@ void MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::initializeDevice() {
     }
 }
 
-bool MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1067,7 +1067,7 @@ bool MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::checkProtocolValidity(string &
     return validFlag;
 }
 
-void MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::setFerdParameters() {
+void MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200uA) {
@@ -1102,7 +1102,11 @@ void MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::setFerdParameters() {
     MessageDispatcher::setFerdParameters();
 }
 
-MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00::MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(string id) :
-    MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00(id){
+MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00(string id) :
+    MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(id) {
+
+}
+
+MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00::~MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00() {
 
 }

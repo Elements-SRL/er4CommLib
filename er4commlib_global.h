@@ -95,6 +95,9 @@ namespace er4CommLib {
  */
 typedef enum {
     DeviceE1bEL03cEDR3,         /*!< e1b ELo3c chip (Legacy version for EDR3). */
+    DeviceE1PlusEL03cEDR3,      /*!< e1+ EL03f chip (Legacy version for EDR3). */
+    DeviceE1LightEL03cEDR3,     /*!< e1Light EL03f chip (Legacy version for EDR3). */
+    DeviceE1HcEL03cEDR3,        /*!< e1HC EL03f chip (Legacy version for EDR3) */
     DeviceE1PlusEL03fEDR3,      /*!< e1+ EL03f chip (Legacy version for EDR3). */
     DeviceE1LightEL03fEDR3,     /*!< e1Light EL03f chip (Legacy version for EDR3). */
     DeviceE1HcEL03fEDR3,        /*!< e1HC EL03f chip (Legacy version for EDR3) */

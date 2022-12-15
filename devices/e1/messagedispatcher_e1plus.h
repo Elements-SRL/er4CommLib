@@ -133,6 +133,15 @@ protected:
     InfoStruct_t infoStruct;
 };
 
-class MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00 : public MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00 {};
-//class MessageDispatcher_e1b_El03c_LegacyEdr3_V00 : public MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00 {};
+class MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00 : public MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00 {
+public:
+    MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00(string id);
+    ~MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00();
+};
+
+class MessageDispatcher_e1b_El03c_LegacyEdr3_V00 : public MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00 {
+public:
+    MessageDispatcher_e1b_El03c_LegacyEdr3_V00(string id);
+    ~MessageDispatcher_e1b_El03c_LegacyEdr3_V00();
+};
 #endif // MESSAGEDISPATCHER_E1PLUS_H

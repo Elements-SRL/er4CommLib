@@ -1107,3 +1107,21 @@ void MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00::setFerdParameters() {
 
     MessageDispatcher::setFerdParameters();
 }
+
+MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00::MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00(string id) :
+    MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(id) {
+
+}
+
+MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00::~MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00() {
+
+}
+
+MessageDispatcher_e1b_El03c_LegacyEdr3_V00::MessageDispatcher_e1b_El03c_LegacyEdr3_V00(string id) :
+    MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(id) {
+
+}
+
+MessageDispatcher_e1b_El03c_LegacyEdr3_V00::~MessageDispatcher_e1b_El03c_LegacyEdr3_V00() {
+
+}

@@ -163,20 +163,32 @@ ErrorCodes_t connect(
         }
 
         switch (deviceType) {
-        case DeviceE1PlusEL03fEDR3:
-            messageDispatcher = new MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(deviceId);
+        case DeviceE1bEL03cEDR3:
+            messageDispatcher = new MessageDispatcher_e1b_El03c_LegacyEdr3_V00(deviceId);
+            break;
+
+        case DeviceE1LightEL03cEDR3:
+            messageDispatcher = new MessageDispatcher_e1Light_El03c_LegacyEdr3_V01(deviceId);
+            break;
+
+        case DeviceE1PlusEL03cEDR3:
+            messageDispatcher = new MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00(deviceId);
+            break;
+
+        case DeviceE1HcEL03cEDR3:
+            messageDispatcher = new MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00(deviceId);
             break;
 
         case DeviceE1LightEL03fEDR3:
             messageDispatcher = new MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(deviceId);
             break;
 
-        case DeviceE1HcEL03fEDR3:
-            messageDispatcher = new MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(deviceId);
+        case DeviceE1PlusEL03fEDR3:
+            messageDispatcher = new MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(deviceId);
             break;
 
-        case DeviceE16eEDR3:
-            messageDispatcher = new MessageDispatcher_e16e_LegacyEdr3_V00(deviceId);
+        case DeviceE1HcEL03fEDR3:
+            messageDispatcher = new MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(deviceId);
             break;
 
         case DeviceENPR:
@@ -197,6 +209,10 @@ ErrorCodes_t connect(
 
         case DeviceE4e:
             messageDispatcher = new MessageDispatcher_e4e(deviceId);
+            break;
+
+        case DeviceE16eEDR3:
+            messageDispatcher = new MessageDispatcher_e16e_LegacyEdr3_V00(deviceId);
             break;
 
         case DeviceE16FastPulses:

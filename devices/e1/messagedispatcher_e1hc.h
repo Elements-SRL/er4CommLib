@@ -1,3 +1,20 @@
+//  Copyright (C) 2022 Filippo Cona
+//
+//  This file is part of EDR4.
+//
+//  EDR4 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  EDR4 is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+
 #ifndef MESSAGEDISPATCHER_E1HC_H
 #define MESSAGEDISPATCHER_E1HC_H
 
@@ -15,15 +32,14 @@ protected:
     } InfoStruct_t;
 
     enum CurrentRanges {
-        CurrentRange200pA,
-        CurrentRange2nA,
-        CurrentRange20nA,
-        CurrentRange200nA,
+        CurrentRange2uA,
+        CurrentRange20uA,
+        CurrentRange200uA,
         CurrentRangesNum
     };
 
     enum VoltageRanges {
-        VoltageRange500mV,
+        VoltageRange2000mV,
         VoltageRangesNum
     };
 
@@ -54,7 +70,7 @@ protected:
     };
 
     enum ProtocolVoltageRanges {
-        ProtocolVoltageRange500mV,
+        ProtocolVoltageRange2000mV,
         ProtocolVoltageRangesNum
     };
 
@@ -115,7 +131,6 @@ protected:
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
-
 };
 
 class MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00 : public MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00 {

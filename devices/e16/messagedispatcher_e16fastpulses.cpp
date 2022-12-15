@@ -663,7 +663,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     }
 
     boolConfig.initialByte = 8;
-    boolConfig.initialBit = 2;
+    boolConfig.initialBit = 3;
     boolConfig.bitsNum = 1;
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 

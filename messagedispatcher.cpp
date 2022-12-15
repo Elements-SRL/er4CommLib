@@ -1209,14 +1209,14 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Time(unsigned 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Duration(unsigned int idx, Measurement_t time, bool applyFlag) {
     if (idx < fastPulseW2num) {
         time.convertValue(fastPulseW2DurationRange.prefix);
+        fastPulseW2Durations[idx] = time;
         if (fastPulseTrainProtocolImplementatedFlag) {
             if (time >= fastPulseW2Periods[idx]) {
                 return ErrorValueOutOfRange;
             }
 
-            fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-time.value, txStatus);
+            fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
         }
-        fastPulseW2Durations[idx] = time;
         fastPulseW2DurationCoder[idx]->encode(time.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
@@ -1232,11 +1232,12 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Duration(unsig
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Period(unsigned int idx, Measurement_t time, bool applyFlag) {
     if (idx < fastPulseW2num) {
         time.convertValue(fastPulseW2PeriodRange.prefix);
+        fastPulseW2Periods[idx] = time;
         if (time <= fastPulseW2Durations[idx]) {
             return ErrorValueOutOfRange;
         }
-        fastPulseW2Periods[idx] = time;
-        fastPulseW2WaitTimeCoder[idx]->encode(time.value-fastPulseW2Durations[idx].value, txStatus);
+        fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
+        fastPulseW2DurationCoder[idx]->encode(time.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }

@@ -74,13 +74,13 @@ ErrorCodes_t MessageDispatcher_fake_e16FastPulses::connect(FtdiEeprom * ftdiEepr
 
     stopConnectionFlag = false;
 
-//    rxThread = thread(&MessageDispatcher_fake_e16n::readAndParseMessagesForGenerator, this);
+//    rxThread = thread(&MessageDispatcher_fake_e16FastPulses::readDataFromGenerator, this);
 
-//    txThread = thread(&MessageDispatcher_fake_e16n::unwrapAndSendMessagesForGenerator, this);
+    txThread = thread(&MessageDispatcher_fake_e16FastPulses::sendCommandsToGenerator, this);
 
-//    gnThread = thread(&MessageDispatcher_fake_e16n::generateData, this);
+//    gnThread = thread(&MessageDispatcher_fake_e16FastPulses::generateData, this);
 
-//    satThread = thread(&MessageDispatcher_fake_e16n::saturationFromGenerator, this);
+//    satThread = thread(&MessageDispatcher_fake_e16FastPulses::saturationFromGenerator, this);
 
     return Success;
 }
@@ -94,7 +94,7 @@ ErrorCodes_t MessageDispatcher_fake_e16FastPulses::disconnect() {
         stopConnectionFlag = true;
 
 //        rxThread.join();
-//        txThread.join();
+        txThread.join();
 //        gnThread.join();
 //        satThread.join();
 
@@ -136,4 +136,72 @@ ErrorCodes_t MessageDispatcher_fake_e16FastPulses::setSamplingRate(uint16_t samp
         samplingTime = 1.0/genSamplingRate.value;
     }
     return ret;
+}
+
+void MessageDispatcher_fake_e16FastPulses::sendCommandsToGenerator() {
+    DWORD bytesToWrite;
+
+    /*! Variables used to access the tx raw buffer */
+    uint32_t txRawBufferReadIdx = 0; /*!< Index being processed wrt buffer  */
+
+    /*! Variables used to access the tx msg buffer */
+    uint32_t txMsgBufferReadOffset = 0; /*!< Offset of the part of buffer to be processed  */
+
+    /*! Variables used to access the tx data buffer */
+    uint32_t txDataBufferReadIdx;
+
+    unique_lock <mutex> txMutexLock (txMutex);
+    txMutexLock.unlock();
+
+    while (!stopConnectionFlag) {
+
+        /***********************\
+         *  Data copying part  *
+        \***********************/
+
+        txMutexLock.lock();
+        while (txMsgBufferReadLength <= 0) {
+            txMsgBufferNotEmpty.wait_for(txMutexLock, chrono::milliseconds(100));
+            if (stopConnectionFlag) {
+                break;
+            }
+        }
+        txMutexLock.unlock();
+        if (stopConnectionFlag) {
+            continue;
+        }
+
+        txRawBufferReadIdx = 0;
+        for (txDataBufferReadIdx = 0; txDataBufferReadIdx < txDataBytes; txDataBufferReadIdx++) {
+            * ((uint8_t *)(txRawBuffer+txRawBufferReadIdx)) = txMsgBuffer[txMsgBufferReadOffset][txDataBufferReadIdx];
+            txRawBufferReadIdx += FTD_TX_WORD_SIZE;
+        }
+
+        txMsgBufferReadOffset = (txMsgBufferReadOffset+1)&FTD_TX_MSG_BUFFER_MASK;
+
+        /******************\
+         *  Sending part  *
+        \******************/
+
+        bytesToWrite = (DWORD)txDataBytes;
+
+#ifdef DEBUG_PRINT
+            fprintf(fid, "\n%d %d\n", txDataBytes, bytesToWrite);
+            fflush(fid);
+
+            for (int i = 0; i < txDataBytes; i++) {
+                fprintf(fid, "%03d:%02x ", i, txRawBuffer[i]);
+                if (i % 16 == 15) {
+                    fprintf(fid, "\n");
+                }
+            }
+            fprintf(fid, "\n");
+            fflush(fid);
+#endif
+
+        txMutexLock.lock();
+        txMsgBufferReadLength--;
+        txMsgBufferNotFull.notify_all();
+        txMutexLock.unlock();
+    }
 }

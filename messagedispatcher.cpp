@@ -1160,7 +1160,7 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Voltage(unsign
 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag) {
     if (idx < fastPulseW1num) {
-        time.convertValue(protocolTimeRanges[idx].prefix);
+        time.convertValue(fastPulseW1TimeRange.prefix);
         fastPulseW1Times[idx] = time;
         fastPulseW1TimeCoder[idx]->encode(time.value, txStatus);
         if (applyFlag) {

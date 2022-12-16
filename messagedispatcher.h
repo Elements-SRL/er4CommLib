@@ -34,7 +34,7 @@
 using namespace std;
 using namespace er4CommLib;
 
-//#define DEBUG_PRINT
+#define DEBUG_PRINT
 
 #ifdef DEBUG_PRINT
 //#define DEBUG_RAW_BIT_RATE_PRINT

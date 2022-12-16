@@ -41,6 +41,8 @@ public:
 
     ErrorCodes_t connect(FtdiEeprom * ftdiEeprom) override;
     ErrorCodes_t disconnect() override;
+//    void readDataFromGenerator();
+    void sendCommandsToGenerator();
 
     /******************************\
      *  Tx methods for generator  *

@@ -1015,7 +1015,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 14;
     for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
-        doubleConfig.initialByte = 170+14*idx;
+        boolConfig.initialByte = 170+14*idx;
         fastPulseW2NumberCoder[idx] = new BoolArrayCoder(boolConfig);
     }
 

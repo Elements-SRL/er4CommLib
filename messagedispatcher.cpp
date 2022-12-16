@@ -1237,7 +1237,7 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Period(unsigne
             return ErrorValueOutOfRange;
         }
         fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
-        fastPulseW2DurationCoder[idx]->encode(time.value, txStatus);
+        fastPulseW2DurationCoder[idx]->encode(fastPulseW2Durations[idx].value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }

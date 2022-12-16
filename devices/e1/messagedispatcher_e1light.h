@@ -129,4 +129,10 @@ protected:
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 };
+
+class MessageDispatcher_e1Light_El03c_LegacyEdr3_V01 : public MessageDispatcher_e1Light_El03f_LegacyEdr3_V01 {
+public:
+    MessageDispatcher_e1Light_El03c_LegacyEdr3_V01(string id);
+    ~MessageDispatcher_e1Light_El03c_LegacyEdr3_V01();
+};
 #endif // MESSAGEDISPATCHER_E1LIGHT_H

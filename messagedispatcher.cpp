@@ -26,10 +26,13 @@
 #include <algorithm>
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},                   //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                         //    9,  2,  4 : e1b EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1LightEL03C, 2, DeviceE1LightEL03cEDR3},                 //    9,  4,  2 : e1Light EL03c chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1PlusEL03C, 6, DeviceE1PlusEL03cEDR3},                   //    9,  5,  6 : e1Light EL03c chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1HcEL03C, 7, DeviceE1HcEL03cEDR3},                       //    9,  6,  7 : e1HC EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightEL03F, 1, DeviceE1LightEL03fEDR3},                 //    9,  7,  1 : e1Light EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightEL03F, 2, DeviceE1LightEL03fEDR3},                 //    9,  7,  2 : e1Light EL03f chip (Legacy version for EDR3)
-    {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                         //    9,  1,  4 : e1b EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},                   //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1HcEL03F, 1, DeviceE1HcEL03fEDR3},                       //    9,  9,  1 : e1HC EL03f chip (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                               //    3,  8, 11 : e16e (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                                 //    8,  2,129 : eNPR
@@ -1193,7 +1196,7 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Voltage(unsign
 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag) {
     if (idx < fastPulseW1num) {
-        time.convertValue(protocolTimeRanges[idx].prefix);
+        time.convertValue(fastPulseW1TimeRange.prefix);
         fastPulseW1Times[idx] = time;
         fastPulseW1TimeCoder[idx]->encode(time.value, txStatus);
         if (applyFlag) {
@@ -1242,14 +1245,14 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Time(unsigned 
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Duration(unsigned int idx, Measurement_t time, bool applyFlag) {
     if (idx < fastPulseW2num) {
         time.convertValue(fastPulseW2DurationRange.prefix);
+        fastPulseW2Durations[idx] = time;
         if (fastPulseTrainProtocolImplementatedFlag) {
             if (time >= fastPulseW2Periods[idx]) {
                 return ErrorValueOutOfRange;
             }
 
-            fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-time.value, txStatus);
+            fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
         }
-        fastPulseW2Durations[idx] = time;
         fastPulseW2DurationCoder[idx]->encode(time.value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
@@ -1265,11 +1268,12 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Duration(unsig
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Period(unsigned int idx, Measurement_t time, bool applyFlag) {
     if (idx < fastPulseW2num) {
         time.convertValue(fastPulseW2PeriodRange.prefix);
+        fastPulseW2Periods[idx] = time;
         if (time <= fastPulseW2Durations[idx]) {
             return ErrorValueOutOfRange;
         }
-        fastPulseW2Periods[idx] = time;
-        fastPulseW2WaitTimeCoder[idx]->encode(time.value-fastPulseW2Durations[idx].value, txStatus);
+        fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
+        fastPulseW2DurationCoder[idx]->encode(fastPulseW2Durations[idx].value, txStatus);
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }

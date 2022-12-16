@@ -1071,3 +1071,12 @@ void MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::setFerdParameters() {
 
     MessageDispatcher::setFerdParameters();
 }
+
+MessageDispatcher_e1Light_El03c_LegacyEdr3_V01::MessageDispatcher_e1Light_El03c_LegacyEdr3_V01(string id) :
+    MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(id) {
+
+}
+
+MessageDispatcher_e1Light_El03c_LegacyEdr3_V01::~MessageDispatcher_e1Light_El03c_LegacyEdr3_V01() {
+
+}

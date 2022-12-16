@@ -557,12 +557,12 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     referencePulseVoltageRange.unit = "V";
     referencePulseDurationRange.step = 0.1;
     referencePulseDurationRange.min = 1.0;
-    referencePulseDurationRange.max = 15000.0;
+    referencePulseDurationRange.max = 20000.0;
     referencePulseDurationRange.prefix = UnitPfxMicro;
     referencePulseDurationRange.unit = "s";
     referencePulsePeriodRange.step = 0.1;
     referencePulsePeriodRange.min = 2.0;
-    referencePulsePeriodRange.max = 30000.0;
+    referencePulsePeriodRange.max = 20000.0;
     referencePulsePeriodRange.prefix = UnitPfxMicro;
     referencePulsePeriodRange.unit = "s";
     referencePulseNumber = 15000;
@@ -608,7 +608,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     fastPulseW2TimeRange.prefix = UnitPfxMilli;
 
     fastPulseW2DurationRange.min = 1.0;
-    fastPulseW2DurationRange.max = 10000.0;
+    fastPulseW2DurationRange.max = 20000.0;
     fastPulseW2DurationRange.step = 0.1;
     fastPulseW2DurationRange.unit = "s";
     fastPulseW2DurationRange.prefix = UnitPfxMicro;
@@ -663,7 +663,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     }
 
     boolConfig.initialByte = 8;
-    boolConfig.initialBit = 2;
+    boolConfig.initialBit = 3;
     boolConfig.bitsNum = 1;
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
@@ -908,8 +908,8 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 21;
     doubleConfig.resolution = referencePulsePeriodRange.step;
-    doubleConfig.minValue = referencePulsePeriodRange.min-referencePulseDurationRange.min;
-    doubleConfig.maxValue = referencePulsePeriodRange.max-referencePulseDurationRange.max;
+    doubleConfig.minValue = referencePulsePeriodRange.min;
+    doubleConfig.maxValue = referencePulsePeriodRange.max;
     referencePulseWaitTimeCoder = new DoubleTwosCompCoder(doubleConfig);
     boolConfig.initialByte = 92;
     boolConfig.initialBit = 0;
@@ -1004,8 +1004,8 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 21;
     doubleConfig.resolution = fastPulseW2PeriodRange.step;
-    doubleConfig.minValue = fastPulseW2PeriodRange.min-fastPulseW2DurationRange.min;
-    doubleConfig.maxValue = fastPulseW2PeriodRange.max-fastPulseW2DurationRange.max;
+    doubleConfig.minValue = fastPulseW2PeriodRange.min;
+    doubleConfig.maxValue = fastPulseW2PeriodRange.max;
     for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
         doubleConfig.initialByte = 167+14*idx;
         fastPulseW2WaitTimeCoder[idx] = new DoubleSignAbsCoder(doubleConfig);
@@ -1015,7 +1015,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 14;
     for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
-        doubleConfig.initialByte = 170+14*idx;
+        boolConfig.initialByte = 170+14*idx;
         fastPulseW2NumberCoder[idx] = new BoolArrayCoder(boolConfig);
     }
 
@@ -2130,7 +2130,7 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
 //    referencePulseVoltageRange.unit = "V";
     referencePulseDurationRange.step = 0.1;
     referencePulseDurationRange.min = 1.0;
-    referencePulseDurationRange.max = 15000.0;
+    referencePulseDurationRange.max = 20000.0;
     referencePulseDurationRange.prefix = UnitPfxMicro;
 //    referencePulseDurationRange.unit = "s";
 
@@ -2176,7 +2176,7 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
     fastPulseW2TimeRange.prefix = UnitPfxMilli;
 
     fastPulseW2DurationRange.min = 1.0;
-    fastPulseW2DurationRange.max = 10000.0;
+    fastPulseW2DurationRange.max = 20000.0;
     fastPulseW2DurationRange.step = 0.1;
 //    fastPulseW2DurationRange.unit = "s";
     fastPulseW2DurationRange.prefix = UnitPfxMicro;
@@ -3725,7 +3725,7 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
 //    referencePulseVoltageRange.unit = "V";
     referencePulseDurationRange.step = 0.1;
     referencePulseDurationRange.min = 1.0;
-    referencePulseDurationRange.max = 15000.0;
+    referencePulseDurationRange.max = 20000.0;
     referencePulseDurationRange.prefix = UnitPfxMicro;
 //    referencePulseDurationRange.unit = "s";
 
@@ -3770,7 +3770,7 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
     fastPulseW2TimeRange.prefix = UnitPfxMilli;
 
     fastPulseW2DurationRange.min = 1.0;
-    fastPulseW2DurationRange.max = 10000.0;
+    fastPulseW2DurationRange.max = 20000.0;
     fastPulseW2DurationRange.step = 0.1;
 //    fastPulseW2DurationRange.unit = "s";
     fastPulseW2DurationRange.prefix = UnitPfxMicro;

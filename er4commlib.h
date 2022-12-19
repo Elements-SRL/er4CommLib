@@ -163,6 +163,17 @@ ErrorCodes_t setProtocolSlope(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t slope);
 
+/*! \brief Set a protocol frequency value.
+ *
+ * \param idx [in] Index of the frequency set.
+ * \param value [in] Value of the frequency set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setProtocolFrequency(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t frequency);
+
 /*! \brief Set a protocol adimensional value.
  *
  * \param idx [in] Index of the adimensional set.
@@ -222,6 +233,19 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t checkProtocolSlope(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t slope,
+        ER4CL_ARGIN std::string &message);
+
+/*! \brief Check if the protocol parameters are valid.
+ *
+ * \param idx [in] Index of the frequency parameter to be checked.
+ * \param frequency [in] Value of the frequency parameter to be checked.
+ * \param message [in] Error message in case the parameters set is invalid.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t checkProtocolFrequency(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN Measurement_t frequency,
         ER4CL_ARGIN std::string &message);
 
 /*! \brief Check if the protocol parameters are valid.
@@ -1008,6 +1032,7 @@ ErrorCodes_t hasFrontEndResetDenoiser(
  * \param voltages [out] Indexes of available voltage controls for each protocol.
  * \param times [out] Indexes of available time controls for each protocol.
  * \param slopes [out] Indexes of available slope controls for each protocol.
+ * \param frequencies [out] Indexes of available frequency controls for each protocol.
  * \param adimensionals [out] Indexes of available adimensional controls for each protocol.
  * \return Error code.
  */
@@ -1018,6 +1043,7 @@ ErrorCodes_t getProtocolList(
         ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &voltages,
         ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &times,
         ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &slopes,
+        ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &frequencies,
         ER4CL_ARGOUT std::vector <std::vector <uint16_t>> &adimensionals);
 
 /*! \brief Get triangular protocol index.
@@ -1074,6 +1100,19 @@ ErrorCodes_t getProtocolTime(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolSlope(
         ER4CL_ARGOUT std::vector <std::string> &slopeNames,
+        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
+        ER4CL_ARGOUT std::vector <Measurement_t> &defaultValues);
+
+/*! \brief Get protocol applicable frequency range.
+ *
+ * \param frequencyNames [out] Names of available frequencys.
+ * \param ranges [out] Ranges of applicable frequency in protocols.
+ * \param defaultValues [out] Default values.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolFrequency(
+        ER4CL_ARGOUT std::vector <std::string> &frequencyNames,
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT std::vector <Measurement_t> &defaultValues);
 

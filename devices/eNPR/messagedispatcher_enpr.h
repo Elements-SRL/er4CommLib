@@ -81,6 +81,11 @@ protected:
         ProtocolTimeRangesNum
     };
 
+    enum ProtocolFrequencyRanges {
+        ProtocolFrequencyRange35Hz,
+        ProtocolFrequencyRangesNum
+    };
+
     enum ProtocolVoltages {
         ProtocolVHold,
         ProtocolVPulse,
@@ -100,8 +105,9 @@ protected:
         ProtocolTimesNum
     };
 
-    enum ProtocolSlopes {
-        ProtocolSlopesNum = 0
+    enum ProtocolFrequencies {
+        ProtocolFrequency,
+        ProtocolFrequenciesNum
     };
 
     enum ProtocolAdimensionals {
@@ -147,6 +153,9 @@ class MessageDispatcher_eNPR_2Channels_V01 : public MessageDispatcher_eNPR {
 public:
     MessageDispatcher_eNPR_2Channels_V01(string di);
     virtual ~MessageDispatcher_eNPR_2Channels_V01();
+
+protected:
+    bool checkProtocolValidity(string &message) override;
 
 private:
     enum VoltageRanges {

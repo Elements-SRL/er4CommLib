@@ -91,6 +91,42 @@ MessageDispatcher::MessageDispatcher(string deviceId) :
 
     cFastCompensationOptions.clear();
     cFastCompensationControl.implemented = false;
+
+    /*! Initialize protocols parameters empty */
+    protocolVoltagesNum = 0;
+    protocolVoltageNames.resize(protocolVoltagesNum);
+    protocolVoltageRanges.resize(protocolVoltagesNum);
+    protocolVoltageDefault.resize(protocolVoltagesNum);
+    selectedProtocolVoltage.resize(protocolVoltagesNum);
+    protocolVoltageCoders.resize(protocolVoltagesNum);
+
+    protocolTimesNum = 0;
+    protocolTimeNames.resize(protocolTimesNum);
+    protocolTimeRanges.resize(protocolTimesNum);
+    protocolTimeDefault.resize(protocolTimesNum);
+    selectedProtocolTime.resize(protocolTimesNum);
+    protocolTimeCoders.resize(protocolTimesNum);
+
+    protocolSlopesNum = 0;
+    protocolSlopeNames.resize(protocolSlopesNum);
+    protocolSlopeRanges.resize(protocolSlopesNum);
+    protocolSlopeDefault.resize(protocolSlopesNum);
+    selectedProtocolSlope.resize(protocolSlopesNum);
+    protocolSlopeCoders.resize(protocolSlopesNum);
+
+    protocolFrequenciesNum = 0;
+    protocolFrequencyNames.resize(protocolFrequenciesNum);
+    protocolFrequencyRanges.resize(protocolFrequenciesNum);
+    protocolFrequencyDefault.resize(protocolFrequenciesNum);
+    selectedProtocolFrequency.resize(protocolFrequenciesNum);
+    protocolFrequencyCoders.resize(protocolFrequenciesNum);
+
+    protocolAdimensionalsNum = 0;
+    protocolAdimensionalNames.resize(protocolAdimensionalsNum);
+    protocolAdimensionalRanges.resize(protocolAdimensionalsNum);
+    protocolAdimensionalDefault.resize(protocolAdimensionalsNum);
+    selectedProtocolAdimensional.resize(protocolAdimensionalsNum);
+    protocolAdimensionalCoders.resize(protocolAdimensionalsNum);
 }
 
 MessageDispatcher::~MessageDispatcher() {
@@ -892,6 +928,21 @@ ErrorCodes_t MessageDispatcher::setProtocolSlope(unsigned int idx, Measurement_t
     }
 }
 
+ErrorCodes_t MessageDispatcher::setProtocolFrequency(unsigned int idx, Measurement_t frequency, bool applyFlag) {
+    if (idx < protocolFrequenciesNum) {
+        frequency.convertValue(protocolFrequencyRanges[idx].prefix);
+        protocolFrequencyCoders[idx]->encode(frequency.value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::setProtocolAdimensional(unsigned int idx, Measurement_t adimensional, bool applyFlag) {
     if (idx < protocolAdimensionalsNum) {
         adimensional.convertValue(protocolAdimensionalRanges[idx].prefix);
@@ -939,6 +990,16 @@ ErrorCodes_t MessageDispatcher::checkProtocolTime(unsigned int idx, Measurement_
 
 ErrorCodes_t MessageDispatcher::checkProtocolSlope(unsigned int idx, Measurement_t slope, string &message) {
     selectedProtocolSlope[idx] = slope;
+    if (this->checkProtocolValidity(message)) {
+        return Success;
+
+    } else {
+        return ErrorInvalidProtocolParameters;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::checkProtocolFrequency(unsigned int idx, Measurement_t frequency, string &message) {
+    selectedProtocolFrequency[idx] = frequency;
     if (this->checkProtocolValidity(message)) {
         return Success;
 
@@ -1675,12 +1736,12 @@ ErrorCodes_t MessageDispatcher::getLiquidJunctionControl(CompensationControl_t &
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &adimensionals) {
+ErrorCodes_t MessageDispatcher::getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &frequencies, vector <vector <uint16_t>> &adimensionals) {
     names = protocolsNames;
     images = protocolsImages;
     voltages = protocolsAvailableVoltages;
     times = protocolsAvailableTimes;
-    slopes = protocolsAvailableSlopes;
+    frequencies = protocolsAvailableFrequencies;
     adimensionals = protocolsAvailableAdimensionals;
     return Success;
 }
@@ -1725,6 +1786,13 @@ ErrorCodes_t MessageDispatcher::getProtocolSlope(vector <string> &slopeNames, ve
     slopeNames = protocolSlopeNames;
     ranges = protocolSlopeRanges;
     defaultValues = protocolSlopeDefault;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getProtocolFrequency(vector <string> &frequencyNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues) {
+    frequencyNames = protocolFrequencyNames;
+    ranges = protocolFrequencyRanges;
+    defaultValues = protocolFrequencyDefault;
     return Success;
 }
 
@@ -1975,6 +2043,30 @@ ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel
     return Success;
 }
 
+void MessageDispatcher::initializeDevice() {
+    this->selectVoltageProtocol(defaultProtocol);
+
+    for (unsigned int voltageIdx = 0; voltageIdx < protocolVoltagesNum; voltageIdx++) {
+        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
+    }
+
+    for (unsigned int timeIdx = 0; timeIdx < protocolTimesNum; timeIdx++) {
+        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
+    }
+
+    for (unsigned int slopeIdx = 0; slopeIdx < protocolSlopesNum; slopeIdx++) {
+        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
+    }
+
+    for (unsigned int frequencyIdx = 0; frequencyIdx < protocolFrequenciesNum; frequencyIdx++) {
+        this->setProtocolFrequency(frequencyIdx, protocolFrequencyDefault[frequencyIdx], false);
+    }
+
+    for (unsigned int adimensionalIdx = 0; adimensionalIdx < protocolAdimensionalsNum; adimensionalIdx++) {
+        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
+    }
+}
+
 void MessageDispatcher::initializeLsbNoise(bool nullValues) {
     if (nullValues) {
         /*! By default there is no added noise  */
@@ -2002,13 +2094,10 @@ void MessageDispatcher::initializeCompensations() {
 
     cFastCapacitance.resize(currentChannelsNum);
     cFastCompensationFlag.resize(currentChannelsNum);
-    //    cFastCompensationOptionIdx.resize(currentChannelsNum);
 
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
         cFastCapacitance[channelIdx] = 0.0;
         cFastCompensationFlag[channelIdx] = false;
-
-        //        cFastCompensationOptionIdx[channelIdx] = 0;
     }
 }
 

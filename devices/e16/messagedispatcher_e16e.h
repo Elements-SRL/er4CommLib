@@ -116,10 +116,6 @@ protected:
         ProtocolTimesNum
     };
 
-    enum ProtocolSlopes {
-        ProtocolSlopesNum = 0
-    };
-
     enum ProtocolAdimensionals {
         ProtocolN,
         ProtocolNR,
@@ -130,13 +126,8 @@ protected:
     bool checkProtocolValidity(string &message) override;
     virtual void setFerdParameters() override;
 
-
-
-
     /*! Device specific controls */
     InfoStruct_t infoStruct;
-
-
 };
 
 #endif // MESSAGEDISPATCHER_E16E_H

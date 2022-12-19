@@ -46,6 +46,7 @@ using namespace er4CommLib;
 #define USHORT_MAX (static_cast <double> (0xFFFF))
 #define UINT10_MAX (static_cast <double> (0x3FF))
 #define INT14_MAX (static_cast <double> (0x1FFF))
+#define UINT14_MAX (static_cast <double> (0x3FFF))
 #define INT18_MAX (static_cast <double> (0x1FFFF))
 #define UINT28_MAX (static_cast <double> (0xFFFFFFF))
 #define INT28_MAX (static_cast <double> (0x7FFFFFF))
@@ -159,11 +160,13 @@ public:
     virtual ErrorCodes_t setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
     ErrorCodes_t setProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag = false);
     ErrorCodes_t setProtocolSlope(unsigned int idx, Measurement_t slope, bool applyFlag = false);
+    ErrorCodes_t setProtocolFrequency(unsigned int idx, Measurement_t frequency, bool applyFlag = false);
     ErrorCodes_t setProtocolAdimensional(unsigned int idx, Measurement_t adimensional, bool applyFlag = false);
     ErrorCodes_t checkSelectedProtocol(unsigned int idx, string &message);
     ErrorCodes_t checkProtocolVoltage(unsigned int idx, Measurement_t voltage, string &message);
     ErrorCodes_t checkProtocolTime(unsigned int idx, Measurement_t time, string &message);
     ErrorCodes_t checkProtocolSlope(unsigned int idx, Measurement_t slope, string &message);
+    ErrorCodes_t checkProtocolFrequency(unsigned int idx, Measurement_t frequency, string &message);
     ErrorCodes_t checkProtocolAdimensional(unsigned int idx, Measurement_t adimensional, string &message);
     ErrorCodes_t setVoltageOffset(unsigned int idx, Measurement_t voltage, bool applyFlag = true);
     ErrorCodes_t checkVoltageOffset(unsigned int idx, Measurement_t voltage, string &message);
@@ -239,12 +242,13 @@ public:
 
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
 
-    ErrorCodes_t getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &adimensionals);
+    ErrorCodes_t getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &frequencies, vector <vector <uint16_t>> &adimensionals);
     ErrorCodes_t getTriangularProtocolIdx(uint16_t &idx);
     ErrorCodes_t getSealTestProtocolIdx(uint16_t &idx);
     ErrorCodes_t getProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
+    ErrorCodes_t getProtocolFrequency(vector <string> &frequencyNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolAdimensional(vector <string> &adimensionalNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getVoltageOffsetControls(RangedMeasurement_t &voltageRange);
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
@@ -304,7 +308,7 @@ protected:
     \*************/
 
     ErrorCodes_t initFtdiChannel(FT_HANDLE * handle, char channel);
-    virtual void initializeDevice() = 0;
+    virtual void initializeDevice();
     virtual bool checkProtocolValidity(string &message) = 0;
 
     void initializeLsbNoise(bool nullValues = true);

@@ -405,6 +405,19 @@ ErrorCodes_t setProtocolSlope(
     return ret;
 }
 
+ErrorCodes_t setProtocolFrequency(
+        unsigned int idx,
+        Measurement_t frequency) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setProtocolFrequency(idx, frequency);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setProtocolAdimensional(
         unsigned int idx,
         Measurement_t adimensional) {
@@ -466,6 +479,20 @@ ErrorCodes_t checkProtocolSlope(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->checkProtocolSlope(idx, slope, message);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t checkProtocolFrequency(
+        unsigned int idx,
+        Measurement_t frequency,
+        std::string &message) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->checkProtocolFrequency(idx, frequency, message);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1417,10 +1444,11 @@ ErrorCodes_t getProtocolList(
         vector <vector <uint16_t>> &voltages,
         vector <vector <uint16_t>> &times,
         vector <vector <uint16_t>> &slopes,
+        vector <vector <uint16_t>> &frequencies,
         vector <vector <uint16_t>> &adimensionals) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolList(names, images, voltages, times, slopes, adimensionals);
+        ret = messageDispatcher->getProtocolList(names, images, voltages, times, slopes, frequencies, adimensionals);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1487,6 +1515,20 @@ ErrorCodes_t getProtocolSlope(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getProtocolSlope(slopeNames, ranges, defaultValues);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getProtocolFrequency(
+        vector <string> &frequencyNames,
+        vector <RangedMeasurement_t> &ranges,
+        vector <Measurement_t> &defaultValues) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getProtocolFrequency(frequencyNames, ranges, defaultValues);
 
     } else {
         ret = ErrorDeviceNotConnected;

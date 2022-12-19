@@ -1004,7 +1004,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 21;
     doubleConfig.resolution = fastPulseW2PeriodRange.step;
-    doubleConfig.minValue = fastPulseW2PeriodRange.min;
+    doubleConfig.minValue = fastPulseW2PeriodRange.min-fastPulseW2DurationRange.min;
     doubleConfig.maxValue = fastPulseW2PeriodRange.max;
     for (uint16_t idx = 0; idx < fastPulseW2num; idx++) {
         doubleConfig.initialByte = 167+14*idx;
@@ -1215,7 +1215,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     txStatus[txStatusIdx++] = 0x00; //Wav2_P1
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; //Wav2_N1
+    txStatus[txStatusIdx++] = 0x01; //Wav2_N1
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; //Wav2_V2
     txStatus[txStatusIdx++] = 0x00;
@@ -1229,7 +1229,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     txStatus[txStatusIdx++] = 0x00; //Wav2_P2
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; //Wav2_N2
+    txStatus[txStatusIdx++] = 0x01; //Wav2_N2
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; //Wav2_V3
     txStatus[txStatusIdx++] = 0x00;
@@ -1243,7 +1243,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     txStatus[txStatusIdx++] = 0x00; //Wav2_P3
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; //Wav2_N3
+    txStatus[txStatusIdx++] = 0x01; //Wav2_N3
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; //Wav2_V4
     txStatus[txStatusIdx++] = 0x00;
@@ -1257,7 +1257,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     txStatus[txStatusIdx++] = 0x00; //Wav2_P4
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; //Wav2_N4
+    txStatus[txStatusIdx++] = 0x01; //Wav2_N4
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; //Wav2_V5
     txStatus[txStatusIdx++] = 0x00;
@@ -1271,7 +1271,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     txStatus[txStatusIdx++] = 0x00; //Wav2_P5
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; //Wav2_N5
+    txStatus[txStatusIdx++] = 0x01; //Wav2_N5
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; //Wav2_V6
     txStatus[txStatusIdx++] = 0x00;
@@ -1285,7 +1285,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     txStatus[txStatusIdx++] = 0x00; //Wav2_P6
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; //Wav2_N6
+    txStatus[txStatusIdx++] = 0x01; //Wav2_N6
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; //Wav2_V7
     txStatus[txStatusIdx++] = 0x00;
@@ -1299,7 +1299,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     txStatus[txStatusIdx++] = 0x00; //Wav2_P7
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; //Wav2_N7
+    txStatus[txStatusIdx++] = 0x01; //Wav2_N7
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; //Wav2_V8
     txStatus[txStatusIdx++] = 0x00;
@@ -1313,7 +1313,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     txStatus[txStatusIdx++] = 0x00; //Wav2_P8
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; //Wav2_N8
+    txStatus[txStatusIdx++] = 0x01; //Wav2_N8
     txStatus[txStatusIdx++] = 0x00;
 }
 

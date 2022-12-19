@@ -1231,6 +1231,24 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Time(unsigned 
         time.convertValue(fastPulseW2TimeRange.prefix);
         fastPulseW2Times[idx] = time;
         fastPulseW2TimeCoder[idx]->encode(time.value, txStatus);
+
+        if (time.value > 0.0) {
+            /*! The time parameter disables the pulse/train when set to 0. So restore duration, period and pulses/train when the time is set greater than 0 ... */
+            fastPulseW2DurationCoder[idx]->encode(fastPulseW2Durations[idx].value, txStatus);
+            if (fastPulseTrainProtocolImplementatedFlag) {
+                fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
+                fastPulseW2NumberCoder[idx]->encode(fastPulseW2PulsesNumbers[idx], txStatus);
+            }
+
+        } else {
+            /*! ... otherwise set duration and period to 0 and pulse nummber to 1 (this must never be 0) */
+            fastPulseW2DurationCoder[idx]->encode(0.0, txStatus);
+            if (fastPulseTrainProtocolImplementatedFlag) {
+                fastPulseW2WaitTimeCoder[idx]->encode(0.0, txStatus);
+                fastPulseW2NumberCoder[idx]->encode(1, txStatus);
+            }
+        }
+
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -1251,9 +1269,17 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Duration(unsig
                 return ErrorValueOutOfRange;
             }
 
-            fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
+            if (fastPulseW2Times[idx]. value > 0.0) {
+                /*! Inhibit this control when the time is 0 (pulse/train disabled) */
+                fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
+            }
         }
-        fastPulseW2DurationCoder[idx]->encode(time.value, txStatus);
+
+        if (fastPulseW2Times[idx]. value > 0.0) {
+            /*! Inhibit this control when the time is 0 (pulse/train disabled) */
+            fastPulseW2DurationCoder[idx]->encode(time.value, txStatus);
+        }
+
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -1272,8 +1298,13 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Period(unsigne
         if (time <= fastPulseW2Durations[idx]) {
             return ErrorValueOutOfRange;
         }
-        fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
-        fastPulseW2DurationCoder[idx]->encode(fastPulseW2Durations[idx].value, txStatus);
+
+        if (fastPulseW2Times[idx]. value > 0.0) {
+            /*! Inhibit this control when the time is 0 (pulse/train disabled) */
+            fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
+            fastPulseW2DurationCoder[idx]->encode(fastPulseW2Durations[idx].value, txStatus);
+        }
+
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }
@@ -1288,7 +1319,11 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Period(unsigne
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2PulseNumber(unsigned int idx, uint16_t pulsesNumber, bool applyFlag) {
     if ((idx < fastPulseW2num) && (pulsesNumber > 0)) {
         fastPulseW2PulsesNumbers[idx] = pulsesNumber;
-        fastPulseW2NumberCoder[idx]->encode(pulsesNumber, txStatus);
+        if (fastPulseW2Times[idx]. value > 0.0) {
+            /*! Inhibit this control when the time is 0 (pulse/train disabled) */
+            fastPulseW2NumberCoder[idx]->encode(pulsesNumber, txStatus);
+        }
+
         if (applyFlag) {
             this->stackOutgoingMessage(txStatus);
         }

@@ -33,8 +33,6 @@
 
 using namespace std;
 
-#define DEBUG_PRINT
-
 #ifdef DEBUG_PRINT
 //#define DEBUG_RAW_BIT_RATE_PRINT
 #endif

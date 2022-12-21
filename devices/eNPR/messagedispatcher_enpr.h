@@ -155,12 +155,19 @@ public:
     virtual ~MessageDispatcher_eNPR_2Channels_V01();
 
 protected:
+    void initializeDevice() override;
     bool checkProtocolValidity(string &message) override;
+    void updateVoltageReferenceOffsetCalibration();
 
 private:
     enum VoltageRanges {
         VoltageRange500mV,
         VoltageRangesNum
+    };
+
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRangesNum
     };
 
     enum ProtocolVoltageRanges {
@@ -180,6 +187,8 @@ private:
         ProtocolSinusoid,
         ProtocolsNum
     };
+
+    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
 };
 
 class MessageDispatcher_eNPR_FL_V02 : public MessageDispatcher_eNPR {

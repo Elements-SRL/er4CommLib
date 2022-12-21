@@ -276,6 +276,10 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_eNPR_FL_V02(deviceId);
             break;
 
+        case DeviceENPR2Channels_V01:
+            messageDispatcher = new MessageDispatcher_eNPR_2Channels_V01(deviceId);
+            break;
+
         case DeviceFakeE16n:
             messageDispatcher = new MessageDispatcher_fake_e16n(deviceId);
             break;
@@ -613,6 +617,19 @@ ErrorCodes_t applyDacExt(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->applyDacExt(voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setCustomFlag(
+        uint16_t idx,
+        bool flag) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setCustomFlag(idx, flag, true);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1716,6 +1733,18 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getFastReferencePulseTrainProtocolWave2Range(voltageRange, timeRange, durationRange, periodRange, pulsesPerTrain, nTrains);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getCustomFlags(
+        vector <string> &customFlags) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getCustomFlags(customFlags);
 
     } else {
         ret = ErrorDeviceNotConnected;

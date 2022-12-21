@@ -1177,6 +1177,7 @@ ErrorCodes_t MessageDispatcher_e16HC_V02::updateVoltageOffsetCompensations(vecto
 
 void MessageDispatcher_e16HC_V02::updateVoltageReferenceOffsetCalibration() {
     /*! Voltage DAC Ext */
+    /*! \todo FCON serve davvero ricreare i coder? */
     DoubleCoder::CoderConfig_t doubleConfig;
     doubleConfig.initialByte = 86;
     doubleConfig.initialBit = 0;

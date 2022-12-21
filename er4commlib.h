@@ -353,6 +353,17 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t applyDacExt(
         ER4CL_ARGIN Measurement_t voltage);
 
+/*! \brief Set a custom flag control.
+ *
+ * \param idx [in] Index of the custom control to set.
+ * \param flag [in] Flag to be used for the cutom control.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setCustomFlag(
+        ER4CL_ARGIN uint16_t idx,
+        ER4CL_ARGIN bool flag);
+
 /*! \brief Reset the error status for the Orbit washer.
  *
  * \return Error code.
@@ -1281,6 +1292,15 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
         ER4CL_ARGOUT RangedMeasurement_t &periodRange,
         ER4CL_ARGOUT uint16_t &pulsesPerTrain,
         ER4CL_ARGOUT uint16_t &nTrains);
+
+/*! \brief Get the available custom controls of type flag (active/inactive).
+ *
+ * \param customFlags [out] Names of the available custom controls.
+ * \return Success if there's at least one custom flag control available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getCustomFlags(
+        ER4CL_ARGOUT std::vector <std::string> &customFlags);
 
 /*! \brief Availability of Nanion's temperature controller.
  *

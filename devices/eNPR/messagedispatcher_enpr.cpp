@@ -1129,11 +1129,17 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
-    txDataBytes = 54;
+    txDataBytes = 60;
 
     /**********************\
      * Available settings *
     \**********************/
+
+    /*! Current ranges */
+    defaultCurrentRangesIdx.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        defaultCurrentRangesIdx[channelIdx] = CurrentRange200pA;
+    }
 
     /*! Voltage ranges */
     voltageRangesNum = VoltageRangesNum;
@@ -1145,8 +1151,34 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
 
+    /*! Voltage reference ranges */
+    dacExtControllableFlag = true;
+    invertedDacExtFlag = true;
+
+    voltageReferenceRangesNum = VoltageReferenceRangesNum;
+    voltageReferenceRangesArray.resize(voltageReferenceRangesNum);
+    voltageReferenceRangesArray[VoltageReferenceRange2V].min = -1800.0;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].max = 1800.0;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].step = 0.0625;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].prefix = UnitPfxMilli;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].unit = "V";
+    defaultVoltageReferenceRangeIdx = VoltageReferenceRange2V;
+
+    /*! Default values */
+    selectedVoltageRangeIdx = defaultVoltageRangeIdx;
+    selectedCurrentRangesIdx = defaultCurrentRangesIdx;
+    selectedSamplingRateIdx = defaultSamplingRateIdx;
+
+    currentRanges.resize(currentChannelsNum);
+    currentResolutions.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
+        currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
+    }
+
     voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
     voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
+    voltageReferenceRange = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
 
     /*************\
      * Protocols *
@@ -1193,8 +1225,13 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     protocolsImages[ProtocolVariableDuration] = "stepVariableDuration001";
     protocolsImages[ProtocolRamp] = "ramp002";
     protocolsImages[ProtocolCyclicVoltammetry] = "cyclicVoltammetry002";
-    protocolsImages[ProtocolSinusoid] = "cyclicVoltammetry002";
+    protocolsImages[ProtocolSinusoid] = "sineWave001";
 
+    protocolsAvailableVoltages.clear();
+    protocolsAvailableTimes.clear();
+    protocolsAvailableSlopes.clear();
+    protocolsAvailableFrequencies.clear();
+    protocolsAvailableAdimensionals.clear();
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
     protocolsAvailableSlopes.resize(ProtocolsNum);
@@ -1430,8 +1467,18 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
         selectedProtocolAdimensional[idx] = protocolAdimensionalDefault[idx];
     }
 
-    voltageOffsetControlImplemented = false;
-    selectedVoltageOffset.clear();
+    voltageOffsetControlImplemented = true;
+    selectedVoltageOffset.resize(currentChannelsNum);
+    voltageOffsetRange.step = 1.0;
+    voltageOffsetRange.min = -512.0;
+    voltageOffsetRange.max = 512.0;
+    voltageOffsetRange.prefix = UnitPfxMilli;
+    voltageOffsetRange.unit = "V";
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        selectedVoltageOffset[channelIdx].value = 0.0;
+        selectedVoltageOffset[channelIdx].prefix = voltageOffsetRange.prefix;
+        selectedVoltageOffset[channelIdx].unit = voltageOffsetRange.unit;
+    }
 
     insertionPulseImplemented = true;
     insertionPulseVoltageRange.step = 1.0;
@@ -1514,12 +1561,11 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage range */
-    boolConfig.initialByte = 1;
-    boolConfig.initialBit = 6;
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig)
-    voltageRangeCoder->addMapItem(1); /*!< 700mV    -> 0b1 */
-    voltageRangeCoder->addMapItem(0); /*!< 2V       -> 0b0 */
+    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
 
     /*! Protocol frequencies */
     protocolFrequencyCoders.resize(ProtocolFrequenciesNum);
@@ -1533,37 +1579,49 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 11;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        doubleConfig.initialByte = 9+2*channelIdx;
+        doubleConfig.initialByte = 54+3*channelIdx;
         voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
     }
 
-    /*! Insertion pulse */
-    doubleConfig.initialByte = 13;
-    doubleConfig.initialBit = 4;
-    doubleConfig.bitsNum = 12;
-    doubleConfig.minValue = insertionPulseVoltageRange.min;
-    doubleConfig.maxValue = insertionPulseVoltageRange.max;
-    doubleConfig.resolution = insertionPulseVoltageRange.step;
-    insertionPulseVoltageCoder = new DoubleSignAbsCoder(doubleConfig);
-    doubleConfig.initialByte = 27;
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 14;
-    doubleConfig.minValue = insertionPulseDurationRange.min;
-    doubleConfig.maxValue = insertionPulseDurationRange.max;
-    doubleConfig.resolution = insertionPulseDurationRange.step;
-    insertionPulseDurationCoder = new DoubleTwosCompCoder(doubleConfig);
-    boolConfig.initialByte = 3;
-    boolConfig.initialBit = 5;
+    /*! Voltage reference range */
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
+    voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    voltageReferenceRangeCoder->addMapItem(0); /*!< No controls -> 0b0 */
+
+    /*! Voltage DAC Ext */
+    doubleConfig.initialByte = 51;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    dacExtCoders.resize(voltageReferenceRangesNum);
+
+    double vcm_mV = 1850.0;
+    double maxDacExtVoltage = 4096.0;
+
+    unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
+    doubleConfig.resolution = voltageReferenceRangesArray[voltageReferenceIdx].step;
+    doubleConfig.minValue = -vcm_mV;
+    doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
+    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*! Device specific controls */
+
+    customFlagsNum = 1;
+    customFlagsNames.resize(customFlagsNum);
+    customFlagsNames[0] = "Differential current";
+
+    customFlagsCoders.resize(customFlagsNum);
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 6;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[0] = new BoolArrayCoder(boolConfig);
 
     /*******************\
      * Default status  *
@@ -1626,11 +1684,28 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     txStatus[txStatusIdx++] = 0x00; // DacExt
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // Vofs1
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // Vofs2
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
 }
 
 MessageDispatcher_eNPR_2Channels_V01::~MessageDispatcher_eNPR_2Channels_V01() {
 
 }
+
+void MessageDispatcher_eNPR_2Channels_V01::initializeDevice() {
+    this->updateVoltageReferenceOffsetCalibration();
+    this->setSamplingRate(defaultSamplingRateIdx, false);
+
+    this->selectStimulusChannel(currentChannelsNum, true);
+    this->digitalOffsetCompensation(currentChannelsNum, false);
+
+    MessageDispatcher::initializeDevice();
+}
+
 
 bool MessageDispatcher_eNPR_2Channels_V01::checkProtocolValidity(string &message) {
     bool validFlag = true;
@@ -1838,9 +1913,9 @@ bool MessageDispatcher_eNPR_2Channels_V01::checkProtocolValidity(string &message
             validFlag = false;
             message = "Vhold-Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
 
-        } else if (!(protocolTimeRangesArray[ProtocolTimeRange2_10ms].includes(selectedProtocolTime[ProtocolTPe]))) {
+        } else if (!(protocolFrequencyRangesArray[ProtocolFrequencyRange35Hz].includes(selectedProtocolFrequency[ProtocolFrequency]))) {
             validFlag = false;
-            message = "TPeriod\nmust be within [1,1000]ms";
+            message = "Frequency\nmust be within [0,35]Hz";
 
         } else {
             validFlag = true;
@@ -1849,6 +1924,29 @@ bool MessageDispatcher_eNPR_2Channels_V01::checkProtocolValidity(string &message
         break;
     }
     return validFlag;
+}
+
+void MessageDispatcher_eNPR_2Channels_V01::updateVoltageReferenceOffsetCalibration() {
+    /*! Voltage DAC Ext */
+    /*! \todo FCON serve davvero ricreare i coder? */
+    DoubleCoder::CoderConfig_t doubleConfig;
+    doubleConfig.initialByte = 51;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    dacExtCoders.resize(voltageReferenceRangesNum);
+
+    int16_t voltageReferenceOffsetCalibrationInt = (int16_t)ftdiEeprom->getVcOffset();
+    voltageReferenceOffsetCalibration.value = voltageReferenceRangesArray[VoltageReferenceRange2V].step*(double)voltageReferenceOffsetCalibrationInt;
+    voltageReferenceOffsetCalibration.prefix = voltageReferenceRangesArray[VoltageReferenceRange2V].prefix;
+    voltageReferenceOffsetCalibration.convertValue(UnitPfxMilli);
+    double vcm_mV = 1850.0+voltageReferenceOffsetCalibration.value;
+    double maxDacExtVoltage = 4096.0+voltageReferenceOffsetCalibration.value;
+
+    unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
+    doubleConfig.resolution = voltageReferenceRangesArray[voltageReferenceIdx].step;
+    doubleConfig.minValue = -vcm_mV;
+    doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
+    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
 }
 
 MessageDispatcher_eNPR_FL_V02::MessageDispatcher_eNPR_FL_V02(string di) :

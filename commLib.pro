@@ -21,7 +21,7 @@ include(./quietWarnings.pri)
 
 CONFIG(debug, debug|release) {
     TARGET = er4commlibd
-    DEFINES += DEBUGPRINT
+    DEFINES += DEBUG_PRINT
 }
 
 CONFIG(release, debug|release) {

@@ -61,6 +61,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},                //  254, 15,129 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight_V01},    //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},    //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
+    {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 129, DeviceENPR2Channels_V01},      //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16FastPulses}
 };
 
@@ -127,6 +128,9 @@ MessageDispatcher::MessageDispatcher(string deviceId) :
     protocolAdimensionalDefault.resize(protocolAdimensionalsNum);
     selectedProtocolAdimensional.resize(protocolAdimensionalsNum);
     protocolAdimensionalCoders.resize(protocolAdimensionalsNum);
+
+    customFlagsNames.resize(customFlagsNum);
+    customFlagsCoders.resize(customFlagsNum);
 }
 
 MessageDispatcher::~MessageDispatcher() {
@@ -1324,6 +1328,19 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2PulseNumber(un
     }
 }
 
+ErrorCodes_t MessageDispatcher::setCustomFlag(uint16_t idx, bool flag, bool applyFlag) {
+    if (idx < customFlagsNum) {
+        customFlagsCoders[idx]->encode(flag ? 1 : 0, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::resetWasherError() {
     return ErrorFeatureNotImplemented;
 }
@@ -1741,6 +1758,7 @@ ErrorCodes_t MessageDispatcher::getProtocolList(vector <string> &names, vector <
     images = protocolsImages;
     voltages = protocolsAvailableVoltages;
     times = protocolsAvailableTimes;
+    slopes = protocolsAvailableSlopes;
     frequencies = protocolsAvailableFrequencies;
     adimensionals = protocolsAvailableAdimensionals;
     return Success;
@@ -1929,6 +1947,16 @@ ErrorCodes_t MessageDispatcher::getFastReferencePulseTrainProtocolWave2Range(Ran
 
     } else {
         return ErrorCommandNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::getCustomFlags(vector <string> &customFlags) {
+    if (customFlagsNum > 0) {
+        customFlags = customFlagsNames;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
     }
 }
 

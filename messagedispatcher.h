@@ -187,6 +187,8 @@ public:
 
     /*! Device specific controls */
 
+    ErrorCodes_t setCustomFlag(uint16_t idx, bool flag, bool applyFlag);
+
     virtual ErrorCodes_t resetWasherError();
     virtual ErrorCodes_t setWasherPresetSpeeds(vector <int8_t> speedValues);
     virtual ErrorCodes_t startWasher(uint16_t speedIdx);
@@ -265,6 +267,8 @@ public:
     ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, RangedMeasurement_t &waitTimeRange, uint16_t &pulsesPerTrain, uint16_t &nTrains);
 
     /*! Device specific controls */
+
+    ErrorCodes_t getCustomFlags(vector <string> &customFlags);
 
     ErrorCodes_t hasNanionTemperatureController();
     virtual ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature);
@@ -524,6 +528,10 @@ protected:
     RangedMeasurement_t fastPulseW2PeriodRange;
     vector <BoolArrayCoder *> fastPulseW2NumberCoder;
     vector <uint16_t> fastPulseW2PulsesNumbers;
+
+    uint16_t customFlagsNum = 0;
+    vector <string> customFlagsNames;
+    vector <BoolArrayCoder *> customFlagsCoders;
 
     string edhFormat;
 

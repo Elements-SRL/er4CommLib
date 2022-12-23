@@ -61,7 +61,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},                //  254, 15,129 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight_V01},    //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},    //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
-    {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 129, DeviceENPR2Channels_V01},      //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 130, DeviceENPR2Channels_V01},      //  254, 17,130 : eNPR prototype with 2 channels and sinusoidal waveforms
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16FastPulses}
 };
 

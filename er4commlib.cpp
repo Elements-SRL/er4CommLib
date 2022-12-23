@@ -1741,10 +1741,11 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
 }
 
 ErrorCodes_t getCustomFlags(
-        vector <string> &customFlags) {
+        vector <string> &customFlags,
+        vector <bool> &customFlagsDefault) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCustomFlags(customFlags);
+        ret = messageDispatcher->getCustomFlags(customFlags, customFlagsDefault);
 
     } else {
         ret = ErrorDeviceNotConnected;

@@ -1296,11 +1296,13 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
 /*! \brief Get the available custom controls of type flag (active/inactive).
  *
  * \param customFlags [out] Names of the available custom controls.
+ * \param customFlagsDefault [out] Deafault values for the available custom controls.
  * \return Success if there's at least one custom flag control available.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCustomFlags(
-        ER4CL_ARGOUT std::vector <std::string> &customFlags);
+        ER4CL_ARGOUT std::vector <std::string> &customFlags,
+        ER4CL_ARGOUT std::vector <bool> &customFlagsDefault);
 
 /*! \brief Availability of Nanion's temperature controller.
  *

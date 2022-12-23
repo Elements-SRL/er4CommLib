@@ -268,7 +268,7 @@ public:
 
     /*! Device specific controls */
 
-    ErrorCodes_t getCustomFlags(vector <string> &customFlags);
+    ErrorCodes_t getCustomFlags(vector <string> &customFlags, vector <bool> &customFlagsDefault);
 
     ErrorCodes_t hasNanionTemperatureController();
     virtual ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature);
@@ -531,6 +531,7 @@ protected:
 
     uint16_t customFlagsNum = 0;
     vector <string> customFlagsNames;
+    vector <bool> customFlagsDefault;
     vector <BoolArrayCoder *> customFlagsCoders;
 
     string edhFormat;

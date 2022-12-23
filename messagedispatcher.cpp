@@ -1950,9 +1950,13 @@ ErrorCodes_t MessageDispatcher::getFastReferencePulseTrainProtocolWave2Range(Ran
     }
 }
 
-ErrorCodes_t MessageDispatcher::getCustomFlags(vector <string> &customFlags) {
+ErrorCodes_t MessageDispatcher::getCustomFlags(vector <string> &customFlags, vector <bool> &customFlagsDefault) {
     if (customFlagsNum > 0) {
-        customFlags = customFlagsNames;
+        customFlags.resize(customFlagsNum);
+        for (unsigned int idx = 0; idx < customFlagsNum; idx++) {
+            customFlags[idx] = customFlagsNames[idx];
+        }
+        customFlagsDefault = this->customFlagsDefault;
         return Success;
 
     } else {

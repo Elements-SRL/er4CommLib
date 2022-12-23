@@ -1616,6 +1616,8 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     customFlagsNum = 1;
     customFlagsNames.resize(customFlagsNum);
     customFlagsNames[0] = "Differential current";
+    customFlagsDefault.resize(customFlagsNum);
+    customFlagsDefault[0] = false;
 
     customFlagsCoders.resize(customFlagsNum);
     boolConfig.initialByte = 1;

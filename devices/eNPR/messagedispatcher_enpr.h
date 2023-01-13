@@ -81,16 +81,9 @@ protected:
         ProtocolTimeRangesNum
     };
 
-    enum Protocols {
-        ProtocolConstant,
-        ProtocolTriangular,
-        ProtocolSquareWave,
-        ProtocolConductance,
-        ProtocolVariableAmplitude,
-        ProtocolVariableDuration,
-        ProtocolRamp,
-        ProtocolCyclicVoltammetry,
-        ProtocolsNum
+    enum ProtocolFrequencyRanges {
+        ProtocolFrequencyRange35Hz,
+        ProtocolFrequencyRangesNum
     };
 
     enum ProtocolVoltages {
@@ -112,8 +105,9 @@ protected:
         ProtocolTimesNum
     };
 
-    enum ProtocolSlopes {
-        ProtocolSlopesNum = 0
+    enum ProtocolFrequencies {
+        ProtocolFrequency,
+        ProtocolFrequenciesNum
     };
 
     enum ProtocolAdimensionals {
@@ -141,6 +135,60 @@ private:
         ProtocolVoltageRange2V,
         ProtocolVoltageRangesNum
     };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+};
+
+class MessageDispatcher_eNPR_2Channels_V01 : public MessageDispatcher_eNPR {
+public:
+    MessageDispatcher_eNPR_2Channels_V01(string di);
+    virtual ~MessageDispatcher_eNPR_2Channels_V01();
+
+protected:
+    void initializeDevice() override;
+    bool checkProtocolValidity(string &message) override;
+    void updateVoltageReferenceOffsetCalibration();
+
+private:
+    enum VoltageRanges {
+        VoltageRange500mV,
+        VoltageRangesNum
+    };
+
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRangesNum
+    };
+
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange500mV,
+        ProtocolVoltageRangesNum
+    };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolSinusoid,
+        ProtocolsNum
+    };
+
+    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
 };
 
 class MessageDispatcher_eNPR_FL_V02 : public MessageDispatcher_eNPR {
@@ -149,6 +197,18 @@ public:
     virtual ~MessageDispatcher_eNPR_FL_V02();
 
 protected:
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+
     enum Leds {
         LedBlue,
         LedsNum
@@ -161,6 +221,18 @@ public:
     virtual ~MessageDispatcher_eNPR_FL_V01();
 
 protected:
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+
     enum Leds {
         LedBlue,
         LedsNum

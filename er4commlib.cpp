@@ -276,6 +276,10 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_eNPR_FL_V02(deviceId);
             break;
 
+        case DeviceENPR2Channels_V01:
+            messageDispatcher = new MessageDispatcher_eNPR_2Channels_V01(deviceId);
+            break;
+
         case DeviceFakeE16n:
             messageDispatcher = new MessageDispatcher_fake_e16n(deviceId);
             break;
@@ -405,6 +409,19 @@ ErrorCodes_t setProtocolSlope(
     return ret;
 }
 
+ErrorCodes_t setProtocolFrequency(
+        unsigned int idx,
+        Measurement_t frequency) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setProtocolFrequency(idx, frequency);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setProtocolAdimensional(
         unsigned int idx,
         Measurement_t adimensional) {
@@ -466,6 +483,20 @@ ErrorCodes_t checkProtocolSlope(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->checkProtocolSlope(idx, slope, message);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t checkProtocolFrequency(
+        unsigned int idx,
+        Measurement_t frequency,
+        std::string &message) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->checkProtocolFrequency(idx, frequency, message);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -586,6 +617,19 @@ ErrorCodes_t applyDacExt(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->applyDacExt(voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setCustomFlag(
+        uint16_t idx,
+        bool flag) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setCustomFlag(idx, flag, true);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1417,10 +1461,11 @@ ErrorCodes_t getProtocolList(
         vector <vector <uint16_t>> &voltages,
         vector <vector <uint16_t>> &times,
         vector <vector <uint16_t>> &slopes,
+        vector <vector <uint16_t>> &frequencies,
         vector <vector <uint16_t>> &adimensionals) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolList(names, images, voltages, times, slopes, adimensionals);
+        ret = messageDispatcher->getProtocolList(names, images, voltages, times, slopes, frequencies, adimensionals);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1487,6 +1532,20 @@ ErrorCodes_t getProtocolSlope(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getProtocolSlope(slopeNames, ranges, defaultValues);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getProtocolFrequency(
+        vector <string> &frequencyNames,
+        vector <RangedMeasurement_t> &ranges,
+        vector <Measurement_t> &defaultValues) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getProtocolFrequency(frequencyNames, ranges, defaultValues);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1674,6 +1733,19 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getFastReferencePulseTrainProtocolWave2Range(voltageRange, timeRange, durationRange, periodRange, pulsesPerTrain, nTrains);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getCustomFlags(
+        vector <string> &customFlags,
+        vector <bool> &customFlagsDefault) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getCustomFlags(customFlags, customFlagsDefault);
 
     } else {
         ret = ErrorDeviceNotConnected;

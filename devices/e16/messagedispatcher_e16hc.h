@@ -95,10 +95,6 @@ protected:
         ProtocolTimesNum
     };
 
-    enum ProtocolSlopes {
-        ProtocolSlopesNum = 0
-    };
-
     enum ProtocolAdimensionals {
         ProtocolN,
         ProtocolNR,
@@ -118,9 +114,6 @@ protected:
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 
-    const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
-    const double stimulusVoltageReference = 1.1; /*! voltage reference for stimuli [V] */
-
 private:
     enum VoltageReferenceRanges {
         VoltageReferenceRange2V,
@@ -128,7 +121,7 @@ private:
         VoltageReferenceRangesNum
     };
 
-    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"}; /*! \todo FCON aggiungere metodo per leggere il valore dalla eeprom FTDI */
+    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
 };
 
 class MessageDispatcher_e16HC_V01 : public MessageDispatcher_e16HC_V02 {

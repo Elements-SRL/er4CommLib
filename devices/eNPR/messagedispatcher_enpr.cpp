@@ -296,6 +296,7 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
     protocolsAvailableSlopes.resize(ProtocolsNum);
+    protocolsAvailableFrequencies.resize(ProtocolsNum);
     protocolsAvailableAdimensionals.resize(ProtocolsNum);
 
     protocolsAvailableVoltages[ProtocolConstant].push_back(ProtocolVHold);
@@ -470,18 +471,6 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     selectedProtocolTime.resize(ProtocolTimesNum);
     for (unsigned int idx = 0; idx < ProtocolTimesNum; idx++) {
         selectedProtocolTime[idx] = protocolTimeDefault[idx];
-    }
-
-    /*! Protocol slope */
-    protocolSlopesNum = ProtocolSlopesNum;
-    protocolSlopeNames.resize(ProtocolSlopesNum);
-
-    protocolSlopeRanges.resize(ProtocolSlopesNum);
-
-    protocolSlopeDefault.resize(ProtocolSlopesNum);
-    selectedProtocolSlope.resize(ProtocolSlopesNum);
-    for (unsigned int idx = 0; idx < ProtocolSlopesNum; idx++) {
-        selectedProtocolSlope[idx] = protocolSlopeDefault[idx];
     }
 
     /*! Protocol adimensionals */
@@ -753,9 +742,6 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     doubleConfig.resolution = protocolTimeRanges[ProtocolTPe].step;
     protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
 
-    /*! Protocol slope */
-    protocolSlopeCoders.resize(ProtocolSlopesNum);
-
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
     doubleConfig.initialByte = 33;
@@ -881,23 +867,7 @@ void MessageDispatcher_eNPR::initializeDevice() {
 
     this->digitalOffsetCompensation(currentChannelsNum, false);
 
-    this->selectVoltageProtocol(defaultProtocol);
-
-    for (unsigned int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
-        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
-    }
-
-    for (unsigned int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
-        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
-    }
-
-    for (unsigned int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
-        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
-    }
-
-    for (unsigned int adimensionalIdx = 0; adimensionalIdx < ProtocolAdimensionalsNum; adimensionalIdx++) {
-        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
-    }
+    MessageDispatcher::initializeDevice();
 }
 
 bool MessageDispatcher_eNPR::checkProtocolValidity(string &message) {
@@ -1142,6 +1112,857 @@ void MessageDispatcher_eNPR::setFerdParameters() {
     ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
 
     MessageDispatcher::setFerdParameters();
+}
+
+MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(string di) :
+    MessageDispatcher_eNPR(di) {
+
+    /************************\
+     * Communication format *
+    \************************/
+
+    voltageChannelsNum = 1;
+    currentChannelsNum = 2;
+    totalChannelsNum = voltageChannelsNum+currentChannelsNum;
+
+    readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
+
+    maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
+
+    txDataBytes = 60;
+
+    /**********************\
+     * Available settings *
+    \**********************/
+
+    /*! Current ranges */
+    defaultCurrentRangesIdx.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        defaultCurrentRangesIdx[channelIdx] = CurrentRange200pA;
+    }
+
+    /*! Voltage ranges */
+    voltageRangesNum = VoltageRangesNum;
+    voltageRangesArray.resize(voltageRangesNum);
+    voltageRangesArray[VoltageRange500mV].min = -500.0;
+    voltageRangesArray[VoltageRange500mV].max = 500.0;
+    voltageRangesArray[VoltageRange500mV].step = 0.0625;
+    voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
+    voltageRangesArray[VoltageRange500mV].unit = "V";
+    defaultVoltageRangeIdx = VoltageRange500mV;
+
+    /*! Voltage reference ranges */
+    dacExtControllableFlag = true;
+    invertedDacExtFlag = true;
+
+    voltageReferenceRangesNum = VoltageReferenceRangesNum;
+    voltageReferenceRangesArray.resize(voltageReferenceRangesNum);
+    voltageReferenceRangesArray[VoltageReferenceRange2V].min = -1800.0;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].max = 1800.0;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].step = 0.0625;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].prefix = UnitPfxMilli;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].unit = "V";
+    defaultVoltageReferenceRangeIdx = VoltageReferenceRange2V;
+
+    /*! Default values */
+    selectedVoltageRangeIdx = defaultVoltageRangeIdx;
+    selectedCurrentRangesIdx = defaultCurrentRangesIdx;
+    selectedSamplingRateIdx = defaultSamplingRateIdx;
+
+    currentRanges.resize(currentChannelsNum);
+    currentResolutions.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
+        currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
+    }
+
+    voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
+    voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
+    voltageReferenceRange = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
+
+    /*************\
+     * Protocols *
+    \*************/
+
+    /*! Voltage ranges */
+    protocolVoltageRangesArray.resize(ProtocolVoltageRangesNum);
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].min = -500.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].max = 500.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
+
+    /*! Frequency ranges */
+    protocolFrequencyRangesArray.resize(ProtocolFrequencyRangesNum);
+    protocolFrequencyRangesArray[ProtocolFrequencyRange35Hz].min = 0.0;
+    protocolFrequencyRangesArray[ProtocolFrequencyRange35Hz].max = 35.0;
+    protocolFrequencyRangesArray[ProtocolFrequencyRange35Hz].step = 1.0;
+    protocolFrequencyRangesArray[ProtocolFrequencyRange35Hz].prefix = UnitPfxNone;
+    protocolFrequencyRangesArray[ProtocolFrequencyRange35Hz].unit = "Hz";
+
+    /*! Protocol selection */
+    protocolsNames.resize(ProtocolsNum);
+    protocolsNames[ProtocolConstant] = "Constant";
+    protocolsNames[ProtocolTriangular] = "Triangular";
+    protocolsNames[ProtocolSquareWave] = "Square wave";
+    protocolsNames[ProtocolConductance] = "Conductance";
+    protocolsNames[ProtocolVariableAmplitude] = "Variable Amplitude";
+    protocolsNames[ProtocolVariableDuration] = "Variable Duration";
+    protocolsNames[ProtocolRamp] = "Ramp";
+    protocolsNames[ProtocolCyclicVoltammetry] = "Cyclic Voltammetry";
+    protocolsNames[ProtocolSinusoid] = "Sinusoid";
+    defaultProtocol = ProtocolConstant;
+    selectedProtocol = defaultProtocol;
+    triangularProtocolIdx = ProtocolTriangular;
+    sealTestProtocolIdx = ProtocolSquareWave;
+
+    protocolsImages.resize(ProtocolsNum);
+    protocolsImages[ProtocolConstant] = "holdingVoltage001";
+    protocolsImages[ProtocolTriangular] = "triangularParametric001";
+    protocolsImages[ProtocolSquareWave] = "sealTest001";
+    protocolsImages[ProtocolConductance] = "conductance001";
+    protocolsImages[ProtocolVariableAmplitude] = "stepVariableAmplitude001";
+    protocolsImages[ProtocolVariableDuration] = "stepVariableDuration001";
+    protocolsImages[ProtocolRamp] = "ramp002";
+    protocolsImages[ProtocolCyclicVoltammetry] = "cyclicVoltammetry002";
+    protocolsImages[ProtocolSinusoid] = "sineWave001";
+
+    protocolsAvailableVoltages.clear();
+    protocolsAvailableTimes.clear();
+    protocolsAvailableSlopes.clear();
+    protocolsAvailableFrequencies.clear();
+    protocolsAvailableAdimensionals.clear();
+    protocolsAvailableVoltages.resize(ProtocolsNum);
+    protocolsAvailableTimes.resize(ProtocolsNum);
+    protocolsAvailableSlopes.resize(ProtocolsNum);
+    protocolsAvailableFrequencies.resize(ProtocolsNum);
+    protocolsAvailableAdimensionals.resize(ProtocolsNum);
+
+    protocolsAvailableVoltages[ProtocolConstant].push_back(ProtocolVHold);
+
+    protocolsAvailableVoltages[ProtocolTriangular].push_back(ProtocolVHold);
+    protocolsAvailableVoltages[ProtocolTriangular].push_back(ProtocolVPk);
+    protocolsAvailableTimes[ProtocolTriangular].push_back(ProtocolTPe);
+
+    protocolsAvailableVoltages[ProtocolSquareWave].push_back(ProtocolVHold);
+    protocolsAvailableVoltages[ProtocolSquareWave].push_back(ProtocolVPulse);
+    protocolsAvailableTimes[ProtocolSquareWave].push_back(ProtocolTHold);
+    protocolsAvailableTimes[ProtocolSquareWave].push_back(ProtocolTPulse);
+
+    protocolsAvailableVoltages[ProtocolConductance].push_back(ProtocolVHold);
+    protocolsAvailableVoltages[ProtocolConductance].push_back(ProtocolVPulse);
+    protocolsAvailableVoltages[ProtocolConductance].push_back(ProtocolVStep);
+    protocolsAvailableTimes[ProtocolConductance].push_back(ProtocolTHold);
+    protocolsAvailableTimes[ProtocolConductance].push_back(ProtocolTPulse);
+    protocolsAvailableAdimensionals[ProtocolConductance].push_back(ProtocolN);
+    protocolsAvailableAdimensionals[ProtocolConductance].push_back(ProtocolNR);
+
+    protocolsAvailableVoltages[ProtocolVariableAmplitude].push_back(ProtocolVHold);
+    protocolsAvailableVoltages[ProtocolVariableAmplitude].push_back(ProtocolVPulse);
+    protocolsAvailableVoltages[ProtocolVariableAmplitude].push_back(ProtocolVStep);
+    protocolsAvailableTimes[ProtocolVariableAmplitude].push_back(ProtocolTHold);
+    protocolsAvailableTimes[ProtocolVariableAmplitude].push_back(ProtocolTPulse);
+    protocolsAvailableAdimensionals[ProtocolVariableAmplitude].push_back(ProtocolN);
+    protocolsAvailableAdimensionals[ProtocolVariableAmplitude].push_back(ProtocolNR);
+
+    protocolsAvailableVoltages[ProtocolVariableDuration].push_back(ProtocolVHold);
+    protocolsAvailableVoltages[ProtocolVariableDuration].push_back(ProtocolVPulse);
+    protocolsAvailableTimes[ProtocolVariableDuration].push_back(ProtocolTHold);
+    protocolsAvailableTimes[ProtocolVariableDuration].push_back(ProtocolTPulse);
+    protocolsAvailableTimes[ProtocolVariableDuration].push_back(ProtocolTStep);
+    protocolsAvailableAdimensionals[ProtocolVariableDuration].push_back(ProtocolN);
+    protocolsAvailableAdimensionals[ProtocolVariableDuration].push_back(ProtocolNR);
+
+    protocolsAvailableVoltages[ProtocolRamp].push_back(ProtocolVHold);
+    protocolsAvailableVoltages[ProtocolRamp].push_back(ProtocolVFinal);
+    protocolsAvailableVoltages[ProtocolRamp].push_back(ProtocolVInit);
+    protocolsAvailableTimes[ProtocolRamp].push_back(ProtocolTHold);
+    protocolsAvailableTimes[ProtocolRamp].push_back(ProtocolTPulse);
+    protocolsAvailableTimes[ProtocolRamp].push_back(ProtocolTRamp);
+    protocolsAvailableAdimensionals[ProtocolRamp].push_back(ProtocolNR);
+
+    protocolsAvailableVoltages[ProtocolCyclicVoltammetry].push_back(ProtocolVHold);
+    protocolsAvailableVoltages[ProtocolCyclicVoltammetry].push_back(ProtocolVFinal);
+    protocolsAvailableVoltages[ProtocolCyclicVoltammetry].push_back(ProtocolVInit);
+    protocolsAvailableTimes[ProtocolCyclicVoltammetry].push_back(ProtocolTHold);
+    protocolsAvailableTimes[ProtocolCyclicVoltammetry].push_back(ProtocolTRamp);
+    protocolsAvailableAdimensionals[ProtocolCyclicVoltammetry].push_back(ProtocolN);
+    protocolsAvailableAdimensionals[ProtocolCyclicVoltammetry].push_back(ProtocolNR);
+
+    protocolsAvailableVoltages[ProtocolSinusoid].push_back(ProtocolVHold);
+    protocolsAvailableVoltages[ProtocolSinusoid].push_back(ProtocolVPulse);
+    protocolsAvailableFrequencies[ProtocolSinusoid].push_back(ProtocolFrequency);
+
+    /*! Protocol voltages */
+    protocolVoltagesNum = ProtocolVoltagesNum;
+    protocolVoltageNames.resize(ProtocolVoltagesNum);
+    protocolVoltageNames[ProtocolVHold] = "Vhold";
+    protocolVoltageNames[ProtocolVPulse] = "Vpulse";
+    protocolVoltageNames[ProtocolVStep] = "Vstep";
+    protocolVoltageNames[ProtocolVPk] = "Vamp";
+    protocolVoltageNames[ProtocolVFinal] = "Vfinal";
+    protocolVoltageNames[ProtocolVInit] = "Vinit";
+
+    protocolVoltageRanges.resize(ProtocolVoltagesNum);
+    protocolVoltageRanges[ProtocolVHold].step = 1.0;
+    protocolVoltageRanges[ProtocolVHold].min = voltageRangesArray[VoltageRange500mV].min;
+    protocolVoltageRanges[ProtocolVHold].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVHold].prefix = UnitPfxMilli;
+    protocolVoltageRanges[ProtocolVHold].unit = "V";
+    protocolVoltageRanges[ProtocolVPulse].step = 1.0;
+    protocolVoltageRanges[ProtocolVPulse].min = voltageRangesArray[VoltageRange500mV].min;
+    protocolVoltageRanges[ProtocolVPulse].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVPulse].prefix = UnitPfxMilli;
+    protocolVoltageRanges[ProtocolVPulse].unit = "V";
+    protocolVoltageRanges[ProtocolVStep].step = 1.0;
+    protocolVoltageRanges[ProtocolVStep].min = voltageRangesArray[VoltageRange500mV].min;
+    protocolVoltageRanges[ProtocolVStep].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVStep].prefix = UnitPfxMilli;
+    protocolVoltageRanges[ProtocolVStep].unit = "V";
+    protocolVoltageRanges[ProtocolVPk].step = 25.0;
+    protocolVoltageRanges[ProtocolVPk].min = 25.0;
+    protocolVoltageRanges[ProtocolVPk].max = 4.0*protocolVoltageRanges[ProtocolVPk].step;
+    protocolVoltageRanges[ProtocolVPk].prefix = UnitPfxMilli;
+    protocolVoltageRanges[ProtocolVPk].unit = "V";
+    protocolVoltageRanges[ProtocolVFinal].step = 1.0;
+    protocolVoltageRanges[ProtocolVFinal].min = voltageRangesArray[VoltageRange500mV].min;
+    protocolVoltageRanges[ProtocolVFinal].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVFinal].prefix = UnitPfxMilli;
+    protocolVoltageRanges[ProtocolVFinal].unit = "V";
+    protocolVoltageRanges[ProtocolVInit].step = 1.0;
+    protocolVoltageRanges[ProtocolVInit].min = voltageRangesArray[VoltageRange500mV].min;
+    protocolVoltageRanges[ProtocolVInit].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVInit].prefix = UnitPfxMilli;
+    protocolVoltageRanges[ProtocolVInit].unit = "V";
+
+    protocolVoltageDefault.resize(ProtocolVoltagesNum);
+    protocolVoltageDefault[ProtocolVHold].value = 0.0;
+    protocolVoltageDefault[ProtocolVHold].prefix = UnitPfxMilli;
+    protocolVoltageDefault[ProtocolVHold].unit = "V";
+    protocolVoltageDefault[ProtocolVPulse].value = 100.0;
+    protocolVoltageDefault[ProtocolVPulse].prefix = UnitPfxMilli;
+    protocolVoltageDefault[ProtocolVPulse].unit = "V";
+    protocolVoltageDefault[ProtocolVStep].value = 20.0;
+    protocolVoltageDefault[ProtocolVStep].prefix = UnitPfxMilli;
+    protocolVoltageDefault[ProtocolVStep].unit = "V";
+    protocolVoltageDefault[ProtocolVPk].value = 100.0;
+    protocolVoltageDefault[ProtocolVPk].prefix = UnitPfxMilli;
+    protocolVoltageDefault[ProtocolVPk].unit = "V";
+    protocolVoltageDefault[ProtocolVFinal].value = 100.0;
+    protocolVoltageDefault[ProtocolVFinal].prefix = UnitPfxMilli;
+    protocolVoltageDefault[ProtocolVFinal].unit = "V";
+    protocolVoltageDefault[ProtocolVInit].value = -100.0;
+    protocolVoltageDefault[ProtocolVInit].prefix = UnitPfxMilli;
+    protocolVoltageDefault[ProtocolVInit].unit = "V";
+    selectedProtocolVoltage.resize(ProtocolVoltagesNum);
+    for (unsigned int idx = 0; idx < ProtocolVoltagesNum; idx++) {
+        selectedProtocolVoltage[idx] = protocolVoltageDefault[idx];
+    }
+
+    /*! Protocol times */
+    protocolTimesNum = ProtocolTimesNum;
+    protocolTimeNames.resize(ProtocolTimesNum);
+    protocolTimeNames[ProtocolTHold] = "Thold";
+    protocolTimeNames[ProtocolTPulse] = "Tpulse";
+    protocolTimeNames[ProtocolTStep] = "Tstep";
+    protocolTimeNames[ProtocolTRamp] = "Tramp";
+    protocolTimeNames[ProtocolTPe] = "TPeriod";
+
+    protocolTimeRanges.resize(ProtocolTimesNum);
+    protocolTimeRanges[ProtocolTHold].step = 1.0;
+    protocolTimeRanges[ProtocolTHold].min = 0.0;
+    protocolTimeRanges[ProtocolTHold].max = UINT28_MAX*protocolTimeRanges[ProtocolTHold].step;
+    protocolTimeRanges[ProtocolTHold].prefix = UnitPfxMilli;
+    protocolTimeRanges[ProtocolTHold].unit = "s";
+    protocolTimeRanges[ProtocolTPulse].step = 1.0;
+    protocolTimeRanges[ProtocolTPulse].min = 0.0;
+    protocolTimeRanges[ProtocolTPulse].max = UINT28_MAX*protocolTimeRanges[ProtocolTPulse].step;
+    protocolTimeRanges[ProtocolTPulse].prefix = UnitPfxMilli;
+    protocolTimeRanges[ProtocolTPulse].unit = "s";
+    protocolTimeRanges[ProtocolTStep].step = 1.0;
+    protocolTimeRanges[ProtocolTStep].min = INT28_MIN*protocolTimeRanges[ProtocolTStep].step;
+    protocolTimeRanges[ProtocolTStep].max = INT28_MAX*protocolTimeRanges[ProtocolTStep].step;
+    protocolTimeRanges[ProtocolTStep].prefix = UnitPfxMilli;
+    protocolTimeRanges[ProtocolTStep].unit = "s";
+    protocolTimeRanges[ProtocolTRamp].step = 1.0;
+    protocolTimeRanges[ProtocolTRamp].min = 0.0;
+    protocolTimeRanges[ProtocolTRamp].max = UINT28_MAX*protocolTimeRanges[ProtocolTRamp].step;
+    protocolTimeRanges[ProtocolTRamp].prefix = UnitPfxMilli;
+    protocolTimeRanges[ProtocolTRamp].unit = "s";
+    protocolTimeRanges[ProtocolTPe].step = 1.0;
+    protocolTimeRanges[ProtocolTPe].min = 0.0;
+    protocolTimeRanges[ProtocolTPe].max = UINT10_MAX*protocolTimeRanges[ProtocolTPe].step;
+    protocolTimeRanges[ProtocolTPe].prefix = UnitPfxMilli;
+    protocolTimeRanges[ProtocolTPe].unit = "s";
+
+    protocolTimeDefault.resize(ProtocolTimesNum);
+    protocolTimeDefault[ProtocolTHold].value = 100.0;
+    protocolTimeDefault[ProtocolTHold].prefix = UnitPfxMilli;
+    protocolTimeDefault[ProtocolTHold].unit = "s";
+    protocolTimeDefault[ProtocolTPulse].value = 100.0;
+    protocolTimeDefault[ProtocolTPulse].prefix = UnitPfxMilli;
+    protocolTimeDefault[ProtocolTPulse].unit = "s";
+    protocolTimeDefault[ProtocolTStep].value = 20.0;
+    protocolTimeDefault[ProtocolTStep].prefix = UnitPfxMilli;
+    protocolTimeDefault[ProtocolTStep].unit = "s";
+    protocolTimeDefault[ProtocolTRamp].value = 1000.0;
+    protocolTimeDefault[ProtocolTRamp].prefix = UnitPfxMilli;
+    protocolTimeDefault[ProtocolTRamp].unit = "s";
+    protocolTimeDefault[ProtocolTPe].value = 100.0;
+    protocolTimeDefault[ProtocolTPe].prefix = UnitPfxMilli;
+    protocolTimeDefault[ProtocolTPe].unit = "s";
+    selectedProtocolTime.resize(ProtocolTimesNum);
+    for (unsigned int idx = 0; idx < ProtocolTimesNum; idx++) {
+        selectedProtocolTime[idx] = protocolTimeDefault[idx];
+    }
+
+    /*! Protocol frequencies */
+    protocolFrequenciesNum = ProtocolFrequenciesNum;
+    protocolFrequencyNames.resize(ProtocolFrequenciesNum);
+    protocolFrequencyNames[ProtocolFrequency] = "Frequency";
+
+    protocolFrequencyRanges.resize(ProtocolFrequenciesNum);
+    protocolFrequencyRanges[ProtocolFrequency].step = 10.0e6/256.0/16777216.0;
+    protocolFrequencyRanges[ProtocolFrequency].min = 0.0;
+    protocolFrequencyRanges[ProtocolFrequency].max = UINT14_MAX*protocolFrequencyRanges[ProtocolFrequency].step;
+    protocolFrequencyRanges[ProtocolFrequency].prefix = UnitPfxNone;
+    protocolFrequencyRanges[ProtocolFrequency].unit = "Hz";
+
+    protocolFrequencyDefault.resize(ProtocolFrequenciesNum);
+    protocolFrequencyDefault[ProtocolFrequency].value = 10.0;
+    protocolFrequencyDefault[ProtocolFrequency].prefix = UnitPfxNone;
+    protocolFrequencyDefault[ProtocolFrequency].unit = "Hz";
+    selectedProtocolFrequency.resize(ProtocolFrequenciesNum);
+    for (unsigned int idx = 0; idx < ProtocolFrequenciesNum; idx++) {
+        selectedProtocolFrequency[idx] = protocolFrequencyDefault[idx];
+    }
+
+    /*! Protocol adimensionals */
+    protocolAdimensionalsNum = ProtocolAdimensionalsNum;
+    protocolAdimensionalNames.resize(ProtocolAdimensionalsNum);
+    protocolAdimensionalNames[ProtocolN] = "N";
+    protocolAdimensionalNames[ProtocolNR] = "NR";
+
+    protocolAdimensionalRanges.resize(ProtocolAdimensionalsNum);
+    protocolAdimensionalRanges[ProtocolN].step = 1.0;
+    protocolAdimensionalRanges[ProtocolN].min = 0.0;
+    protocolAdimensionalRanges[ProtocolN].max = UINT10_MAX*protocolAdimensionalRanges[ProtocolN].step;
+    protocolAdimensionalRanges[ProtocolN].prefix = UnitPfxNone;
+    protocolAdimensionalRanges[ProtocolN].unit = "";
+    protocolAdimensionalRanges[ProtocolNR].step = 1.0;
+    protocolAdimensionalRanges[ProtocolNR].min = 0.0;
+    protocolAdimensionalRanges[ProtocolNR].max = UINT10_MAX*protocolAdimensionalRanges[ProtocolNR].step;
+    protocolAdimensionalRanges[ProtocolNR].prefix = UnitPfxNone;
+    protocolAdimensionalRanges[ProtocolNR].unit = "";
+
+    protocolAdimensionalDefault.resize(ProtocolAdimensionalsNum);
+    protocolAdimensionalDefault[ProtocolN].value = 5.0;
+    protocolAdimensionalDefault[ProtocolN].prefix = UnitPfxNone;
+    protocolAdimensionalDefault[ProtocolN].unit = "";
+    protocolAdimensionalDefault[ProtocolNR].value = 0.0;
+    protocolAdimensionalDefault[ProtocolNR].prefix = UnitPfxNone;
+    protocolAdimensionalDefault[ProtocolNR].unit = "";
+    selectedProtocolAdimensional.resize(ProtocolAdimensionalsNum);
+    for (unsigned int idx = 0; idx < ProtocolAdimensionalsNum; idx++) {
+        selectedProtocolAdimensional[idx] = protocolAdimensionalDefault[idx];
+    }
+
+    voltageOffsetControlImplemented = true;
+    selectedVoltageOffset.resize(currentChannelsNum);
+    voltageOffsetRange.step = 1.0;
+    voltageOffsetRange.min = -512.0;
+    voltageOffsetRange.max = 512.0;
+    voltageOffsetRange.prefix = UnitPfxMilli;
+    voltageOffsetRange.unit = "V";
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        selectedVoltageOffset[channelIdx].value = 0.0;
+        selectedVoltageOffset[channelIdx].prefix = voltageOffsetRange.prefix;
+        selectedVoltageOffset[channelIdx].unit = voltageOffsetRange.unit;
+    }
+
+    insertionPulseImplemented = true;
+    insertionPulseVoltageRange.step = 1.0;
+    insertionPulseVoltageRange.min = -500.0;
+    insertionPulseVoltageRange.max = 500.0;
+    insertionPulseVoltageRange.prefix = UnitPfxMilli;
+    insertionPulseVoltageRange.unit = "V";
+    insertionPulseDurationRange.step = 1.0;
+    insertionPulseDurationRange.min = 1.0;
+    insertionPulseDurationRange.max = 15000.0;
+    insertionPulseDurationRange.prefix = UnitPfxMilli;
+    insertionPulseDurationRange.unit = "s";
+
+    /**************\
+     * EDH format *
+    \**************/
+
+    edhFormat =
+            "EDH Version: 2.0\n"
+            "\n"
+            "Elements eNPR\n"
+            "Channels: 1\n"
+            "\n"
+            "Data header file\n"
+            "\n"
+            "Amplifier Setup\n"
+            "Range: %currentRange%\n" // 200 pA
+            "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
+            "Final Bandwidth: SR/2 (no filter)\n"
+            "Oversampling x%oversamplingRatio%: %oversamplingFlag%\n" // Oversampling x4: enabled
+            "\n"
+            "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
+            "\n"
+            "Active channels: %activeChannels%\n"; // 1
+
+    /****************************\
+     * Device specific controls *
+    \****************************/
+
+    /**********\
+     * Coders *
+    \**********/
+
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+    DoubleCoder::CoderConfig_t doubleConfig;
+
+    /*! Select stimulus channel */
+    selectStimulusChannelFlag = true;
+    singleChannelSSCFlag = true;
+
+    boolConfig.initialByte = 6;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 2;
+    selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
+
+    selectStimulusChannelStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        selectStimulusChannelStates[currentIdx] = false;
+    }
+
+    /*! Digital offset compensations */
+    digitalOffsetCompensationFlag = true;
+    singleChannelDOCFlag = true;
+    selectableDOCAutostopFlag = false;
+
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 2;
+    digitalOffsetCompensationCoder = new BoolArrayCoder(boolConfig);
+
+    digitalOffsetCompensationStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        digitalOffsetCompensationStates[currentIdx] = false;
+    }
+
+    boolConfig.initialByte = 3;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 1;
+    digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
+
+    /*! Zap */
+    zappableDeviceFlag = true;
+    singleChannelZapFlag = true;
+
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 2;
+    zapCoder = new BoolArrayCoder(boolConfig);
+
+    zapStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        zapStates[currentIdx] = false;
+    }
+
+    /*! Voltage range */
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+
+    /*! Protocol frequencies */
+    protocolFrequencyCoders.resize(ProtocolFrequenciesNum);
+    doubleConfig.initialByte = 49;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 14;
+    doubleConfig.minValue = protocolFrequencyRanges[ProtocolFrequency].min;
+    doubleConfig.maxValue = protocolFrequencyRanges[ProtocolFrequency].max;
+    doubleConfig.resolution = protocolFrequencyRanges[ProtocolFrequency].step;
+    protocolFrequencyCoders[ProtocolFrequency] = new DoubleOffsetBinaryCoder(doubleConfig);
+
+    /*! Voltage offsets */
+    voltageOffsetCoders.resize(currentChannelsNum);
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
+    doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
+    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        doubleConfig.initialByte = 54+3*channelIdx;
+        voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
+    }
+
+    /*! Voltage reference range */
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    voltageReferenceRangeCoder->addMapItem(0); /*!< No controls -> 0b0 */
+
+    /*! Voltage DAC Ext */
+    doubleConfig.initialByte = 51;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    dacExtCoders.resize(voltageReferenceRangesNum);
+
+    double vcm_mV = 1850.0;
+    double maxDacExtVoltage = 4096.0;
+
+    unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
+    doubleConfig.resolution = voltageReferenceRangesArray[voltageReferenceIdx].step;
+    doubleConfig.minValue = -vcm_mV;
+    doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
+    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
+
+    /*! Device specific controls */
+
+    customFlagsNum = 1;
+    customFlagsNames.resize(customFlagsNum);
+    customFlagsNames[0] = "Differential current";
+    customFlagsDefault.resize(customFlagsNum);
+    customFlagsDefault[0] = false;
+
+    customFlagsCoders.resize(customFlagsNum);
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 6;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[0] = new BoolArrayCoder(boolConfig);
+
+    /*******************\
+     * Default status  *
+    \*******************/
+
+    txStatus.resize(txDataBytes);
+
+    int txStatusIdx = 0;
+    txStatus[txStatusIdx++] = txSyncWord; // HDR
+    txStatus[txStatusIdx++] = 0x20; // CFG0
+    txStatus[txStatusIdx++] = 0x03; // CFG1
+    txStatus[txStatusIdx++] = 0x00; // CFG2
+    txStatus[txStatusIdx++] = 0x00; // CFG3
+    txStatus[txStatusIdx++] = 0x00; // COMP0
+    txStatus[txStatusIdx++] = 0x40; // COMP1
+    txStatus[txStatusIdx++] = 0x00; // Vhold
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VPulse
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VInsPulse
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VStep
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // THold
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // TPulse
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // TInsPulse
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // TStep
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // N
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // NR
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // Triangular
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // TRamp
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // Vfinal
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VInit
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // Frequency
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // DacExt
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // Vofs1
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // Vofs2
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00;
+}
+
+MessageDispatcher_eNPR_2Channels_V01::~MessageDispatcher_eNPR_2Channels_V01() {
+
+}
+
+void MessageDispatcher_eNPR_2Channels_V01::initializeDevice() {
+    this->updateVoltageReferenceOffsetCalibration();
+    this->setSamplingRate(defaultSamplingRateIdx, false);
+
+    this->selectStimulusChannel(currentChannelsNum, true);
+    this->digitalOffsetCompensation(currentChannelsNum, false);
+
+    MessageDispatcher::initializeDevice();
+}
+
+
+bool MessageDispatcher_eNPR_2Channels_V01::checkProtocolValidity(string &message) {
+    bool validFlag = true;
+    message = "Valid protocol";
+    string voltageLimit = "500";
+    switch (selectedProtocol) {
+    case ProtocolConstant:
+        if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolTriangular:
+        if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPk]))) {
+            validFlag = false;
+            message = "Vhold+Vamp\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPk]))) {
+            validFlag = false;
+            message = "Vhold-Vamp\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange2_10ms].includes(selectedProtocolTime[ProtocolTPe]))) {
+            validFlag = false;
+            message = "TPeriod\nmust be within [1,1000]ms";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolSquareWave:
+        if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold+Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold-Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
+            validFlag = false;
+            message = "Tpulse\nmust be within [1, 200e6]ms";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolConductance:
+        if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold+Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
+                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
+            validFlag = false;
+            message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold-Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
+                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
+            validFlag = false;
+            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
+            validFlag = false;
+            message = "Tpulse\nmust be within [1, 200e6]ms";
+
+        } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
+            validFlag = false;
+            message = "N\nmust be at least 1";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolVariableAmplitude:
+        if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold+Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
+                                                                                    selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
+            validFlag = false;
+            message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
+            validFlag = false;
+            message = "Tpulse\nmust be within [1, 200e6]ms";
+
+        } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
+            validFlag = false;
+            message = "N\nmust be at least 1";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolVariableDuration:
+        if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold+Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
+            validFlag = false;
+            message = "Tpulse\nmust be within [1, 200e6]ms";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRangeSigned2_27].includes(selectedProtocolTime[ProtocolTStep]))) {
+            validFlag = false;
+            message = "Tstep\nmust be within [-100e6, 100e6]ms";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1orMore].includes(selectedProtocolTime[ProtocolTPulse]+
+                                                                               selectedProtocolTime[ProtocolTStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
+            validFlag = false;
+            message = "Tpulse+Tstep(N-1)\nmust be at least 1ms";
+
+        } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
+            validFlag = false;
+            message = "N\nmust at least 1";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolRamp:
+        if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVFinal]))) {
+            validFlag = false;
+            message = "Vfinal\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVInit]))) {
+            validFlag = false;
+            message = "Vinit\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_25].includes(selectedProtocolTime[ProtocolTRamp]))) {
+            validFlag = false;
+            message = "Tramp\nmust be within [1, 30e6]ms";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolCyclicVoltammetry:
+        if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+            validFlag = false;
+            message = "Vhold\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVFinal]))) {
+            validFlag = false;
+            message = "Vfinal\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVInit]))) {
+            validFlag = false;
+            message = "Vinit\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_25].includes(selectedProtocolTime[ProtocolTRamp]))) {
+            validFlag = false;
+            message = "Tramp\nmust be within [1, 30e6]ms";
+
+        } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
+            validFlag = false;
+            message = "N\nmust at least 1";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+
+    case ProtocolSinusoid:
+        if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold+Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]))) {
+            validFlag = false;
+            message = "Vhold-Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
+
+        } else if (!(protocolFrequencyRangesArray[ProtocolFrequencyRange35Hz].includes(selectedProtocolFrequency[ProtocolFrequency]))) {
+            validFlag = false;
+            message = "Frequency\nmust be within [0,35]Hz";
+
+        } else {
+            validFlag = true;
+            message = "Valid protocol";
+        }
+        break;
+    }
+    return validFlag;
+}
+
+void MessageDispatcher_eNPR_2Channels_V01::updateVoltageReferenceOffsetCalibration() {
+    /*! Voltage DAC Ext */
+    /*! \todo FCON serve davvero ricreare i coder? */
+    DoubleCoder::CoderConfig_t doubleConfig;
+    doubleConfig.initialByte = 51;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
+    dacExtCoders.resize(voltageReferenceRangesNum);
+
+    int16_t voltageReferenceOffsetCalibrationInt = (int16_t)ftdiEeprom->getVcOffset();
+    voltageReferenceOffsetCalibration.value = voltageReferenceRangesArray[VoltageReferenceRange2V].step*(double)voltageReferenceOffsetCalibrationInt;
+    voltageReferenceOffsetCalibration.prefix = voltageReferenceRangesArray[VoltageReferenceRange2V].prefix;
+    voltageReferenceOffsetCalibration.convertValue(UnitPfxMilli);
+    double vcm_mV = 1850.0+voltageReferenceOffsetCalibration.value;
+    double maxDacExtVoltage = 4096.0+voltageReferenceOffsetCalibration.value;
+
+    unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
+    doubleConfig.resolution = voltageReferenceRangesArray[voltageReferenceIdx].step;
+    doubleConfig.minValue = -vcm_mV;
+    doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
+    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
 }
 
 MessageDispatcher_eNPR_FL_V02::MessageDispatcher_eNPR_FL_V02(string di) :

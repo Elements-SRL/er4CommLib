@@ -1560,6 +1560,20 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     boolConfig.bitsNum = 1;
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
+    /*! Zap */
+    zappableDeviceFlag = true;
+    singleChannelZapFlag = true;
+
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 2;
+    zapCoder = new BoolArrayCoder(boolConfig);
+
+    zapStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        zapStates[currentIdx] = false;
+    }
+
     /*! Voltage range */
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;

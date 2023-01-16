@@ -36,12 +36,14 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},                   //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1HcEL03F, 1, DeviceE1HcEL03fEDR3},                       //    9,  9,  1 : e1HC EL03f chip (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                               //    3,  8, 11 : e16e (Legacy version for EDR3)
+    {DeviceVersionENPR, DeviceSubversionENPR, 8, DeviceENPREDR3_V04},                           //    8,  2,  8 : eNPR (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                                 //    8,  2,129 : eNPR
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                             //    8,  8,129 : eNPR-HC
-    {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nV04EDR3},                               //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nV04EDR3},                               //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nEDR3_V04},                              //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nEDR3_V04},                              //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                                  //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                     //    4,  8,129 : e4 Elements version
+    {DeviceVersionE4, DeviceSubversionE4n, 129, DeviceE4n_V01},                                 //    4,  3,129 : e4 Orbit mini
+    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e_V01},                                 //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses_V01},            //    3,  4,129 : e16 Orbit customized for fast pulses
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 130, DeviceE16FastPulses_V02},            //    3,  4,130 : e16 Orbit customized for fast pulse trains
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 4, DeviceE16FastPulsesEDR3},              //    3,  4,  4 : e16 Orbit customized for fast pulses (Legacy version for EDR3)
@@ -62,6 +64,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight_V01},    //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},    //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
     {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 130, DeviceENPR2Channels_V01},      //  254, 17,130 : eNPR prototype with 2 channels and sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},  //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16FastPulses}
 };
 

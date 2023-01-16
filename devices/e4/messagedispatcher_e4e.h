@@ -24,10 +24,10 @@
 
 using namespace std;
 
-class MessageDispatcher_e4e : public MessageDispatcher {
+class MessageDispatcher_e4e_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e4e(string di);
-    virtual ~MessageDispatcher_e4e();
+    MessageDispatcher_e4e_V01(string di);
+    virtual ~MessageDispatcher_e4e_V01();
 
 protected:
     typedef struct {

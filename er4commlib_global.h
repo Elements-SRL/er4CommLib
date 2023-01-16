@@ -105,11 +105,13 @@ typedef enum {
     DeviceE16ETHEDR3,           /*!< e16ETH (LegacyVersion for EDR3). */
     DeviceE16HC_V01,            /*!< e16HC (no voltage amplifier). */
     DeviceE16HC_V02,            /*!< e16HC. */
+    DeviceENPREDR3_V04,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPR,                 /*!< eNPR. */
     DeviceENPRHC,               /*!< eNPR-HC. */
-    DeviceE4nV04EDR3,           /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
+    DeviceE4nEDR3_V04,          /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
     DeviceE4eEDR3,              /*!< e4 Elements (Legacy version for EDR3). */
-    DeviceE4e,                  /*!< e4 Elements version. */
+    DeviceE4n_V01,              /*!< e4 Orbit mini. */
+    DeviceE4e_V01,              /*!< e4 Elements version. */
     DeviceE16FastPulses_V01,    /*!< e16 Orbit customized for fast pulses. */
     DeviceE16FastPulses_V02,    /*!< e16 Orbit customized for fast pulse trains. */
     DeviceE16FastPulsesEDR3,    /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
@@ -123,6 +125,7 @@ typedef enum {
     DeviceENPRFairyLight_V01,   /*!< eNPR prototype for Fairy Light project with DAC ext control and only ULN mode. */
     DeviceENPRFairyLight_V02,   /*!< eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes. */
     DeviceENPR2Channels_V01,    /*!< eNPR prototype with 2 channels and sinusoidal waveforms. */
+    DeviceOrbitMiniSine_V01,    /*!< Orbit mini prototype with additional sinusoidal waveforms. */
     DeviceFakeE16n,             /*!< Fake e16 2020 release. */
     DeviceFakeE16FastPulses,    /*!< Fake e16 Orbit customized for fast pulses. */
     DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */

@@ -192,6 +192,10 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(deviceId);
             break;
 
+        case DeviceENPREDR3_V04:
+            messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V04(deviceId);
+            break;
+
         case DeviceENPR:
             messageDispatcher = new MessageDispatcher_eNPR(deviceId);
             break;
@@ -200,7 +204,7 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_eNPR_HC_V00(deviceId);
             break;
 
-        case DeviceE4nV04EDR3:
+        case DeviceE4nEDR3_V04:
             messageDispatcher = new MessageDispatcher_e4n_El03c_LegacyEdr3_V04(deviceId);
             break;
 
@@ -208,8 +212,12 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e4e_El03c_LegacyEdr3_V00(deviceId);
             break;
 
-        case DeviceE4e:
-            messageDispatcher = new MessageDispatcher_e4e(deviceId);
+        case DeviceE4n_V01:
+            messageDispatcher = new MessageDispatcher_e4n_V01(deviceId);
+            break;
+
+        case DeviceE4e_V01:
+            messageDispatcher = new MessageDispatcher_e4e_V01(deviceId);
             break;
 
         case DeviceE16eEDR3:
@@ -278,6 +286,10 @@ ErrorCodes_t connect(
 
         case DeviceENPR2Channels_V01:
             messageDispatcher = new MessageDispatcher_eNPR_2Channels_V01(deviceId);
+            break;
+
+        case DeviceOrbitMiniSine_V01:
+            messageDispatcher = new MessageDispatcher_e4n_sine_V01(deviceId);
             break;
 
         case DeviceFakeE16n:

@@ -17,7 +17,7 @@
 
 #include "messagedispatcher_e4e.h"
 
-MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
+MessageDispatcher_e4e_V01::MessageDispatcher_e4e_V01(string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -858,11 +858,11 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e4e::~MessageDispatcher_e4e() {
+MessageDispatcher_e4e_V01::~MessageDispatcher_e4e_V01() {
 
 }
 
-void MessageDispatcher_e4e::initializeDevice() {
+void MessageDispatcher_e4e_V01::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -872,7 +872,7 @@ void MessageDispatcher_e4e::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_e4e::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e4e_V01::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1071,7 +1071,7 @@ bool MessageDispatcher_e4e::checkProtocolValidity(string &message) {
     return validFlag;
 }
 
-void MessageDispatcher_e4e::setFerdParameters() {
+void MessageDispatcher_e4e_V01::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {
@@ -1106,7 +1106,7 @@ void MessageDispatcher_e4e::setFerdParameters() {
     MessageDispatcher::setFerdParameters();
 }
 
-ErrorCodes_t MessageDispatcher_e4e::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
+ErrorCodes_t MessageDispatcher_e4e_V01::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
     for (int idx = 0; idx < currentChannelsNum; idx++) {
         offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
     }

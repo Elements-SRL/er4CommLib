@@ -234,7 +234,7 @@ MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00::MessageDispatcher_e1Plus_El03f_Le
     protocolTimeRangesArray[ProtocolTimeRange1to2_28].prefix = UnitPfxMilli;
     protocolTimeRangesArray[ProtocolTimeRange1to2_28].unit = "s";
     protocolTimeRangesArray[ProtocolTimeRange1orMore].min = 1.0;
-    protocolTimeRangesArray[ProtocolTimeRange1orMore].max = numeric_limits <double> ::max();
+    protocolTimeRangesArray[ProtocolTimeRange1orMore].max = (numeric_limits <double> ::max)();
     protocolTimeRangesArray[ProtocolTimeRange1orMore].step = 1.0;
     protocolTimeRangesArray[ProtocolTimeRange1orMore].prefix = UnitPfxMilli;
     protocolTimeRangesArray[ProtocolTimeRange1orMore].unit = "s";
@@ -770,6 +770,18 @@ MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00::MessageDispatcher_e1Plus_El03f_Le
     insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
 
     /*! Device specific controls */
+
+    customFlagsNum = 1;
+    customFlagsNames.resize(customFlagsNum);
+    customFlagsNames[0] = "Trigger selection";
+    customFlagsDefault.resize(customFlagsNum);
+    customFlagsDefault[0] = false;
+
+    customFlagsCoders.resize(customFlagsNum);
+    boolConfig.initialByte = 3;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[0] = new BoolArrayCoder(boolConfig);
 
     /*******************\
      * Default status  *

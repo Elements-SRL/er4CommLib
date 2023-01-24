@@ -24,7 +24,9 @@
 #include <math.h>
 #include <random>
 #include <algorithm>
+#if defined(_WIN32) && !defined(_MSC_VER)
 #include <unistd.h>
+#endif
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                         //    9,  2,  4 : e1b EL03f chip (Legacy version for EDR3)
@@ -2254,7 +2256,7 @@ void MessageDispatcher::readDataFromDevice() {
     while (!stopConnectionFlag) {
         if (connectionPaused) {
             if (this->pauseConnection(false) != Success) {
-                usleep(100000);
+                this_thread::sleep_for(chrono::microseconds(100000));
                 continue;
             }
         }
@@ -2268,7 +2270,7 @@ void MessageDispatcher::readDataFromDevice() {
         if (result != FT_OK) {
             deviceCommunicationErrorFlag = true;
             this->pauseConnection(true);
-            usleep(100000);
+            this_thread::sleep_for(chrono::microseconds(100000));
             continue;
         }
 
@@ -2278,7 +2280,7 @@ void MessageDispatcher::readDataFromDevice() {
         /*! If there are not enough frames wait for a minimum frame number,
          *  the ftdi driver will wait for that to decrease overhead */
         if (availableFrames < minReadFrameNumber) {
-            usleep(fewFramesSleep);
+            this_thread::sleep_for(chrono::microseconds(fewFramesSleep));
             continue;
         }
 

@@ -176,7 +176,7 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     protocolTimeRangesArray[ProtocolTimeRange1to2_28].prefix = UnitPfxMilli;
     protocolTimeRangesArray[ProtocolTimeRange1to2_28].unit = "s";
     protocolTimeRangesArray[ProtocolTimeRange1orMore].min = 1.0;
-    protocolTimeRangesArray[ProtocolTimeRange1orMore].max = numeric_limits <double> ::max();
+    protocolTimeRangesArray[ProtocolTimeRange1orMore].max = (numeric_limits <double> ::max)();
     protocolTimeRangesArray[ProtocolTimeRange1orMore].step = 1.0;
     protocolTimeRangesArray[ProtocolTimeRange1orMore].prefix = UnitPfxMilli;
     protocolTimeRangesArray[ProtocolTimeRange1orMore].unit = "s";

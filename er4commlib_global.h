@@ -408,7 +408,7 @@ typedef struct Measurement {
         }
 
         double diff;
-        double minDiff = std::numeric_limits <double>::max();
+        double minDiff = (std::numeric_limits <double>::max)();
         unsigned int minDelta = 0;
         for (unsigned int delta = 0; delta < UnitPfxNum; delta++) {
             diff = fabs(powersOf1000[delta]-gain);
@@ -774,7 +774,7 @@ typedef struct {
         }
 
         double diff;
-        double minDiff = std::numeric_limits <double>::max();
+        double minDiff = (std::numeric_limits <double>::max)();
         unsigned int minDelta = 0;
         for (unsigned int delta = 0; delta < UnitPfxNum; delta++) {
             diff = fabs(powersOf1000[delta]-gain);

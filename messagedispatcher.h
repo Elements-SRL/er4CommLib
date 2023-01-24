@@ -23,6 +23,8 @@
 #include <thread>
 #include <condition_variable>
 #include <unordered_map>
+#define _USE_MATH_DEFINES // for C++
+#include <cmath>
 
 #include "er4commlib_errorcodes.h"
 #include "er4commlib_global.h"
@@ -382,7 +384,7 @@ protected:
 
     bool oversamplingImplemented = false;
     uint32_t oversamplingRatiosNum = 1;
-    vector <uint_fast16_t> oversamplingRatiosArray;
+    vector <uint16_t> oversamplingRatiosArray;
     BoolRandomArrayCoder * oversamplingRatioCoder;
 
     bool selectStimulusChannelFlag = false;

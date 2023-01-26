@@ -993,6 +993,17 @@ ErrorCodes_t resetDevice() {
     return ret;
 }
 
+ErrorCodes_t resetDigitalOffsetCompensation() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->resetDigitalOffsetCompensation();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setCompensationsChannel(
         uint16_t channelIdx) {
     ErrorCodes_t ret;
@@ -1438,6 +1449,17 @@ ErrorCodes_t hasChannelOn(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->hasChannelOn(channelOnFlag, singleChannelOnFlag);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasDigitalOffsetCompensationReset() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasDigitalOffsetCompensationReset();
 
     } else {
         ret = ErrorDeviceNotConnected;

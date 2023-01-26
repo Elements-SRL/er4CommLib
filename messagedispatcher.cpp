@@ -65,7 +65,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},                //  254, 15,129 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight_V01},    //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},    //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
-    {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 130, DeviceENPR2Channels_V01},      //  254, 17,130 : eNPR prototype with 2 channels and sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 129, DeviceENPR2Channels_V01},      //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},  //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16FastPulses}
 };
@@ -832,6 +832,20 @@ ErrorCodes_t MessageDispatcher::resetDevice() {
     this->stackOutgoingMessage(txStatus);
 
     this->resetCalib();
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::resetDigitalOffsetCompensation() {
+    if (digitalOffsetCompensationResetFlag) {
+        digitalOffsetCompensationResetCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        digitalOffsetCompensationResetCoder->encode(0, txStatus);
+        this->stackOutgoingMessage(txStatus);
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
 
     return Success;
 }
@@ -1767,6 +1781,14 @@ ErrorCodes_t MessageDispatcher::hasChannelOn(bool &channelOnFlag, bool &singleCh
     channelOnFlag = this->channelOnFlag;
     singleChannelOnFlag = this->singleChannelOnFlag;
     return Success;
+}
+
+ErrorCodes_t MessageDispatcher::hasDigitalOffsetCompensationReset() {
+    ErrorCodes_t ret = ErrorFeatureNotImplemented;
+    if (digitalOffsetCompensationResetFlag) {
+        ret = Success;
+    }
+    return ret;
 }
 
 ErrorCodes_t MessageDispatcher::hasDigitalOutput() {

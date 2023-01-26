@@ -641,11 +641,18 @@ ErrorCodes_t enableFrontEndResetDenoiser(
 
 /*! \brief Reset the device.
  *
- * \param reset [in] False sets the device in normal operation state, true sets in reset state.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t resetDevice(
+        ER4CL_ARGVOID);
+
+/*! \brief Reset the digital offset compensations.
+ *
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t resetDigitalOffsetCompensation(
         ER4CL_ARGVOID);
 
 /*! \brief Select the channel for compesantions settings.
@@ -1019,6 +1026,13 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasChannelOn(
         ER4CL_ARGOUT bool &channelOnFlag,
         ER4CL_ARGOUT bool &singleChannelOnFlag);
+
+/*! \brief Get the digital offset compensation reset availability.
+ *
+ * \return Success if the device has offers the possibility to reset the digital offset compensation.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasDigitalOffsetCompensationReset();
 
 /*! \brief Get the digital output availability.
  *

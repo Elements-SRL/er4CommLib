@@ -151,6 +151,7 @@ public:
     ErrorCodes_t enableFrontEndResetDenoiser(bool on);
 
     ErrorCodes_t resetDevice();
+    ErrorCodes_t resetDigitalOffsetCompensation();
     ErrorCodes_t resetCalib();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
 
@@ -238,6 +239,7 @@ public:
     ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag, bool &selectableDOCAutostopFlag);
     ErrorCodes_t hasZap(bool &zappableDeviceFlag, bool &singleChannelZapFlag);
     ErrorCodes_t hasChannelOn(bool &channelOnFlag, bool &singleChannelOnFlag);
+    ErrorCodes_t hasDigitalOffsetCompensationReset();
 
     ErrorCodes_t hasDigitalOutput();
     ErrorCodes_t hasFrontEndResetDenoiser();
@@ -407,6 +409,7 @@ protected:
     BoolArrayCoder * digitalOffsetCompensationCoder;
     BoolArrayCoder * digitalOffsetCompensationAutostopCoder;
     vector <bool> digitalOffsetCompensationStates;
+    bool digitalOffsetCompensationResetFlag = false;
     BoolArrayCoder * digitalOffsetCompensationResetCoder;
 
     BoolArrayCoder * zapCoder;

@@ -571,6 +571,7 @@ MessageDispatcher_e4n_V01::MessageDispatcher_e4n_V01(string di) :
     digitalOffsetCompensationFlag = true;
     singleChannelDOCFlag = true;
     selectableDOCAutostopFlag = false;
+    digitalOffsetCompensationResetFlag = true;
 
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 5;

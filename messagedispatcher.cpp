@@ -29,7 +29,7 @@
 #endif
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                         //    9,  2,  4 : e1b EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                         //    9,  2,  4 : e1b EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightEL03C, 2, DeviceE1LightEL03cEDR3},                 //    9,  4,  2 : e1Light EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1PlusEL03C, 6, DeviceE1PlusEL03cEDR3},                   //    9,  5,  6 : e1+ EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1HcEL03C, 7, DeviceE1HcEL03cEDR3},                       //    9,  6,  7 : e1HC EL03c chip (Legacy version for EDR3)
@@ -54,6 +54,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                            //    3,  9,  4 : e16eth (Legacy Version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC_V01},                              //    3, 10,  4 : e16HC No voltage amplifier
     {DeviceVersionE16, DeviceSubversionE16HC, 5, DeviceE16HC_V02},                              //    3, 10,  5 : e16HC
+    {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                               //   11,  1,130 : e2HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                      //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                             //    6,  5,129 : testboard EL06b
     {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                             //    6,  6,129 : testboard EL06c

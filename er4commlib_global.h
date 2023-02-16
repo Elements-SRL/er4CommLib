@@ -116,6 +116,7 @@ typedef enum {
     DeviceE16FastPulses_V02,    /*!< e16 Orbit customized for fast pulse trains. */
     DeviceE16FastPulsesEDR3,    /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
     DeviceE16n,                 /*!< e16 2020 release. */
+    DeviceE2HC_V01,             /*!< e2HC. */
     DeviceDlp,                  /*!< debug dlp. */
     TestboardEL06b,             /*!< testboard chip EL06b */
     TestboardEL06c,             /*!< testboard chip EL06c */

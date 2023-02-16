@@ -252,6 +252,10 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e16HC_V02(deviceId);
             break;
 
+        case DeviceE2HC_V01:
+            messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
+            break;
+
         case DeviceDlp:
             messageDispatcher = new MessageDispatcher_dlp(deviceId);
             break;

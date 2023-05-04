@@ -369,4 +369,127 @@ protected:
     InfoStruct_t infoStruct;
 };
 
+class MessageDispatcher_eNPR_LegacyEdr3_V03 : public MessageDispatcherLegacyEdr3 {
+public:
+    MessageDispatcher_eNPR_LegacyEdr3_V03(string id);
+    virtual ~MessageDispatcher_eNPR_LegacyEdr3_V03();
+
+protected:
+    typedef struct {
+        uint8_t unused;
+    } InfoStruct_t;
+
+    enum CurrentRanges {
+        CurrentRange200pA,
+        CurrentRange2nA,
+        CurrentRange20nA,
+        CurrentRange200nA,
+        CurrentRangesNum
+    };
+
+    enum VoltageRanges {
+        VoltageRange700mV,
+        VoltageRange2V,
+        VoltageRangesNum
+    };
+
+    enum SamplingRates {
+        SamplingRate1_25kHz,
+        SamplingRate5kHz,
+        SamplingRate10kHz,
+        SamplingRate20kHz,
+        SamplingRate50kHz,
+        SamplingRate100kHz,
+        SamplingRate200kHz,
+        SamplingRatesNum
+    };
+
+    enum OveramplingRatios {
+        OversamplingRatioX1,
+        OversamplingRatioX4,
+        OversamplingRatiosNum
+    };
+
+    enum VoltageStimulusLpfs {
+        VoltageStimulusLpf1kHz,
+        VoltageStimulusLpf10kHz,
+        VoltageStimulusLpfsNum
+    };
+
+    enum VoltageReferenceLpfs {
+        VoltageReferenceLpf3Hz,
+        VoltageReferenceLpf180kHz,
+        VoltageReferenceLpfsNum
+    };
+
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange700mV,
+        ProtocolVoltageRange2V,
+        ProtocolVoltageRangesNum
+    };
+
+    enum ProtocolTimeRanges {
+        ProtocolTimeRange2_10ms,
+        ProtocolTimeRange0to2_28,
+        ProtocolTimeRange1to2_28,
+        ProtocolTimeRange1orMore,
+        ProtocolTimeRangeSigned2_27,
+        ProtocolTimeRange1to2_25,
+        ProtocolTimeRangesNum
+    };
+
+    enum ProtocolSlopeRanges {
+        ProtocolSlopeRange2_10mVms,
+        ProtocolSlopeRangesNum
+    };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+
+    enum ProtocolVoltages {
+        ProtocolVHold,
+        ProtocolVPulse,
+        ProtocolVStep,
+        ProtocolVPk,
+        ProtocolVMax,
+        ProtocolVMin,
+        ProtocolVoltagesNum
+    };
+
+    enum ProtocolTimes {
+        ProtocolTHold,
+        ProtocolTPulse,
+        ProtocolTStep,
+        ProtocolTPe,
+        ProtocolTimesNum
+    };
+
+    enum ProtocolSlopes {
+        ProtocolSlope,
+        ProtocolSlopesNum
+    };
+
+    enum ProtocolAdimensionals {
+        ProtocolN,
+        ProtocolNR,
+        ProtocolAdimensionalsNum
+    };
+
+    void initializeDevice() override;
+    bool checkProtocolValidity(string &message) override;
+    virtual void setFerdParameters() override;
+
+    /*! Device specific controls */
+    InfoStruct_t infoStruct;
+};
+
 #endif // MESSAGEDISPATCHER_ENPR_H

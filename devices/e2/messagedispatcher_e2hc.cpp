@@ -537,18 +537,18 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
 //    }
 
     /*! Channel off */
-    channelOnFlag = false;
-    singleChannelOnFlag = false;
+    channelOnFlag = true;
+    singleChannelOnFlag = true;
 
-//    boolConfig.initialByte = 5;
-//    boolConfig.initialBit = 0;
-//    boolConfig.bitsNum = 4;
-//    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 2;
+    channelOnCoder = new BoolArrayCoder(boolConfig);
 
-//    channelOnStates.resize(currentChannelsNum);
-//    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-//        channelOnStates[currentIdx] = false;
-//    }
+    channelOnStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        channelOnStates[currentIdx] = false;
+    }
 
     /*! Current range */
     currentRangeCoders.resize(currentChannelsNum);

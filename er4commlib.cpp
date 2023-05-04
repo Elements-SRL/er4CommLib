@@ -192,6 +192,10 @@ ErrorCodes_t connect(
             messageDispatcher = new MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(deviceId);
             break;
 
+        case DeviceENPREDR3_V03:
+            messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V03(deviceId);
+            break;
+
         case DeviceENPREDR3_V04:
             messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V04(deviceId);
             break;

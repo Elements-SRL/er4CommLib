@@ -105,6 +105,7 @@ typedef enum {
     DeviceE16ETHEDR3,           /*!< e16ETH (LegacyVersion for EDR3). */
     DeviceE16HC_V01,            /*!< e16HC (no voltage amplifier). */
     DeviceE16HC_V02,            /*!< e16HC. */
+    DeviceENPREDR3_V03,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPREDR3_V04,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPR,                 /*!< eNPR. */
     DeviceENPRHC,               /*!< eNPR-HC. */
@@ -629,7 +630,7 @@ inline Measurement_t operator / (ER4CL_ARGIN const Measurement_t &a, ER4CL_ARGIN
 /*! \struct RangedMeasurement_t
  * \brief Structure used manage physical ranges that define a range with its unit and unit prefix.
  */
-typedef struct {
+typedef struct RangedMeasurement {
     double min; /*!< Minimum value. */
     double max; /*!< Maximum value. */
     double step; /*!< Resolution. */
@@ -880,21 +881,10 @@ inline bool operator != (const RangedMeasurement_t &a, const RangedMeasurement_t
     return !(a == b);
 }
 
-/*! \struct ChannelSources_t
- * \brief Structure used to return available data sources for a channel.
- * \note -1 means that the source is not available.
- */
-typedef struct {
-    int16_t VoltageFromVoltageClamp = -1; /*!< Get voltage applied by voltage clamp front-end. */
-    int16_t CurrentFromVoltageClamp = -1; /*!< Get current read by voltage clamp front-end. */
-    int16_t VoltageFromCurrentClamp = -1; /*!< Get voltage read by current clamp front-end. */
-    int16_t CurrentFromCurrentClamp = -1; /*!< Get current applied by current clamp front-end. */
-} ChannelSources_t;
-
 /*! \struct CompensationControl_t
  * \brief Structure used to return detailed information on a specific compensation implemented by the HW.
  */
-typedef struct {
+typedef struct CompensationControl {
     bool implemented = false; /*!< True if the corresponding compensation is implemented by the device. */
     double min = 0.0; /*!< Minimum compensable value. */
     double max = 1.0; /*!< Maximum compensable value globally. */

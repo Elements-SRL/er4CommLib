@@ -597,7 +597,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     fastPulseW2TimeRange.unit = "s";
     fastPulseW2TimeRange.prefix = UnitPfxMilli;
 
-    fastPulseW2DurationRange.min = 1.0;
+    fastPulseW2DurationRange.min = 0.0;
     fastPulseW2DurationRange.max = 20000.0;
     fastPulseW2DurationRange.step = 0.1;
     fastPulseW2DurationRange.unit = "s";
@@ -2135,7 +2135,7 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
     fastPulseW2TimeRange.unit = "s";
     fastPulseW2TimeRange.prefix = UnitPfxMilli;
 
-    fastPulseW2DurationRange.min = 1.0;
+    fastPulseW2DurationRange.min = 0.0;
     fastPulseW2DurationRange.max = 20000.0;
     fastPulseW2DurationRange.step = 0.1;
     fastPulseW2DurationRange.unit = "s";

@@ -1667,10 +1667,22 @@ ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int pa
     }
 
     unsigned int channelIdx;
+    unsigned int dataIdx = 0;
     for (unsigned int packetIdx = 0; packetIdx < packetsNumber; packetIdx++) {
+#ifdef OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
+        for (channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            if (channelIdx < voltageChannelsNum) {
+                data[dataIdx++] = outputDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
+
+            } else if (channelOnStates[channelIdx-voltageChannelsNum]) {
+                data[dataIdx++] = outputDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
+            }
+        }
+#else
         for (channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
             data[packetIdx*totalChannelsNum+channelIdx] = outputDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
         }
+#endif
     }
     outputBufferReadOffset = (outputBufferReadOffset+packetsNumber)&ER4CL_OUTPUT_BUFFER_MASK;
     outputBufferAvailablePackets -= packetsNumber;

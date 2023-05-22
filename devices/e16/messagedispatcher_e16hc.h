@@ -95,10 +95,6 @@ protected:
         ProtocolTimesNum
     };
 
-    enum ProtocolSlopes {
-        ProtocolSlopesNum = 0
-    };
-
     enum ProtocolAdimensionals {
         ProtocolN,
         ProtocolNR,
@@ -117,9 +113,6 @@ protected:
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
-
-    const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
-    const double stimulusVoltageReference = 1.1; /*! voltage reference for stimuli [V] */
 
 private:
     enum VoltageReferenceRanges {

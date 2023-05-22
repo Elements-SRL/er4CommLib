@@ -281,6 +281,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
     protocolsAvailableSlopes.resize(ProtocolsNum);
+    protocolsAvailableFrequencies.resize(ProtocolsNum);
     protocolsAvailableAdimensionals.resize(ProtocolsNum);
 
     protocolsAvailableVoltages[ProtocolConstant].push_back(ProtocolVHold);
@@ -457,17 +458,6 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
         selectedProtocolTime[idx] = protocolTimeDefault[idx];
     }
 
-    protocolSlopesNum = ProtocolSlopesNum;
-    protocolSlopeNames.resize(ProtocolSlopesNum);
-
-    protocolSlopeRanges.resize(ProtocolSlopesNum);
-
-    protocolSlopeDefault.resize(ProtocolSlopesNum);
-    selectedProtocolSlope.resize(ProtocolSlopesNum);
-    for (unsigned int idx = 0; idx < ProtocolSlopesNum; idx++) {
-        selectedProtocolSlope[idx] = protocolSlopeDefault[idx];
-    }
-
     /*! Protocol adimensionals */
     protocolAdimensionalsNum = ProtocolAdimensionalsNum;
     protocolAdimensionalNames.resize(ProtocolAdimensionalsNum);
@@ -607,7 +597,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     fastPulseW2TimeRange.unit = "s";
     fastPulseW2TimeRange.prefix = UnitPfxMilli;
 
-    fastPulseW2DurationRange.min = 1.0;
+    fastPulseW2DurationRange.min = 0.0;
     fastPulseW2DurationRange.max = 20000.0;
     fastPulseW2DurationRange.step = 0.1;
     fastPulseW2DurationRange.unit = "s";
@@ -827,9 +817,6 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     doubleConfig.minValue = protocolTimeRanges[ProtocolTPe].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPe].max;
     protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
-
-    /*! Protocol slope */
-    protocolSlopeCoders.resize(ProtocolSlopesNum);
 
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
@@ -1328,24 +1315,7 @@ void MessageDispatcher_e16FastPulses_V02::initializeDevice() {
     this->digitalOffsetCompensation(currentChannelsNum, false);
     this->switchChannelOn(currentChannelsNum, true, false);
 
-    this->selectVoltageProtocol(defaultProtocol);
-
-    for (unsigned int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
-        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
-    }
-
-    for (unsigned int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
-        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
-    }
-
-    for (unsigned int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
-        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
-    }
-
-    for (unsigned int adimensionalIdx = 0; adimensionalIdx < ProtocolAdimensionalsNum; adimensionalIdx++) {
-        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
-    }
-
+    MessageDispatcher::initializeDevice();
 }
 
 bool MessageDispatcher_e16FastPulses_V02::checkProtocolValidity(string &message) {
@@ -1852,6 +1822,7 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
     protocolsAvailableSlopes.resize(ProtocolsNum);
+    protocolsAvailableFrequencies.resize(ProtocolsNum);
     protocolsAvailableAdimensionals.resize(ProtocolsNum);
 
     protocolsAvailableVoltages[ProtocolConstant].push_back(ProtocolVHold);
@@ -2028,17 +1999,6 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
         selectedProtocolTime[idx] = protocolTimeDefault[idx];
     }
 
-    protocolSlopesNum = ProtocolSlopesNum;
-    protocolSlopeNames.resize(ProtocolSlopesNum);
-
-    protocolSlopeRanges.resize(ProtocolSlopesNum);
-
-    protocolSlopeDefault.resize(ProtocolSlopesNum);
-    selectedProtocolSlope.resize(ProtocolSlopesNum);
-    for (unsigned int idx = 0; idx < ProtocolSlopesNum; idx++) {
-        selectedProtocolSlope[idx] = protocolSlopeDefault[idx];
-    }
-
     /*! Protocol adimensionals */
     protocolAdimensionalsNum = ProtocolAdimensionalsNum;
     protocolAdimensionalNames.resize(ProtocolAdimensionalsNum);
@@ -2175,7 +2135,7 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
 //    fastPulseW2TimeRange.unit = "s";
     fastPulseW2TimeRange.prefix = UnitPfxMilli;
 
-    fastPulseW2DurationRange.min = 1.0;
+    fastPulseW2DurationRange.min = 0.0;
     fastPulseW2DurationRange.max = 20000.0;
     fastPulseW2DurationRange.step = 0.1;
 //    fastPulseW2DurationRange.unit = "s";
@@ -2391,10 +2351,6 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
     doubleConfig.minValue = protocolTimeRanges[ProtocolTPe].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPe].max;
     protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
-
-
-    /*! Protocol slope */
-    protocolSlopeCoders.resize(ProtocolSlopesNum);
 
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
@@ -2928,24 +2884,7 @@ void MessageDispatcher_e16FastPulses_V01::initializeDevice() {
     this->digitalOffsetCompensation(currentChannelsNum, false);
     this->switchChannelOn(currentChannelsNum, true, false);
 
-    this->selectVoltageProtocol(defaultProtocol);
-
-    for (unsigned int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
-        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
-    }
-
-    for (unsigned int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
-        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
-    }
-
-    for (unsigned int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
-        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
-    }
-
-    for (unsigned int adimensionalIdx = 0; adimensionalIdx < ProtocolAdimensionalsNum; adimensionalIdx++) {
-        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
-    }
-
+    MessageDispatcher::initializeDevice();
 }
 
 bool MessageDispatcher_e16FastPulses_V01::checkProtocolValidity(string &message) {
@@ -3449,6 +3388,7 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
     protocolsAvailableSlopes.resize(ProtocolsNum);
+    protocolsAvailableFrequencies.resize(ProtocolsNum);
     protocolsAvailableAdimensionals.resize(ProtocolsNum);
 
     protocolsAvailableVoltages[ProtocolConstant].push_back(ProtocolVHold);
@@ -3623,17 +3563,6 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
     selectedProtocolTime.resize(ProtocolTimesNum);
     for (unsigned int idx = 0; idx < ProtocolTimesNum; idx++) {
         selectedProtocolTime[idx] = protocolTimeDefault[idx];
-    }
-
-    protocolSlopesNum = ProtocolSlopesNum;
-    protocolSlopeNames.resize(ProtocolSlopesNum);
-
-    protocolSlopeRanges.resize(ProtocolSlopesNum);
-
-    protocolSlopeDefault.resize(ProtocolSlopesNum);
-    selectedProtocolSlope.resize(ProtocolSlopesNum);
-    for (unsigned int idx = 0; idx < ProtocolSlopesNum; idx++) {
-        selectedProtocolSlope[idx] = protocolSlopeDefault[idx];
     }
 
     /*! Protocol adimensionals */
@@ -3983,10 +3912,6 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
     doubleConfig.minValue = protocolTimeRanges[ProtocolTPe].min;
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPe].max;
     protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
-
-
-    /*! Protocol slope */
-    protocolSlopeCoders.resize(ProtocolSlopesNum);
 
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
@@ -4519,24 +4444,7 @@ void MessageDispatcher_e16FastPulses_LegacyEdr3_V03::initializeDevice() {
     this->digitalOffsetCompensation(currentChannelsNum, false);
     this->switchChannelOn(currentChannelsNum, true, false);
 
-    this->selectVoltageProtocol(defaultProtocol);
-
-    for (unsigned int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
-        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
-    }
-
-    for (unsigned int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
-        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
-    }
-
-    for (unsigned int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
-        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
-    }
-
-    for (unsigned int adimensionalIdx = 0; adimensionalIdx < ProtocolAdimensionalsNum; adimensionalIdx++) {
-        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
-    }
-
+    MessageDispatcher::initializeDevice();
 }
 
 bool MessageDispatcher_e16FastPulses_LegacyEdr3_V03::checkProtocolValidity(string &message) {

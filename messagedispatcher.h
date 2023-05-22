@@ -23,6 +23,8 @@
 #include <thread>
 #include <condition_variable>
 #include <unordered_map>
+#define _USE_MATH_DEFINES // for C++
+#include <cmath>
 
 #include "er4commlib_errorcodes.h"
 #include "er4commlib_global.h"
@@ -43,6 +45,7 @@ using namespace std;
 #define USHORT_MAX (static_cast <double> (0xFFFF))
 #define UINT10_MAX (static_cast <double> (0x3FF))
 #define INT14_MAX (static_cast <double> (0x1FFF))
+#define UINT14_MAX (static_cast <double> (0x3FFF))
 #define INT18_MAX (static_cast <double> (0x1FFFF))
 #define UINT28_MAX (static_cast <double> (0xFFFFFFF))
 #define INT28_MAX (static_cast <double> (0x7FFFFFF))
@@ -617,6 +620,7 @@ public:
     ErrorCodes_t enableFrontEndResetDenoiser(bool on);
 
     ErrorCodes_t resetDevice();
+    ErrorCodes_t resetDigitalOffsetCompensation();
     ErrorCodes_t resetCalib();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
 
@@ -626,11 +630,13 @@ public:
     virtual ErrorCodes_t setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
     ErrorCodes_t setProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag = false);
     ErrorCodes_t setProtocolSlope(unsigned int idx, Measurement_t slope, bool applyFlag = false);
+    ErrorCodes_t setProtocolFrequency(unsigned int idx, Measurement_t frequency, bool applyFlag = false);
     ErrorCodes_t setProtocolAdimensional(unsigned int idx, Measurement_t adimensional, bool applyFlag = false);
     ErrorCodes_t checkSelectedProtocol(unsigned int idx, string &message);
     ErrorCodes_t checkProtocolVoltage(unsigned int idx, Measurement_t voltage, string &message);
     ErrorCodes_t checkProtocolTime(unsigned int idx, Measurement_t time, string &message);
     ErrorCodes_t checkProtocolSlope(unsigned int idx, Measurement_t slope, string &message);
+    ErrorCodes_t checkProtocolFrequency(unsigned int idx, Measurement_t frequency, string &message);
     ErrorCodes_t checkProtocolAdimensional(unsigned int idx, Measurement_t adimensional, string &message);
     ErrorCodes_t setVoltageOffset(unsigned int idx, Measurement_t voltage, bool applyFlag = true);
     ErrorCodes_t checkVoltageOffset(unsigned int idx, Measurement_t voltage, string &message);
@@ -650,6 +656,8 @@ public:
     ErrorCodes_t setFastReferencePulseProtocolWave2PulseNumber(unsigned int idx, uint16_t pulsesNumber, bool applyFlag = false);
 
     /*! Device specific controls */
+
+    ErrorCodes_t setCustomFlag(uint16_t idx, bool flag, bool applyFlag);
 
     virtual ErrorCodes_t resetWasherError();
     virtual ErrorCodes_t setWasherPresetSpeeds(vector <int8_t> speedValues);
@@ -700,18 +708,21 @@ public:
     ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag, bool &selectableDOCAutostopFlag);
     ErrorCodes_t hasZap(bool &zappableDeviceFlag, bool &singleChannelZapFlag);
     ErrorCodes_t hasChannelOn(bool &channelOnFlag, bool &singleChannelOnFlag);
+    ErrorCodes_t getSwitchedOnChannels(uint32_t &channelsMask);
+    ErrorCodes_t hasDigitalOffsetCompensationReset();
 
     ErrorCodes_t hasDigitalOutput();
     ErrorCodes_t hasFrontEndResetDenoiser();
 
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
 
-    ErrorCodes_t getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &adimensionals);
+    ErrorCodes_t getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &frequencies, vector <vector <uint16_t>> &adimensionals);
     ErrorCodes_t getTriangularProtocolIdx(uint16_t &idx);
     ErrorCodes_t getSealTestProtocolIdx(uint16_t &idx);
     ErrorCodes_t getProtocolVoltage(vector <string> &voltageNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolTime(vector <string> &timeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolSlope(vector <string> &slopeNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
+    ErrorCodes_t getProtocolFrequency(vector <string> &frequencyNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolAdimensional(vector <string> &adimensionalNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues);
     ErrorCodes_t getVoltageOffsetControls(RangedMeasurement_t &voltageRange);
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
@@ -728,6 +739,8 @@ public:
     ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, RangedMeasurement_t &waitTimeRange, uint16_t &pulsesPerTrain, uint16_t &nTrains);
 
     /*! Device specific controls */
+
+    ErrorCodes_t getCustomFlags(vector <string> &customFlags, vector <bool> &customFlagsDefault);
 
     ErrorCodes_t hasNanionTemperatureController();
     virtual ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature);
@@ -771,7 +784,7 @@ protected:
     \*************/
 
     ErrorCodes_t initFtdiChannel(FT_HANDLE * handle, char channel);
-    virtual void initializeDevice() = 0;
+    virtual void initializeDevice();
     virtual bool checkProtocolValidity(string &message) = 0;
 
     void initializeLsbNoise(bool nullValues = true);
@@ -866,6 +879,7 @@ protected:
     BoolArrayCoder * digitalOffsetCompensationCoder;
     BoolArrayCoder * digitalOffsetCompensationAutostopCoder;
     vector <bool> digitalOffsetCompensationStates;
+    bool digitalOffsetCompensationResetFlag = false;
     BoolArrayCoder * digitalOffsetCompensationResetCoder;
 
     BoolArrayCoder * zapCoder;
@@ -881,12 +895,14 @@ protected:
     vector <RangedMeasurement_t> protocolVoltageRangesArray;
     vector <RangedMeasurement_t> protocolTimeRangesArray;
     vector <RangedMeasurement_t> protocolSlopeRangesArray;
+    vector <RangedMeasurement_t> protocolFrequencyRangesArray;
 
     vector <string> protocolsNames;
     vector <string> protocolsImages;
     vector <vector <uint16_t>> protocolsAvailableVoltages;
     vector <vector <uint16_t>> protocolsAvailableTimes;
     vector <vector <uint16_t>> protocolsAvailableSlopes;
+    vector <vector <uint16_t>> protocolsAvailableFrequencies;
     vector <vector <uint16_t>> protocolsAvailableAdimensionals;
     BoolArrayCoder * protocolsSelectCoder;
     BoolArrayCoder * protocolStartCoder;
@@ -915,6 +931,13 @@ protected:
     vector <DoubleCoder *> protocolSlopeCoders;
     vector <Measurement_t> protocolSlopeDefault;
     vector <Measurement_t> selectedProtocolSlope;
+
+    unsigned int protocolFrequenciesNum;
+    vector <std::string> protocolFrequencyNames;
+    vector <RangedMeasurement_t> protocolFrequencyRanges;
+    vector <DoubleCoder *> protocolFrequencyCoders;
+    vector <Measurement_t> protocolFrequencyDefault;
+    vector <Measurement_t> selectedProtocolFrequency;
 
     unsigned int protocolAdimensionalsNum;
     vector <std::string> protocolAdimensionalNames;
@@ -978,6 +1001,11 @@ protected:
     RangedMeasurement_t fastPulseW2PeriodRange;
     vector <BoolArrayCoder *> fastPulseW2NumberCoder;
     vector <uint16_t> fastPulseW2PulsesNumbers;
+
+    uint16_t customFlagsNum = 0;
+    vector <string> customFlagsNames;
+    vector <bool> customFlagsDefault;
+    vector <BoolArrayCoder *> customFlagsCoders;
 
     string edhFormat;
 

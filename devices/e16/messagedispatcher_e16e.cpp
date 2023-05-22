@@ -208,7 +208,6 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     samplingRate = baseSamplingRate;
     integrationStep = integrationStepArray[selectedSamplingRateIdx];
 
-
     /*************\
      * Protocols *
     \*************/
@@ -220,7 +219,6 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
 //    protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
-
 
     /*! Time ranges */
     protocolTimeRangesArray.resize(ProtocolTimeRangesNum);
@@ -284,6 +282,7 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
     protocolsAvailableSlopes.resize(ProtocolsNum);
+    protocolsAvailableFrequencies.resize(ProtocolsNum);
     protocolsAvailableAdimensionals.resize(ProtocolsNum);
 
     protocolsAvailableVoltages[ProtocolConstant].push_back(ProtocolVHold);
@@ -458,17 +457,6 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     selectedProtocolTime.resize(ProtocolTimesNum);
     for (unsigned int idx = 0; idx < ProtocolTimesNum; idx++) {
         selectedProtocolTime[idx] = protocolTimeDefault[idx];
-    }
-
-    protocolSlopesNum = ProtocolSlopesNum;
-    protocolSlopeNames.resize(ProtocolSlopesNum);
-
-    protocolSlopeRanges.resize(ProtocolSlopesNum);
-
-    protocolSlopeDefault.resize(ProtocolSlopesNum);
-    selectedProtocolSlope.resize(ProtocolSlopesNum);
-    for (unsigned int idx = 0; idx < ProtocolSlopesNum; idx++) {
-        selectedProtocolSlope[idx] = protocolSlopeDefault[idx];
     }
 
     /*! Protocol adimensionals */
@@ -754,11 +742,6 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPe].max;
     protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
 
-
-    /*! Protocol slope */
-    protocolSlopeCoders.resize(ProtocolSlopesNum);
-
-
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
     doubleConfig.initialByte = 70;
@@ -921,24 +904,7 @@ void MessageDispatcher_e16e_LegacyEdr3_V00::initializeDevice() {
     this->digitalOffsetCompensation(currentChannelsNum, false);
     this->switchChannelOn(currentChannelsNum, true, false);
 
-    this->selectVoltageProtocol(defaultProtocol);
-
-    for (unsigned int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
-        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
-    }
-
-    for (unsigned int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
-        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
-    }
-
-    for (unsigned int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
-        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
-    }
-
-    for (unsigned int adimensionalIdx = 0; adimensionalIdx < ProtocolAdimensionalsNum; adimensionalIdx++) {
-        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
-    }
-
+    MessageDispatcher::initializeDevice();
 }
 
 bool MessageDispatcher_e16e_LegacyEdr3_V00::checkProtocolValidity(string &message) {

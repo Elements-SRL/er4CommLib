@@ -107,15 +107,19 @@ typedef enum {
     DeviceE16ETHEDR3,           /*!< e16ETH (LegacyVersion for EDR3). */
     DeviceE16HC_V01,            /*!< e16HC (no voltage amplifier). */
     DeviceE16HC_V02,            /*!< e16HC. */
+    DeviceENPREDR3_V03,         /*!< eNPR (Legacy version for EDR3). */
+    DeviceENPREDR3_V04,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPR,                 /*!< eNPR. */
     DeviceENPRHC,               /*!< eNPR-HC. */
-    DeviceE4nV04EDR3,           /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
+    DeviceE4nEDR3_V04,          /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
     DeviceE4eEDR3,              /*!< e4 Elements (Legacy version for EDR3). */
-    DeviceE4e,                  /*!< e4 Elements version. */
+    DeviceE4n_V01,              /*!< e4 Orbit mini. */
+    DeviceE4e_V01,              /*!< e4 Elements version. */
     DeviceE16FastPulses_V01,    /*!< e16 Orbit customized for fast pulses. */
     DeviceE16FastPulses_V02,    /*!< e16 Orbit customized for fast pulse trains. */
     DeviceE16FastPulsesEDR3,    /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
     DeviceE16n,                 /*!< e16 2020 release. */
+    DeviceE2HC_V01,             /*!< e2HC. */
     DeviceDlp,                  /*!< debug dlp. */
     TestboardEL06b,             /*!< testboard chip EL06b */
     TestboardEL06c,             /*!< testboard chip EL06c */
@@ -124,6 +128,8 @@ typedef enum {
     DeviceE2HCIntAdc,           /*!< e2HC prototype (internal ADC). */
     DeviceENPRFairyLight_V01,   /*!< eNPR prototype for Fairy Light project with DAC ext control and only ULN mode. */
     DeviceENPRFairyLight_V02,   /*!< eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes. */
+    DeviceENPR2Channels_V01,    /*!< eNPR prototype with 2 channels and sinusoidal waveforms. */
+    DeviceOrbitMiniSine_V01,    /*!< Orbit mini prototype with additional sinusoidal waveforms. */
     DeviceFakeE16n,             /*!< Fake e16 2020 release. */
     DeviceFakeE16FastPulses,    /*!< Fake e16 Orbit customized for fast pulses. */
     DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */
@@ -238,21 +244,10 @@ typedef struct RangedMeasurementReduced {
     UnitPfx_t prefix = UnitPfxNone;
 } RangedMeasurementReduced_t;
 
-/*! \struct ChannelSources_t
- * \brief Structure used to return available data sources for a channel.
- * \note -1 means that the source is not available.
- */
-typedef struct ChannelSource {
-    int16_t VoltageFromVoltageClamp = -1; /*!< Get voltage applied by voltage clamp front-end. */
-    int16_t CurrentFromVoltageClamp = -1; /*!< Get current read by voltage clamp front-end. */
-    int16_t VoltageFromCurrentClamp = -1; /*!< Get voltage read by current clamp front-end. */
-    int16_t CurrentFromCurrentClamp = -1; /*!< Get current applied by current clamp front-end. */
-} ChannelSources_t;
-
 /*! \struct CompensationControl_t
  * \brief Structure used to return detailed information on a specific compensation implemented by the HW.
  */
-typedef struct CompensationControl{
+typedef struct CompensationControl {
     bool implemented = false; /*!< True if the corresponding compensation is implemented by the device. */
     double min = 0.0; /*!< Minimum compensable value. */
     double max = 1.0; /*!< Maximum compensable value globally. */

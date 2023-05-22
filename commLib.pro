@@ -29,7 +29,7 @@ CONFIG(release, debug|release) {
 }
 
 TEMPLATE = lib
-CONFIG += c++11
+CONFIG += c++14
 
 # use as static library
 #DEFINES += ER4COMMLIB_STATIC

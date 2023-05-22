@@ -17,7 +17,7 @@
 
 #include "messagedispatcher_e4e.h"
 
-MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
+MessageDispatcher_e4e_V01::MessageDispatcher_e4e_V01(string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -280,6 +280,7 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
     protocolsAvailableSlopes.resize(ProtocolsNum);
+    protocolsAvailableFrequencies.resize(ProtocolsNum);
     protocolsAvailableAdimensionals.resize(ProtocolsNum);
 
     protocolsAvailableVoltages[ProtocolConstant].push_back(ProtocolVHold);
@@ -454,18 +455,6 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     selectedProtocolTime.resize(ProtocolTimesNum);
     for (unsigned int idx = 0; idx < ProtocolTimesNum; idx++) {
         selectedProtocolTime[idx] = protocolTimeDefault[idx];
-    }
-
-    /*! Protocol slope */
-    protocolSlopesNum = ProtocolSlopesNum;
-    protocolSlopeNames.resize(ProtocolSlopesNum);
-
-    protocolSlopeRanges.resize(ProtocolSlopesNum);
-
-    protocolSlopeDefault.resize(ProtocolSlopesNum);
-    selectedProtocolSlope.resize(ProtocolSlopesNum);
-    for (unsigned int idx = 0; idx < ProtocolSlopesNum; idx++) {
-        selectedProtocolSlope[idx] = protocolSlopeDefault[idx];
     }
 
     /*! Protocol adimensionals */
@@ -750,9 +739,6 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPe].max;
     protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
 
-    /*! Protocol slope */
-    protocolSlopeCoders.resize(ProtocolSlopesNum);
-
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
     doubleConfig.initialByte = 37;
@@ -872,37 +858,21 @@ MessageDispatcher_e4e::MessageDispatcher_e4e(string di) :
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e4e::~MessageDispatcher_e4e() {
+MessageDispatcher_e4e_V01::~MessageDispatcher_e4e_V01() {
 
 }
 
-void MessageDispatcher_e4e::initializeDevice() {
+void MessageDispatcher_e4e_V01::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
     this->digitalOffsetCompensation(currentChannelsNum, false);
     this->switchChannelOn(currentChannelsNum, true, false);
 
-    this->selectVoltageProtocol(defaultProtocol);
-
-    for (unsigned int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
-        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
-    }
-
-    for (unsigned int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
-        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
-    }
-
-    for (unsigned int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
-        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
-    }
-
-    for (unsigned int adimensionalIdx = 0; adimensionalIdx < ProtocolAdimensionalsNum; adimensionalIdx++) {
-        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
-    }
+    MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_e4e::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e4e_V01::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1101,7 +1071,7 @@ bool MessageDispatcher_e4e::checkProtocolValidity(string &message) {
     return validFlag;
 }
 
-void MessageDispatcher_e4e::setFerdParameters() {
+void MessageDispatcher_e4e_V01::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {
@@ -1136,7 +1106,7 @@ void MessageDispatcher_e4e::setFerdParameters() {
     MessageDispatcher::setFerdParameters();
 }
 
-ErrorCodes_t MessageDispatcher_e4e::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
+ErrorCodes_t MessageDispatcher_e4e_V01::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
     for (int idx = 0; idx < currentChannelsNum; idx++) {
         offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
     }
@@ -1403,6 +1373,7 @@ MessageDispatcher_e4e_El03c_LegacyEdr3_V00::MessageDispatcher_e4e_El03c_LegacyEd
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);
     protocolsAvailableSlopes.resize(ProtocolsNum);
+    protocolsAvailableFrequencies.resize(ProtocolsNum);
     protocolsAvailableAdimensionals.resize(ProtocolsNum);
 
     protocolsAvailableVoltages[ProtocolConstant].push_back(ProtocolVHold);
@@ -1577,18 +1548,6 @@ MessageDispatcher_e4e_El03c_LegacyEdr3_V00::MessageDispatcher_e4e_El03c_LegacyEd
     selectedProtocolTime.resize(ProtocolTimesNum);
     for (unsigned int idx = 0; idx < ProtocolTimesNum; idx++) {
         selectedProtocolTime[idx] = protocolTimeDefault[idx];
-    }
-
-    /*! Protocol slope */
-    protocolSlopesNum = ProtocolSlopesNum;
-    protocolSlopeNames.resize(ProtocolSlopesNum);
-
-    protocolSlopeRanges.resize(ProtocolSlopesNum);
-
-    protocolSlopeDefault.resize(ProtocolSlopesNum);
-    selectedProtocolSlope.resize(ProtocolSlopesNum);
-    for (unsigned int idx = 0; idx < ProtocolSlopesNum; idx++) {
-        selectedProtocolSlope[idx] = protocolSlopeDefault[idx];
     }
 
     /*! Protocol adimensionals */
@@ -1873,9 +1832,6 @@ MessageDispatcher_e4e_El03c_LegacyEdr3_V00::MessageDispatcher_e4e_El03c_LegacyEd
     doubleConfig.maxValue = protocolTimeRanges[ProtocolTPe].max;
     protocolTimeCoders[ProtocolTPe] = new DoubleTwosCompCoder(doubleConfig);
 
-    /*! Protocol slope */
-    protocolSlopeCoders.resize(ProtocolSlopesNum);
-
     /*! Protocol Adimensionals */
     protocolAdimensionalCoders.resize(ProtocolAdimensionalsNum);
     doubleConfig.initialByte = 37;
@@ -2007,23 +1963,7 @@ void MessageDispatcher_e4e_El03c_LegacyEdr3_V00::initializeDevice() {
     this->digitalOffsetCompensation(currentChannelsNum, false);
     this->switchChannelOn(currentChannelsNum, true, false);
 
-    this->selectVoltageProtocol(defaultProtocol);
-
-    for (unsigned int voltageIdx = 0; voltageIdx < ProtocolVoltagesNum; voltageIdx++) {
-        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
-    }
-
-    for (unsigned int timeIdx = 0; timeIdx < ProtocolTimesNum; timeIdx++) {
-        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
-    }
-
-    for (unsigned int slopeIdx = 0; slopeIdx < ProtocolSlopesNum; slopeIdx++) {
-        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
-    }
-
-    for (unsigned int adimensionalIdx = 0; adimensionalIdx < ProtocolAdimensionalsNum; adimensionalIdx++) {
-        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
-    }
+    MessageDispatcher::initializeDevice();
 }
 
 bool MessageDispatcher_e4e_El03c_LegacyEdr3_V00::checkProtocolValidity(string &message) {

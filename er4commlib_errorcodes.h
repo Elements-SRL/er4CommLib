@@ -26,7 +26,7 @@
 /*! \enum ErrorGroups_t
  *  \brief Enumerated error groups.
  */
-typedef enum {
+typedef enum ErrorGroups {
     ErrorGroupDeviceDetection =     0x00010000, /*!< Error codes related to device detection errors. */
     ErrorGroupEepromCommunication = 0x00020000, /*!< Error codes related to eeprom communication errors. */
     ErrorGroupDeviceConnection =    0x00030000, /*!< Error codes related to connection errors. */
@@ -38,7 +38,7 @@ typedef enum {
 /*! \enum ErrorCodes_t
  *  \brief Enumerated error codes.
  */
-typedef enum ErrorCodes{
+typedef enum ErrorCode {
     Success =                                                           0x00000000, /*!< Method returns with no errors. */
 
     ErrorNoDeviceFound =                ErrorGroupDeviceDetection +     0x00000001, /*!< Error returned when no devices are detected. */

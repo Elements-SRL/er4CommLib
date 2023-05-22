@@ -170,6 +170,18 @@ ErrorCodes_t setProtocolSlope(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN MeasurementReduced_t slope);
 
+/*! \brief Set a protocol frequency value.
+ *
+ * \param idx [in] Index of the frequency set.
+ * \param value [in] Value of the frequency set.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setProtocolFrequency(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN MeasurementReduced_t frequency);
+
 /*! \brief Set a protocol adimensional value.
  *
  * \param idx [in] Index of the adimensional set.
@@ -185,20 +197,20 @@ ErrorCodes_t setProtocolAdimensional(
 /*! \brief Check if the protocol parameters are valid.
  *
  * \param idx [in] Index of the protocol to be checked.
- * \param message [in] Error message in case the parameters set is invalid.
+ * \param message [out] Error message in case the parameters set is invalid.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t checkSelectedProtocol(
         ER4CL_ARGIN unsigned int idx,
-        ER4CL_ARGIN char * message);
+        ER4CL_ARGOUT char * message);
 
 /*! \brief Check if the protocol parameters are valid.
  *
  * \param idx [in] Index of the voltage parameter to be checked.
  * \param voltage [in] Value of the voltage parameter to be checked.
- * \param message [in] Error message in case the parameters set is invalid.
+ * \param message [out] Error message in case the parameters set is invalid.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
@@ -206,13 +218,13 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t checkProtocolVoltage(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN MeasurementReduced_t voltage,
-        ER4CL_ARGIN char * message);
+        ER4CL_ARGOUT char * message);
 
 /*! \brief Check if the protocol parameters are valid.
  *
  * \param idx [in] Index of the time parameter to be checked.
  * \param time [in] Value of the time parameter to be checked.
- * \param message [in] Error message in case the parameters set is invalid.
+ * \param message [out] Error message in case the parameters set is invalid.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
@@ -220,13 +232,13 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t checkProtocolTime(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN MeasurementReduced_t time,
-        ER4CL_ARGIN char * message);
+        ER4CL_ARGOUT char * message);
 
 /*! \brief Check if the protocol parameters are valid.
  *
  * \param idx [in] Index of the slope parameter to be checked.
  * \param slope [in] Value of the slope parameter to be checked.
- * \param message [in] Error message in case the parameters set is invalid.
+ * \param message [out] Error message in case the parameters set is invalid.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
@@ -234,13 +246,27 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t checkProtocolSlope(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN MeasurementReduced_t slope,
-        ER4CL_ARGIN char * message);
+        ER4CL_ARGOUT char * message);
+
+/*! \brief Check if the protocol parameters are valid.
+ *
+ * \param idx [in] Index of the frequency parameter to be checked.
+ * \param frequency [in] Value of the frequency parameter to be checked.
+ * \param message [out] Error message in case the parameters set is invalid.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t checkProtocolFrequency(
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN MeasurementReduced_t frequency,
+        ER4CL_ARGOUT char * message);
 
 /*! \brief Check if the protocol parameters are valid.
  *
  * \param idx [in] Index of the adimensional parameter to be checked.
  * \param adimensional [in] Value of the adimensional parameter to be checked.
- * \param message [in] Error message in case the parameters set is invalid.
+ * \param message [out] Error message in case the parameters set is invalid.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
@@ -248,7 +274,7 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t checkProtocolAdimensional(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN MeasurementReduced_t adimensional,
-        ER4CL_ARGIN char * message);
+        ER4CL_ARGOUT char * message);
 
 /*! \brief Set a channel voltage offset.
  *
@@ -262,11 +288,11 @@ ErrorCodes_t setVoltageOffset(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN MeasurementReduced_t voltage);
 
-/*! \brief Check if the protocol parameters are valid.
+/*! \brief Check if the applied voltage is valid in combination with the currently applied voltage protocol.
  *
  * \param idx [in] Index of the channel voltage offset to be checked.
  * \param voltage [in] Value of the voltage offset to be checked.
- * \param message [in] Error message in case the parameters set is invalid.
+ * \param message [out] Error message in case the parameters set is invalid.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
@@ -274,7 +300,7 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t checkVoltageOffset(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN MeasurementReduced_t voltage,
-        ER4CL_ARGIN char * message);
+        ER4CL_ARGOUT char * message);
 
 /*! \brief Apply the insertion pulse if available.
  *
@@ -349,6 +375,19 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t applyDacExt(
         ER4CL_ARGIN MeasurementReduced_t voltage);
+
+/*! \brief Set a custom flag control.
+ *
+ * \param idx [in] Index of the custom control to set.
+ * \param flag [in] Flag to be used for the cutom control.
+ * \return Error code.
+ */
+ /*
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setCustomFlag(
+        ER4CL_ARGIN uint16_t idx,
+        ER4CL_ARGIN bool flag);
+        */
 
 /*! \brief Reset the error status for the Orbit washer.
  *
@@ -655,12 +694,20 @@ ErrorCodes_t enableFrontEndResetDenoiser(
 
 /*! \brief Reset the device.
  *
- * \param reset [in] False sets the device in normal operation state, true sets in reset state.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t resetDevice(
+        ER4CL_ARGVOID);
+
+/*! \brief Reset the digital offset compensations.
+ *
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t resetDigitalOffsetCompensation(
         ER4CL_ARGVOID);
 
 /*! \brief Select the channel for compesantions settings.
@@ -1063,6 +1110,26 @@ ErrorCodes_t hasChannelOn(
         ER4CL_ARGOUT bool &channelOnFlag,
         ER4CL_ARGOUT bool &singleChannelOnFlag);
 
+/*! \brief Get a mask which describes which channels are switched on.
+ *
+ * \param channelsMask [out] 32 bits word: each bit corresponds to 1 channel, where the first channel is the LSB.
+ * if a bit is 1 then the channel is active, otherwise it is deactivated with the method switchChannelOn
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getSwitchedOnChannels(
+        ER4CL_ARGOUT uint32_t &channelsMask);
+
+/*! \brief Get the digital offset compensation reset availability.
+ *
+ * \return Success if the device has offers the possibility to reset the digital offset compensation.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasDigitalOffsetCompensationReset(
+        ER4CL_ARGVOID);
+
 /*! \brief Get the digital output availability.
  *
  * \return Return an error code if the feature is not available.
@@ -1088,6 +1155,7 @@ ErrorCodes_t hasFrontEndResetDenoiser(
  * \param voltages [out] Indexes of available voltage controls for each protocol.
  * \param times [out] Indexes of available time controls for each protocol.
  * \param slopes [out] Indexes of available slope controls for each protocol.
+ * \param frequencies [out] Indexes of available frequency controls for each protocol.
  * \param adimensionals [out] Indexes of available adimensional controls for each protocol.
  * \return Error code.
  */
@@ -1099,6 +1167,7 @@ ErrorCodes_t getProtocolList(
         ER4CL_ARGOUT int16_t voltages[],
         ER4CL_ARGOUT int16_t times[],
         ER4CL_ARGOUT int16_t slopes[],
+        ER4CL_ARGOUT int16_t frequencies[],
         ER4CL_ARGOUT int16_t adimensionals[]);
 
 /*! \brief Get triangular protocol index.
@@ -1160,6 +1229,20 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolSlope(
         ER4CL_ARGOUT char slopeNames[],
+        ER4CL_ARGOUT RangedMeasurementReduced_t ranges[],
+        ER4CL_ARGOUT MeasurementReduced_t defaultValues[]);
+
+/*! \brief Get protocol applicable frequency range.
+ *
+ * \param frequencyNames [out] Names of available frequencys.
+ * \param ranges [out] Ranges of applicable frequency in protocols.
+ * \param defaultValues [out] Default values.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolFrequency(
+        ER4CL_ARGOUT char frequencyNames[],
         ER4CL_ARGOUT RangedMeasurementReduced_t ranges[],
         ER4CL_ARGOUT MeasurementReduced_t defaultValues[]);
 
@@ -1342,6 +1425,20 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
         ER4CL_ARGOUT RangedMeasurementReduced_t &periodRange,
         ER4CL_ARGOUT uint16_t &pulsesPerTrain,
         ER4CL_ARGOUT uint16_t &nTrains);
+
+/*! \brief Get the available custom controls of type flag (active/inactive).
+ *
+ * \param customFlags [out] Names of the available custom controls.
+ * \param customFlagsDefault [out] Deafault values for the available custom controls.
+ * \return Success if there's at least one custom flag control available.
+ */
+ /*
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getCustomFlags(
+        ER4CL_ARGOUT std::vector <std::string> &customFlags,
+        ER4CL_ARGOUT std::vector <bool> &customFlagsDefault);
+        */
 
 /*! \brief Availability of Nanion's temperature controller.
  *

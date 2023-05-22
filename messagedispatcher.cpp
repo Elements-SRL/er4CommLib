@@ -24,31 +24,38 @@
 #include <cmath>
 #include <random>
 #include <algorithm>
+#if defined(_WIN32) && !defined(_MSC_VER)
+#endif
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                         //    9,  2,  4 : e1b EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                         //    9,  2,  4 : e1b EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightEL03C, 2, DeviceE1LightEL03cEDR3},                 //    9,  4,  2 : e1Light EL03c chip (Legacy version for EDR3)
-    {DeviceVersionE1, DeviceSubversionE1PlusEL03C, 6, DeviceE1PlusEL03cEDR3},                   //    9,  5,  6 : e1Light EL03c chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1PlusEL03C, 6, DeviceE1PlusEL03cEDR3},                   //    9,  5,  6 : e1+ EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1HcEL03C, 7, DeviceE1HcEL03cEDR3},                       //    9,  6,  7 : e1HC EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightEL03F, 1, DeviceE1LightEL03fEDR3},                 //    9,  7,  1 : e1Light EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightEL03F, 2, DeviceE1LightEL03fEDR3},                 //    9,  7,  2 : e1Light EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},                   //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1HcEL03F, 1, DeviceE1HcEL03fEDR3},                       //    9,  9,  1 : e1HC EL03f chip (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                               //    3,  8, 11 : e16e (Legacy version for EDR3)
+    {DeviceVersionENPR, DeviceSubversionENPR, 4, DeviceENPREDR3_V03},                           //    8,  2,  4 : eNPR (Legacy version for EDR3)
+    {DeviceVersionENPR, DeviceSubversionENPR, 8, DeviceENPREDR3_V04},                           //    8,  2,  8 : eNPR (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                                 //    8,  2,129 : eNPR
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                             //    8,  8,129 : eNPR-HC
-    {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nV04EDR3},                               //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nV04EDR3},                               //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nEDR3_V04},                              //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nEDR3_V04},                              //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                                  //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e},                                     //    4,  8,129 : e4 Elements version
+    {DeviceVersionE4, DeviceSubversionE4n, 129, DeviceE4n_V01},                                 //    4,  3,129 : e4 Orbit mini
+    {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e_V01},                                 //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses_V01},            //    3,  4,129 : e16 Orbit customized for fast pulses
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 130, DeviceE16FastPulses_V02},            //    3,  4,130 : e16 Orbit customized for fast pulse trains
+    {DeviceVersionE16, DeviceSubversionE16FastPulses, 131, DeviceE16FastPulses_V02},            //    3,  4,131 : e16 Orbit customized for fast pulse trains
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 4, DeviceE16FastPulsesEDR3},              //    3,  4,  4 : e16 Orbit customized for fast pulses (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                                  //    3,  5,135 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                                  //    3,  5,136 : e16 2020 release
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                            //    3,  9,  4 : e16eth (Legacy Version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC_V01},                              //    3, 10,  4 : e16HC No voltage amplifier
     {DeviceVersionE16, DeviceSubversionE16HC, 5, DeviceE16HC_V02},                              //    3, 10,  5 : e16HC
+    {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                               //   11,  1,130 : e2HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                      //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                             //    6,  5,129 : testboard EL06b
     {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                             //    6,  6,129 : testboard EL06c
@@ -60,6 +67,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},                //  254, 15,129 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight_V01},    //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},    //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
+    {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 129, DeviceENPR2Channels_V01},      //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},  //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16FastPulses}
 };
 
@@ -128,6 +137,45 @@ MessageDispatcher::MessageDispatcher(string deviceId) :
 
     cFastCompensationOptions.clear();
     cFastCompensationControl.implemented = false;
+
+    /*! Initialize protocols parameters empty */
+    protocolVoltagesNum = 0;
+    protocolVoltageNames.resize(protocolVoltagesNum);
+    protocolVoltageRanges.resize(protocolVoltagesNum);
+    protocolVoltageDefault.resize(protocolVoltagesNum);
+    selectedProtocolVoltage.resize(protocolVoltagesNum);
+    protocolVoltageCoders.resize(protocolVoltagesNum);
+
+    protocolTimesNum = 0;
+    protocolTimeNames.resize(protocolTimesNum);
+    protocolTimeRanges.resize(protocolTimesNum);
+    protocolTimeDefault.resize(protocolTimesNum);
+    selectedProtocolTime.resize(protocolTimesNum);
+    protocolTimeCoders.resize(protocolTimesNum);
+
+    protocolSlopesNum = 0;
+    protocolSlopeNames.resize(protocolSlopesNum);
+    protocolSlopeRanges.resize(protocolSlopesNum);
+    protocolSlopeDefault.resize(protocolSlopesNum);
+    selectedProtocolSlope.resize(protocolSlopesNum);
+    protocolSlopeCoders.resize(protocolSlopesNum);
+
+    protocolFrequenciesNum = 0;
+    protocolFrequencyNames.resize(protocolFrequenciesNum);
+    protocolFrequencyRanges.resize(protocolFrequenciesNum);
+    protocolFrequencyDefault.resize(protocolFrequenciesNum);
+    selectedProtocolFrequency.resize(protocolFrequenciesNum);
+    protocolFrequencyCoders.resize(protocolFrequenciesNum);
+
+    protocolAdimensionalsNum = 0;
+    protocolAdimensionalNames.resize(protocolAdimensionalsNum);
+    protocolAdimensionalRanges.resize(protocolAdimensionalsNum);
+    protocolAdimensionalDefault.resize(protocolAdimensionalsNum);
+    selectedProtocolAdimensional.resize(protocolAdimensionalsNum);
+    protocolAdimensionalCoders.resize(protocolAdimensionalsNum);
+
+    customFlagsNames.resize(customFlagsNum);
+    customFlagsCoders.resize(customFlagsNum);
 }
 
 MessageDispatcher::~MessageDispatcher() {
@@ -827,6 +875,20 @@ ErrorCodes_t MessageDispatcher::resetDevice() {
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::resetDigitalOffsetCompensation() {
+    if (digitalOffsetCompensationResetFlag) {
+        digitalOffsetCompensationResetCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        digitalOffsetCompensationResetCoder->encode(0, txStatus);
+        this->stackOutgoingMessage(txStatus);
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::resetCalib() {
     if (resetCalibrationFlag) {
         calibResetCoder->encode(1, txStatus);
@@ -928,6 +990,21 @@ ErrorCodes_t MessageDispatcher::setProtocolSlope(unsigned int idx, Measurement_t
     }
 }
 
+ErrorCodes_t MessageDispatcher::setProtocolFrequency(unsigned int idx, Measurement_t frequency, bool applyFlag) {
+    if (idx < protocolFrequenciesNum) {
+        frequency.convertValue(protocolFrequencyRanges[idx].prefix);
+        protocolFrequencyCoders[idx]->encode(frequency.value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::setProtocolAdimensional(unsigned int idx, Measurement_t adimensional, bool applyFlag) {
     if (idx < protocolAdimensionalsNum) {
         adimensional.convertValue(protocolAdimensionalRanges[idx].prefix);
@@ -975,6 +1052,16 @@ ErrorCodes_t MessageDispatcher::checkProtocolTime(unsigned int idx, Measurement_
 
 ErrorCodes_t MessageDispatcher::checkProtocolSlope(unsigned int idx, Measurement_t slope, string &message) {
     selectedProtocolSlope[idx] = slope;
+    if (this->checkProtocolValidity(message)) {
+        return Success;
+
+    } else {
+        return ErrorInvalidProtocolParameters;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::checkProtocolFrequency(unsigned int idx, Measurement_t frequency, string &message) {
+    selectedProtocolFrequency[idx] = frequency;
     if (this->checkProtocolValidity(message)) {
         return Success;
 
@@ -1241,7 +1328,7 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Time(unsigned 
             }
 
         } else {
-            /*! ... otherwise set duration and period to 0 and pulse nummber to 1 (this must never be 0) */
+            /*! ... otherwise set duration and period to 0 and pulse number to 1 (this must never be 0) */
             fastPulseW2DurationCoder[idx]->encode(0.0, txStatus);
             if (fastPulseTrainProtocolImplementatedFlag) {
                 fastPulseW2WaitTimeCoder[idx]->encode(0.0, txStatus);
@@ -1269,15 +1356,18 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Duration(unsig
                 return ErrorValueOutOfRange;
             }
 
-            if (fastPulseW2Times[idx]. value > 0.0) {
+            if (fastPulseW2Times[idx].value > 0.0) {
                 /*! Inhibit this control when the time is 0 (pulse/train disabled) */
                 fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
             }
         }
 
-        if (fastPulseW2Times[idx]. value > 0.0) {
+        if (fastPulseW2Times[idx].value > 0.0) {
             /*! Inhibit this control when the time is 0 (pulse/train disabled) */
             fastPulseW2DurationCoder[idx]->encode(time.value, txStatus);
+
+        } else {
+            fastPulseW2DurationCoder[idx]->encode(0.0, txStatus);
         }
 
         if (applyFlag) {
@@ -1299,10 +1389,13 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Period(unsigne
             return ErrorValueOutOfRange;
         }
 
-        if (fastPulseW2Times[idx]. value > 0.0) {
+        if (fastPulseW2Times[idx].value > 0.0) {
             /*! Inhibit this control when the time is 0 (pulse/train disabled) */
             fastPulseW2WaitTimeCoder[idx]->encode(fastPulseW2Periods[idx].value-fastPulseW2Durations[idx].value, txStatus);
             fastPulseW2DurationCoder[idx]->encode(fastPulseW2Durations[idx].value, txStatus);
+
+        } else {
+            fastPulseW2DurationCoder[idx]->encode(0.0, txStatus);
         }
 
         if (applyFlag) {
@@ -1319,7 +1412,7 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2Period(unsigne
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2PulseNumber(unsigned int idx, uint16_t pulsesNumber, bool applyFlag) {
     if ((idx < fastPulseW2num) && (pulsesNumber > 0)) {
         fastPulseW2PulsesNumbers[idx] = pulsesNumber;
-        if (fastPulseW2Times[idx]. value > 0.0) {
+        if (fastPulseW2Times[idx].value > 0.0) {
             /*! Inhibit this control when the time is 0 (pulse/train disabled) */
             fastPulseW2NumberCoder[idx]->encode(pulsesNumber, txStatus);
         }
@@ -1328,6 +1421,19 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2PulseNumber(un
             this->stackOutgoingMessage(txStatus);
         }
 
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::setCustomFlag(uint16_t idx, bool flag, bool applyFlag) {
+    if (idx < customFlagsNum) {
+        customFlagsCoders[idx]->encode(flag ? 1 : 0, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
         return Success;
 
     } else {
@@ -1722,6 +1828,27 @@ ErrorCodes_t MessageDispatcher::hasChannelOn(bool &channelOnFlag, bool &singleCh
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::getSwitchedOnChannels(uint32_t &channelsMask) {
+    if (singleChannelOnFlag) {
+        channelsMask = 0;
+        for (unsigned int idx = 0; idx < currentChannelsNum; idx++) {
+            channelsMask |= (channelOnStates[idx] ? (uint32_t)1 : 0) << idx;
+        }
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::hasDigitalOffsetCompensationReset() {
+    ErrorCodes_t ret = ErrorFeatureNotImplemented;
+    if (digitalOffsetCompensationResetFlag) {
+        ret = Success;
+    }
+    return ret;
+}
+
 ErrorCodes_t MessageDispatcher::hasDigitalOutput() {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (digOutImplementedFlag) {
@@ -1747,12 +1874,13 @@ ErrorCodes_t MessageDispatcher::getLiquidJunctionControl(CompensationControl_t &
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &adimensionals) {
+ErrorCodes_t MessageDispatcher::getProtocolList(vector <string> &names, vector <string> &images, vector <vector <uint16_t>> &voltages, vector <vector <uint16_t>> &times, vector <vector <uint16_t>> &slopes, vector <vector <uint16_t>> &frequencies, vector <vector <uint16_t>> &adimensionals) {
     names = protocolsNames;
     images = protocolsImages;
     voltages = protocolsAvailableVoltages;
     times = protocolsAvailableTimes;
     slopes = protocolsAvailableSlopes;
+    frequencies = protocolsAvailableFrequencies;
     adimensionals = protocolsAvailableAdimensionals;
     return Success;
 }
@@ -1797,6 +1925,13 @@ ErrorCodes_t MessageDispatcher::getProtocolSlope(vector <string> &slopeNames, ve
     slopeNames = protocolSlopeNames;
     ranges = protocolSlopeRanges;
     defaultValues = protocolSlopeDefault;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getProtocolFrequency(vector <string> &frequencyNames, vector <RangedMeasurement_t> &ranges, vector <Measurement_t> &defaultValues) {
+    frequencyNames = protocolFrequencyNames;
+    ranges = protocolFrequencyRanges;
+    defaultValues = protocolFrequencyDefault;
     return Success;
 }
 
@@ -1936,6 +2071,20 @@ ErrorCodes_t MessageDispatcher::getFastReferencePulseTrainProtocolWave2Range(Ran
     }
 }
 
+ErrorCodes_t MessageDispatcher::getCustomFlags(vector <string> &customFlags, vector <bool> &customFlagsDefault) {
+    if (customFlagsNum > 0) {
+        customFlags.resize(customFlagsNum);
+        for (unsigned int idx = 0; idx < customFlagsNum; idx++) {
+            customFlags[idx] = customFlagsNames[idx];
+        }
+        customFlagsDefault = this->customFlagsDefault;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::hasNanionTemperatureController() {
     if (nanionTemperatureControllerFlag) {
         return Success;
@@ -2047,6 +2196,30 @@ ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel
     return Success;
 }
 
+void MessageDispatcher::initializeDevice() {
+    this->selectVoltageProtocol(defaultProtocol);
+
+    for (unsigned int voltageIdx = 0; voltageIdx < protocolVoltagesNum; voltageIdx++) {
+        this->setProtocolVoltage(voltageIdx, protocolVoltageDefault[voltageIdx], false);
+    }
+
+    for (unsigned int timeIdx = 0; timeIdx < protocolTimesNum; timeIdx++) {
+        this->setProtocolTime(timeIdx, protocolTimeDefault[timeIdx], false);
+    }
+
+    for (unsigned int slopeIdx = 0; slopeIdx < protocolSlopesNum; slopeIdx++) {
+        this->setProtocolSlope(slopeIdx, protocolSlopeDefault[slopeIdx], false);
+    }
+
+    for (unsigned int frequencyIdx = 0; frequencyIdx < protocolFrequenciesNum; frequencyIdx++) {
+        this->setProtocolFrequency(frequencyIdx, protocolFrequencyDefault[frequencyIdx], false);
+    }
+
+    for (unsigned int adimensionalIdx = 0; adimensionalIdx < protocolAdimensionalsNum; adimensionalIdx++) {
+        this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
+    }
+}
+
 void MessageDispatcher::initializeLsbNoise(bool nullValues) {
     if (nullValues) {
         /*! By default there is no added noise  */
@@ -2074,13 +2247,10 @@ void MessageDispatcher::initializeCompensations() {
 
     cFastCapacitance.resize(currentChannelsNum);
     cFastCompensationFlag.resize(currentChannelsNum);
-    //    cFastCompensationOptionIdx.resize(currentChannelsNum);
 
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
         cFastCapacitance[channelIdx] = 0.0;
         cFastCompensationFlag[channelIdx] = false;
-
-        //        cFastCompensationOptionIdx[channelIdx] = 0;
     }
 }
 
@@ -2166,7 +2336,7 @@ void MessageDispatcher::readDataFromDevice() {
     while (!stopConnectionFlag) {
         if (connectionPaused) {
             if (this->pauseConnection(false) != Success) {
-                Sleep(100);
+                this_thread::sleep_for(chrono::microseconds(100000));
                 continue;
             }
         }
@@ -2180,7 +2350,7 @@ void MessageDispatcher::readDataFromDevice() {
         if (result != FT_OK) {
             deviceCommunicationErrorFlag = true;
             this->pauseConnection(true);
-            Sleep(100);
+            this_thread::sleep_for(chrono::microseconds(100000));
             continue;
         }
 
@@ -2190,7 +2360,7 @@ void MessageDispatcher::readDataFromDevice() {
         /*! If there are not enough frames wait for a minimum frame number,
          *  the ftdi driver will wait for that to decrease overhead */
         if (availableFrames < minReadFrameNumber) {
-            Sleep(fewFramesSleep);
+            this_thread::sleep_for(chrono::microseconds(fewFramesSleep));
             continue;
         }
 

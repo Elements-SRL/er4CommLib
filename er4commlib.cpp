@@ -170,6 +170,14 @@ ErrorCodes_t connectDevice(
             messageDispatcher = new MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(deviceId);
             break;
 
+        case DeviceENPREDR3_V03:
+            messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V03(deviceId);
+            break;
+
+        case DeviceENPREDR3_V04:
+            messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V04(deviceId);
+            break;
+
         case DeviceENPR:
             messageDispatcher = new MessageDispatcher_eNPR(deviceId);
             break;
@@ -178,7 +186,7 @@ ErrorCodes_t connectDevice(
             messageDispatcher = new MessageDispatcher_eNPR_HC_V00(deviceId);
             break;
 
-        case DeviceE4nV04EDR3:
+        case DeviceE4nEDR3_V04:
             messageDispatcher = new MessageDispatcher_e4n_El03c_LegacyEdr3_V04(deviceId);
             break;
 
@@ -186,8 +194,12 @@ ErrorCodes_t connectDevice(
             messageDispatcher = new MessageDispatcher_e4e_El03c_LegacyEdr3_V00(deviceId);
             break;
 
-        case DeviceE4e:
-            messageDispatcher = new MessageDispatcher_e4e(deviceId);
+        case DeviceE4n_V01:
+            messageDispatcher = new MessageDispatcher_e4n_V01(deviceId);
+            break;
+
+        case DeviceE4e_V01:
+            messageDispatcher = new MessageDispatcher_e4e_V01(deviceId);
             break;
 
         case DeviceE16eEDR3:
@@ -222,6 +234,10 @@ ErrorCodes_t connectDevice(
             messageDispatcher = new MessageDispatcher_e16HC_V02(deviceId);
             break;
 
+        case DeviceE2HC_V01:
+            messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
+            break;
+
         case DeviceDlp:
             messageDispatcher = new MessageDispatcher_dlp(deviceId);
             break;
@@ -252,6 +268,14 @@ ErrorCodes_t connectDevice(
 
         case DeviceENPRFairyLight_V02:
             messageDispatcher = new MessageDispatcher_eNPR_FL_V02(deviceId);
+            break;
+
+        case DeviceENPR2Channels_V01:
+            messageDispatcher = new MessageDispatcher_eNPR_2Channels_V01(deviceId);
+            break;
+
+        case DeviceOrbitMiniSine_V01:
+            messageDispatcher = new MessageDispatcher_e4n_sine_V01(deviceId);
             break;
 
         case DeviceFakeE16n:
@@ -389,6 +413,21 @@ ErrorCodes_t setProtocolSlope(
     return ret;
 }
 
+ErrorCodes_t setProtocolFrequency(
+        unsigned int idx,
+        MeasurementReduced_t frequencyRed) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        Measurement_t frequency;
+        frequency=fromReduceMeasurement(frequencyRed);
+        ret = messageDispatcher->setProtocolFrequency(idx, frequency);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t setProtocolAdimensional(
         unsigned int idx,
         MeasurementReduced_t adimensionalRed) {
@@ -482,6 +521,28 @@ ErrorCodes_t checkProtocolSlope(
         int messageOffset = 0;
         slope = fromReduceMeasurement(slopeRed);
         ret = messageDispatcher->checkProtocolSlope(idx, slope, messageStr);
+
+        for(uint32_t charIdx=0; charIdx<messageStr.length(); charIdx++){
+            message[messageOffset++]= messageStr[charIdx];
+        }
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t checkProtocolFrequency(
+        unsigned int idx,
+        MeasurementReduced_t frequencyRed,
+        char * message) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        Measurement_t frequency;
+        string messageStr;
+        int messageOffset = 0;
+        frequency = fromReduceMeasurement(frequencyRed);
+        ret = messageDispatcher->checkProtocolFrequency(idx, frequency, messageStr);
 
         for(uint32_t charIdx=0; charIdx<messageStr.length(); charIdx++){
             message[messageOffset++]= messageStr[charIdx];
@@ -641,6 +702,19 @@ ErrorCodes_t applyDacExt(
         Measurement_t voltage;
         voltage=fromReduceMeasurement(voltageRed);
         ret = messageDispatcher->applyDacExt(voltage);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t setCustomFlag(
+        uint16_t idx,
+        bool flag) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setCustomFlag(idx, flag, true);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1006,6 +1080,17 @@ ErrorCodes_t resetDevice() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->resetDevice();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t resetDigitalOffsetCompensation() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->resetDigitalOffsetCompensation();
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1519,6 +1604,29 @@ ErrorCodes_t hasChannelOn(
     return ret;
 }
 
+ErrorCodes_t getSwitchedOnChannels(
+        uint32_t &channelsMask) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getSwitchedOnChannels(channelsMask);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t hasDigitalOffsetCompensationReset() {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->hasDigitalOffsetCompensationReset();
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t hasDigitalOutput() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -1547,64 +1655,74 @@ ErrorCodes_t getProtocolList(
         int16_t voltages[],
         int16_t times[],
         int16_t slopes[],
+        int16_t frequencies[],
         int16_t adimensionals[]) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
 
-        vector<string> vectorNames;
-        vector<string> vectorImages;
+        vector <string> vectorNames;
+        vector <string> vectorImages;
         vector <vector <uint16_t>> vectorVoltages;
         vector <vector <uint16_t>> vectorTimes;
         vector <vector <uint16_t>> vectorSlopes;
+        vector <vector <uint16_t>> vectorFrequencies;
         vector <vector <uint16_t>> vectorAdimensional;
         uint32_t nameOffset = 0;
         uint32_t imagesOffset = 0;
         uint32_t voltagesOffset = 0;
         uint32_t timesOffset = 0;
         uint32_t slopesOffset = 0;
+        uint32_t frequenciesOffset = 0;
         uint32_t adimensionalOffset = 0;
 
-        ret = messageDispatcher->getProtocolList(vectorNames, vectorImages, vectorVoltages, vectorTimes, vectorSlopes, vectorAdimensional);
+        ret = messageDispatcher->getProtocolList(vectorNames, vectorImages, vectorVoltages, vectorTimes, vectorSlopes, vectorFrequencies, vectorAdimensional);
 
-        uint32_t protocolsNum=vectorNames.size();
+        uint32_t protocolsNum = vectorNames.size();
 
-        for(uint32_t namesIdx =0; namesIdx< protocolsNum; namesIdx++){
-            for(uint32_t charIdx =0; charIdx<vectorNames[namesIdx].length();charIdx++ ){
+        for(uint32_t namesIdx = 0; namesIdx < protocolsNum; namesIdx++){
+            for(uint32_t charIdx = 0; charIdx < vectorNames[namesIdx].length();charIdx++){
                 names[nameOffset++] = vectorNames[namesIdx][charIdx];
             }
             names[nameOffset++] = ',';
         }
 
-        for(uint32_t imagesIdx =0; imagesIdx< protocolsNum; imagesIdx++){
-            for(uint32_t charIdx =0; charIdx<vectorImages[imagesIdx].length();charIdx++ ){
+        for(uint32_t imagesIdx = 0; imagesIdx < protocolsNum; imagesIdx++){
+            for(uint32_t charIdx = 0; charIdx < vectorImages[imagesIdx].length();charIdx++){
                 images[nameOffset++] = vectorImages[imagesIdx][charIdx];
             }
             images[imagesOffset++] = ',';
         }
 
-        for(uint32_t voltagesIdx =0; voltagesIdx< protocolsNum; voltagesIdx++){
-            for(uint32_t elementIdx =0; elementIdx< vectorVoltages[voltagesIdx].size(); elementIdx++ ){
+        for(uint32_t voltagesIdx = 0; voltagesIdx < protocolsNum; voltagesIdx++){
+            for(uint32_t elementIdx = 0; elementIdx < vectorVoltages[voltagesIdx].size(); elementIdx++){
                 voltages[voltagesOffset++] = vectorVoltages[voltagesIdx][elementIdx];
             }
             voltages[voltagesOffset++] = -1;
         }
 
-        for(uint32_t timesIdx =0; timesIdx< protocolsNum; timesIdx++){
-            for(uint32_t elementIdx =0; elementIdx< vectorTimes[timesIdx].size(); elementIdx++ ){
+        for(uint32_t timesIdx = 0; timesIdx < protocolsNum; timesIdx++){
+            for(uint32_t elementIdx = 0; elementIdx < vectorTimes[timesIdx].size(); elementIdx++){
                 times[timesOffset++] = vectorTimes[timesIdx][elementIdx];
             }
             voltages[voltagesOffset++] = -1;
         }
 
-        for(uint32_t slopeIdx =0; slopeIdx< protocolsNum; slopeIdx++){
-            for(uint32_t elementIdx =0; elementIdx< vectorSlopes[slopeIdx].size(); elementIdx++ ){
+        for(uint32_t slopeIdx = 0; slopeIdx< protocolsNum; slopeIdx++){
+            for(uint32_t elementIdx = 0; elementIdx< vectorSlopes[slopeIdx].size(); elementIdx++){
                 slopes[slopesOffset++] = vectorSlopes[slopeIdx][elementIdx];
             }
             slopes[slopesOffset++] = -1;
         }
 
-        for(uint32_t adimensionalIdx =0; adimensionalIdx< protocolsNum; adimensionalIdx++){
-            for(uint32_t elementIdx =0; elementIdx< vectorAdimensional[adimensionalIdx].size(); elementIdx++ ){
+        for(uint32_t frequencyIdx = 0; frequencyIdx < protocolsNum; frequencyIdx++){
+            for(uint32_t elementIdx = 0; elementIdx < vectorFrequencies[frequencyIdx].size(); elementIdx++){
+                frequencies[frequenciesOffset++] = vectorFrequencies[frequencyIdx][elementIdx];
+            }
+            frequencies[frequenciesOffset++] = -1;
+        }
+
+        for(uint32_t adimensionalIdx = 0; adimensionalIdx < protocolsNum; adimensionalIdx++){
+            for(uint32_t elementIdx = 0; elementIdx < vectorAdimensional[adimensionalIdx].size(); elementIdx++){
                 adimensionals[adimensionalOffset++] = vectorAdimensional[adimensionalIdx][elementIdx];
             }
             adimensionals[adimensionalOffset++] = -1;
@@ -1737,6 +1855,45 @@ ErrorCodes_t getProtocolSlope(
                     slopeNames[slopeNamesOffset++] = slopeNamesVec[idx][charIdx];
                 }
                 slopeNames[slopeNamesOffset++] = ',';
+            }
+
+            size = rangesVec.size();
+            for (uint32_t idx = 0; idx < size; idx++) {
+                rangesRed[idx] = toReduceRangedMeasurement(rangesVec[idx]);
+            }
+            size = defaultValuesVec.size();
+            for (uint32_t idx = 0; idx < size; idx++) {
+                defaultValuesRed[idx] = toReduceMeasurement(defaultValuesVec[idx]);
+            }
+
+        }
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getProtocolFrequency(
+        char frequencyNames[],
+        RangedMeasurementReduced_t rangesRed[],
+        MeasurementReduced_t defaultValuesRed[]) {
+    ErrorCodes_t ret;
+    vector <string> frequencyNamesVec;
+    vector <RangedMeasurement_t> rangesVec;
+    vector <Measurement_t> defaultValuesVec;
+    uint32_t frequencyNamesOffset = 0;
+
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getProtocolFrequency(frequencyNamesVec, rangesVec, defaultValuesVec);
+
+        if (ret == Success) {
+            int size = frequencyNamesVec.size();
+            for (uint32_t idx = 0; idx< size; idx++){
+                for (uint32_t charIdx = 0; charIdx < frequencyNamesVec[idx].length(); charIdx++) {
+                    frequencyNames[frequencyNamesOffset++] = frequencyNamesVec[idx][charIdx];
+                }
+                frequencyNames[frequencyNamesOffset++] = ',';
             }
 
             size = rangesVec.size();
@@ -2013,6 +2170,19 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
         timeRangeRed=toReduceRangedMeasurement(timeRange);
         durationRangeRed=toReduceRangedMeasurement(durationRange);
         periodRangeRed=toReduceRangedMeasurement(periodRange);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getCustomFlags(
+        vector <string> &customFlags,
+        vector <bool> &customFlagsDefault) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getCustomFlags(customFlags, customFlagsDefault);
 
     } else {
         ret = ErrorDeviceNotConnected;

@@ -110,10 +110,6 @@ protected:
         ProtocolTimesNum
     };
 
-    enum ProtocolSlopes {
-        ProtocolSlopesNum = 0
-    };
-
     enum ProtocolAdimensionals {
         ProtocolN,
         ProtocolNR,

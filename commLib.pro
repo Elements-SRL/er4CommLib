@@ -37,6 +37,7 @@ CONFIG += staticlib
 
 # or create .dll
 #DEFINES += ER4COMMLIB_LIBRARY
+#DEFINES += OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
 
 include(../version.pri)
 

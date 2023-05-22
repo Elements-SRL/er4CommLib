@@ -239,6 +239,7 @@ public:
     ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag, bool &selectableDOCAutostopFlag);
     ErrorCodes_t hasZap(bool &zappableDeviceFlag, bool &singleChannelZapFlag);
     ErrorCodes_t hasChannelOn(bool &channelOnFlag, bool &singleChannelOnFlag);
+    ErrorCodes_t getSwitchedOnChannels(uint32_t &channelsMask);
     ErrorCodes_t hasDigitalOffsetCompensationReset();
 
     ErrorCodes_t hasDigitalOutput();

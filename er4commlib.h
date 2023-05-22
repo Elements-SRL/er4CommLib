@@ -272,7 +272,7 @@ ErrorCodes_t setVoltageOffset(
         ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN Measurement_t voltage);
 
-/*! \brief Check if the protocol parameters are valid.
+/*! \brief Check if the applied voltage is valid in combination with the currently applied voltage protocol.
  *
  * \param idx [in] Index of the channel voltage offset to be checked.
  * \param voltage [in] Value of the voltage offset to be checked.
@@ -1026,6 +1026,16 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasChannelOn(
         ER4CL_ARGOUT bool &channelOnFlag,
         ER4CL_ARGOUT bool &singleChannelOnFlag);
+
+/*! \brief Get a mask which describes which channels are switched on.
+ *
+ * \param channelsMask [out] 32 bits word: each bit corresponds to 1 channel, where the first channel is the LSB.
+ * if a bit is 1 then the channel is active, otherwise it is deactivated with the method switchChannelOn
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getSwitchedOnChannels(
+        ER4CL_ARGOUT uint32_t &channelsMask);
 
 /*! \brief Get the digital offset compensation reset availability.
  *

@@ -1792,6 +1792,19 @@ ErrorCodes_t MessageDispatcher::hasChannelOn(bool &channelOnFlag, bool &singleCh
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::getSwitchedOnChannels(uint32_t &channelsMask) {
+    if (singleChannelOnFlag) {
+        channelsMask = 0;
+        for (unsigned int idx = 0; idx < currentChannelsNum; idx++) {
+            channelsMask |= (channelOnStates[idx] ? (uint32_t)1 : 0) << idx;
+        }
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::hasDigitalOffsetCompensationReset() {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (digitalOffsetCompensationResetFlag) {

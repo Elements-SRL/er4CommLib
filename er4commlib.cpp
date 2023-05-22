@@ -1464,6 +1464,18 @@ ErrorCodes_t hasChannelOn(
     return ret;
 }
 
+ErrorCodes_t getSwitchedOnChannels(
+        uint32_t &channelsMask) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getSwitchedOnChannels(channelsMask);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t hasDigitalOffsetCompensationReset() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {

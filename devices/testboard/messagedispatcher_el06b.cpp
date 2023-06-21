@@ -583,6 +583,7 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
 
     double vcm_mV = 1650.0;
     double maxDacExtVoltage = 4096.0;
+    dacExtCoders.resize(voltageReferenceRangesNum);
 
     unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
     doubleConfig.resolution = voltageReferenceRangesArray[voltageReferenceIdx].step;

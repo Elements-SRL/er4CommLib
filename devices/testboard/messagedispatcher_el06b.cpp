@@ -68,8 +68,8 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     /*! Voltage ranges */
     voltageRangesNum = VoltageRangesNum;
     voltageRangesArray.resize(voltageRangesNum);
-    voltageRangesArray[VoltageRange500mV].min = -511.0;
-    voltageRangesArray[VoltageRange500mV].max = 511.0;
+    voltageRangesArray[VoltageRange500mV].min = -500.0;
+    voltageRangesArray[VoltageRange500mV].max = 500.0;
     voltageRangesArray[VoltageRange500mV].step = 0.0625;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
@@ -545,7 +545,7 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     boolConfig.initialByte = 8;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 16;
-    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
+    channelOnCoder = new BoolArrayCoder(boolConfig);
 
     channelOnStates.resize(currentChannelsNum);
     for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {

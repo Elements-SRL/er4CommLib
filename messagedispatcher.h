@@ -569,8 +569,8 @@ protected:
     bool dacExtControllableFlag = false; /*! This is true if the voltage applied on the external DAC is directly controllable by the user, not through protocols */
     bool invertedDacExtFlag = false; /*! Negate the DAC value before applying it */
     vector <DoubleOffsetBinaryCoder *> dacExtCoders;
-    Measurement_t dacExtDefault;
-    Measurement_t voltageReference;
+    Measurement_t dacExtDefault = {0.0, UnitPfxNone, "V"};
+    Measurement_t voltageReference = {0.0, UnitPfxNone, "V"};
     int16_t voltageReferenceOffset = 0; /*! Value added to returned voltage data to accoutn for the voltage applied on the reference */
 
     /*! Device specific parameters */

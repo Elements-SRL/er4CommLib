@@ -20,24 +20,6 @@
 #include <algorithm>
 
 #include "messagedispatcher.h"
-#include "messagedispatcher_e1plus.h"
-#include "messagedispatcher_e1light.h"
-#include "messagedispatcher_e1hc.h"
-#include "messagedispatcher_enpr.h"
-#include "messagedispatcher_enpr_hc.h"
-#include "messagedispatcher_e2hc.h"
-#include "messagedispatcher_e4n.h"
-#include "messagedispatcher_e4e.h"
-#include "messagedispatcher_e16fastpulses.h"
-#include "messagedispatcher_e16n.h"
-#include "messagedispatcher_e16e.h"
-#include "messagedispatcher_e16eth.h"
-#include "messagedispatcher_el06b.h"
-#include "messagedispatcher_el06c.h"
-#include "messagedispatcher_el06d_el06e.h"
-#include "messagedispatcher_fake_e16n.h"
-#include "messagedispatcher_fake_e16fastpulses.h"
-#include "messagedispatcher_e16hc.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -49,13 +31,6 @@ using namespace std;
 
 static MessageDispatcher * messageDispatcher = nullptr;
 static uint16_t * buffer_l;
-
-/*! Private functions prototypes */
-string getDeviceSerial(
-        uint32_t index);
-
-bool getDeviceCount(
-        DWORD &numDevs);
 
 namespace er4CommLib {
 
@@ -90,250 +65,18 @@ ErrorCodes_t deinit() {
 ErrorCodes_t detectDevices(
         vector <string> &deviceIds) {
     /*! Gets number of devices */
-    DWORD numDevs;
-    bool devCountOk = getDeviceCount(numDevs);
-    if (!devCountOk) {
-        return ErrorListDeviceFailed;
-
-    } else if (numDevs < 2) {
-        /*! Each device has 2 channels */
-        deviceIds.clear();
-        return ErrorNoDeviceFound;
-    }
-
-    vector <string> deviceIdsTemp;
-    deviceIds.clear();
-    deviceIdsTemp.clear();
-    string deviceName;
-
-    /*! Lists all serial numbers */
-    for (uint32_t i = 0; i < numDevs; i++) {
-        deviceName = getDeviceSerial(i);
-        if (find(deviceIdsTemp.begin(), deviceIdsTemp.end(), deviceName) == deviceIdsTemp.end()) {
-            /*! Devices with an open channel are detected wrongly and their name is an empty string */
-            if (deviceName.size() > 0) {
-                /*! If this device has been found for the first time put it in the temporary list */
-                deviceIdsTemp.push_back(getDeviceSerial(i));
-            }
-
-        } else {
-            /*! Devices with an open channel are detected wrongly and their name is an empty string */
-            if (deviceName.size() > 0) {
-                /*! If this device has been already been found both channels A and B are detected, so add it in the output list */
-                deviceIds.push_back(getDeviceSerial(i));
-            }
-        }
-    }
-
-    return Success;
+    return MessageDispatcher::detectDevices(deviceIds);
 }
 
 ErrorCodes_t connect(
         string deviceId) {
 
-    ErrorCodes_t ret = Success;
     if (messageDispatcher == nullptr) {
-        /*! Initializes eeprom */
-        /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
-        FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
-        if (deviceId == "e16 Demo") {
-            ftdiEepromId = FtdiEepromIdDemo;
-        }
-
-        /*! ftdiEeprom is deleted by the messageDispatcher if one is created successfully */
-        FtdiEeprom * ftdiEeprom = nullptr;
-        switch (ftdiEepromId) {
-        case FtdiEepromId56:
-            ftdiEeprom = new FtdiEeprom56(deviceId);
-            break;
-
-        case FtdiEepromIdDemo:
-            ftdiEeprom = new FtdiEepromDemo(deviceId);
-            break;
-        }
-
-        DeviceTuple_t deviceTuple = ftdiEeprom->getDeviceTuple();
-        DeviceTypes_t deviceType;
-
-        ret = MessageDispatcher::getDeviceType(deviceTuple, deviceType);
-        if (ret != Success) {
-            if (ftdiEeprom != nullptr) {
-                delete ftdiEeprom;
-            }
-            return ErrorDeviceTypeNotRecognized;
-        }
-
-        switch (deviceType) {
-        case DeviceE1bEL03cEDR3:
-            messageDispatcher = new MessageDispatcher_e1b_El03c_LegacyEdr3_V00(deviceId);
-            break;
-
-        case DeviceE1LightEL03cEDR3:
-            messageDispatcher = new MessageDispatcher_e1Light_El03c_LegacyEdr3_V01(deviceId);
-            break;
-
-        case DeviceE1PlusEL03cEDR3:
-            messageDispatcher = new MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00(deviceId);
-            break;
-
-        case DeviceE1HcEL03cEDR3:
-            messageDispatcher = new MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00(deviceId);
-            break;
-
-        case DeviceE1LightEL03fEDR3:
-            messageDispatcher = new MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(deviceId);
-            break;
-
-        case DeviceE1PlusEL03fEDR3:
-            messageDispatcher = new MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(deviceId);
-            break;
-
-        case DeviceE1HcEL03fEDR3:
-            messageDispatcher = new MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(deviceId);
-            break;
-
-        case DeviceENPREDR3_V03:
-            messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V03(deviceId);
-            break;
-
-        case DeviceENPREDR3_V04:
-            messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V04(deviceId);
-            break;
-
-        case DeviceENPR:
-            messageDispatcher = new MessageDispatcher_eNPR(deviceId);
-            break;
-
-        case DeviceENPRHC:
-            messageDispatcher = new MessageDispatcher_eNPR_HC_V00(deviceId);
-            break;
-
-        case DeviceE4nEDR3_V04:
-            messageDispatcher = new MessageDispatcher_e4n_El03c_LegacyEdr3_V04(deviceId);
-            break;
-
-        case DeviceE4eEDR3:
-            messageDispatcher = new MessageDispatcher_e4e_El03c_LegacyEdr3_V00(deviceId);
-            break;
-
-        case DeviceE4n_V01:
-            messageDispatcher = new MessageDispatcher_e4n_V01(deviceId);
-            break;
-
-        case DeviceE4e_V01:
-            messageDispatcher = new MessageDispatcher_e4e_V01(deviceId);
-            break;
-
-        case DeviceE16eEDR3:
-            messageDispatcher = new MessageDispatcher_e16e_LegacyEdr3_V00(deviceId);
-            break;
-
-        case DeviceE16FastPulses_V01:
-            messageDispatcher = new MessageDispatcher_e16FastPulses_V01(deviceId);
-            break;
-
-        case DeviceE16FastPulses_V02:
-            messageDispatcher = new MessageDispatcher_e16FastPulses_V02(deviceId);
-            break;
-
-        case DeviceE16FastPulsesEDR3:
-            messageDispatcher = new MessageDispatcher_e16FastPulses_LegacyEdr3_V03(deviceId);
-            break;
-
-        case DeviceE16n:
-            messageDispatcher = new MessageDispatcher_e16n(deviceId);
-            break;
-
-        case DeviceE16ETHEDR3:
-            messageDispatcher = new MessageDispatcher_e16ETH_LegacyEdr3_V01(deviceId);
-            break;
-
-        case DeviceE16HC_V01:
-            messageDispatcher = new MessageDispatcher_e16HC_V01(deviceId);
-            break;
-
-        case DeviceE16HC_V02:
-            messageDispatcher = new MessageDispatcher_e16HC_V02(deviceId);
-            break;
-
-        case DeviceE2HC_V01:
-            messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
-            break;
-
-        case DeviceDlp:
-            messageDispatcher = new MessageDispatcher_dlp(deviceId);
-            break;
-
-        case TestboardEL06b:
-            messageDispatcher = new MessageDispatcher_EL06b(deviceId);
-            break;
-
-        case TestboardEL06c:
-            messageDispatcher = new MessageDispatcher_EL06c(deviceId);
-            break;
-
-        case TestboardEL06dEL06e:
-            messageDispatcher = new MessageDispatcher_EL06d_EL06e(deviceId);
-            break;
-
-        case DeviceE2HCExtAdc:
-            messageDispatcher = new MessageDispatcher_e2HC_V00(deviceId);
-            break;
-
-        case DeviceE2HCIntAdc:
-            messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
-            break;
-
-        case DeviceENPRFairyLight_V01:
-            messageDispatcher = new MessageDispatcher_eNPR_FL_V01(deviceId);
-            break;
-
-        case DeviceENPRFairyLight_V02:
-            messageDispatcher = new MessageDispatcher_eNPR_FL_V02(deviceId);
-            break;
-
-        case DeviceENPR2Channels_V01:
-            messageDispatcher = new MessageDispatcher_eNPR_2Channels_V01(deviceId);
-            break;
-
-        case DeviceOrbitMiniSine_V01:
-            messageDispatcher = new MessageDispatcher_e4n_sine_V01(deviceId);
-            break;
-
-        case DeviceFakeE16n:
-            messageDispatcher = new MessageDispatcher_fake_e16n(deviceId);
-            break;
-
-        case DeviceFakeE16FastPulses:
-            messageDispatcher = new MessageDispatcher_fake_e16FastPulses(deviceId);
-            break;
-
-        default:
-            if (ftdiEeprom != nullptr) {
-                delete ftdiEeprom;
-            }
-            return ErrorDeviceTypeNotRecognized;
-        }
-
-        if (messageDispatcher != nullptr) {
-            ret = messageDispatcher->init();
-            if (ret != Success) {
-                return ret;
-            }
-
-            ret = messageDispatcher->connect(ftdiEeprom);
-
-            if (ret != Success) {
-                messageDispatcher->disconnect();
-                delete messageDispatcher;
-                messageDispatcher = nullptr;
-            }
-        }
+        return MessageDispatcher::connectDevice(deviceId, messageDispatcher);
 
     } else {
-        ret = ErrorDeviceAlreadyConnected;
+        return ErrorDeviceAlreadyConnected;
     }
-    return ret;
 }
 
 ErrorCodes_t disconnect() {
@@ -1928,31 +1671,3 @@ ErrorCodes_t getVoltageOffsetCompensations(
 }
 
 } // namespace er4CommLib
-
-/*! Private functions */
-string getDeviceSerial(
-        uint32_t index) {
-    char buffer[64];
-    string serial;
-    FT_STATUS FT_Result = FT_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
-    if (FT_Result == FT_OK) {
-        serial = buffer;
-        return serial.substr(0, serial.size()-1); /*!< Removes channel character */
-
-    } else {
-        return "";
-    }
-}
-
-bool getDeviceCount(
-        DWORD &numDevs) {
-    /*! Get the number of connected devices */
-    numDevs = 0;
-    FT_STATUS FT_Result = FT_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
-    if (FT_Result == FT_OK) {
-        return true;
-
-    } else {
-        return false;
-    }
-}

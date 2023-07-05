@@ -112,6 +112,8 @@ public:
      *  Connection methods  *
     \************************/
 
+    static ErrorCodes_t detectDevices(std::vector <std::string> &deviceIds);
+    static ErrorCodes_t connectDevice(std::string deviceId, MessageDispatcher * &messageDispatcher);
     ErrorCodes_t init();
     ErrorCodes_t deinit();
     virtual ErrorCodes_t connect(FtdiEeprom * ftdiEeprom);
@@ -119,8 +121,6 @@ public:
     virtual ErrorCodes_t pauseConnection(bool pauseFlag);
     void readDataFromDevice();
     void sendCommandsToDevice();
-
-    static ErrorCodes_t getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type);
 
     /****************\
      *  Tx methods  *
@@ -313,6 +313,8 @@ protected:
     /*************\
      *  Methods  *
     \*************/
+
+    static ErrorCodes_t getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type);
 
     ErrorCodes_t initFtdiChannel(FT_HANDLE * handle, char channel);
     virtual void initializeDevice();

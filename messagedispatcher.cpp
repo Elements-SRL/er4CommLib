@@ -3166,3 +3166,31 @@ void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
         outputBufferOverflowFlag = true;
     }
 }
+
+/*! Private functions */
+string getDeviceSerial(
+        uint32_t index) {
+    char buffer[64];
+    string serial;
+    FT_STATUS FT_Result = FT_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
+    if (FT_Result == FT_OK) {
+        serial = buffer;
+        return serial.substr(0, serial.size()-1); /*!< Removes channel character */
+
+    } else {
+        return "";
+    }
+}
+
+bool getDeviceCount(
+        DWORD &numDevs) {
+    /*! Get the number of connected devices */
+    numDevs = 0;
+    FT_STATUS FT_Result = FT_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
+    if (FT_Result == FT_OK) {
+        return true;
+
+    } else {
+        return false;
+    }
+}

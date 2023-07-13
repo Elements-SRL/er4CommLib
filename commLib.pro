@@ -129,7 +129,7 @@ DEPENDPATH += ./ \
 macx: INCLUDEPATH += /usr/local/include
 macx: DEPENDPATH += /usr/local/include
 
-include(./ftd2xx/includeftd2xx.pri)
+include($$(FTD2XX_PATH)includeftd2xx.pri)
 
 win32: QMAKE_LFLAGS+=-Wl,-Map=er4commlib_$${VERSION_FULL}.map
 win32: QMAKE_CXXFLAGS_RELEASE+=-O0

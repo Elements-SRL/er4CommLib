@@ -30,33 +30,7 @@
 using namespace std;
 
 static MessageDispatcher * messageDispatcher = nullptr;
-static uint16_t * buffer_l;
-
 namespace er4CommLib {
-
-/*****************\
- *  Ctor / Dtor  *
-\*****************/
-
-ErrorCodes_t init() {
-    buffer_l = new (nothrow) uint16_t [ER4CL_DATA_ARRAY_SIZE];
-    if (buffer_l == nullptr) {
-        //        delete [] deviceId_l;
-        //        deviceId_l = nullptr;
-        return ErrorInitializationFailed;
-    }
-
-    return Success;
-}
-
-ErrorCodes_t deinit() {
-    if (buffer_l != nullptr) {
-        delete [] buffer_l;
-        buffer_l = nullptr;
-    }
-
-    return Success;
-}
 
 /************************\
  *  Connection methods  *
@@ -82,9 +56,8 @@ ErrorCodes_t connect(
 ErrorCodes_t disconnect() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->disconnect();
+        ret = messageDispatcher->disconnectDevice();
         if (ret == Success) {
-            messageDispatcher->deinit();
             delete messageDispatcher;
             messageDispatcher = nullptr;
         }
@@ -963,8 +936,7 @@ ErrorCodes_t readData(
         unsigned int &dataRead,
         uint16_t * &buffer) {
     if (messageDispatcher != nullptr) {
-        buffer = buffer_l;
-        return messageDispatcher->getDataPackets(buffer, dataToRead, &dataRead);
+        return messageDispatcher->getDataPackets(buffer, dataToRead, dataRead);
 
     } else {
         return ErrorDeviceNotConnected;

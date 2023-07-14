@@ -40,7 +40,7 @@ public:
     \************************/
 
     ErrorCodes_t connect(FtdiEeprom * ftdiEeprom) override;
-    ErrorCodes_t disconnect() override;
+    ErrorCodes_t disconnectDevice() override;
 //    void readDataFromGenerator();
     void sendCommandsToGenerator();
 

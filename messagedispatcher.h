@@ -98,7 +98,7 @@ using namespace er4CommLib;
  *                                                                                          *
 \********************************************************************************************/
 
-class MessageDispatcher {
+class ER4COMMLIBSHARED_EXPORT MessageDispatcher {
 public:
 
     /*****************\
@@ -114,10 +114,7 @@ public:
 
     static ErrorCodes_t detectDevices(std::vector <std::string> &deviceIds);
     static ErrorCodes_t connectDevice(std::string deviceId, MessageDispatcher * &messageDispatcher);
-    ErrorCodes_t init();
-    ErrorCodes_t deinit();
-    virtual ErrorCodes_t connect(FtdiEeprom * ftdiEeprom);
-    virtual ErrorCodes_t disconnect();
+    virtual ErrorCodes_t disconnectDevice();
     virtual ErrorCodes_t pauseConnection(bool pauseFlag);
     void readDataFromDevice();
     void sendCommandsToDevice();
@@ -212,7 +209,7 @@ public:
     ErrorCodes_t getDeviceInfo(uint8_t &deviceVersion, uint8_t &deviceSubversion, uint32_t &firmwareVersion);
 
     ErrorCodes_t getQueueStatus(QueueStatus_t &status);
-    ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int * packetsRead);
+    ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int &packetsRead);
     ErrorCodes_t purgeData();
 
     ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber);
@@ -316,6 +313,9 @@ protected:
 
     static ErrorCodes_t getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type);
 
+    virtual ErrorCodes_t connect(FtdiEeprom * ftdiEeprom);
+    ErrorCodes_t init();
+    ErrorCodes_t deinit();
     ErrorCodes_t initFtdiChannel(FT_HANDLE * handle, char channel);
     virtual void initializeDevice();
     virtual bool checkProtocolValidity(string &message) = 0;
@@ -626,6 +626,7 @@ protected:
     bool exitOnSyncWord = false; /*!< Tells if the last buffer analysis returned with a syncword found */
 
     /*! Output data buffer management */
+    uint16_t * outputDataArray = nullptr; /*! Array used to return data via getDataPackets method */
     uint16_t ** outputDataBuffer = nullptr; /*!< Buffer used to share received and converted data with the user */
     unsigned int outputBufferReadOffset = 0; /*!< outputDataBuffer offset position in which data are collected by the user */
     unsigned int outputBufferWriteOffset = 0; /*!< outputDataBuffer offset position in which data are converted from readDataBuffer */

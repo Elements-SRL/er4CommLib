@@ -53,22 +53,6 @@ typedef struct {
                                   *   This flag is reset if the communication restarts successfully. */
 } QueueStatus_t;
 
-/*******************\
- *  Init / Deinit  *
-\*******************/
-
-/*! \brief Initialize the communication library.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t init(
-        ER4CL_ARGVOID);
-
-/*! \brief Deinitialize the communication library.
- */
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t deinit(
-            ER4CL_ARGVOID);
-
 /************************\
  *  Connection methods  *
 \************************/

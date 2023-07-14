@@ -168,7 +168,7 @@ MessageDispatcher::MessageDispatcher(string deviceId) :
 }
 
 MessageDispatcher::~MessageDispatcher() {
-    this->deinit();
+    this->disconnectDevice();
 }
 
 /************************\
@@ -409,7 +409,7 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         ret = messageDispatcher->connect(ftdiEeprom);
 
         if (ret != Success) {
-            messageDispatcher->disconnect();
+            messageDispatcher->disconnectDevice();
             delete messageDispatcher;
             messageDispatcher = nullptr;
         }
@@ -418,191 +418,12 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::init() {
-    readDataBuffer = new (std::nothrow) unsigned char[FTD_RX_BUFFER_SIZE];
-    if (readDataBuffer == nullptr) {
-        return ErrorInitializationFailed;
-    }
-
-    outputDataBuffer = new (std::nothrow) uint16_t * [ER4CL_OUTPUT_BUFFER_SIZE];
-    if (outputDataBuffer == nullptr) {
-        return ErrorInitializationFailed;
-    }
-
-    outputDataBuffer[0] = new (std::nothrow) uint16_t[ER4CL_OUTPUT_BUFFER_SIZE*totalChannelsNum];
-    if (outputDataBuffer == nullptr) {
-        return ErrorInitializationFailed;
-    }
-    for (int packetIdx = 1; packetIdx < ER4CL_OUTPUT_BUFFER_SIZE; packetIdx++) {
-        outputDataBuffer[packetIdx] = outputDataBuffer[0]+((int)totalChannelsNum)*packetIdx;
-    }
-
-    lsbNoiseArray = new (std::nothrow) double[LSB_NOISE_ARRAY_SIZE];
-    if (lsbNoiseArray == nullptr) {
-        return ErrorInitializationFailed;
-    }
-
-    txMsgBuffer = new (std::nothrow) vector <uint8_t>[FTD_TX_MSG_BUFFER_SIZE];
-    if (txMsgBuffer == nullptr) {
-        return ErrorInitializationFailed;
-    }
-
-    txRawBuffer = new (std::nothrow) uint8_t[txDataBytes];
-    if (txRawBuffer == nullptr) {
-        return ErrorInitializationFailed;
-    }
-
-#ifdef DEBUG_PRINT
-#ifdef _WIN32
-    string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
-#else
-    string path = string(getenv("HOME"));
-#endif
-    stringstream ss;
-
-    for (size_t i = 0; i < path.length(); ++i) {
-        if (path[i] == '\\') {
-            ss << "\\\\";
-
-        } else {
-            ss << path[i];
-        }
-    }
-#ifdef _WIN32
-    ss << "\\\\temp.txt";
-#else
-    ss << "/temp.txt";
-#endif
-
-    fid = fopen(ss.str().c_str(), "wb");
-#endif
-
-    this->computeMinimumPacketNumber();
-
-    this->initializeRawDataFilterVariables();
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::deinit() {
-    if (readDataBuffer != nullptr) {
-        delete [] readDataBuffer;
-        readDataBuffer = nullptr;
-    }
-
-    if (outputDataBuffer != nullptr) {
-        if (outputDataBuffer[0] != nullptr) {
-            delete [] outputDataBuffer[0];
-            outputDataBuffer[0] = nullptr;
-        }
-        delete [] outputDataBuffer;
-        outputDataBuffer = nullptr;
-    }
-
-    if (lsbNoiseArray != nullptr) {
-        delete [] lsbNoiseArray;
-        lsbNoiseArray = nullptr;
-    }
-
-    if (txMsgBuffer != nullptr) {
-        delete [] txMsgBuffer;
-        txMsgBuffer = nullptr;
-    }
-
-    if (txRawBuffer != nullptr) {
-        delete [] txRawBuffer;
-        txRawBuffer = nullptr;
-    }
-
-    if (iirX != nullptr) {
-        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
-            delete [] iirX[channelIdx];
-        }
-        delete [] iirX;
-        iirX = nullptr;
-    }
-
-    if (iirY != nullptr) {
-        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
-            delete [] iirY[channelIdx];
-        }
-        delete [] iirY;
-        iirY = nullptr;
-    }
-
-#ifdef DEBUG_PRINT
-    fclose(fid);
-#endif
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
-    if (connected) {
-        return ErrorDeviceAlreadyConnected;
-    }
-
-    connected = true;
-    connectionPaused = false;
-    ErrorCodes_t ret;
-
-    this->ftdiEeprom = ftdiEeprom;
-
-    /*! Initialize the ftdi Rx handle */
-    ftdiRxHandle = new FT_HANDLE;
-
-    ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
-    if (ret != Success) {
-        return ret;
-    }
-
-    if (rxChannel == txChannel) {
-        ftdiTxHandle = ftdiRxHandle;
-
-    } else {
-        /*! Initialize the ftdi Tx handle */
-        ftdiTxHandle = new FT_HANDLE;
-
-        ret = this->initFtdiChannel(ftdiTxHandle, txChannel);
-        if (ret != Success) {
-            return ret;
-        }
-    }
-    deviceCommunicationErrorFlag = false;
-
-    /*! Calculate the LSB noise vector */
-    this->initializeLsbNoise();
-
-    this->initializeCompensations();
-
-    this->initializeFerdMemory();
-
-    stopConnectionFlag = false;
-
-    this->setRawDataFilter({30.0, UnitPfxKilo, "Hz"}, true, false);
-
-    rxThread = thread(&MessageDispatcher::readDataFromDevice, this);
-
-    txThread = thread(&MessageDispatcher::sendCommandsToDevice, this);
-
-    threadsStarted = true;
-
-    this->resetDevice();
-    this_thread::sleep_for(chrono::milliseconds(10));
-
-    /*! Initialize device */
-    this->initializeDevice();
-    this->stackOutgoingMessage(txStatus);
-
-    this_thread::sleep_for(chrono::milliseconds(10));
-
-    return ret;
-}
-
-ErrorCodes_t MessageDispatcher::disconnect() {
+ErrorCodes_t MessageDispatcher::disconnectDevice() {
     if (!connected) {
         return ErrorDeviceNotConnected;
     }
+
+    this->deinit();
 
     if (!stopConnectionFlag) {
         stopConnectionFlag = true;
@@ -1865,8 +1686,8 @@ ErrorCodes_t MessageDispatcher::getQueueStatus(QueueStatus_t &status) {
     }
 }
 
-ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int * packetsRead) {
-    unique_lock <mutex> readDataMtxLock (readDataMtx);
+ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int &packetsRead) {
+    unique_lock <mutex> readDataMtxLock(readDataMtx);
     ErrorCodes_t ret = Success;
 
     if (packetsNumber > outputBufferAvailablePackets) {
@@ -1878,6 +1699,8 @@ ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int pa
         ret = WarningNotEnoughDataAvailable;
         packetsNumber = maxOutputPacketsNum;
     }
+
+    data = outputDataArray;
 
     unsigned int channelIdx;
     unsigned int dataIdx = 0;
@@ -1899,7 +1722,7 @@ ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int pa
     }
     outputBufferReadOffset = (outputBufferReadOffset+packetsNumber)&ER4CL_OUTPUT_BUFFER_MASK;
     outputBufferAvailablePackets -= packetsNumber;
-    * packetsRead = packetsNumber;
+    packetsRead = packetsNumber;
 
     return ret;
 }
@@ -2397,6 +2220,197 @@ ErrorCodes_t MessageDispatcher::getDeviceType(DeviceTuple_t tuple, DeviceTypes_t
     } else {
         return ErrorDeviceTypeNotRecognized;
     }
+}
+
+ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
+    if (connected) {
+        return ErrorDeviceAlreadyConnected;
+    }
+
+    connected = true;
+    connectionPaused = false;
+    ErrorCodes_t ret;
+
+    this->ftdiEeprom = ftdiEeprom;
+
+    /*! Initialize the ftdi Rx handle */
+    ftdiRxHandle = new FT_HANDLE;
+
+    ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
+    if (ret != Success) {
+        return ret;
+    }
+
+    if (rxChannel == txChannel) {
+        ftdiTxHandle = ftdiRxHandle;
+
+    } else {
+        /*! Initialize the ftdi Tx handle */
+        ftdiTxHandle = new FT_HANDLE;
+
+        ret = this->initFtdiChannel(ftdiTxHandle, txChannel);
+        if (ret != Success) {
+            return ret;
+        }
+    }
+    deviceCommunicationErrorFlag = false;
+
+    /*! Calculate the LSB noise vector */
+    this->initializeLsbNoise();
+
+    this->initializeCompensations();
+
+    this->initializeFerdMemory();
+
+    stopConnectionFlag = false;
+
+    this->setRawDataFilter({30.0, UnitPfxKilo, "Hz"}, true, false);
+
+    rxThread = thread(&MessageDispatcher::readDataFromDevice, this);
+
+    txThread = thread(&MessageDispatcher::sendCommandsToDevice, this);
+
+    threadsStarted = true;
+
+    this->resetDevice();
+    this_thread::sleep_for(chrono::milliseconds(10));
+
+    /*! Initialize device */
+    this->initializeDevice();
+    this->stackOutgoingMessage(txStatus);
+
+    this_thread::sleep_for(chrono::milliseconds(10));
+
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::init() {
+    outputDataArray = new (nothrow) uint16_t [ER4CL_DATA_ARRAY_SIZE];
+    if (outputDataArray == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    readDataBuffer = new (std::nothrow) unsigned char[FTD_RX_BUFFER_SIZE];
+    if (readDataBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    outputDataBuffer = new (std::nothrow) uint16_t * [ER4CL_OUTPUT_BUFFER_SIZE];
+    if (outputDataBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    outputDataBuffer[0] = new (std::nothrow) uint16_t[ER4CL_OUTPUT_BUFFER_SIZE*totalChannelsNum];
+    if (outputDataBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+    for (int packetIdx = 1; packetIdx < ER4CL_OUTPUT_BUFFER_SIZE; packetIdx++) {
+        outputDataBuffer[packetIdx] = outputDataBuffer[0]+((int)totalChannelsNum)*packetIdx;
+    }
+
+    lsbNoiseArray = new (std::nothrow) double[LSB_NOISE_ARRAY_SIZE];
+    if (lsbNoiseArray == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    txMsgBuffer = new (std::nothrow) vector <uint8_t>[FTD_TX_MSG_BUFFER_SIZE];
+    if (txMsgBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    txRawBuffer = new (std::nothrow) uint8_t[txDataBytes];
+    if (txRawBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+#ifdef DEBUG_PRINT
+#ifdef _WIN32
+    string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
+#else
+    string path = string(getenv("HOME"));
+#endif
+    stringstream ss;
+
+    for (size_t i = 0; i < path.length(); ++i) {
+        if (path[i] == '\\') {
+            ss << "\\\\";
+
+        } else {
+            ss << path[i];
+        }
+    }
+#ifdef _WIN32
+    ss << "\\\\temp.txt";
+#else
+    ss << "/temp.txt";
+#endif
+
+    fid = fopen(ss.str().c_str(), "wb");
+#endif
+
+    this->computeMinimumPacketNumber();
+
+    this->initializeRawDataFilterVariables();
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::deinit() {
+    if (outputDataArray != nullptr) {
+        delete [] outputDataArray;
+        outputDataArray = nullptr;
+    }
+
+    if (readDataBuffer != nullptr) {
+        delete [] readDataBuffer;
+        readDataBuffer = nullptr;
+    }
+
+    if (outputDataBuffer != nullptr) {
+        if (outputDataBuffer[0] != nullptr) {
+            delete [] outputDataBuffer[0];
+            outputDataBuffer[0] = nullptr;
+        }
+        delete [] outputDataBuffer;
+        outputDataBuffer = nullptr;
+    }
+
+    if (lsbNoiseArray != nullptr) {
+        delete [] lsbNoiseArray;
+        lsbNoiseArray = nullptr;
+    }
+
+    if (txMsgBuffer != nullptr) {
+        delete [] txMsgBuffer;
+        txMsgBuffer = nullptr;
+    }
+
+    if (txRawBuffer != nullptr) {
+        delete [] txRawBuffer;
+        txRawBuffer = nullptr;
+    }
+
+    if (iirX != nullptr) {
+        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            delete [] iirX[channelIdx];
+        }
+        delete [] iirX;
+        iirX = nullptr;
+    }
+
+    if (iirY != nullptr) {
+        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            delete [] iirY[channelIdx];
+        }
+        delete [] iirY;
+        iirY = nullptr;
+    }
+
+#ifdef DEBUG_PRINT
+    fclose(fid);
+#endif
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel) {

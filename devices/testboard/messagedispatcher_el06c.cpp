@@ -545,7 +545,7 @@ MessageDispatcher_EL06c::MessageDispatcher_EL06c(string id) :
     boolConfig.initialByte = 8;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 16;
-    channelOnCoder = new BoolNegatedArrayCoder(boolConfig);
+    channelOnCoder = new BoolArrayCoder(boolConfig);
 
     channelOnStates.resize(currentChannelsNum);
     for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {

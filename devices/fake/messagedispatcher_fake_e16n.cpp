@@ -85,10 +85,12 @@ ErrorCodes_t MessageDispatcher_fake_e16n::connect(FtdiEeprom * ftdiEeprom) {
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher_fake_e16n::disconnect() {
+ErrorCodes_t MessageDispatcher_fake_e16n::disconnectDevice() {
     if (!connected) {
         return ErrorDeviceNotConnected;
     }
+
+    this->deinit();
 
     if (!stopConnectionFlag) {
         stopConnectionFlag = true;

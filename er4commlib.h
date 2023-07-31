@@ -49,24 +49,6 @@ typedef struct QueueStatus{
                                   *   This flag is reset if the communication restarts successfully. */
 } QueueStatus_t;
 
-/*******************\
- *  Init / Deinit  *
-\*******************/
-
-/*! \brief Initialize the communication library.
- */
-ER4COMMLIB_NAME_MANGLING
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t init(
-        ER4CL_ARGVOID);
-
-/*! \brief Deinitialize the communication library.
- */
-ER4COMMLIB_NAME_MANGLING
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t deinit(
-            ER4CL_ARGVOID);
-
 /************************\
  *  Connection methods  *
 \************************/
@@ -717,6 +699,7 @@ ErrorCodes_t resetDigitalOffsetCompensation(
  * \param channelIdx [in] Channel index that compensations methods will be applied to.
  * \return Error code.
  */
+ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCompensationsChannel(
         ER4CL_ARGIN uint16_t channelIdx);
 
@@ -725,6 +708,7 @@ ErrorCodes_t setCompensationsChannel(
  * \param on [in] True to turn the cFast compensation on, false to turn it off.
  * \return Error code.
  */
+ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t turnCFastCompensationOn(
         ER4CL_ARGIN bool on);
 
@@ -733,6 +717,7 @@ ErrorCodes_t turnCFastCompensationOn(
  * \param optionIdx [in] Option index.
  * \return Error code.
  */
+ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCFastCompensationOptions(
         ER4CL_ARGIN uint16_t optionIdx);
 
@@ -741,6 +726,7 @@ ErrorCodes_t setCFastCompensationOptions(
  * \param value [in] Value of the cFast capacitance.
  * \return Error code.
  */
+ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCFastCapacitance(
         ER4CL_ARGIN MeasurementReduced_t value);
 
@@ -749,6 +735,7 @@ ErrorCodes_t setCFastCapacitance(
 // * \param reset [in] False sets the digital offset compensation in normal operation state, true sets in reset state.
 // * \return Error code.
 // */
+//ER4COMMLIBSHARED_EXPORT
 //ErrorCodes_t resetDigitalOffsetCompensation(
 //        ER4CL_ARGIN bool reset);
 
@@ -1506,6 +1493,7 @@ ErrorCodes_t getWasherPresetSpeeds(
  *
  * \return Success if the device implements CFast compensation.
  */
+ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasCFastCompensation(
         ER4CL_ARGVOID);
 
@@ -1514,6 +1502,7 @@ ErrorCodes_t hasCFastCompensation(
  * \param option [out]: vector of strings of the available options.
  * \return Success if the device has options for CFast compensation.
  */
+ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCFastCompensationOptions(
         ER4CL_ARGOUT char* &options);
 
@@ -1522,6 +1511,7 @@ ErrorCodes_t getCFastCompensationOptions(
  * \param control [in] Specifications of the control for the CFast capacitance.
  * \return Success if the device implements CFast capacitance control.
  */
+ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCFastCapacitanceControl(
         ER4CL_ARGOUT CompensationControl_t &control);
 

@@ -61,7 +61,7 @@ protected:
     };
 
     enum VoltageStimulusLpfs {
-        VoltageStimulusLpf100Hz,
+        VoltageStimulusLpf1kHz,
         VoltageStimulusLpf10kHz,
         VoltageStimulusLpfsNum
     };

@@ -176,9 +176,9 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].value = 100.0;
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].prefix = UnitPfxNone;
-    //voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].unit = "Hz";
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].value = 1.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].prefix = UnitPfxKilo;
+    //voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].unit = "Hz";
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     //voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
@@ -556,7 +556,7 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     selectStimulusChannelFlag = true;
     singleChannelSSCFlag = true;
 
-    boolConfig.initialByte = 6;
+    boolConfig.initialByte = 13;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 16;
     selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
@@ -820,8 +820,8 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     txStatus[txStatusIdx++] = 0x00; // CFG9
     txStatus[txStatusIdx++] = 0x00; // CFG10
     txStatus[txStatusIdx++] = 0x00; // CFG11
-    txStatus[txStatusIdx++] = 0x3F; // CFG12
-    txStatus[txStatusIdx++] = 0x3F; // CFG13
+    txStatus[txStatusIdx++] = 0x7F; // CFG12
+    txStatus[txStatusIdx++] = 0x7F; // CFG13
     txStatus[txStatusIdx++] = 0x03; // CFG14
     txStatus[txStatusIdx++] = 0x00; // Vhold
     txStatus[txStatusIdx++] = 0x00;

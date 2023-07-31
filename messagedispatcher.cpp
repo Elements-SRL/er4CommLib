@@ -17,6 +17,25 @@
 #define _USE_MATH_DEFINES
 #include "messagedispatcher.h"
 
+#include "messagedispatcher_e1plus.h"
+#include "messagedispatcher_e1light.h"
+#include "messagedispatcher_e1hc.h"
+#include "messagedispatcher_enpr.h"
+#include "messagedispatcher_enpr_hc.h"
+#include "messagedispatcher_e2hc.h"
+#include "messagedispatcher_e4n.h"
+#include "messagedispatcher_e4e.h"
+#include "messagedispatcher_e16fastpulses.h"
+#include "messagedispatcher_e16n.h"
+#include "messagedispatcher_e16e.h"
+#include "messagedispatcher_e16eth.h"
+#include "messagedispatcher_el06b.h"
+#include "messagedispatcher_el06c.h"
+#include "messagedispatcher_el06d_el06e.h"
+#include "messagedispatcher_fake_e16n.h"
+#include "messagedispatcher_fake_e16fastpulses.h"
+#include "messagedispatcher_e16hc.h"
+
 #include <iostream>
 #include <sstream>
 #include <ctime>
@@ -77,6 +96,13 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
  *                                 MessageDispatcher                                        *
  *                                                                                          *
 \********************************************************************************************/
+
+/*! Private functions prototypes */
+string getDeviceSerial(
+        uint32_t index);
+
+bool getDeviceCount(
+        DWORD &numDevs);
 
 MeasurementReduced_t toReduceMeasurement(Measurement_t meas) {
     MeasurementReduced_t measRed;
@@ -179,198 +205,262 @@ MessageDispatcher::MessageDispatcher(string deviceId) :
 }
 
 MessageDispatcher::~MessageDispatcher() {
-    this->deinit();
+    this->disconnectDevice();
 }
 
 /************************\
  *  Connection methods  *
 \************************/
 
-ErrorCodes_t MessageDispatcher::init() {
-    readDataBuffer = new (std::nothrow) unsigned char[FTD_RX_BUFFER_SIZE];
-    if (readDataBuffer == nullptr) {
-        return ErrorInitializationFailed;
+ErrorCodes_t MessageDispatcher::detectDevices(
+        vector <string> &deviceIds) {
+    /*! Gets number of devices */
+    DWORD numDevs;
+    bool devCountOk = getDeviceCount(numDevs);
+    if (!devCountOk) {
+        return ErrorListDeviceFailed;
+
+    } else if (numDevs < 2) {
+        /*! Each device has 2 channels */
+        deviceIds.clear();
+        return ErrorNoDeviceFound;
     }
 
-    outputDataBuffer = new (std::nothrow) uint16_t * [ER4CL_OUTPUT_BUFFER_SIZE];
-    if (outputDataBuffer == nullptr) {
-        return ErrorInitializationFailed;
-    }
+    vector <string> deviceIdsTemp;
+    deviceIds.clear();
+    deviceIdsTemp.clear();
+    string deviceName;
 
-    outputDataBuffer[0] = new (std::nothrow) uint16_t[ER4CL_OUTPUT_BUFFER_SIZE*totalChannelsNum];
-    if (outputDataBuffer == nullptr) {
-        return ErrorInitializationFailed;
-    }
-    for (int packetIdx = 1; packetIdx < ER4CL_OUTPUT_BUFFER_SIZE; packetIdx++) {
-        outputDataBuffer[packetIdx] = outputDataBuffer[0]+((int)totalChannelsNum)*packetIdx;
-    }
-
-    lsbNoiseArray = new (std::nothrow) double[LSB_NOISE_ARRAY_SIZE];
-    if (lsbNoiseArray == nullptr) {
-        return ErrorInitializationFailed;
-    }
-
-    txMsgBuffer = new (std::nothrow) vector <uint8_t>[FTD_TX_MSG_BUFFER_SIZE];
-    if (txMsgBuffer == nullptr) {
-        return ErrorInitializationFailed;
-    }
-
-    txRawBuffer = new (std::nothrow) uint8_t[txDataBytes];
-    if (txRawBuffer == nullptr) {
-        return ErrorInitializationFailed;
-    }
-
-#ifdef DEBUG_PRINT
-#ifdef _WIN32
-    string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
-#else
-    string path = string(getenv("HOME"));
-#endif
-    stringstream ss;
-
-    for (size_t i = 0; i < path.length(); ++i) {
-        if (path[i] == '\\') {
-            ss << "\\\\";
+    /*! Lists all serial numbers */
+    for (uint32_t i = 0; i < numDevs; i++) {
+        deviceName = getDeviceSerial(i);
+        if (find(deviceIdsTemp.begin(), deviceIdsTemp.end(), deviceName) == deviceIdsTemp.end()) {
+            /*! Devices with an open channel are detected wrongly and their name is an empty string */
+            if (deviceName.size() > 0) {
+                /*! If this device has been found for the first time put it in the temporary list */
+                deviceIdsTemp.push_back(getDeviceSerial(i));
+            }
 
         } else {
-            ss << path[i];
+            /*! Devices with an open channel are detected wrongly and their name is an empty string */
+            if (deviceName.size() > 0) {
+                /*! If this device has been already been found both channels A and B are detected, so add it in the output list */
+                deviceIds.push_back(getDeviceSerial(i));
+            }
         }
     }
-#ifdef _WIN32
-    ss << "\\\\temp.txt";
-#else
-    ss << "/temp.txt";
-#endif
-
-    fid = fopen(ss.str().c_str(), "wb");
-#endif
-
-    this->computeMinimumPacketNumber();
-
-    this->initializeRawDataFilterVariables();
 
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::deinit() {
-    if (readDataBuffer != nullptr) {
-        delete [] readDataBuffer;
-        readDataBuffer = nullptr;
+ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispatcher *&messageDispatcher) {
+    ErrorCodes_t ret = Success;
+    /*! Initializes eeprom */
+    /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
+    FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
+    if (deviceId == "e16 Demo") {
+        ftdiEepromId = FtdiEepromIdDemo;
     }
 
-    if (outputDataBuffer != nullptr) {
-        if (outputDataBuffer[0] != nullptr) {
-            delete [] outputDataBuffer[0];
-            outputDataBuffer[0] = nullptr;
-        }
-        delete [] outputDataBuffer;
-        outputDataBuffer = nullptr;
+    /*! ftdiEeprom is deleted by the messageDispatcher if one is created successfully */
+    FtdiEeprom * ftdiEeprom = nullptr;
+    switch (ftdiEepromId) {
+    case FtdiEepromId56:
+        ftdiEeprom = new FtdiEeprom56(deviceId);
+        break;
+
+    case FtdiEepromIdDemo:
+        ftdiEeprom = new FtdiEepromDemo(deviceId);
+        break;
     }
 
-    if (lsbNoiseArray != nullptr) {
-        delete [] lsbNoiseArray;
-        lsbNoiseArray = nullptr;
-    }
+    DeviceTuple_t deviceTuple = ftdiEeprom->getDeviceTuple();
+    DeviceTypes_t deviceType;
 
-    if (txMsgBuffer != nullptr) {
-        delete [] txMsgBuffer;
-        txMsgBuffer = nullptr;
-    }
-
-    if (txRawBuffer != nullptr) {
-        delete [] txRawBuffer;
-        txRawBuffer = nullptr;
-    }
-
-    if (iirX != nullptr) {
-        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
-            delete [] iirX[channelIdx];
-        }
-        delete [] iirX;
-        iirX = nullptr;
-    }
-
-    if (iirY != nullptr) {
-        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
-            delete [] iirY[channelIdx];
-        }
-        delete [] iirY;
-        iirY = nullptr;
-    }
-
-#ifdef DEBUG_PRINT
-    fclose(fid);
-#endif
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
-    if (connected) {
-        return ErrorDeviceAlreadyConnected;
-    }
-
-    connected = true;
-    connectionPaused = false;
-    ErrorCodes_t ret;
-
-    this->ftdiEeprom = ftdiEeprom;
-
-    /*! Initialize the ftdi Rx handle */
-    ftdiRxHandle = new FT_HANDLE;
-
-    ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
+    ret = MessageDispatcher::getDeviceType(deviceTuple, deviceType);
     if (ret != Success) {
-        return ret;
+        if (ftdiEeprom != nullptr) {
+            delete ftdiEeprom;
+        }
+        return ErrorDeviceTypeNotRecognized;
     }
 
-    if (rxChannel == txChannel) {
-        ftdiTxHandle = ftdiRxHandle;
+    switch (deviceType) {
+    case DeviceE1bEL03cEDR3:
+        messageDispatcher = new MessageDispatcher_e1b_El03c_LegacyEdr3_V00(deviceId);
+        break;
 
-    } else {
-        /*! Initialize the ftdi Tx handle */
-        ftdiTxHandle = new FT_HANDLE;
+    case DeviceE1LightEL03cEDR3:
+        messageDispatcher = new MessageDispatcher_e1Light_El03c_LegacyEdr3_V01(deviceId);
+        break;
 
-        ret = this->initFtdiChannel(ftdiTxHandle, txChannel);
+    case DeviceE1PlusEL03cEDR3:
+        messageDispatcher = new MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00(deviceId);
+        break;
+
+    case DeviceE1HcEL03cEDR3:
+        messageDispatcher = new MessageDispatcher_e1Hc_El03c_LegacyEdr3_V00(deviceId);
+        break;
+
+    case DeviceE1LightEL03fEDR3:
+        messageDispatcher = new MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(deviceId);
+        break;
+
+    case DeviceE1PlusEL03fEDR3:
+        messageDispatcher = new MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(deviceId);
+        break;
+
+    case DeviceE1HcEL03fEDR3:
+        messageDispatcher = new MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(deviceId);
+        break;
+
+    case DeviceENPREDR3_V03:
+        messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V03(deviceId);
+        break;
+
+    case DeviceENPREDR3_V04:
+        messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V04(deviceId);
+        break;
+
+    case DeviceENPR:
+        messageDispatcher = new MessageDispatcher_eNPR(deviceId);
+        break;
+
+    case DeviceENPRHC:
+        messageDispatcher = new MessageDispatcher_eNPR_HC_V00(deviceId);
+        break;
+
+    case DeviceE4nEDR3_V04:
+        messageDispatcher = new MessageDispatcher_e4n_El03c_LegacyEdr3_V04(deviceId);
+        break;
+
+    case DeviceE4eEDR3:
+        messageDispatcher = new MessageDispatcher_e4e_El03c_LegacyEdr3_V00(deviceId);
+        break;
+
+    case DeviceE4n_V01:
+        messageDispatcher = new MessageDispatcher_e4n_V01(deviceId);
+        break;
+
+    case DeviceE4e_V01:
+        messageDispatcher = new MessageDispatcher_e4e_V01(deviceId);
+        break;
+
+    case DeviceE16eEDR3:
+        messageDispatcher = new MessageDispatcher_e16e_LegacyEdr3_V00(deviceId);
+        break;
+
+    case DeviceE16FastPulses_V01:
+        messageDispatcher = new MessageDispatcher_e16FastPulses_V01(deviceId);
+        break;
+
+    case DeviceE16FastPulses_V02:
+        messageDispatcher = new MessageDispatcher_e16FastPulses_V02(deviceId);
+        break;
+
+    case DeviceE16FastPulsesEDR3:
+        messageDispatcher = new MessageDispatcher_e16FastPulses_LegacyEdr3_V03(deviceId);
+        break;
+
+    case DeviceE16n:
+        messageDispatcher = new MessageDispatcher_e16n(deviceId);
+        break;
+
+    case DeviceE16ETHEDR3:
+        messageDispatcher = new MessageDispatcher_e16ETH_LegacyEdr3_V01(deviceId);
+        break;
+
+    case DeviceE16HC_V01:
+        messageDispatcher = new MessageDispatcher_e16HC_V01(deviceId);
+        break;
+
+    case DeviceE16HC_V02:
+        messageDispatcher = new MessageDispatcher_e16HC_V02(deviceId);
+        break;
+
+    case DeviceE2HC_V01:
+        messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
+        break;
+
+    case DeviceDlp:
+        messageDispatcher = new MessageDispatcher_dlp(deviceId);
+        break;
+
+    case TestboardEL06b:
+        messageDispatcher = new MessageDispatcher_EL06b(deviceId);
+        break;
+
+    case TestboardEL06c:
+        messageDispatcher = new MessageDispatcher_EL06c(deviceId);
+        break;
+
+    case TestboardEL06dEL06e:
+        messageDispatcher = new MessageDispatcher_EL06d_EL06e(deviceId);
+        break;
+
+    case DeviceE2HCExtAdc:
+        messageDispatcher = new MessageDispatcher_e2HC_V00(deviceId);
+        break;
+
+    case DeviceE2HCIntAdc:
+        messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
+        break;
+
+    case DeviceENPRFairyLight_V01:
+        messageDispatcher = new MessageDispatcher_eNPR_FL_V01(deviceId);
+        break;
+
+    case DeviceENPRFairyLight_V02:
+        messageDispatcher = new MessageDispatcher_eNPR_FL_V02(deviceId);
+        break;
+
+    case DeviceENPR2Channels_V01:
+        messageDispatcher = new MessageDispatcher_eNPR_2Channels_V01(deviceId);
+        break;
+
+    case DeviceOrbitMiniSine_V01:
+        messageDispatcher = new MessageDispatcher_e4n_sine_V01(deviceId);
+        break;
+
+    case DeviceFakeE16n:
+        messageDispatcher = new MessageDispatcher_fake_e16n(deviceId);
+        break;
+
+    case DeviceFakeE16FastPulses:
+        messageDispatcher = new MessageDispatcher_fake_e16FastPulses(deviceId);
+        break;
+
+    default:
+        if (ftdiEeprom != nullptr) {
+            delete ftdiEeprom;
+        }
+        return ErrorDeviceTypeNotRecognized;
+    }
+
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->init();
         if (ret != Success) {
             return ret;
         }
+
+        ret = messageDispatcher->connect(ftdiEeprom);
+
+        if (ret != Success) {
+            messageDispatcher->disconnectDevice();
+            delete messageDispatcher;
+            messageDispatcher = nullptr;
+        }
     }
-    deviceCommunicationErrorFlag = false;
-
-    /*! Calculate the LSB noise vector */
-    this->initializeLsbNoise();
-
-    this->initializeCompensations();
-
-    this->initializeFerdMemory();
-
-    stopConnectionFlag = false;
-
-    this->setRawDataFilter({30.0, UnitPfxKilo}, true, false);
-
-    rxThread = thread(&MessageDispatcher::readDataFromDevice, this);
-
-    txThread = thread(&MessageDispatcher::sendCommandsToDevice, this);
-
-    threadsStarted = true;
-
-    this->resetDevice();
-    this_thread::sleep_for(chrono::milliseconds(10));
-
-    /*! Initialize device */
-    this->initializeDevice();
-    this->stackOutgoingMessage(txStatus);
-
-    this_thread::sleep_for(chrono::milliseconds(10));
 
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::disconnect() {
+ErrorCodes_t MessageDispatcher::disconnectDevice() {
     if (!connected) {
         return ErrorDeviceNotConnected;
     }
+
+    this->deinit();
 
     if (!stopConnectionFlag) {
         stopConnectionFlag = true;
@@ -467,26 +557,6 @@ ErrorCodes_t MessageDispatcher::pauseConnection(bool pauseFlag) {
         connectionPaused = false;
     }
     return ret;
-}
-
-ErrorCodes_t MessageDispatcher::getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type) {
-    bool deviceFound = false;
-    for (unsigned int mappingIdx = 0; mappingIdx < deviceTupleMapping.size(); mappingIdx++) {
-        if (tuple.version == deviceTupleMapping[mappingIdx][0] &&
-                tuple.subversion == deviceTupleMapping[mappingIdx][1] &&
-                tuple.fwVersion == deviceTupleMapping[mappingIdx][2]) {
-            type = (DeviceTypes_t)deviceTupleMapping[mappingIdx][3];
-            deviceFound = true;
-            break;
-        }
-    }
-
-    if (deviceFound) {
-        return Success;
-
-    } else {
-        return ErrorDeviceTypeNotRecognized;
-    }
 }
 
 /****************\
@@ -1652,8 +1722,8 @@ ErrorCodes_t MessageDispatcher::getQueueStatus(QueueStatus_t &status) {
     }
 }
 
-ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int * packetsRead) {
-    unique_lock <mutex> readDataMtxLock (readDataMtx);
+ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int &packetsRead) {
+    unique_lock <mutex> readDataMtxLock(readDataMtx);
     ErrorCodes_t ret = Success;
 
     if (packetsNumber > outputBufferAvailablePackets) {
@@ -1686,7 +1756,7 @@ ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int pa
     }
     outputBufferReadOffset = (outputBufferReadOffset+packetsNumber)&ER4CL_OUTPUT_BUFFER_MASK;
     outputBufferAvailablePackets -= packetsNumber;
-    * packetsRead = packetsNumber;
+    packetsRead = packetsNumber;
 
     return ret;
 }
@@ -2165,6 +2235,217 @@ ErrorCodes_t MessageDispatcher::updateVoltageOffsetCompensations(vector <Measure
 /*********************\
  *  Private methods  *
 \*********************/
+
+ErrorCodes_t MessageDispatcher::getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type) {
+    bool deviceFound = false;
+    for (unsigned int mappingIdx = 0; mappingIdx < deviceTupleMapping.size(); mappingIdx++) {
+        if (tuple.version == deviceTupleMapping[mappingIdx][0] &&
+                tuple.subversion == deviceTupleMapping[mappingIdx][1] &&
+                tuple.fwVersion == deviceTupleMapping[mappingIdx][2]) {
+            type = (DeviceTypes_t)deviceTupleMapping[mappingIdx][3];
+            deviceFound = true;
+            break;
+        }
+    }
+
+    if (deviceFound) {
+        return Success;
+
+    } else {
+        return ErrorDeviceTypeNotRecognized;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
+    if (connected) {
+        return ErrorDeviceAlreadyConnected;
+    }
+
+    connected = true;
+    connectionPaused = false;
+    ErrorCodes_t ret;
+
+    this->ftdiEeprom = ftdiEeprom;
+
+    /*! Initialize the ftdi Rx handle */
+    ftdiRxHandle = new FT_HANDLE;
+
+    ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
+    if (ret != Success) {
+        return ret;
+    }
+
+    if (rxChannel == txChannel) {
+        ftdiTxHandle = ftdiRxHandle;
+
+    } else {
+        /*! Initialize the ftdi Tx handle */
+        ftdiTxHandle = new FT_HANDLE;
+
+        ret = this->initFtdiChannel(ftdiTxHandle, txChannel);
+        if (ret != Success) {
+            return ret;
+        }
+    }
+    deviceCommunicationErrorFlag = false;
+
+    /*! Calculate the LSB noise vector */
+    this->initializeLsbNoise();
+
+    this->initializeCompensations();
+
+    this->initializeFerdMemory();
+
+    stopConnectionFlag = false;
+
+    this->setRawDataFilter({30.0, UnitPfxKilo, "Hz"}, true, false);
+
+    rxThread = thread(&MessageDispatcher::readDataFromDevice, this);
+
+    txThread = thread(&MessageDispatcher::sendCommandsToDevice, this);
+
+    threadsStarted = true;
+
+    this->resetDevice();
+    this_thread::sleep_for(chrono::milliseconds(10));
+
+    /*! Initialize device */
+    this->initializeDevice();
+    this->stackOutgoingMessage(txStatus);
+
+    this_thread::sleep_for(chrono::milliseconds(10));
+
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::init() {
+    outputDataArray = new (nothrow) uint16_t [ER4CL_DATA_ARRAY_SIZE];
+    if (outputDataArray == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    readDataBuffer = new (std::nothrow) unsigned char[FTD_RX_BUFFER_SIZE];
+    if (readDataBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    outputDataBuffer = new (std::nothrow) uint16_t * [ER4CL_OUTPUT_BUFFER_SIZE];
+    if (outputDataBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    outputDataBuffer[0] = new (std::nothrow) uint16_t[ER4CL_OUTPUT_BUFFER_SIZE*totalChannelsNum];
+    if (outputDataBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+    for (int packetIdx = 1; packetIdx < ER4CL_OUTPUT_BUFFER_SIZE; packetIdx++) {
+        outputDataBuffer[packetIdx] = outputDataBuffer[0]+((int)totalChannelsNum)*packetIdx;
+    }
+
+    lsbNoiseArray = new (std::nothrow) double[LSB_NOISE_ARRAY_SIZE];
+    if (lsbNoiseArray == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    txMsgBuffer = new (std::nothrow) vector <uint8_t>[FTD_TX_MSG_BUFFER_SIZE];
+    if (txMsgBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    txRawBuffer = new (std::nothrow) uint8_t[txDataBytes];
+    if (txRawBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+#ifdef DEBUG_PRINT
+#ifdef _WIN32
+    string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
+#else
+    string path = string(getenv("HOME"));
+#endif
+    stringstream ss;
+
+    for (size_t i = 0; i < path.length(); ++i) {
+        if (path[i] == '\\') {
+            ss << "\\\\";
+
+        } else {
+            ss << path[i];
+        }
+    }
+#ifdef _WIN32
+    ss << "\\\\temp.txt";
+#else
+    ss << "/temp.txt";
+#endif
+
+    fid = fopen(ss.str().c_str(), "wb");
+#endif
+
+    this->computeMinimumPacketNumber();
+
+    this->initializeRawDataFilterVariables();
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::deinit() {
+    if (outputDataArray != nullptr) {
+        delete [] outputDataArray;
+        outputDataArray = nullptr;
+    }
+
+    if (readDataBuffer != nullptr) {
+        delete [] readDataBuffer;
+        readDataBuffer = nullptr;
+    }
+
+    if (outputDataBuffer != nullptr) {
+        if (outputDataBuffer[0] != nullptr) {
+            delete [] outputDataBuffer[0];
+            outputDataBuffer[0] = nullptr;
+        }
+        delete [] outputDataBuffer;
+        outputDataBuffer = nullptr;
+    }
+
+    if (lsbNoiseArray != nullptr) {
+        delete [] lsbNoiseArray;
+        lsbNoiseArray = nullptr;
+    }
+
+    if (txMsgBuffer != nullptr) {
+        delete [] txMsgBuffer;
+        txMsgBuffer = nullptr;
+    }
+
+    if (txRawBuffer != nullptr) {
+        delete [] txRawBuffer;
+        txRawBuffer = nullptr;
+    }
+
+    if (iirX != nullptr) {
+        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            delete [] iirX[channelIdx];
+        }
+        delete [] iirX;
+        iirX = nullptr;
+    }
+
+    if (iirY != nullptr) {
+        for (unsigned int channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            delete [] iirY[channelIdx];
+        }
+        delete [] iirY;
+        iirY = nullptr;
+    }
+
+#ifdef DEBUG_PRINT
+    fclose(fid);
+#endif
+
+    return Success;
+}
 
 ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel) {
     FT_STATUS ftRet;
@@ -2931,5 +3212,33 @@ void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
         outputBufferAvailablePackets = ER4CL_OUTPUT_BUFFER_SIZE/totalChannelsNum; /*!< Saturates available packets */
         outputBufferReadOffset = outputBufferWriteOffset; /*! Move read offset just on top of the write offset so that it can read up to 1 position before after a full buffer read */
         outputBufferOverflowFlag = true;
+    }
+}
+
+/*! Private functions */
+string getDeviceSerial(
+        uint32_t index) {
+    char buffer[64];
+    string serial;
+    FT_STATUS FT_Result = FT_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
+    if (FT_Result == FT_OK) {
+        serial = buffer;
+        return serial.substr(0, serial.size()-1); /*!< Removes channel character */
+
+    } else {
+        return "";
+    }
+}
+
+bool getDeviceCount(
+        DWORD &numDevs) {
+    /*! Get the number of connected devices */
+    numDevs = 0;
+    FT_STATUS FT_Result = FT_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
+    if (FT_Result == FT_OK) {
+        return true;
+
+    } else {
+        return false;
     }
 }

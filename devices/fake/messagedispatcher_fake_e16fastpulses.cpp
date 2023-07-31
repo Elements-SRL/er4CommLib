@@ -85,10 +85,12 @@ ErrorCodes_t MessageDispatcher_fake_e16FastPulses::connect(FtdiEeprom * ftdiEepr
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher_fake_e16FastPulses::disconnect() {
+ErrorCodes_t MessageDispatcher_fake_e16FastPulses::disconnectDevice() {
     if (!connected) {
         return ErrorDeviceNotConnected;
     }
+
+    this->deinit();
 
     if (!stopConnectionFlag) {
         stopConnectionFlag = true;

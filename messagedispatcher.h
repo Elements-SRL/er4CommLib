@@ -81,7 +81,7 @@ using namespace std;
 #define FTD_FEW_PACKET_COEFF 0.05 /*!< = 50.0/1000.0: 50.0 because I want to get data once every 50ms, 1000 to convert sampling rate from Hz to kHz */
 #define FTD_MAX_BYTES_TO_WAIT_FOR 2048 /*! Max FTDI buffer size = 4k, so wait no more than half full to read it */
 
-#define ER4CL_OUTPUT_BUFFER_SIZE 0x100000 /*!< Always use a power of 2 for efficient circular buffer management through index masking */
+#define ER4CL_OUTPUT_BUFFER_SIZE 0x400000 /*!< Always use a power of 2 for efficient circular buffer management through index masking */
 #define ER4CL_OUTPUT_BUFFER_MASK (ER4CL_OUTPUT_BUFFER_SIZE-1)
 
 #define FTD_TX_WORD_SIZE (sizeof(uint8_t)) // 1 bite word
@@ -567,7 +567,7 @@ RangedMeasurement_t fromReduceRangedMeasurement(RangedMeasurementReduced_t);
  *                                                                                          *
 \********************************************************************************************/
 
-class MessageDispatcher {
+class ER4COMMLIBSHARED_EXPORT MessageDispatcher {
 public:
 
     /*****************\
@@ -581,15 +581,12 @@ public:
      *  Connection methods  *
     \************************/
 
-    ErrorCodes_t init();
-    ErrorCodes_t deinit();
-    virtual ErrorCodes_t connect(FtdiEeprom * ftdiEeprom);
-    virtual ErrorCodes_t disconnect();
+    static ErrorCodes_t detectDevices(std::vector <std::string> &deviceIds);
+    static ErrorCodes_t connectDevice(std::string deviceId, MessageDispatcher * &messageDispatcher);
+    virtual ErrorCodes_t disconnectDevice();
     virtual ErrorCodes_t pauseConnection(bool pauseFlag);
     void readDataFromDevice();
     void sendCommandsToDevice();
-
-    static ErrorCodes_t getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type);
 
     /****************\
      *  Tx methods  *
@@ -681,7 +678,7 @@ public:
     ErrorCodes_t getDeviceInfo(uint8_t &deviceVersion, uint8_t &deviceSubversion, uint32_t &firmwareVersion);
 
     ErrorCodes_t getQueueStatus(QueueStatus_t &status);
-    ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int * packetsRead);
+    ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int &packetsRead);
     ErrorCodes_t purgeData();
 
     ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber);
@@ -783,6 +780,11 @@ protected:
      *  Methods  *
     \*************/
 
+    static ErrorCodes_t getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type);
+
+    virtual ErrorCodes_t connect(FtdiEeprom * ftdiEeprom);
+    ErrorCodes_t init();
+    ErrorCodes_t deinit();
     ErrorCodes_t initFtdiChannel(FT_HANDLE * handle, char channel);
     virtual void initializeDevice();
     virtual bool checkProtocolValidity(string &message) = 0;
@@ -1038,8 +1040,8 @@ protected:
     bool dacExtControllableFlag = false; /*! This is true if the voltage applied on the external DAC is directly controllable by the user, not through protocols */
     bool invertedDacExtFlag = false; /*! Negate the DAC value before applying it */
     vector <DoubleOffsetBinaryCoder *> dacExtCoders;
-    Measurement_t dacExtDefault;
-    Measurement_t voltageReference;
+    Measurement_t dacExtDefault = {0.0, UnitPfxNone, "V"};
+    Measurement_t voltageReference = {0.0, UnitPfxNone, "V"};
     int16_t voltageReferenceOffset = 0; /*! Value added to returned voltage data to accoutn for the voltage applied on the reference */
 
     /*! Device specific parameters */
@@ -1093,6 +1095,7 @@ protected:
     bool exitOnSyncWord = false; /*!< Tells if the last buffer analysis returned with a syncword found */
 
     /*! Output data buffer management */
+    uint16_t * outputDataArray = nullptr; /*! Array used to return data via getDataPackets method */
     uint16_t ** outputDataBuffer = nullptr; /*!< Buffer used to share received and converted data with the user */
     unsigned int outputBufferReadOffset = 0; /*!< outputDataBuffer offset position in which data are collected by the user */
     unsigned int outputBufferWriteOffset = 0; /*!< outputDataBuffer offset position in which data are converted from readDataBuffer */

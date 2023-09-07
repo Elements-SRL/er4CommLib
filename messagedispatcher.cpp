@@ -28,13 +28,15 @@
 #include "messagedispatcher_e16fastpulses.h"
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_e16e.h"
+#include "messagedispatcher_e16hc.h"
 #include "messagedispatcher_e16eth.h"
 #include "messagedispatcher_el06b.h"
 #include "messagedispatcher_el06c.h"
 #include "messagedispatcher_el06d_el06e.h"
+#include "messagedispatcher_fake_enpr.h"
+#include "messagedispatcher_fake_enpr_hc.h"
 #include "messagedispatcher_fake_e16n.h"
 #include "messagedispatcher_fake_e16fastpulses.h"
-#include "messagedispatcher_e16hc.h"
 
 #include <iostream>
 #include <sstream>
@@ -89,7 +91,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},    //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
     {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 129, DeviceENPR2Channels_V01},      //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},  //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
-    {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeE16FastPulses}
+    {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeENPR}
 };
 
 /********************************************************************************************\
@@ -221,7 +223,7 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
     /*! Initializes eeprom */
     /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
     FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
-    if (deviceId == "e16 Demo") {
+    if (deviceId == "eNPR Demo") {
         ftdiEepromId = FtdiEepromIdDemo;
     }
 
@@ -383,6 +385,14 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceOrbitMiniSine_V01:
         messageDispatcher = new MessageDispatcher_e4n_sine_V01(deviceId);
+        break;
+
+    case DeviceFakeENPR:
+        messageDispatcher = new MessageDispatcher_fake_eNPR(deviceId);
+        break;
+
+    case DeviceFakeENPRHC:
+        messageDispatcher = new MessageDispatcher_fake_eNPR_HC(deviceId);
         break;
 
     case DeviceFakeE16n:
@@ -1763,12 +1773,13 @@ ErrorCodes_t MessageDispatcher::hasIndependentCurrentRanges() {
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption) {
+ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption, vector <string> &extensions) {
     voltageRanges = voltageRangesArray;
     for (uint16_t idx = 0; idx < voltageRanges.size(); idx++) {
         voltageRanges[idx].step *= (double)voltageRangeDivider;
     }
     defaultOption = defaultVoltageRangeIdx;
+    extensions = voltageRangesExtensions;
     return Success;
 }
 
@@ -1829,24 +1840,28 @@ ErrorCodes_t MessageDispatcher::getOversamplingRatio(uint16_t &oversamplingRatio
     }
 }
 
-ErrorCodes_t MessageDispatcher::getVoltageStimulusLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption) {
+ErrorCodes_t MessageDispatcher::getVoltageStimulusLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption, int16_t &voltageRangeIdx) {
     if (dacIntFilterAvailable) {
         filterOptions = voltageStimulusLpfOptions;
         defaultOption = voltageStimulusLpfDefaultOption;
+        voltageRangeIdx = voltageStimulusLpfRange;
         return Success;
 
     } else {
+        voltageRangeIdx = -1;
         return ErrorFeatureNotImplemented;
     }
 }
 
-ErrorCodes_t MessageDispatcher::getVoltageReferenceLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption) {
+ErrorCodes_t MessageDispatcher::getVoltageReferenceLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption, int16_t &voltageRangeIdx) {
     if (dacExtFilterAvailable) {
         filterOptions = voltageReferenceLpfOptions;
         defaultOption = voltageReferenceLpfDefaultOption;
+        voltageRangeIdx = voltageReferenceLpfRange;
         return Success;
 
     } else {
+        voltageRangeIdx = -1;
         return ErrorFeatureNotImplemented;
     }
 }

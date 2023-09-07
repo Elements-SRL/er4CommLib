@@ -70,6 +70,8 @@ SOURCES += \
     devices/testboard/messagedispatcher_el06b.cpp \
     devices/testboard/messagedispatcher_el06c.cpp \
     devices/testboard/messagedispatcher_el06d_el06e.cpp \
+    devices/fake/messagedispatcher_fake_enpr.cpp \
+    devices/fake/messagedispatcher_fake_enpr_hc.cpp \
     devices/fake/messagedispatcher_fake_e16n.cpp \
     devices/fake/messagedispatcher_fake_e16fastpulses.cpp
 
@@ -98,6 +100,8 @@ HEADERS += \
     devices/testboard/messagedispatcher_el06b.h \
     devices/testboard/messagedispatcher_el06c.h \
     devices/testboard/messagedispatcher_el06d_el06e.h \
+    devices/fake/messagedispatcher_fake_enpr.h \
+    devices/fake/messagedispatcher_fake_enpr_hc.h \
     devices/fake/messagedispatcher_fake_e16n.h \
     devices/fake/messagedispatcher_fake_e16fastpulses.h
 

@@ -991,10 +991,11 @@ ErrorCodes_t hasIndependentCurrentRanges() {
 
 ErrorCodes_t getVoltageRanges(
         vector <RangedMeasurement_t> &voltageRanges,
-        uint16_t &defaultOption) {
+        uint16_t &defaultOption,
+        vector <string> &extensions) {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getVoltageRanges(voltageRanges, defaultOption);
+        ret = messageDispatcher->getVoltageRanges(voltageRanges, defaultOption, extensions);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1102,10 +1103,11 @@ ErrorCodes_t getOversamplingRatio(
 
 ErrorCodes_t getVoltageStimulusLpfs(
         vector <Measurement_t> &filterOptions,
-        uint16_t &defaultOption) {
+        uint16_t &defaultOption,
+        int16_t &voltageRangeIdx) {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getVoltageStimulusLpfs(filterOptions, defaultOption);
+        ret = messageDispatcher->getVoltageStimulusLpfs(filterOptions, defaultOption, voltageRangeIdx);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1115,10 +1117,11 @@ ErrorCodes_t getVoltageStimulusLpfs(
 
 ErrorCodes_t getVoltageReferenceLpfs(
         vector <Measurement_t> &filterOptions,
-        uint16_t &defaultOption) {
+        uint16_t &defaultOption,
+        int16_t &voltageRangeIdx) {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getVoltageReferenceLpfs(filterOptions, defaultOption);
+        ret = messageDispatcher->getVoltageReferenceLpfs(filterOptions, defaultOption, voltageRangeIdx);
 
     } else {
         ret = ErrorDeviceNotConnected;

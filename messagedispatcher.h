@@ -218,7 +218,7 @@ public:
     ErrorCodes_t getCurrentRange(RangedMeasurement_t &currentRange, uint16_t channelIdx);
     ErrorCodes_t hasIndependentCurrentRanges();
 
-    ErrorCodes_t getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption);
+    ErrorCodes_t getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption, vector <string> &extensions);
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
     ErrorCodes_t getVoltageReferenceRanges(vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption);
 
@@ -229,8 +229,8 @@ public:
     ErrorCodes_t getOversamplingRatios(vector <uint16_t> &oversamplingRatios);
     ErrorCodes_t getOversamplingRatio(uint16_t &oversamplingRatio);
 
-    ErrorCodes_t getVoltageStimulusLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption);
-    ErrorCodes_t getVoltageReferenceLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption);
+    ErrorCodes_t getVoltageStimulusLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption, int16_t &voltageRangeIdx);
+    ErrorCodes_t getVoltageReferenceLpfs(vector <Measurement_t> &filterOptions, uint16_t &defaultOption, int16_t &voltageRangeIdx);
 
     ErrorCodes_t hasSelectStimulusChannel(bool &selectStimulusChannelFlag, bool &singleChannelSSCFlag);
     ErrorCodes_t hasDigitalOffsetCompensation(bool &digitalOffsetCompensationFlag, bool &singleChannelDOCFlag, bool &selectableDOCAutostopFlag);
@@ -370,6 +370,7 @@ protected:
 
     uint32_t voltageRangesNum;
     vector <RangedMeasurement_t> voltageRangesArray;
+    vector <string> voltageRangesExtensions;
     uint16_t defaultVoltageRangeIdx = 0;
     BoolRandomArrayCoder * voltageRangeCoder;
 
@@ -557,11 +558,13 @@ protected:
     vector <Measurement_t> voltageStimulusLpfOptions;
     uint16_t voltageStimulusLpfOptionsNum = 0;
     uint16_t voltageStimulusLpfDefaultOption = 0;
+    int16_t voltageStimulusLpfRange = -1;
     BoolRandomArrayCoder * dacIntFilterCoder;
     bool dacExtFilterAvailable = false;
     vector <Measurement_t> voltageReferenceLpfOptions;
     uint16_t voltageReferenceLpfOptionsNum = 0;
     uint16_t voltageReferenceLpfDefaultOption = 0;
+    int16_t voltageReferenceLpfRange = -1;
     BoolRandomArrayCoder * dacExtFilterCoder;
 
     uint16_t ledsNum = 0;

@@ -94,6 +94,10 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     voltageRangesArray[VoltageRange2V].unit = "V";
     defaultVoltageRangeIdx = VoltageRange700mV;
 
+    voltageRangesExtensions.resize(voltageRangesNum);
+    voltageRangesExtensions[VoltageRange700mV] = "Ultra Low Noise";
+    voltageRangesExtensions[VoltageRange2V] = "Low Noise";
+
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);
@@ -183,6 +187,7 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange700mV;
 
     dacExtFilterAvailable = true;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
@@ -193,6 +198,7 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange2V;
 
     /*! Digital output */
     digOutImplementedFlag = true;
@@ -2370,6 +2376,7 @@ MessageDispatcher_eNPR_LegacyEdr3_V04::MessageDispatcher_eNPR_LegacyEdr3_V04(str
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange700mV;
 
     dacExtFilterAvailable = true;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
@@ -2380,6 +2387,7 @@ MessageDispatcher_eNPR_LegacyEdr3_V04::MessageDispatcher_eNPR_LegacyEdr3_V04(str
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange2V;
 
     /*! Digital output */
     digOutImplementedFlag = true;
@@ -3468,6 +3476,7 @@ MessageDispatcher_eNPR_LegacyEdr3_V03::MessageDispatcher_eNPR_LegacyEdr3_V03(str
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange700mV;
 
     dacExtFilterAvailable = true;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
@@ -3478,6 +3487,7 @@ MessageDispatcher_eNPR_LegacyEdr3_V03::MessageDispatcher_eNPR_LegacyEdr3_V03(str
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange2V;
 
     /*! Digital output */
     digOutImplementedFlag = true;

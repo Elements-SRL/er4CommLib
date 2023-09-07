@@ -15,10 +15,10 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MESSAGEDISPATCHER_FAKE_E16FASTPULSES_H
-#define MESSAGEDISPATCHER_FAKE_E16FASTPULSES_H
+#ifndef MESSAGEDISPATCHER_FAKE_ENPR_HC_H
+#define MESSAGEDISPATCHER_FAKE_ENPR_HC_H
 
-#include "messagedispatcher_e16fastpulses.h"
+#include "messagedispatcher_enpr_hc.h"
 
 /********************************************************************************************\
  *                                                                                          *
@@ -26,14 +26,14 @@
  *                                                                                          *
 \********************************************************************************************/
 
-class MessageDispatcher_fake_e16FastPulses : public MessageDispatcher_e16FastPulses_V02 {
+class MessageDispatcher_fake_eNPR_HC : public MessageDispatcher_eNPR_HC_V00 {
 public:
     /*****************\
      *  Ctor / Dtor  *
     \*****************/
 
-    MessageDispatcher_fake_e16FastPulses(string di);
-    ~MessageDispatcher_fake_e16FastPulses();
+    MessageDispatcher_fake_eNPR_HC(string di);
+    ~MessageDispatcher_fake_eNPR_HC();
 
     /************************\
      *  Connection methods  *
@@ -41,8 +41,6 @@ public:
 
     ErrorCodes_t connect(FtdiEeprom * ftdiEeprom) override;
     ErrorCodes_t disconnectDevice() override;
-//    void readDataFromGenerator();
-    void sendCommandsToGenerator();
 
     /******************************\
      *  Tx methods for generator  *
@@ -82,18 +80,10 @@ protected:
     double genCurrentNorm;
     uint16_t genCurrentInt;
 
-    double wFHN = 0.0;
-    double dwFHN = 0.0;
-    double vFHN = 0.0;
-    double dvFHN = 0.0;
-    const double aFHN = 0.0007;
-    const double bFHN = 0.8;
-    const double tFHN = 5.0;
-
     Measurement_t genSamplingRate;
     double samplingTime = 0.0001;
     double integrationStep = 0.01;
     int integrationItemStepsNum;
 };
 
-#endif // MESSAGEDISPATCHER_FAKE_E16FASTPULSES_H
+#endif // MESSAGEDISPATCHER_FAKE_ENPR_HC_H

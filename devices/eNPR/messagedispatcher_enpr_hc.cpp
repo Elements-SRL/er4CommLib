@@ -84,6 +84,10 @@ MessageDispatcher_eNPR_HC_V00::MessageDispatcher_eNPR_HC_V00(string di) :
     voltageRangesArray[VoltageRange2V].unit = "V";
     defaultVoltageRangeIdx = VoltageRange700mV;
 
+    voltageRangesExtensions.resize(voltageRangesNum);
+    voltageRangesExtensions[VoltageRange700mV] = "Ultra Low Noise";
+    voltageRangesExtensions[VoltageRange2V] = "Low Noise";
+
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);
@@ -167,6 +171,7 @@ MessageDispatcher_eNPR_HC_V00::MessageDispatcher_eNPR_HC_V00(string di) :
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange2V;
 
     /*! Digital output */
     digOutImplementedFlag = true;

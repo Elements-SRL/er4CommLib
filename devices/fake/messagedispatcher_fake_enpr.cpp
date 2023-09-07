@@ -1,33 +1,7 @@
-//  Copyright (C) 2021 Filippo Cona
-//
-//  This file is part of EDR4.
-//
-//  EDR4 is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  EDR4 is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public License
-//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+#include "messagedispatcher_fake_enpr.h"
 
-#include "messagedispatcher_fake_e16n.h"
-
-#include <thread>
-#include <ctime>
-#include <cmath>
-#include <sstream>
-
-/*****************\
- *  Ctor / Dtor  *
-\*****************/
-
-MessageDispatcher_fake_e16n::MessageDispatcher_fake_e16n(string di) :
-    MessageDispatcher_e16n(di) {
+MessageDispatcher_fake_eNPR::MessageDispatcher_fake_eNPR(string di) :
+    MessageDispatcher_eNPR(di) {
 
     /*! Sampling rates */
     samplingRatesNum = 4;
@@ -48,7 +22,7 @@ MessageDispatcher_fake_e16n::MessageDispatcher_fake_e16n(string di) :
     realSamplingRatesArray[SamplingRate20kHz].unit = "Hz";
 }
 
-MessageDispatcher_fake_e16n::~MessageDispatcher_fake_e16n() {
+MessageDispatcher_fake_eNPR::~MessageDispatcher_fake_eNPR() {
 
 }
 
@@ -56,7 +30,7 @@ MessageDispatcher_fake_e16n::~MessageDispatcher_fake_e16n() {
  *  Connection methods  *
 \************************/
 
-ErrorCodes_t MessageDispatcher_fake_e16n::connect(FtdiEeprom * ftdiEeprom) {
+ErrorCodes_t MessageDispatcher_fake_eNPR::connect(FtdiEeprom * ftdiEeprom) {
     if (connected) {
         return ErrorDeviceAlreadyConnected;
     }
@@ -77,7 +51,7 @@ ErrorCodes_t MessageDispatcher_fake_e16n::connect(FtdiEeprom * ftdiEeprom) {
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher_fake_e16n::disconnectDevice() {
+ErrorCodes_t MessageDispatcher_fake_eNPR::disconnectDevice() {
     if (!connected) {
         return ErrorDeviceNotConnected;
     }
@@ -105,7 +79,7 @@ ErrorCodes_t MessageDispatcher_fake_e16n::disconnectDevice() {
  *  Tx methods for generator  *
 \******************************/
 
-ErrorCodes_t MessageDispatcher_fake_e16n::setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool) {
+ErrorCodes_t MessageDispatcher_fake_eNPR::setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool) {
     ErrorCodes_t ret;
     ret = MessageDispatcher::setCurrentRange(currentRangeIdx, channelIdx);
     if (ret == Success) {
@@ -115,7 +89,7 @@ ErrorCodes_t MessageDispatcher_fake_e16n::setCurrentRange(uint16_t currentRangeI
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher_fake_e16n::setSamplingRate(uint16_t samplingRateIdx, bool) {
+ErrorCodes_t MessageDispatcher_fake_eNPR::setSamplingRate(uint16_t samplingRateIdx, bool) {
     ErrorCodes_t ret;
     ret = MessageDispatcher::setSamplingRate(samplingRateIdx);
     if (ret == Success) {

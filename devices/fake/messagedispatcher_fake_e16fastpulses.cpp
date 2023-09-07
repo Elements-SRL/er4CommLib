@@ -95,10 +95,7 @@ ErrorCodes_t MessageDispatcher_fake_e16FastPulses::disconnectDevice() {
     if (!stopConnectionFlag) {
         stopConnectionFlag = true;
 
-//        rxThread.join();
         txThread.join();
-//        gnThread.join();
-//        satThread.join();
 
         if (ftdiEeprom != nullptr) {
             delete ftdiEeprom;

@@ -863,12 +863,14 @@ ErrorCodes_t hasIndependentCurrentRanges(
  *
  * \param voltageRanges [out] Array containing all the available voltage ranges in voltage clamp.
  * \param defaultValue [out] Default option.
+ * \param voltageRanges [out] Array containing optional descriptions for the ranges (empty if not available).
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRanges(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &voltageRanges,
-        ER4CL_ARGOUT uint16_t &defaultOption);
+        ER4CL_ARGOUT uint16_t &defaultOption,
+        ER4CL_ARGOUT std::vector <std::string> &extensions);
 
 /*! \brief Get the voltage range currently applied.
  *
@@ -952,23 +954,27 @@ ErrorCodes_t getOversamplingRatio(
  *
  * \param filterOptions [out] Available options for the voltage stimulus low pass filter.
  * \param defaultOption [out] Option selected by default.
+ * \param voltageRangeIdx [out] Voltage range index in which this filter can be used (-1 if it's available for all ranges).
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageStimulusLpfs(
         ER4CL_ARGOUT std::vector <Measurement_t> &filterOptions,
-        ER4CL_ARGOUT uint16_t &defaultOption);
+        ER4CL_ARGOUT uint16_t &defaultOption,
+        ER4CL_ARGOUT int16_t &voltageRangeIdx);
 
 /*! \brief Get the available options for the voltage reference low pass filter.
  *
  * \param filterOptions [out] Available options for the voltage reference low pass filter.
  * \param defaultOption [out] Option selected by default.
+ * \param voltageRangeIdx [out] Voltage range index in which this filter can be used (-1 if it's available for all ranges).
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageReferenceLpfs(
         ER4CL_ARGOUT std::vector <Measurement_t> &filterOptions,
-        ER4CL_ARGOUT uint16_t &defaultOption);
+        ER4CL_ARGOUT uint16_t &defaultOption,
+        ER4CL_ARGOUT int16_t &voltageRangeIdx);
 
 /*! \brief Get the select channels for voltage stimulation feature availability.
  *

@@ -2287,6 +2287,10 @@ MessageDispatcher_eNPR_LegacyEdr3_V04::MessageDispatcher_eNPR_LegacyEdr3_V04(str
     defaultVoltageRangeIdx = VoltageRange700mV;
     rawVoltageZero = 32768;
 
+    voltageRangesExtensions.resize(voltageRangesNum);
+    voltageRangesExtensions[VoltageRange700mV] = "Ultra Low Noise";
+    voltageRangesExtensions[VoltageRange2V] = "Low Noise";
+
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);
@@ -3386,6 +3390,10 @@ MessageDispatcher_eNPR_LegacyEdr3_V03::MessageDispatcher_eNPR_LegacyEdr3_V03(str
     voltageRangesArray[VoltageRange2V].unit = "V";
     defaultVoltageRangeIdx = VoltageRange700mV;
     rawVoltageZero = 32768;
+
+    voltageRangesExtensions.resize(voltageRangesNum);
+    voltageRangesExtensions[VoltageRange700mV] = "Ultra Low Noise";
+    voltageRangesExtensions[VoltageRange2V] = "Low Noise";
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;

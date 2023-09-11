@@ -1512,6 +1512,50 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
     return ret;
 }
 
+/*************************\
+ *  Calibration methods  *
+\*************************/
+
+ErrorCodes_t getCalibrationEepromSize(
+        uint32_t &size) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getCalibrationEepromSize(size);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t writeCalibrationEeprom(
+        vector <uint32_t> value,
+        vector <uint32_t> address,
+        vector <uint32_t> size) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->writeCalibrationEeprom(value, address, size);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t readCalibrationEeprom(
+        vector <uint32_t> &value,
+        vector <uint32_t> address,
+        vector <uint32_t> size) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->readCalibrationEeprom(value, address, size);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t getCustomFlags(
         vector <string> &customFlags,
         vector <bool> &customFlagsDefault) {

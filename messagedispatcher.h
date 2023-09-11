@@ -32,6 +32,7 @@
 #include "ftdieeprom56.h"
 #include "ftdieepromdemo.h"
 #include "commandcoder.h"
+#include "calibrationeeprom.h"
 
 using namespace std;
 using namespace er4CommLib;
@@ -100,7 +101,12 @@ using namespace er4CommLib;
 
 class ER4COMMLIBSHARED_EXPORT MessageDispatcher {
 public:
-
+    typedef enum ConnectionStatus{
+        Connected,
+        Calibrating,
+        Paused,
+        Disconnected,
+    } ConnectionStatus_t;
     /*****************\
      *  Ctor / Dtor  *
     \*****************/
@@ -115,7 +121,7 @@ public:
     static ErrorCodes_t detectDevices(std::vector <std::string> &deviceIds);
     static ErrorCodes_t connectDevice(std::string deviceId, MessageDispatcher * &messageDispatcher);
     virtual ErrorCodes_t disconnectDevice();
-    virtual ErrorCodes_t pauseConnection(bool pauseFlag);
+    virtual ErrorCodes_t pauseConnection(ConnectionStatus_t pauseFlag);
     void readDataFromDevice();
     void sendCommandsToDevice();
 
@@ -266,6 +272,12 @@ public:
     ErrorCodes_t getFastReferencePulseProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, uint16_t &nPulse);
     ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(RangedMeasurement_t &voltageRange, RangedMeasurement_t &timeRange, RangedMeasurement_t &durationRange, RangedMeasurement_t &waitTimeRange, uint16_t &pulsesPerTrain, uint16_t &nTrains);
 
+    /*! Calibration methods */
+
+    ErrorCodes_t getCalibrationEepromSize(uint32_t &size);
+    ErrorCodes_t writeCalibrationEeprom(std::vector <uint32_t> value, std::vector <uint32_t> address, std::vector <uint32_t> size);
+    ErrorCodes_t readCalibrationEeprom(std::vector <uint32_t> &value, std::vector <uint32_t> address, std::vector <uint32_t> size);
+
     /*! Device specific controls */
 
     ErrorCodes_t getCustomFlags(vector <string> &customFlags, vector <bool> &customFlagsDefault);
@@ -306,7 +318,6 @@ protected:
         CompensationCFast,
         CompensationsNum
     };
-
     /*************\
      *  Methods  *
     \*************/
@@ -346,10 +357,12 @@ protected:
     \****************/
 
     FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
+    CalibrationEeprom * calEeprom = nullptr;
 
     string upgradeNotes = "NONE";
     string notificationTag = "UNDEFINED";
 
+    char spiChannel = 'A';
     char rxChannel;
     char txChannel;
 
@@ -608,7 +621,7 @@ protected:
     FT_HANDLE * ftdiTxHandle = nullptr;
 
     bool connected = false;
-    bool connectionPaused = false;
+    ConnectionStatus_t connectionStatus = ConnectionStatus_t::Connected;
     bool threadsStarted = false;
     bool stopConnectionFlag = false;
 
@@ -713,16 +726,14 @@ protected:
     thread rxThread;
     thread txThread;
 
+    mutable std::mutex connectionMutex;
+
     condition_variable rxMsgBufferNotEmpty;
     condition_variable rxMsgBufferNotFull;
 
     mutable mutex txMutex;
     condition_variable txMsgBufferNotEmpty;
     condition_variable txMsgBufferNotFull;
-
-    mutable mutex txAckMutex;
-
-    condition_variable txAckCv;
 
 #ifdef DEBUG_PRINT
     FILE * fid;

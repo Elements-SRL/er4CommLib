@@ -1312,6 +1312,45 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
         ER4CL_ARGOUT uint16_t &pulsesPerTrain,
         ER4CL_ARGOUT uint16_t &nTrains);
 
+/*************************\
+ *  Calibration methods  *
+\*************************/
+
+/*! \brief Get calibration eeprom size in bytes.
+ *
+ * \param size [out] Size of the calibration eeprom in bytes.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getCalibrationEepromSize(
+        ER4CL_ARGOUT uint32_t &size);
+
+/*! \brief Write values on calibration eeprom.
+ *
+ * \param value [in] Values to be written.
+ * \param address [in] Addresses in the eeprom memory of the first byte to be written.
+ * \param size [in] Numbers of bytes to be written.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t writeCalibrationEeprom(
+        ER4CL_ARGIN std::vector <uint32_t> value,
+        ER4CL_ARGIN std::vector <uint32_t> address,
+        ER4CL_ARGIN std::vector <uint32_t> size);
+
+/*! \brief Read values from calibration eeprom.
+ *
+ * \param value [out] Values to be read.
+ * \param address [in] Addresses in the eeprom memory of the first byte to be read.
+ * \param size [in] Numbers of bytes to be read.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t readCalibrationEeprom(
+        ER4CL_ARGOUT std::vector <uint32_t> &value,
+        ER4CL_ARGIN std::vector <uint32_t> address,
+        ER4CL_ARGIN std::vector <uint32_t> size);
+
 /*! \brief Get the available custom controls of type flag (active/inactive).
  *
  * \param customFlags [out] Names of the available custom controls.

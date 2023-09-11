@@ -101,11 +101,9 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
 \********************************************************************************************/
 
 /*! Private functions prototypes */
-string getDeviceSerial(
-        uint32_t index);
-
-bool getDeviceCount(
-        DWORD &numDevs);
+uint32_t getDeviceIndex(std::string serial);
+string getDeviceSerial(uint32_t index, bool excludeLetter = true);
+bool getDeviceCount(DWORD &numDevs);
 
 /*****************\
  *  Ctor / Dtor  *
@@ -443,7 +441,8 @@ ErrorCodes_t MessageDispatcher::disconnectDevice() {
             txThread.join();
         }
 
-        if (!connectionPaused) {
+
+        if (connectionStatus == ConnectionStatus_t::Connected) {
             FT_STATUS ftRet;
             ftRet = FT_Close(* ftdiRxHandle);
             if (ftRet != FT_OK) {
@@ -478,7 +477,7 @@ ErrorCodes_t MessageDispatcher::disconnectDevice() {
         }
 
         connected = false;
-        connectionPaused = false;
+        connectionStatus = ConnectionStatus_t::Disconnected;
 
         return Success;
 
@@ -487,13 +486,15 @@ ErrorCodes_t MessageDispatcher::disconnectDevice() {
     }
 }
 
-ErrorCodes_t MessageDispatcher::pauseConnection(bool pauseFlag) {
+ErrorCodes_t MessageDispatcher::pauseConnection(MessageDispatcher::ConnectionStatus_t newConnectionStatus) {
     if (!connected) {
         return ErrorDeviceNotConnected;
     }
 
     ErrorCodes_t ret = Success;
-    if (pauseFlag) {
+    switch (newConnectionStatus) {
+    case MessageDispatcher::ConnectionStatus_t::Calibrating:
+    case MessageDispatcher::ConnectionStatus_t::Paused:
         FT_STATUS ftRet;
         ftRet = FT_Close(* ftdiRxHandle);
         if (ftRet != FT_OK) {
@@ -507,15 +508,13 @@ ErrorCodes_t MessageDispatcher::pauseConnection(bool pauseFlag) {
                 return ErrorDeviceDisconnectionFailed;
             }
         }
-        connectionPaused = true;
-
-    } else {
+        break;
+    case MessageDispatcher::ConnectionStatus_t::Connected:
         /*! Initialize the ftdi Rx handle */
         ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
         if (ret != Success) {
             return ret;
         }
-
         if (rxChannel == txChannel) {
             ftdiTxHandle = ftdiRxHandle;
 
@@ -527,8 +526,9 @@ ErrorCodes_t MessageDispatcher::pauseConnection(bool pauseFlag) {
             }
         }
         deviceCommunicationErrorFlag = false;
-        connectionPaused = false;
+        break;
     }
+    connectionStatus = newConnectionStatus;
     return ret;
 }
 
@@ -2134,6 +2134,99 @@ ErrorCodes_t MessageDispatcher::getFastReferencePulseTrainProtocolWave2Range(Ran
     }
 }
 
+ErrorCodes_t MessageDispatcher::getCalibrationEepromSize(uint32_t &size) {
+    ErrorCodes_t ret;
+    if (calEeprom != nullptr) {
+        size = calEeprom->getMemorySize();
+        ret = Success;
+
+    } else {
+        size = 0;
+        ret = ErrorEepromNotConnected;
+    }
+
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::writeCalibrationEeprom(std::vector <uint32_t> value, std::vector <uint32_t> address, std::vector <uint32_t> size) {
+    ErrorCodes_t ret;
+    if (calEeprom != nullptr) {
+        std::unique_lock <std::mutex> connectionMutexLock(connectionMutex);
+
+        ret = this->pauseConnection(ConnectionStatus_t::Calibrating);
+        calEeprom->openConnection();
+
+        unsigned char eepromBuffer[4];
+        for (unsigned int itemIdx = 0; itemIdx < value.size(); itemIdx++) {
+            for (uint32_t bufferIdx = 0; bufferIdx < size[itemIdx]; bufferIdx++) {
+                eepromBuffer[size[itemIdx]-bufferIdx-1] = value[itemIdx] & 0x000000FF;
+                value[itemIdx] >>= 8;
+            }
+
+            ret = calEeprom->writeBytes(eepromBuffer, address[itemIdx], size[itemIdx]);
+        }
+
+        calEeprom->closeConnection();
+        this->pauseConnection(ConnectionStatus_t::Connected);
+
+        connectionMutexLock.unlock();
+
+        /*! Make a chip reset to force resynchronization of chip states. This is important when the FPGA has just been reset */
+        deviceResetCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        this_thread::sleep_for(chrono::milliseconds(100));
+        deviceResetCoder->encode(0, txStatus);
+        this->stackOutgoingMessage(txStatus);
+
+    } else {
+        ret = ErrorEepromNotConnected;
+    }
+
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::readCalibrationEeprom(std::vector <uint32_t> &value, std::vector <uint32_t> address, std::vector <uint32_t> size) {
+    ErrorCodes_t ret;
+    if (calEeprom != nullptr) {
+        std::unique_lock <std::mutex> connectionMutexLock(connectionMutex);
+
+        ret = this->pauseConnection(ConnectionStatus_t::Calibrating);
+        calEeprom->openConnection();
+
+        if (value.size() != address.size()) {
+            value.resize(address.size());
+        }
+
+        unsigned char eepromBuffer[4];
+        for (unsigned int itemIdx = 0; itemIdx < value.size(); itemIdx++) {
+            ret = calEeprom->readBytes(eepromBuffer, address[itemIdx], size[itemIdx]);
+
+            value[itemIdx] = 0;
+            for (uint32_t bufferIdx = 0; bufferIdx < size[itemIdx]; bufferIdx++) {
+                value[itemIdx] <<= 8;
+                value[itemIdx] += static_cast <uint32_t> (eepromBuffer[bufferIdx]);
+            }
+        }
+
+        calEeprom->closeConnection();
+        this->pauseConnection(ConnectionStatus_t::Connected);
+
+        connectionMutexLock.unlock();
+
+        /*! Make a chip reset to force resynchronization of chip states. This is important when the FPGA has just been reset */
+        deviceResetCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        this_thread::sleep_for(chrono::milliseconds(100));
+        deviceResetCoder->encode(0, txStatus);
+        this->stackOutgoingMessage(txStatus);
+
+    } else {
+        ret = ErrorEepromNotConnected;
+    }
+
+    return ret;
+}
+
 ErrorCodes_t MessageDispatcher::getCustomFlags(vector <string> &customFlags, vector <bool> &customFlagsDefault) {
     if (customFlagsNum > 0) {
         customFlags.resize(customFlagsNum);
@@ -2243,7 +2336,7 @@ ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
     }
 
     connected = true;
-    connectionPaused = false;
+    connectionStatus = ConnectionStatus_t::Connected;
     ErrorCodes_t ret;
 
     this->ftdiEeprom = ftdiEeprom;
@@ -2363,6 +2456,10 @@ ErrorCodes_t MessageDispatcher::init() {
     fid = fopen(ss.str().c_str(), "wb");
 #endif
 
+    std::string spiChannelStr = deviceId+spiChannel;
+
+    calEeprom = new CalibrationEeprom(getDeviceIndex(spiChannelStr));
+
     this->computeMinimumPacketNumber();
 
     this->initializeRawDataFilterVariables();
@@ -2424,6 +2521,11 @@ ErrorCodes_t MessageDispatcher::deinit() {
 #ifdef DEBUG_PRINT
     fclose(fid);
 #endif
+
+    if (calEeprom != nullptr) {
+        delete calEeprom;
+        calEeprom = nullptr;
+    }
 
     return Success;
 }
@@ -2607,24 +2709,41 @@ void MessageDispatcher::readDataFromDevice() {
     long long int acc = 0;
 #endif
 
-    while (!stopConnectionFlag) {
-        if (connectionPaused) {
-            if (this->pauseConnection(false) != Success) {
-                this_thread::sleep_for(chrono::microseconds(100000));
-                continue;
-            }
-        }
+    unique_lock <mutex> connectionMutexLock (connectionMutex);
+    connectionMutexLock.unlock();
 
+    bool skipReading = false;
+    while (!stopConnectionFlag) {
+        switch (connectionStatus) {
+        case ConnectionStatus_t::Connected:
+            skipReading = false;
+            break;
+        case ConnectionStatus_t::Paused:
+            if (this->pauseConnection(Connected) != Success) {
+                this_thread::sleep_for(chrono::milliseconds(100));
+                skipReading = true;
+            }
+            break;
+        case ConnectionStatus_t::Calibrating:
+            this_thread::sleep_for(chrono::milliseconds(100));
+            skipReading = true;
+            break;
+        }
+        if (skipReading){
+            continue;
+        }
         /******************\
          *  Reading part  *
         \******************/
 
         /*! Read queue status to check the number of available bytes */
+        connectionMutexLock.lock();
         result = FT_GetQueueStatus(* ftdiRxHandle, &ftdiQueuedBytes);
         if (result != FT_OK) {
+            connectionMutexLock.unlock();
             deviceCommunicationErrorFlag = true;
-            this->pauseConnection(true);
-            this_thread::sleep_for(chrono::microseconds(100000));
+            this->pauseConnection(ConnectionStatus_t::Connected);
+            this_thread::sleep_for(chrono::milliseconds(100));
             continue;
         }
 
@@ -2634,6 +2753,7 @@ void MessageDispatcher::readDataFromDevice() {
         /*! If there are not enough frames wait for a minimum frame number,
          *  the ftdi driver will wait for that to decrease overhead */
         if (availableFrames < minReadFrameNumber) {
+            connectionMutexLock.unlock();
             this_thread::sleep_for(chrono::microseconds(fewFramesSleep));
             continue;
         }
@@ -2652,6 +2772,7 @@ void MessageDispatcher::readDataFromDevice() {
         } else {
             result = FT_Read(* ftdiRxHandle, readDataBuffer+bufferWriteOffset, ftdiQueuedBytes, &readResult);
         }
+        connectionMutexLock.unlock();
 
         if (result != FT_OK) {
             continue; /*! \todo FCON Notify to user? */
@@ -2827,7 +2948,9 @@ void MessageDispatcher::sendCommandsToDevice() {
     bool notSentTxData;
 
     unique_lock <mutex> txMutexLock (txMutex);
+    unique_lock <mutex> connectionMutexLock (connectionMutex);
     txMutexLock.unlock();
+    connectionMutexLock.unlock();
 
     while (!stopConnectionFlag) {
 
@@ -2862,7 +2985,9 @@ void MessageDispatcher::sendCommandsToDevice() {
         notSentTxData = true;
         bytesToWrite = (DWORD)txDataBytes;
         while (notSentTxData && (writeTries++ < FTD_MAX_WRITE_TRIES)) { /*! \todo FCON prevedere un modo per notificare ad alto livello e all'utente */
+            connectionMutexLock.lock();
             ftRet = FT_Write(* ftdiTxHandle, txRawBuffer, bytesToWrite, &ftdiWrittenBytes);
+            connectionMutexLock.unlock();
 
             if (ftRet != FT_OK) {
                 continue;
@@ -2885,7 +3010,9 @@ void MessageDispatcher::sendCommandsToDevice() {
             /*! If less bytes than need are sent purge the buffer and retry */
             if (ftdiWrittenBytes < bytesToWrite) {
                 /*! Cleans TX buffer */
-                ftRet = FT_Purge(* ftdiTxHandle, FT_PURGE_TX);
+                connectionMutexLock.lock();
+                FT_Purge(* ftdiTxHandle, FT_PURGE_TX);
+                connectionMutexLock.unlock();
 
             } else {
                 notSentTxData = false;
@@ -3197,22 +3324,45 @@ void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
 }
 
 /*! Private functions */
-string getDeviceSerial(
-        uint32_t index) {
+uint32_t getDeviceIndex(std::string serial) {
+    /*! Gets number of devices */
+    DWORD numDevs;
+    bool devCountOk = getDeviceCount(numDevs);
+    if (!devCountOk) {
+        return 0;
+
+    } else if (numDevs == 0) {
+        return 0;
+    }
+
+    for (uint32_t index = 0; index < numDevs; index++) {
+        std::string deviceId = getDeviceSerial(index, false);
+        if (deviceId == serial) {
+            return index;
+        }
+    }
+    return 0;
+}
+
+string getDeviceSerial(uint32_t index, bool excludeLetter) {
     char buffer[64];
     string serial;
     FT_STATUS FT_Result = FT_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
     if (FT_Result == FT_OK) {
         serial = buffer;
-        return serial.substr(0, serial.size()-1); /*!< Removes channel character */
+        if (excludeLetter) {
+            return serial.substr(0, serial.size()-1); /*!< Removes channel character */
+
+        } else {
+            return serial;
+        }
 
     } else {
         return "";
     }
 }
 
-bool getDeviceCount(
-        DWORD &numDevs) {
+bool getDeviceCount(DWORD &numDevs) {
     /*! Get the number of connected devices */
     numDevs = 0;
     FT_STATUS FT_Result = FT_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);

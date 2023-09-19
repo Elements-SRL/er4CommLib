@@ -394,12 +394,13 @@ ErrorCodes_t updateWasherPresetSpeeds(
  *
  * \param currentRangeIdx [in] Index of the current range to be set.
  * \param channelIdx [in] Index of the channel to set the current range for; set equal to the number of channels to set them all.
+ * \note Use the default option 0 for channelIdx (or the number of channels) in case the device does not support independent current ranges
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCurrentRange(
         ER4CL_ARGIN uint16_t currentRangeIdx,
-        ER4CL_ARGIN uint16_t channelIdx);
+        ER4CL_ARGIN uint16_t channelIdx = 0);
 
 /*! \brief Set the voltage range.
  *
@@ -844,12 +845,13 @@ ErrorCodes_t getCurrentRanges(
  *
  * \param currentRange [out] Current range currently applied.
  * \param channelIdx [in] Channel index.
+ * \note Use the default option 0 for channelIdx in case the device does not support independent current ranges
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRange(
         ER4CL_ARGOUT RangedMeasurement_t &currentRange,
-        ER4CL_ARGIN uint16_t channelIdx);
+        ER4CL_ARGIN uint16_t channelIdx = 0);
 
 /*! \brief Check if the device can set the current range independently on each channel.
  *

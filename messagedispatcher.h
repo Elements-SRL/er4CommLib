@@ -621,7 +621,7 @@ protected:
     FT_HANDLE * ftdiTxHandle = nullptr;
 
     bool connected = false;
-    ConnectionStatus_t connectionStatus = ConnectionStatus_t::Connected;
+    ConnectionStatus_t connectionStatus = ConnectionStatus_t::Disconnected;
     bool threadsStarted = false;
     bool stopConnectionFlag = false;
 

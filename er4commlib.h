@@ -784,6 +784,29 @@ ErrorCodes_t readData(
         ER4CL_ARGOUT unsigned int &dataRead,
         ER4CL_ARGOUT uint16_t * &buffer);
 
+/*! \brief As readData, but returns also a buffer for unfiltered data.
+ * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.
+ * \a buffer is allocated by method init() with #ER4CL_DATA_ARRAY_SIZE items and freed by method deinit().\n
+ * Calling this method with \a dataRead greater than the actual number of available data packets will return an error code,
+ * but the returned \a buffer will still contain all the available data packets, and \a dataRead will be smaller than
+ * \a dataToRead. \n
+ * Calling this method if no device is connected will return an error code.
+ *
+ * \param dataToRead [in] Number of data packets to read.
+ * \param dataRead [out] Number of data packets actually read (may be lower than dataToRead).
+ * \param buffer [out] Buffer of data read. Each data packet consists of 1 sample per channel.
+ * In each data packet the first sample is the voltage command;
+ * the following samples are the measured currents, 1 sample per current channel.
+ * \param unfilteredBuffer [out] Buffer of unfiltered data read.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t readAllData(
+        ER4CL_ARGIN unsigned int dataToRead,
+        ER4CL_ARGOUT unsigned int &dataRead,
+        ER4CL_ARGOUT uint16_t * &buffer,
+        ER4CL_ARGOUT uint16_t * &unfilteredBuffer);
+
 /*! \brief Converts an integer number to the corresponding voltage value.
  * The converted voltage's unit depends on the device configuration.
  *

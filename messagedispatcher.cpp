@@ -1713,7 +1713,9 @@ ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int pa
     data = outputDataArray;
 
     unsigned int channelIdx;
+#ifdef OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
     unsigned int dataIdx = 0;
+#endif
     for (unsigned int packetIdx = 0; packetIdx < packetsNumber; packetIdx++) {
 #ifdef OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
         for (channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
@@ -1727,6 +1729,53 @@ ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int pa
 #else
         for (channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
             data[packetIdx*totalChannelsNum+channelIdx] = outputDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
+        }
+#endif
+    }
+    outputBufferReadOffset = (outputBufferReadOffset+packetsNumber)&ER4CL_OUTPUT_BUFFER_MASK;
+    outputBufferAvailablePackets -= packetsNumber;
+    packetsRead = packetsNumber;
+
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::getAllDataPackets(uint16_t * &data, uint16_t * &unfilteredData, unsigned int packetsNumber, unsigned int &packetsRead) {
+    unique_lock <mutex> readDataMtxLock(readDataMtx);
+    ErrorCodes_t ret = Success;
+
+    if (packetsNumber > outputBufferAvailablePackets) {
+        ret = WarningNotEnoughDataAvailable;
+        packetsNumber = outputBufferAvailablePackets;
+    }
+
+    if (packetsNumber > maxOutputPacketsNum) {
+        ret = WarningNotEnoughDataAvailable;
+        packetsNumber = maxOutputPacketsNum;
+    }
+
+    data = outputDataArray;
+    unfilteredData = outputUnfilteredDataArray;
+
+    unsigned int channelIdx;
+#ifdef OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
+    unsigned int dataIdx = 0;
+#endif
+    for (unsigned int packetIdx = 0; packetIdx < packetsNumber; packetIdx++) {
+#ifdef OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
+        for (channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            if (channelIdx < voltageChannelsNum) {
+                data[dataIdx] = outputDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
+                unfilteredData[dataIdx++] = outputUnfiteredDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
+
+            } else if (channelOnStates[channelIdx-voltageChannelsNum]) {
+                data[dataIdx] = outputDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
+                unfilteredData[dataIdx++] = outputUnfiteredDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
+            }
+        }
+#else
+        for (channelIdx = 0; channelIdx < totalChannelsNum; channelIdx++) {
+            data[packetIdx*totalChannelsNum+channelIdx] = outputDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
+            unfilteredData[packetIdx*totalChannelsNum+channelIdx] = outputUnfiteredDataBuffer[(outputBufferReadOffset+packetIdx)&ER4CL_OUTPUT_BUFFER_MASK][channelIdx];
         }
 #endif
     }
@@ -2398,6 +2447,11 @@ ErrorCodes_t MessageDispatcher::init() {
         return ErrorInitializationFailed;
     }
 
+    outputUnfilteredDataArray = new (nothrow) uint16_t [ER4CL_DATA_ARRAY_SIZE];
+    if (outputUnfilteredDataArray == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
     readDataBuffer = new (std::nothrow) unsigned char[FTD_RX_BUFFER_SIZE];
     if (readDataBuffer == nullptr) {
         return ErrorInitializationFailed;
@@ -2414,6 +2468,19 @@ ErrorCodes_t MessageDispatcher::init() {
     }
     for (int packetIdx = 1; packetIdx < ER4CL_OUTPUT_BUFFER_SIZE; packetIdx++) {
         outputDataBuffer[packetIdx] = outputDataBuffer[0]+((int)totalChannelsNum)*packetIdx;
+    }
+
+    outputUnfiteredDataBuffer = new (std::nothrow) uint16_t * [ER4CL_OUTPUT_BUFFER_SIZE];
+    if (outputUnfiteredDataBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+
+    outputUnfiteredDataBuffer[0] = new (std::nothrow) uint16_t[ER4CL_OUTPUT_BUFFER_SIZE*totalChannelsNum];
+    if (outputUnfiteredDataBuffer == nullptr) {
+        return ErrorInitializationFailed;
+    }
+    for (int packetIdx = 1; packetIdx < ER4CL_OUTPUT_BUFFER_SIZE; packetIdx++) {
+        outputUnfiteredDataBuffer[packetIdx] = outputUnfiteredDataBuffer[0]+((int)totalChannelsNum)*packetIdx;
     }
 
     lsbNoiseArray = new (std::nothrow) double[LSB_NOISE_ARRAY_SIZE];
@@ -2473,6 +2540,11 @@ ErrorCodes_t MessageDispatcher::deinit() {
         outputDataArray = nullptr;
     }
 
+    if (outputUnfilteredDataArray != nullptr) {
+        delete [] outputUnfilteredDataArray;
+        outputUnfilteredDataArray = nullptr;
+    }
+
     if (readDataBuffer != nullptr) {
         delete [] readDataBuffer;
         readDataBuffer = nullptr;
@@ -2485,6 +2557,15 @@ ErrorCodes_t MessageDispatcher::deinit() {
         }
         delete [] outputDataBuffer;
         outputDataBuffer = nullptr;
+    }
+
+    if (outputUnfiteredDataBuffer != nullptr) {
+        if (outputUnfiteredDataBuffer[0] != nullptr) {
+            delete [] outputUnfiteredDataBuffer[0];
+            outputUnfiteredDataBuffer[0] = nullptr;
+        }
+        delete [] outputUnfiteredDataBuffer;
+        outputUnfiteredDataBuffer = nullptr;
     }
 
     if (lsbNoiseArray != nullptr) {
@@ -2630,9 +2711,10 @@ void MessageDispatcher::initializeCompensations() {
     }
 }
 
-void MessageDispatcher::processCurrentData(uint16_t channelIdx, uint16_t &x) {
+void MessageDispatcher::processCurrentData(uint16_t channelIdx, uint16_t &x, uint16_t &unfilteredX) {
     double xFlt = (double)((int16_t)x);
     xFlt = this->frontEndResetDenoise(channelIdx, xFlt);
+    unfilteredX = (uint16_t)((int16_t)xFlt);
     xFlt = this->applyFilter(channelIdx, xFlt);
     xFlt = round(xFlt > SHORT_MAX ? SHORT_MAX : (xFlt < SHORT_MIN ? SHORT_MIN : xFlt));
     x = (uint16_t)((int16_t)xFlt);
@@ -3029,6 +3111,7 @@ void MessageDispatcher::sendCommandsToDevice() {
 
 void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
     uint16_t value;
+    uint16_t unfilteredValue;
     uint8_t infoIndex;
     uint8_t infoValue;
     bool increaseRangeFlag;
@@ -3062,6 +3145,7 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                 if (channelIdx < voltageChannelsNum) {
                     /*! Value is an uint, so before dividing cast to int, so that negative numbers are divided correctly */
                     value = (uint16_t)(((int16_t)value)/voltageRangeDivider+voltageReferenceOffset);
+                    unfilteredValue = value;
                     increaseRangeFlag = false;
 
                 } else {
@@ -3077,10 +3161,11 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                         decreaseRangeFlag = false;
                     }
 
-                    this->processCurrentData(channelIdx, value);
+                    this->processCurrentData(channelIdx, value, unfilteredValue);
                 }
 
                 outputDataBuffer[outputBufferWriteOffset][channelIdx] = value;
+                outputUnfiteredDataBuffer[outputBufferWriteOffset][channelIdx] = unfilteredValue;
             }
 
             /*! Check that in each packet at least one channel is above threshold for the whole frame */
@@ -3245,6 +3330,7 @@ MessageDispatcherLegacyEdr3::~MessageDispatcherLegacyEdr3() {
 
 void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
     uint16_t value;
+    uint16_t unfilteredValue;
     bool increaseRangeFlag;
     bool decreaseRangeFlag = true;
     bufferIncreaseCurrentRangeFlag = true;
@@ -3267,7 +3353,7 @@ void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
                 if (channelIdx < voltageChannelsNum) {
                     value -= rawVoltageZero; /*! Offset binary conversion to 2's complement */
                     value = (uint16_t)(((int16_t)value)/voltageRangeDivider+voltageReferenceOffset);
-
+                    unfilteredValue = value;
                     increaseRangeFlag = false;
 
                 } else {
@@ -3285,10 +3371,11 @@ void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
                         decreaseRangeFlag = false;
                     }
 
-                    this->processCurrentData(channelIdx, value);
+                    this->processCurrentData(channelIdx, value, unfilteredValue);
                 }
 
                 outputDataBuffer[outputBufferWriteOffset][channelIdx] = value;
+                outputUnfiteredDataBuffer[outputBufferWriteOffset][channelIdx] = unfilteredValue;
             }
 
             /*! Check that in each packet at least one channel is above threshold for the whole frame */

@@ -943,6 +943,19 @@ ErrorCodes_t readData(
     }
 }
 
+ErrorCodes_t readAllData(
+        unsigned int dataToRead,
+        unsigned int &dataRead,
+        uint16_t * &buffer,
+        uint16_t * &unfilteredBuffer) {
+    if (messageDispatcher != nullptr) {
+        return messageDispatcher->getAllDataPackets(buffer, unfilteredBuffer, dataToRead, dataRead);
+
+    } else {
+        return ErrorDeviceNotConnected;
+    }
+}
+
 ErrorCodes_t purgeData() {
     if (messageDispatcher != nullptr) {
         return messageDispatcher->purgeData();

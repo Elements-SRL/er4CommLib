@@ -216,6 +216,7 @@ public:
 
     ErrorCodes_t getQueueStatus(QueueStatus_t &status);
     ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int &packetsRead);
+    ErrorCodes_t getAllDataPackets(uint16_t * &data, uint16_t * &unfilteredData, unsigned int packetsNumber, unsigned int &packetsRead);
     ErrorCodes_t purgeData();
 
     ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber);
@@ -334,7 +335,7 @@ protected:
     void initializeLsbNoise(bool nullValues = true);
     void initializeCompensations();
 
-    void processCurrentData(uint16_t channelIdx, uint16_t &x);
+    void processCurrentData(uint16_t channelIdx, uint16_t &x, uint16_t &unfilteredX);
 
     void initializeFerdMemory();
     virtual void setFerdParameters();
@@ -643,7 +644,9 @@ protected:
 
     /*! Output data buffer management */
     uint16_t * outputDataArray = nullptr; /*! Array used to return data via getDataPackets method */
+    uint16_t * outputUnfilteredDataArray = nullptr; /*! Array used to return unfiltered data via getAllDataPackets method */
     uint16_t ** outputDataBuffer = nullptr; /*!< Buffer used to share received and converted data with the user */
+    uint16_t ** outputUnfiteredDataBuffer = nullptr; /*!< Buffer used to share unfiltered data with the user */
     unsigned int outputBufferReadOffset = 0; /*!< outputDataBuffer offset position in which data are collected by the user */
     unsigned int outputBufferWriteOffset = 0; /*!< outputDataBuffer offset position in which data are converted from readDataBuffer */
     unsigned int outputBufferAvailablePackets = 0; /*!< Number of packets available for the user to read */

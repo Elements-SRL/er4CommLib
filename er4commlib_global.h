@@ -127,8 +127,9 @@ typedef enum {
     DeviceENPRFairyLight_V01,   /*!< eNPR prototype for Fairy Light project with DAC ext control and only ULN mode. */
     DeviceENPRFairyLight_V02,   /*!< eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes. */
     DeviceENPR2Channels_V01,    /*!< eNPR prototype with 2 channels and sinusoidal waveforms. */
+    DeviceENPR2Channels_V02,    /*!< eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms. */
     DeviceOrbitMiniSine_V01,    /*!< Orbit mini prototype with additional sinusoidal waveforms. */
-    DeviceFakeENPR,           /*!< Fake eNPR-HC. */
+    DeviceFakeENPR,             /*!< Fake eNPR-HC. */
     DeviceFakeENPRHC,           /*!< Fake eNPR-HC. */
     DeviceFakeE16n,             /*!< Fake e16 2020 release. */
     DeviceFakeE16FastPulses,    /*!< Fake e16 Orbit customized for fast pulses. */

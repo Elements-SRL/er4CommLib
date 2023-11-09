@@ -1157,6 +1157,9 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
 
+    dacExtFilterAvailable = false;
+    voltageReferenceLpfRange = VoltageRange500mV;
+
     /*! Voltage reference ranges */
     dacExtControllableFlag = true;
     invertedDacExtFlag = true;
@@ -1969,6 +1972,48 @@ void MessageDispatcher_eNPR_2Channels_V01::updateVoltageReferenceOffsetCalibrati
     doubleConfig.minValue = -vcm_mV;
     doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
     dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
+}
+
+MessageDispatcher_eNPR_2Channels_V02::MessageDispatcher_eNPR_2Channels_V02(string di) :
+    MessageDispatcher_eNPR_2Channels_V01(di) {
+
+    independentCurrentRangesFlag = true;
+
+    defaultCurrentRangesIdx.resize(currentChannelsNum);
+    defaultCurrentRangesIdx[0] = CurrentRange200pA;
+    defaultCurrentRangesIdx[1] = CurrentRange200nA;
+
+    /**********\
+     * Coders *
+    \**********/
+
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+
+    /*! Current range */
+    currentRangeCoders.resize(currentRangesNum);
+
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 3;
+    currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
+    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
+    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
+    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
+    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
+
+    boolConfig.initialByte = 6;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 3;
+    currentRangeCoders[1] = new BoolRandomArrayCoder(boolConfig);
+    currentRangeCoders[1]->addMapItem(0); /*!< 200pA    -> 0b000 */
+    currentRangeCoders[1]->addMapItem(4); /*!< 2nA      -> 0b010 */
+    currentRangeCoders[1]->addMapItem(6); /*!< 20nA     -> 0b011 */
+    currentRangeCoders[1]->addMapItem(14); /*!< 200nA    -> 0b111 */
+}
+
+MessageDispatcher_eNPR_2Channels_V02::~MessageDispatcher_eNPR_2Channels_V02() {
+
 }
 
 MessageDispatcher_eNPR_FL_V02::MessageDispatcher_eNPR_FL_V02(string di) :

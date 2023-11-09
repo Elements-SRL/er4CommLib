@@ -191,6 +191,12 @@ private:
     Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
 };
 
+class MessageDispatcher_eNPR_2Channels_V02 : public MessageDispatcher_eNPR_2Channels_V01 {
+public:
+    MessageDispatcher_eNPR_2Channels_V02(string di);
+    virtual ~MessageDispatcher_eNPR_2Channels_V02();
+};
+
 class MessageDispatcher_eNPR_FL_V02 : public MessageDispatcher_eNPR {
 public:
     MessageDispatcher_eNPR_FL_V02(string di);

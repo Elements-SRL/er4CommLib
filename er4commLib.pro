@@ -48,11 +48,11 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
-    calibrationeeprom.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
     ftdieeprom56.cpp \
     ftdieepromdemo.cpp \
+    calibrationeeprom.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
     devices/e1/messagedispatcher_e1light.cpp \
@@ -77,13 +77,13 @@ SOURCES += \
     devices/fake/messagedispatcher_fake_e16fastpulses.cpp
 
 HEADERS += \
-    calibrationeeprom.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
     ftdieeprom.h \
     ftdieeprom56.h \
     ftdieepromdemo.h \
+    calibrationeeprom.h \
     messagedispatcher.h \
     commandcoder.h \
     devices/e1/messagedispatcher_e1light.h \

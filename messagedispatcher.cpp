@@ -72,8 +72,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 130, DeviceE16FastPulses_V02},                        //    3,  4,130 : e16 Orbit customized for fast pulse trains
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 131, DeviceE16FastPulses_V02},                        //    3,  4,131 : e16 Orbit customized for fast pulse trains
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 4, DeviceE16FastPulsesEDR3},                          //    3,  4,  4 : e16 Orbit customized for fast pulses (Legacy version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                                              //    3,  5,135 : e16 2020 release
-    {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                                              //    3,  5,136 : e16 2020 release
+    {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                                              //    3,  5,135 : e16 Orbit TC
+    {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                                              //    3,  5,136 : e16 Orbit TC
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC_V01},                                          //    3, 10,  4 : e16HC No voltage amplifier
     {DeviceVersionE16, DeviceSubversionE16HC, 5, DeviceE16HC_V02},                                          //    3, 10,  5 : e16HC
@@ -92,6 +92,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 129, DeviceENPR2Channels_V01},                  //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 130, DeviceENPR2Channels_V02},                  //  254, 17,130 : eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},              //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceE16nSine_V01},                   //  254, 19,129 : e16 Orbit TC prototype with additional sinusoidal waveforms
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeENPR}
 };
 
@@ -327,7 +328,7 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         break;
 
     case DeviceE16n:
-        messageDispatcher = new MessageDispatcher_e16n(deviceId);
+        messageDispatcher = new MessageDispatcher_e16n_V01(deviceId);
         break;
 
     case DeviceE16ETHEDR3:
@@ -388,6 +389,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceOrbitMiniSine_V01:
         messageDispatcher = new MessageDispatcher_e4n_sine_V01(deviceId);
+        break;
+
+    case DeviceE16nSine_V01:
+        messageDispatcher = new MessageDispatcher_e16n_sine_V01(deviceId);
         break;
 
     case DeviceFakeENPR:

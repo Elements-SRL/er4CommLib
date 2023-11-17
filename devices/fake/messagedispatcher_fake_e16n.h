@@ -26,7 +26,7 @@
  *                                                                                          *
 \********************************************************************************************/
 
-class MessageDispatcher_fake_e16n : public MessageDispatcher_e16n {
+class MessageDispatcher_fake_e16n : public MessageDispatcher_e16n_V01 {
 public:
     /*****************\
      *  Ctor / Dtor  *

@@ -116,7 +116,7 @@ typedef enum {
     DeviceE16FastPulses_V01,    /*!< e16 Orbit customized for fast pulses. */
     DeviceE16FastPulses_V02,    /*!< e16 Orbit customized for fast pulse trains. */
     DeviceE16FastPulsesEDR3,    /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
-    DeviceE16n,                 /*!< e16 2020 release. */
+    DeviceE16n,                 /*!< e16 Orbit TC. */
     DeviceE2HC_V01,             /*!< e2HC. */
     DeviceDlp,                  /*!< debug dlp. */
     TestboardEL06b,             /*!< testboard chip EL06b */
@@ -129,9 +129,10 @@ typedef enum {
     DeviceENPR2Channels_V01,    /*!< eNPR prototype with 2 channels and sinusoidal waveforms. */
     DeviceENPR2Channels_V02,    /*!< eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms. */
     DeviceOrbitMiniSine_V01,    /*!< Orbit mini prototype with additional sinusoidal waveforms. */
-    DeviceFakeENPR,             /*!< Fake eNPR-HC. */
+    DeviceE16nSine_V01,         /*!< e16 Orbit TC with additional sinusoidal waveforms. */
+    DeviceFakeENPR,             /*!< Fake eNPR. */
     DeviceFakeENPRHC,           /*!< Fake eNPR-HC. */
-    DeviceFakeE16n,             /*!< Fake e16 2020 release. */
+    DeviceFakeE16n,             /*!< Fake e16 Orbit TC. */
     DeviceFakeE16FastPulses,    /*!< Fake e16 Orbit customized for fast pulses. */
     DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */
     DevicesNum

@@ -24,10 +24,10 @@
 
 using namespace std;
 
-class MessageDispatcher_e16n : public MessageDispatcher {
+class MessageDispatcher_e16n_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e16n(string di);
-    virtual ~MessageDispatcher_e16n();
+    MessageDispatcher_e16n_V01(string di);
+    virtual ~MessageDispatcher_e16n_V01();
 
     ErrorCodes_t resetWasherError() override;
     ErrorCodes_t setWasherPresetSpeeds(vector <int8_t> speedValues) override;
@@ -166,7 +166,41 @@ protected:
     vector <DoubleTwosCompCoder *> washerPresetSpeedsCoders;
 };
 
-class MessageDispatcher_dlp : public MessageDispatcher_e16n {
+class MessageDispatcher_e16n_sine_V01 : public MessageDispatcher_e16n_V01 {
+public:
+    MessageDispatcher_e16n_sine_V01(string di);
+    virtual ~MessageDispatcher_e16n_sine_V01();
+
+protected:
+    bool checkProtocolValidity(string &message) override;
+
+private:
+    enum ProtocolFrequencyRanges {
+        ProtocolFrequencyRange35Hz,
+        ProtocolFrequencyRangesNum
+    };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolSinusoid,
+        ProtocolsNum
+    };
+
+    enum ProtocolFrequencies {
+        ProtocolFrequency,
+        ProtocolFrequenciesNum
+    };
+};
+
+
+class MessageDispatcher_dlp : public MessageDispatcher_e16n_V01 {
 public:
     MessageDispatcher_dlp(string di);
 };

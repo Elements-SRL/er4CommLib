@@ -27,7 +27,7 @@
 \*****************/
 
 MessageDispatcher_fake_e16n::MessageDispatcher_fake_e16n(string di) :
-    MessageDispatcher_e16n(di) {
+    MessageDispatcher_e16n_V01(di) {
 
     /*! Sampling rates */
     samplingRatesNum = 4;

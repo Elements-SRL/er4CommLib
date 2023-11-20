@@ -92,7 +92,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 129, DeviceENPR2Channels_V01},                  //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 130, DeviceENPR2Channels_V02},                  //  254, 17,130 : eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},              //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
-    {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceE16nSine_V01},                   //  254, 19,129 : e16 Orbit TC prototype with additional sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionE16nSineWave, 129, DeviceE16nSine_V01},                        //  254, 19,129 : e16 Orbit TC prototype with additional sinusoidal waveforms
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeENPR}
 };
 

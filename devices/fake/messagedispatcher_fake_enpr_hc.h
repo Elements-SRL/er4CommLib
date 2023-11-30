@@ -26,7 +26,7 @@
  *                                                                                          *
 \********************************************************************************************/
 
-class MessageDispatcher_fake_eNPR_HC : public MessageDispatcher_eNPR_HC_V00 {
+class MessageDispatcher_fake_eNPR_HC : public MessageDispatcher_eNPR_HC_V02 {
 public:
     /*****************\
      *  Ctor / Dtor  *

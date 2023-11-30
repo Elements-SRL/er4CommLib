@@ -17,7 +17,7 @@
 
 #include "messagedispatcher_enpr_hc.h"
 
-MessageDispatcher_eNPR_HC_V00::MessageDispatcher_eNPR_HC_V00(string di) :
+MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -821,11 +821,11 @@ MessageDispatcher_eNPR_HC_V00::MessageDispatcher_eNPR_HC_V00(string di) :
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_eNPR_HC_V00::~MessageDispatcher_eNPR_HC_V00() {
+MessageDispatcher_eNPR_HC_V01::~MessageDispatcher_eNPR_HC_V01() {
 
 }
 
-void MessageDispatcher_eNPR_HC_V00::initializeDevice() {
+void MessageDispatcher_eNPR_HC_V01::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->digitalOffsetCompensation(currentChannelsNum, false);
@@ -833,7 +833,7 @@ void MessageDispatcher_eNPR_HC_V00::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_eNPR_HC_V00::checkProtocolValidity(string &message) {
+bool MessageDispatcher_eNPR_HC_V01::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     string voltageLimit;
@@ -1040,4 +1040,54 @@ bool MessageDispatcher_eNPR_HC_V00::checkProtocolValidity(string &message) {
         break;
     }
     return validFlag;
+}
+
+MessageDispatcher_eNPR_HC_V02::MessageDispatcher_eNPR_HC_V02(string di) :
+    MessageDispatcher_eNPR_HC_V01(di) {
+
+    /************************\
+     * Communication format *
+    \************************/
+
+    /*! Sampling rates */
+    samplingRatesNum = SamplingRatesNum;
+    samplingRatesArray.resize(samplingRatesNum);
+    samplingRatesArray[SamplingRate200kHz].value = 200.0;
+    samplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate200kHz].unit = "Hz";
+    defaultSamplingRateIdx = SamplingRate1_5kHz;
+
+    realSamplingRatesArray.resize(samplingRatesNum);
+    realSamplingRatesArray[SamplingRate200kHz].value = 6.25e3/32.0;
+    realSamplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate200kHz].unit = "Hz";
+
+    integrationStepArray.resize(samplingRatesNum);
+    integrationStepArray[SamplingRate200kHz].value = 32.0/6.25;
+    integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate200kHz].unit = "s";
+
+    /**********\
+     * Coders *
+    \**********/
+
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+
+    /*! Sampling rate */
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 5;
+    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
+    samplingRateCoder->addMapItem(1);  /*!< 1.5kHz      -> 0b00001 */
+    samplingRateCoder->addMapItem(5);  /*!< 6.25kHz     -> 0b00101 */
+    samplingRateCoder->addMapItem(7);  /*!< 12.5kHz     -> 0b00111 */
+    samplingRateCoder->addMapItem(9);  /*!< 25kHz       -> 0b01001 */
+    samplingRateCoder->addMapItem(11); /*!< 50kHz       -> 0b01011 */
+    samplingRateCoder->addMapItem(12); /*!< 100kHz      -> 0b01100 */
+    samplingRateCoder->addMapItem(14); /*!< 200kHz      -> 0b01110 */
+}
+
+MessageDispatcher_eNPR_HC_V02::~MessageDispatcher_eNPR_HC_V02() {
+
 }

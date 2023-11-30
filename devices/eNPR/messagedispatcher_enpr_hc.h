@@ -20,12 +20,10 @@
 
 #include "messagedispatcher.h"
 
-using namespace std;
-
-class MessageDispatcher_eNPR_HC_V00 : public MessageDispatcher {
+class MessageDispatcher_eNPR_HC_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_eNPR_HC_V00(string di);
-    virtual ~MessageDispatcher_eNPR_HC_V00();
+    MessageDispatcher_eNPR_HC_V01(string di);
+    virtual ~MessageDispatcher_eNPR_HC_V01();
 
 protected:
     typedef struct {
@@ -127,6 +125,24 @@ protected:
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
+};
+
+class MessageDispatcher_eNPR_HC_V02 : public MessageDispatcher_eNPR_HC_V01 {
+public:
+    MessageDispatcher_eNPR_HC_V02(string di);
+    virtual ~MessageDispatcher_eNPR_HC_V02();
+
+protected:
+    enum SamplingRates {
+        SamplingRate1_5kHz,
+        SamplingRate6_25kHz,
+        SamplingRate12_5kHz,
+        SamplingRate25kHz,
+        SamplingRate50kHz,
+        SamplingRate100kHz,
+        SamplingRate200kHz,
+        SamplingRatesNum
+    };
 };
 
 #endif // MESSAGEDISPATCHER_ENPR_HC_H

@@ -1,7 +1,7 @@
 #include "messagedispatcher_fake_enpr_hc.h"
 
 MessageDispatcher_fake_eNPR_HC::MessageDispatcher_fake_eNPR_HC(string di) :
-    MessageDispatcher_eNPR_HC_V00(di) {
+    MessageDispatcher_eNPR_HC_V02(di) {
 
     /*! Sampling rates */
     samplingRatesNum = 4;

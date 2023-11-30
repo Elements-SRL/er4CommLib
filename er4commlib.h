@@ -348,6 +348,17 @@ ErrorCodes_t setCustomFlag(
         ER4CL_ARGIN uint16_t idx,
         ER4CL_ARGIN bool flag);
 
+/*! \brief Set a custom double control.
+ *
+ * \param idx [in] Index of the custom control to set.
+ * \param flag [in] Double to be used for the cutom control.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setCustomDouble(
+        ER4CL_ARGIN uint16_t idx,
+        ER4CL_ARGIN double value);
+
 /*! \brief Reset the error status for the Orbit washer.
  *
  * \return Error code.
@@ -1379,13 +1390,26 @@ ErrorCodes_t readCalibrationEeprom(
 /*! \brief Get the available custom controls of type flag (active/inactive).
  *
  * \param customFlags [out] Names of the available custom controls.
- * \param customFlagsDefault [out] Deafault values for the available custom controls.
+ * \param customFlagsDefault [out] Default values for the available custom controls.
  * \return Success if there's at least one custom flag control available.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCustomFlags(
         ER4CL_ARGOUT std::vector <std::string> &customFlags,
         ER4CL_ARGOUT std::vector <bool> &customFlagsDefault);
+
+/*! \brief Get the available custom controls of type double (floating point values).
+ *
+ * \param customDoubles [out] Names of the available custom controls.
+ * \param customDoublesRanges [out] Ranges for the available custom controls.
+ * \param customDoublesDefault [out] Default values for the available custom controls.
+ * \return Success if there's at least one custom flag control available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getCustomDoubles(
+        ER4CL_ARGOUT std::vector <std::string> &customDoubles,
+        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &customDoublesRanges,
+        ER4CL_ARGOUT std::vector <double> &customDoublesDefault);
 
 /*! \brief Availability of Nanion's temperature controller.
  *

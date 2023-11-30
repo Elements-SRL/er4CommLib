@@ -197,6 +197,51 @@ public:
     virtual ~MessageDispatcher_eNPR_2Channels_V02();
 };
 
+class MessageDispatcher_eNPR_2Channels_V03 : public MessageDispatcher_eNPR_2Channels_V02 {
+public:
+    MessageDispatcher_eNPR_2Channels_V03(string di);
+    virtual ~MessageDispatcher_eNPR_2Channels_V03();
+
+protected:
+    bool checkProtocolValidity(string &message) override;
+
+private:
+    enum VoltageRanges {
+        VoltageRange500mV,
+        VoltageRangesNum
+    };
+
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRangesNum
+    };
+
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange500mV,
+        ProtocolVoltageRangesNum
+    };
+
+    enum ProtocolFrequencyRanges {
+        ProtocolFrequencyRangesNum
+    };
+
+    enum ProtocolFrequencies {
+        ProtocolFrequenciesNum
+    };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+};
+
 class MessageDispatcher_eNPR_FL_V02 : public MessageDispatcher_eNPR {
 public:
     MessageDispatcher_eNPR_FL_V02(string di);

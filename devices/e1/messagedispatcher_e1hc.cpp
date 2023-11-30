@@ -57,17 +57,17 @@ MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00::MessageDispatcher_e1Hc_El03f_Legacy
     currentRangesArray[CurrentRange2uA].min = -2.0;
     currentRangesArray[CurrentRange2uA].max = 2.0;
     currentRangesArray[CurrentRange2uA].step = currentRangesArray[CurrentRange2uA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange2uA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange2uA].prefix = UnitPfxMicro;
     currentRangesArray[CurrentRange2uA].unit = "A";
     currentRangesArray[CurrentRange20uA].min = -20.0;
     currentRangesArray[CurrentRange20uA].max = 20.0;
     currentRangesArray[CurrentRange20uA].step = currentRangesArray[CurrentRange20uA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange20uA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange20uA].prefix = UnitPfxMicro;
     currentRangesArray[CurrentRange20uA].unit = "A";
     currentRangesArray[CurrentRange200uA].min = -200.0;
     currentRangesArray[CurrentRange200uA].max = 200.0;
     currentRangesArray[CurrentRange200uA].step = currentRangesArray[CurrentRange200uA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange200uA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange200uA].prefix = UnitPfxMicro;
     currentRangesArray[CurrentRange200uA].unit = "A";
     defaultCurrentRangesIdx.resize(currentChannelsNum);
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {

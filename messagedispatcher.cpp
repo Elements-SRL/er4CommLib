@@ -20,6 +20,7 @@
 #include "messagedispatcher_e1plus.h"
 #include "messagedispatcher_e1light.h"
 #include "messagedispatcher_e1hc.h"
+#include "messagedispatcher_e1uln.h"
 #include "messagedispatcher_enpr.h"
 #include "messagedispatcher_enpr_hc.h"
 #include "messagedispatcher_e2hc.h"
@@ -96,6 +97,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},              //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionE16nSineWave, 129, DeviceE16nSine_V01},                        //  254, 19,129 : e16 Orbit TC prototype with additional sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionENPRNanopipette, 129, DeviceENPRNanopipette_V01},              //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
+    {DeviceVersionPrototype, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                  //  254, 21,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeENPR}
 };
 
@@ -404,6 +406,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceENPRNanopipette_V01:
         messageDispatcher = new MessageDispatcher_eNPR_2Channels_V03(deviceId);
+        break;
+
+    case DeviceE1ULN_V01:
+        messageDispatcher = new MessageDispatcher_e1ULN_V01(deviceId);
         break;
 
     case DeviceFakeENPR:

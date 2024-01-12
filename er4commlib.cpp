@@ -15,6 +15,36 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
+#define MASS_CALL0(func) {\
+    ErrorCodes_t err;\
+    for (auto md : msgDisps) {\
+        if ((err = md->func()) != Success) {\
+            return err;\
+        }\
+    }\
+    return Success;\
+}
+
+#define MASS_CALL1(func, arg) {\
+    ErrorCodes_t err;\
+    for (auto md : msgDisps) {\
+        if ((err = md->func(arg)) != Success) {\
+            return err;\
+        }\
+    }\
+    return Success;\
+}
+
+#define MASS_CALL2(func, arg1, arg2) {\
+    ErrorCodes_t err;\
+    for (auto md : msgDisps) {\
+        if ((err = md->func(arg1, arg2)) != Success) {\
+            return err;\
+        }\
+    }\
+    return Success;\
+}
+
 #include "er4commlib.h"
 
 #include <algorithm>
@@ -27,9 +57,9 @@
 
 #include "ftd2xx_win.h"
 
-using namespace std;
-
 static MessageDispatcher * messageDispatcher = nullptr;
+static std::vector <MessageDispatcher *> msgDisps;
+
 namespace er4CommLib {
 
 /************************\
@@ -43,29 +73,58 @@ ErrorCodes_t detectDevices(
 }
 
 ErrorCodes_t connect(
-        string deviceId) {
+        std::vector <std::string> deviceIds) {
 
-    if (messageDispatcher == nullptr) {
-        return MessageDispatcher::connectDevice(deviceId, messageDispatcher);
-
-    } else {
+    if (!msgDisps.empty()) {
         return ErrorDeviceAlreadyConnected;
     }
+
+    uint8_t deviceVersion;
+    uint8_t deviceSubversion;
+    uint32_t firmwareVersion;
+
+    uint8_t deviceVersionCheck;
+    uint8_t deviceSubversionCheck;
+    uint32_t firmwareVersionCheck;
+
+    getDeviceInfo(deviceIds[0],
+                  deviceVersion,
+                  deviceSubversion,
+                  firmwareVersion);
+
+    for (auto&& deviceId : deviceIds) {
+        getDeviceInfo(deviceId,
+                      deviceVersionCheck,
+                      deviceSubversionCheck,
+                      firmwareVersionCheck);
+        if (deviceVersion != deviceVersionCheck || deviceSubversion != deviceSubversionCheck || firmwareVersion != firmwareVersionCheck) {
+            return ErrorUnknown; // definire un tipo di errore per questa situazione
+        }
+    }
+
+    msgDisps.resize(deviceIds.size());
+    ErrorCodes_t err = Success;
+    int c = 0;
+    for (auto&& deviceId : deviceIds) {
+        err = MessageDispatcher::connectDevice(deviceId, msgDisps[c++]);
+    }
+
+    return err;
 }
 
 ErrorCodes_t disconnect() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->disconnectDevice();
-        if (ret == Success) {
-            delete messageDispatcher;
-            messageDispatcher = nullptr;
-        }
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
-    return ret;
+    ErrorCodes_t err = Success;
+    int c = 0;
+    for (auto md : msgDisps) {
+        err = md->disconnectDevice();
+        delete msgDisps[c++];
+    }
+    msgDisps.clear();
+
+    return err;
 }
 
 /****************\
@@ -73,14 +132,10 @@ ErrorCodes_t disconnect() {
 \****************/
 
 ErrorCodes_t sendCommands() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->sendCommands();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
-    return ret;
+    MASS_CALL0(sendCommands)
 }
 
 ErrorCodes_t selectVoltageProtocol(

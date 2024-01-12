@@ -67,6 +67,19 @@
     return Success;\
 }
 
+#define MASS_CALL4(func, arg1, arg2, arg3, arg4) {\
+    if (msgDisps.empty()) {\
+        return ErrorDeviceNotConnected;\
+    }\
+    ErrorCodes_t err;\
+    for (auto md : msgDisps) {\
+        if ((err = md->func(arg1, arg2, arg3, arg4)) != Success) {\
+            return err;\
+        }\
+    }\
+    return Success;\
+}
+
 #include "er4commlib.h"
 
 #include <algorithm>
@@ -267,27 +280,13 @@ ErrorCodes_t checkVoltageOffset(
 ErrorCodes_t applyInsertionPulse(
         Measurement_t voltage,
         Measurement_t duration) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->applyInsertionPulse(voltage, duration);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(applyInsertionPulse, voltage, duration)
 }
 
 ErrorCodes_t applyReferencePulse(
         Measurement_t voltage,
         Measurement_t duration) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->applyReferencePulse(voltage, duration);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(applyReferencePulse, voltage, duration)
 }
 
 ErrorCodes_t applyReferencePulseTrain(
@@ -295,135 +294,58 @@ ErrorCodes_t applyReferencePulseTrain(
         Measurement_t duration,
         Measurement_t period,
         uint16_t number) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->applyReferencePulseTrain(voltage, duration, period, number);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL4(applyReferencePulseTrain, voltage, duration, period, number)
 }
 
 ErrorCodes_t overrideReferencePulse(
       bool flag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->overrideReferencePulse(flag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(overrideReferencePulse, flag)
 }
 
 ErrorCodes_t setRawDataFilter(
         Measurement_t cutoffFrequency,
         bool lowPassFlag,
         bool activeFlag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setRawDataFilter(cutoffFrequency, lowPassFlag, activeFlag);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL3(setRawDataFilter, cutoffFrequency, lowPassFlag, activeFlag)
 }
 
 ErrorCodes_t applyDacExt(
         Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->applyDacExt(voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(applyDacExt, voltage)
 }
 
 ErrorCodes_t setCustomFlag(
         uint16_t idx,
         bool flag) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setCustomFlag(idx, flag, true);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL3(setCustomFlag, idx, flag, true)
 }
 
 ErrorCodes_t setCustomDouble(
         uint16_t idx,
         double value) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setCustomDouble(idx, value, true);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL3(setCustomDouble, idx, value, true)
 }
 
 ErrorCodes_t resetWasherError() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->resetWasherError();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL0(resetWasherError)
 }
 
 ErrorCodes_t setWasherPresetSpeeds(
         vector <int8_t> speedValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setWasherPresetSpeeds(speedValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(setWasherPresetSpeeds, speedValues)
 }
 
 ErrorCodes_t startWasher(
         uint16_t speedIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->startWasher(speedIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(startWasher, speedIdx)
 }
 
 ErrorCodes_t updateWasherState() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->updateWasherState();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL0(updateWasherState)
 }
 
 ErrorCodes_t updateWasherPresetSpeeds() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->updateWasherPresetSpeeds();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL0(updateWasherPresetSpeeds)
 }
 
 ErrorCodes_t setCurrentRange(

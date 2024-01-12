@@ -16,6 +16,9 @@
 //  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
 #define MASS_CALL0(func) {\
+    if (msgDisps.empty()) {\
+        return ErrorDeviceNotConnected;\
+    }\
     ErrorCodes_t err;\
     for (auto md : msgDisps) {\
         if ((err = md->func()) != Success) {\
@@ -26,6 +29,9 @@
 }
 
 #define MASS_CALL1(func, arg) {\
+    if (msgDisps.empty()) {\
+        return ErrorDeviceNotConnected;\
+    }\
     ErrorCodes_t err;\
     for (auto md : msgDisps) {\
         if ((err = md->func(arg)) != Success) {\
@@ -36,9 +42,25 @@
 }
 
 #define MASS_CALL2(func, arg1, arg2) {\
+    if (msgDisps.empty()) {\
+        return ErrorDeviceNotConnected;\
+    }\
     ErrorCodes_t err;\
     for (auto md : msgDisps) {\
         if ((err = md->func(arg1, arg2)) != Success) {\
+            return err;\
+        }\
+    }\
+    return Success;\
+}
+
+#define MASS_CALL3(func, arg1, arg2, arg3) {\
+    if (msgDisps.empty()) {\
+        return ErrorDeviceNotConnected;\
+    }\
+    ErrorCodes_t err;\
+    for (auto md : msgDisps) {\
+        if ((err = md->func(arg1, arg2, arg3)) != Success) {\
             return err;\
         }\
     }\
@@ -132,181 +154,87 @@ ErrorCodes_t disconnect() {
 \****************/
 
 ErrorCodes_t sendCommands() {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
     MASS_CALL0(sendCommands)
 }
 
 ErrorCodes_t selectVoltageProtocol(
         unsigned int idx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->selectVoltageProtocol(idx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(selectVoltageProtocol, idx)
 }
 
 ErrorCodes_t applyVoltageProtocol() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->applyVoltageProtocol();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL0(applyVoltageProtocol)
 }
 
 ErrorCodes_t setProtocolVoltage(
         unsigned int idx,
         Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setProtocolVoltage(idx, voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setProtocolVoltage, idx, voltage)
 }
 
 ErrorCodes_t setProtocolTime(
         unsigned int idx,
         Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setProtocolTime(idx, time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setProtocolTime, idx, time)
 }
 
 ErrorCodes_t setProtocolSlope(
         unsigned int idx,
         Measurement_t slope) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setProtocolSlope(idx, slope);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setProtocolSlope, idx, slope)
 }
 
 ErrorCodes_t setProtocolFrequency(
         unsigned int idx,
         Measurement_t frequency) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setProtocolFrequency(idx, frequency);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setProtocolFrequency, idx, frequency)
 }
 
 ErrorCodes_t setProtocolAdimensional(
         unsigned int idx,
         Measurement_t adimensional) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setProtocolAdimensional(idx, adimensional);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setProtocolAdimensional, idx, adimensional)
 }
 
 ErrorCodes_t checkSelectedProtocol(
         unsigned int idx,
         std::string &message) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkSelectedProtocol(idx, message);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(checkSelectedProtocol, idx, message)
 }
 
 ErrorCodes_t checkProtocolVoltage(
         unsigned int idx,
         Measurement_t voltage,
         std::string &message) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolVoltage(idx, voltage, message);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL3(checkProtocolVoltage, idx, voltage, message)
 }
 
 ErrorCodes_t checkProtocolTime(
         unsigned int idx,
         Measurement_t time,
         std::string &message) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolTime(idx, time, message);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL3(checkProtocolTime, idx, time, message)
 }
 
 ErrorCodes_t checkProtocolSlope(
         unsigned int idx,
         Measurement_t slope,
         std::string &message) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolSlope(idx, slope, message);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL3(checkProtocolSlope, idx, slope, message)
 }
 
 ErrorCodes_t checkProtocolFrequency(
         unsigned int idx,
         Measurement_t frequency,
         std::string &message) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolFrequency(idx, frequency, message);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL3(checkProtocolFrequency, idx, frequency, message)
 }
 
 ErrorCodes_t checkProtocolAdimensional(
         unsigned int idx,
         Measurement_t adimensional,
         std::string &message) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkProtocolAdimensional(idx, adimensional, message);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL3(checkProtocolAdimensional, idx, adimensional, message)
 }
 
 ErrorCodes_t setVoltageOffset(

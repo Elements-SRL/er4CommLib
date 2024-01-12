@@ -1,23 +1,6 @@
-//  Copyright (C) 2021 Filippo Cona
-//
-//  This file is part of EDR4.
-//
-//  EDR4 is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  EDR4 is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public License
-//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
+#include "messagedispatcher_e1uln.h"
 
-#include "messagedispatcher_enpr_hc.h"
-
-MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
+MessageDispatcher_e1ULN_V01::MessageDispatcher_e1ULN_V01(std::string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -54,19 +37,29 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     independentCurrentRangesFlag = false;
     currentRangesNum = CurrentRangesNum;
     currentRangesArray.resize(currentRangesNum);
+    currentRangesArray[CurrentRange200pA].min = -200.0;
+    currentRangesArray[CurrentRange200pA].max = 200.0;
+    currentRangesArray[CurrentRange200pA].step = currentRangesArray[CurrentRange200pA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange200pA].prefix = UnitPfxPico;
+    currentRangesArray[CurrentRange200pA].unit = "A";
+    currentRangesArray[CurrentRange2nA].min = -2.0;
+    currentRangesArray[CurrentRange2nA].max = 2.0;
+    currentRangesArray[CurrentRange2nA].step = currentRangesArray[CurrentRange2nA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange2nA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange2nA].unit = "A";
+    currentRangesArray[CurrentRange20nA].min = -20.0;
+    currentRangesArray[CurrentRange20nA].max = 20.0;
+    currentRangesArray[CurrentRange20nA].step = currentRangesArray[CurrentRange20nA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange20nA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange20nA].unit = "A";
     currentRangesArray[CurrentRange200nA].min = -200.0;
     currentRangesArray[CurrentRange200nA].max = 200.0;
     currentRangesArray[CurrentRange200nA].step = currentRangesArray[CurrentRange200nA].max/SHORT_MAX;
     currentRangesArray[CurrentRange200nA].prefix = UnitPfxNano;
     currentRangesArray[CurrentRange200nA].unit = "A";
-    currentRangesArray[CurrentRange4uA].min = -4.0;
-    currentRangesArray[CurrentRange4uA].max = 4.0;
-    currentRangesArray[CurrentRange4uA].step = currentRangesArray[CurrentRange4uA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange4uA].prefix = UnitPfxMicro;
-    currentRangesArray[CurrentRange4uA].unit = "A";
     defaultCurrentRangesIdx.resize(currentChannelsNum);
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        defaultCurrentRangesIdx[channelIdx] = CurrentRange200nA;
+        defaultCurrentRangesIdx[channelIdx] = CurrentRange200pA;
     }
 
     /*! Voltage ranges */
@@ -77,108 +70,112 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     voltageRangesArray[VoltageRange700mV].step = 0.0625;
     voltageRangesArray[VoltageRange700mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange700mV].unit = "V";
-    voltageRangesArray[VoltageRange2V].min = -2000.0;
-    voltageRangesArray[VoltageRange2V].max = 2000.0;
-    voltageRangesArray[VoltageRange2V].step = 0.0625;
-    voltageRangesArray[VoltageRange2V].prefix = UnitPfxMilli;
-    voltageRangesArray[VoltageRange2V].unit = "V";
     defaultVoltageRangeIdx = VoltageRange700mV;
 
     voltageRangesExtensions.resize(voltageRangesNum);
     voltageRangesExtensions[VoltageRange700mV] = "Ultra Low Noise";
-    voltageRangesExtensions[VoltageRange2V] = "Low Noise";
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);
-    samplingRatesArray[SamplingRate1_5kHz].value = 1.5;
-    samplingRatesArray[SamplingRate1_5kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate1_5kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate6_25kHz].value = 6.25;
-    samplingRatesArray[SamplingRate6_25kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate6_25kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate12_5kHz].value = 12.5;
-    samplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate25kHz].value = 25.0;
-    samplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate25kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate1_25kHz].value = 1.25;
+    samplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate5kHz].value = 5.0;
+    samplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate5kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate10kHz].value = 10.0;
+    samplingRatesArray[SamplingRate10kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate10kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate20kHz].value = 20.0;
+    samplingRatesArray[SamplingRate20kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate20kHz].unit = "Hz";
     samplingRatesArray[SamplingRate50kHz].value = 50.0;
     samplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate50kHz].unit = "Hz";
     samplingRatesArray[SamplingRate100kHz].value = 100.0;
     samplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate100kHz].unit = "Hz";
-    defaultSamplingRateIdx = SamplingRate1_5kHz;
+    samplingRatesArray[SamplingRate200kHz].value = 200.0;
+    samplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate200kHz].unit = "Hz";
+    defaultSamplingRateIdx = SamplingRate1_25kHz;
 
     realSamplingRatesArray.resize(samplingRatesNum);
-    realSamplingRatesArray[SamplingRate1_5kHz].value = 6.25e3/4096.0;
-    realSamplingRatesArray[SamplingRate1_5kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate1_5kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate6_25kHz].value = 6.25e3/1024.0;
-    realSamplingRatesArray[SamplingRate6_25kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate6_25kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate12_5kHz].value = 6.25e3/512.0;
-    realSamplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate25kHz].value = 6.25e3/256.0;
-    realSamplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate25kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate50kHz].value = 6.25e3/128.0;
+    realSamplingRatesArray[SamplingRate1_25kHz].value = 1.25e3/1024.0;
+    realSamplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate5kHz].value = 1.25e3/256.0;
+    realSamplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate5kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate10kHz].value = 1.25e3/128.0;
+    realSamplingRatesArray[SamplingRate10kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate10kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate20kHz].value = 1.25e3/64.0;
+    realSamplingRatesArray[SamplingRate20kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate20kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate50kHz].value = 50.0;
     realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate100kHz].value = 6.25e3/64.0;
+    realSamplingRatesArray[SamplingRate100kHz].value = 100.0;
     realSamplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate100kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate200kHz].value = 200.0;
+    realSamplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate200kHz].unit = "Hz";
 
     integrationStepArray.resize(samplingRatesNum);
-    integrationStepArray[SamplingRate1_5kHz].value = 4096.0/6.25;
-    integrationStepArray[SamplingRate1_5kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate1_5kHz].unit = "s";
-    integrationStepArray[SamplingRate6_25kHz].value = 1024.0/6.25;
-    integrationStepArray[SamplingRate6_25kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate6_25kHz].unit = "s";
-    integrationStepArray[SamplingRate12_5kHz].value = 512.0/6.25;
-    integrationStepArray[SamplingRate12_5kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate12_5kHz].unit = "s";
-    integrationStepArray[SamplingRate25kHz].value = 256.0/6.25;
-    integrationStepArray[SamplingRate25kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate25kHz].unit = "s";
-    integrationStepArray[SamplingRate50kHz].value = 128.0/6.25;
+    integrationStepArray[SamplingRate1_25kHz].value = 1024.0/1.25;
+    integrationStepArray[SamplingRate1_25kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate1_25kHz].unit = "s";
+    integrationStepArray[SamplingRate5kHz].value = 256.0/1.25;
+    integrationStepArray[SamplingRate5kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate5kHz].unit = "s";
+    integrationStepArray[SamplingRate10kHz].value = 128.0/1.25;
+    integrationStepArray[SamplingRate10kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate10kHz].unit = "s";
+    integrationStepArray[SamplingRate20kHz].value = 64.0/1.25;
+    integrationStepArray[SamplingRate20kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate20kHz].unit = "s";
+    integrationStepArray[SamplingRate50kHz].value = 20.0;
     integrationStepArray[SamplingRate50kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate50kHz].unit = "s";
-    integrationStepArray[SamplingRate100kHz].value = 64.0/6.25;
+    integrationStepArray[SamplingRate100kHz].value = 10.0;
     integrationStepArray[SamplingRate100kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate100kHz].unit = "s";
+    integrationStepArray[SamplingRate200kHz].value = 5.0;
+    integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate200kHz].unit = "s";
 
     /*! Overampling ratios */
-    oversamplingImplemented = false;
+    oversamplingImplemented = true;
     oversamplingRatiosNum = OversamplingRatiosNum;
     oversamplingRatiosArray.resize(oversamplingRatiosNum);
     oversamplingRatiosArray[OversamplingRatioX1] = 1;
+    oversamplingRatiosArray[OversamplingRatioX4] = 4;
 
     /*! Voltage filters */
-    dacIntFilterAvailable = false;
+    dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
-    voltageStimulusLpfOptions.clear();
+    voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].value = 1.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].prefix = UnitPfxKilo;
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].unit = "Hz";
+    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
+    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange700mV;
 
-    dacExtFilterAvailable = true;
+    dacExtFilterAvailable = false;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
     voltageReferenceLpfOptions.resize(voltageReferenceLpfOptionsNum);
-    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].value = 3.0;
-    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].prefix = UnitPfxNone;
-    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].unit = "Hz";
-    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
-    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
-    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
-    voltageReferenceLpfRange = VoltageRange2V;
 
     /*! Digital output */
     digOutImplementedFlag = true;
 
     /*! Front end denoiser */
-    ferdImplementedFlag = false;
-    maxFerdSize = 1;
+    ferdImplementedFlag = true;
+    maxFerdSize = 2048;
 
     /*! Default values */
     selectedVoltageRangeIdx = defaultVoltageRangeIdx;
@@ -208,11 +205,6 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     protocolVoltageRangesArray[ProtocolVoltageRange700mV].step = 0.0625;
     protocolVoltageRangesArray[ProtocolVoltageRange700mV].prefix = UnitPfxMilli;
     protocolVoltageRangesArray[ProtocolVoltageRange700mV].unit = "V";
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].min = -2000.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].max = 2000.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].step = 0.0625;
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].prefix = UnitPfxMilli;
-    protocolVoltageRangesArray[ProtocolVoltageRange2V].unit = "V";
 
     /*! Time ranges */
     protocolTimeRangesArray.resize(ProtocolTimeRangesNum);
@@ -340,19 +332,19 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     protocolVoltageNames[ProtocolVInit] = "Vinit";
 
     protocolVoltageRanges.resize(ProtocolVoltagesNum);
-    protocolVoltageRanges[ProtocolVHold].step = 0.0625;
-    protocolVoltageRanges[ProtocolVHold].min = voltageRangesArray[VoltageRange2V].min;
-    protocolVoltageRanges[ProtocolVHold].max = voltageRangesArray[VoltageRange2V].max;
+    protocolVoltageRanges[ProtocolVHold].step = 1.0;
+    protocolVoltageRanges[ProtocolVHold].min = voltageRangesArray[VoltageRange700mV].min;
+    protocolVoltageRanges[ProtocolVHold].max = voltageRangesArray[VoltageRange700mV].max;
     protocolVoltageRanges[ProtocolVHold].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVHold].unit = "V";
-    protocolVoltageRanges[ProtocolVPulse].step = 0.0625;
-    protocolVoltageRanges[ProtocolVPulse].min = voltageRangesArray[VoltageRange2V].min;
-    protocolVoltageRanges[ProtocolVPulse].max = voltageRangesArray[VoltageRange2V].max;
+    protocolVoltageRanges[ProtocolVPulse].step = 1.0;
+    protocolVoltageRanges[ProtocolVPulse].min = voltageRangesArray[VoltageRange700mV].min;
+    protocolVoltageRanges[ProtocolVPulse].max = voltageRangesArray[VoltageRange700mV].max;
     protocolVoltageRanges[ProtocolVPulse].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPulse].unit = "V";
-    protocolVoltageRanges[ProtocolVStep].step = 0.0625;
-    protocolVoltageRanges[ProtocolVStep].min = voltageRangesArray[VoltageRange2V].min;
-    protocolVoltageRanges[ProtocolVStep].max = voltageRangesArray[VoltageRange2V].max;
+    protocolVoltageRanges[ProtocolVStep].step = 1.0;
+    protocolVoltageRanges[ProtocolVStep].min = voltageRangesArray[VoltageRange700mV].min;
+    protocolVoltageRanges[ProtocolVStep].max = voltageRangesArray[VoltageRange700mV].max;
     protocolVoltageRanges[ProtocolVStep].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVStep].unit = "V";
     protocolVoltageRanges[ProtocolVPk].step = 25.0;
@@ -360,14 +352,14 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     protocolVoltageRanges[ProtocolVPk].max = 4.0*protocolVoltageRanges[ProtocolVPk].step;
     protocolVoltageRanges[ProtocolVPk].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPk].unit = "V";
-    protocolVoltageRanges[ProtocolVFinal].step = 0.0625;
-    protocolVoltageRanges[ProtocolVFinal].min = voltageRangesArray[VoltageRange2V].min;
-    protocolVoltageRanges[ProtocolVFinal].max = voltageRangesArray[VoltageRange2V].max;
+    protocolVoltageRanges[ProtocolVFinal].step = 1.0;
+    protocolVoltageRanges[ProtocolVFinal].min = voltageRangesArray[VoltageRange700mV].min;
+    protocolVoltageRanges[ProtocolVFinal].max = voltageRangesArray[VoltageRange700mV].max;
     protocolVoltageRanges[ProtocolVFinal].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVFinal].unit = "V";
-    protocolVoltageRanges[ProtocolVInit].step = 0.0625;
-    protocolVoltageRanges[ProtocolVInit].min = voltageRangesArray[VoltageRange2V].min;
-    protocolVoltageRanges[ProtocolVInit].max = voltageRangesArray[VoltageRange2V].max;
+    protocolVoltageRanges[ProtocolVInit].step = 1.0;
+    protocolVoltageRanges[ProtocolVInit].min = voltageRangesArray[VoltageRange700mV].min;
+    protocolVoltageRanges[ProtocolVInit].max = voltageRangesArray[VoltageRange700mV].max;
     protocolVoltageRanges[ProtocolVInit].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVInit].unit = "V";
 
@@ -486,9 +478,9 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     selectedVoltageOffset.clear();
 
     insertionPulseImplemented = true;
-    insertionPulseVoltageRange.step = 0.0625;
-    insertionPulseVoltageRange.min = -700.0;
-    insertionPulseVoltageRange.max = 700.0;
+    insertionPulseVoltageRange.step = 1.0;
+    insertionPulseVoltageRange.min = -500.0;
+    insertionPulseVoltageRange.max = 500.0;
     insertionPulseVoltageRange.prefix = UnitPfxMilli;
     insertionPulseVoltageRange.unit = "V";
     insertionPulseDurationRange.step = 1.0;
@@ -504,15 +496,16 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     edhFormat =
             "EDH Version: 2.0\n"
             "\n"
-            "Elements eNPR HC\n"
+            "Elements eNPR\n"
             "Channels: 1\n"
             "\n"
             "Data header file\n"
             "\n"
             "Amplifier Setup\n"
-            "Range: %currentRange%\n" // 200 nA
-            "Sampling frequency (SR): %samplingRate%\n" // 25.0 kHz
+            "Range: %currentRange%\n" // 200 pA
+            "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
             "Final Bandwidth: SR/2 (no filter)\n"
+            "Oversampling x%oversamplingRatio%: %oversamplingFlag%\n" // Oversampling x4: enabled
             "\n"
             "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
             "\n"
@@ -561,8 +554,18 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
     /*! Zap */
-    zappableDeviceFlag = false;
-    singleChannelZapFlag = false;
+    zappableDeviceFlag = true;
+    singleChannelZapFlag = true;
+
+    boolConfig.initialByte = 4;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 1;
+    zapCoder = new BoolArrayCoder(boolConfig);
+
+    zapStates.resize(currentChannelsNum);
+    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
+        zapStates[currentIdx] = false;
+    }
 
     /*! Channel off */
     channelOnFlag = false;
@@ -578,11 +581,13 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     /*! Current range */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 1;
-    boolConfig.bitsNum = 1;
+    boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(1); /*!< 200nA  -> 0b1 */
-    currentRangeCoders[0]->addMapItem(0); /*!< 4uA    -> 0b0 */
+    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
+    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
+    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
+    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 1;
@@ -590,19 +595,19 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     boolConfig.bitsNum = 1;
     voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
     voltageRangeCoder->addMapItem(1); /*!< 700mV    -> 0b1 */
-    voltageRangeCoder->addMapItem(0); /*!< 2V       -> 0b0 */
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;
-    boolConfig.initialBit = 2;
-    boolConfig.bitsNum = 5;
+    boolConfig.initialBit = 3;
+    boolConfig.bitsNum = 4;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(1);  /*!< 1.5kHz      -> 0b00001 */
-    samplingRateCoder->addMapItem(5);  /*!< 6.25kHz     -> 0b00101 */
-    samplingRateCoder->addMapItem(7);  /*!< 12.5kHz     -> 0b00111 */
-    samplingRateCoder->addMapItem(9);  /*!< 25kHz       -> 0b01001 */
-    samplingRateCoder->addMapItem(11); /*!< 50kHz       -> 0b01011 */
-    samplingRateCoder->addMapItem(12); /*!< 100kHz      -> 0b01100 */
+    samplingRateCoder->addMapItem(0); /*!< 1.25kHz  -> 0b0000 */
+    samplingRateCoder->addMapItem(1); /*!< 5kHz     -> 0b0001 */
+    samplingRateCoder->addMapItem(2); /*!< 10kHz    -> 0b0010 */
+    samplingRateCoder->addMapItem(3); /*!< 20kHz    -> 0b0011 */
+    samplingRateCoder->addMapItem(8); /*!< 50kHz    -> 0b1000 */
+    samplingRateCoder->addMapItem(9); /*!< 100kHz   -> 0b1001 */
+    samplingRateCoder->addMapItem(10); /*!< 200kHz  -> 0b1010 */
 
     /*! Oversampling ratio */
     boolConfig.initialByte = 4;
@@ -627,22 +632,22 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     /*! Protocol voltages */
     protocolVoltageCoders.resize(ProtocolVoltagesNum);
     doubleConfig.initialByte = 7;
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 16;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
     protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 10;
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 16;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVPulse].step;
     protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 16;
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 16;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].step;
@@ -655,15 +660,15 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVPk].step;
     protocolVoltageCoders[ProtocolVPk] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 43;
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 16;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVFinal].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVFinal].max;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVFinal].step;
     protocolVoltageCoders[ProtocolVFinal] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 46;
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 16;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVInit].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVInit].max;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVInit].step;
@@ -724,15 +729,17 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     doubleConfig.resolution = protocolAdimensionalRanges[ProtocolNR].step;
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
-    boolConfig.initialByte = 1;
-    boolConfig.initialBit = 5;
-    boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 10kHz     -> 0b1 */
-    /*! DON'T USE  0b0: the filter must be active because the DAC is a 3rd order DS and this filter accounts for the 4th order filtering */
-
+    /*! Internal DAC filter */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 1;
+    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
+    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
+    dacIntFilterCoder->addMapItem(0); /*!< 10kHz -> 0b0 */
+
+    /*! External DAC filter */
+    boolConfig.initialByte = 6;
+    boolConfig.initialBit = 6;
     boolConfig.bitsNum = 1;
     dacExtFilterCoder = new BoolRandomArrayCoder(boolConfig);
     dacExtFilterCoder->addMapItem(0); /*!< 3Hz    -> 0b0 */
@@ -743,8 +750,8 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
 
     /*! Insertion pulse */
     doubleConfig.initialByte = 13;
-    doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 16;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 12;
     doubleConfig.minValue = insertionPulseVoltageRange.min;
     doubleConfig.maxValue = insertionPulseVoltageRange.max;
     doubleConfig.resolution = insertionPulseVoltageRange.step;
@@ -771,12 +778,12 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
 
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
-    txStatus[txStatusIdx++] = 0x42; // CFG0
-    txStatus[txStatusIdx++] = 0x04; // CFG1
+    txStatus[txStatusIdx++] = 0x60; // CFG0
+    txStatus[txStatusIdx++] = 0x03; // CFG1
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
-    txStatus[txStatusIdx++] = 0x00; // CFG4
-    txStatus[txStatusIdx++] = 0x00; // CFG5
+    txStatus[txStatusIdx++] = 0x00; // COMP0
+    txStatus[txStatusIdx++] = 0x40; // COMP1
     txStatus[txStatusIdx++] = 0x00; // Vhold
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
@@ -821,11 +828,11 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_eNPR_HC_V01::~MessageDispatcher_eNPR_HC_V01() {
+MessageDispatcher_e1ULN_V01::~MessageDispatcher_e1ULN_V01() {
 
 }
 
-void MessageDispatcher_eNPR_HC_V01::initializeDevice() {
+void MessageDispatcher_e1ULN_V01::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->digitalOffsetCompensation(currentChannelsNum, false);
@@ -833,17 +840,13 @@ void MessageDispatcher_eNPR_HC_V01::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_eNPR_HC_V01::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e1ULN_V01::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     string voltageLimit;
     switch (selectedVoltageRangeIdx) {
     case VoltageRange700mV:
         voltageLimit = "700";
-        break;
-
-    case VoltageRange2V:
-        voltageLimit = "2000";
         break;
     }
     switch (selectedProtocol) {
@@ -910,7 +913,7 @@ bool MessageDispatcher_eNPR_HC_V01::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vhold-Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
 
-        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
             message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
@@ -1042,52 +1045,37 @@ bool MessageDispatcher_eNPR_HC_V01::checkProtocolValidity(string &message) {
     return validFlag;
 }
 
-MessageDispatcher_eNPR_HC_V02::MessageDispatcher_eNPR_HC_V02(string di) :
-    MessageDispatcher_eNPR_HC_V01(di) {
+void MessageDispatcher_e1ULN_V01::setFerdParameters() {
+    unsigned int rangeCoeff;
+    /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
+    if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {
+        rangeCoeff = 4;
 
-    /************************\
-     * Communication format *
-    \************************/
+    } else {
+        rangeCoeff = 1;
+    }
 
-    /*! Sampling rates */
-    samplingRatesNum = SamplingRatesNum;
-    samplingRatesArray.resize(samplingRatesNum);
-    samplingRatesArray[SamplingRate200kHz].value = 200.0;
-    samplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate200kHz].unit = "Hz";
-    defaultSamplingRateIdx = SamplingRate1_5kHz;
+    if (selectedSamplingRateIdx < SamplingRate20kHz) {
+        /*! sampling rate too low for reset */
+        ferdL = 1;
+        ferdInhibition = true;
 
-    realSamplingRatesArray.resize(samplingRatesNum);
-    realSamplingRatesArray[SamplingRate200kHz].value = 6.25e3/32.0;
-    realSamplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate200kHz].unit = "Hz";
+    } else if (selectedSamplingRateIdx == SamplingRate20kHz) {
+        if (rangeCoeff == 1) {
+            /*! sampling rate too low for reset (in the highest range the reset is 4 times faster) */
+            ferdL = 1;
+            ferdInhibition = true;
 
-    integrationStepArray.resize(samplingRatesNum);
-    integrationStepArray[SamplingRate200kHz].value = 32.0/6.25;
-    integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate200kHz].unit = "s";
+        } else {
+            ferdL = oversamplingRatio*rangeCoeff/2;
+            ferdInhibition = false;
+        }
 
-    /**********\
-     * Coders *
-    \**********/
+    } else {
+        ferdL = oversamplingRatio*((unsigned int)round(baseSamplingRate.getNoPrefixValue()/50.0e3))*rangeCoeff*32; /*! It should be osrSR/baseSR*baseSR/50kHz */
+        ferdInhibition = false;
+    }
+    ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
 
-    /*! Input controls */
-    BoolCoder::CoderConfig_t boolConfig;
-
-    /*! Sampling rate */
-    boolConfig.initialByte = 2;
-    boolConfig.initialBit = 2;
-    boolConfig.bitsNum = 5;
-    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(1);  /*!< 1.5kHz      -> 0b00001 */
-    samplingRateCoder->addMapItem(5);  /*!< 6.25kHz     -> 0b00101 */
-    samplingRateCoder->addMapItem(7);  /*!< 12.5kHz     -> 0b00111 */
-    samplingRateCoder->addMapItem(9);  /*!< 25kHz       -> 0b01001 */
-    samplingRateCoder->addMapItem(11); /*!< 50kHz       -> 0b01011 */
-    samplingRateCoder->addMapItem(12); /*!< 100kHz      -> 0b01100 */
-    samplingRateCoder->addMapItem(14); /*!< 200kHz      -> 0b01110 */
-}
-
-MessageDispatcher_eNPR_HC_V02::~MessageDispatcher_eNPR_HC_V02() {
-
+    MessageDispatcher::setFerdParameters();
 }

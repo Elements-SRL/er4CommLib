@@ -373,6 +373,19 @@ ErrorCodes_t setCustomFlag(
     return ret;
 }
 
+ErrorCodes_t setCustomDouble(
+        uint16_t idx,
+        double value) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->setCustomDouble(idx, value, true);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t resetWasherError() {
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
@@ -1575,6 +1588,20 @@ ErrorCodes_t getCustomFlags(
     ErrorCodes_t ret;
     if (messageDispatcher != nullptr) {
         ret = messageDispatcher->getCustomFlags(customFlags, customFlagsDefault);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
+ErrorCodes_t getCustomDoubles(
+        vector <string> &customDoubles,
+        vector <RangedMeasurement_t> &customDoublesRanges,
+        vector <double> &customDoublesDefault) {
+    ErrorCodes_t ret;
+    if (messageDispatcher != nullptr) {
+        ret = messageDispatcher->getCustomDoubles(customDoubles, customDoublesRanges,customDoublesDefault);
 
     } else {
         ret = ErrorDeviceNotConnected;

@@ -1,4 +1,4 @@
-//  Copyright (C) 2021 Filippo Cona
+//  Copyright (C) 2021-2023 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -347,6 +347,17 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCustomFlag(
         ER4CL_ARGIN uint16_t idx,
         ER4CL_ARGIN bool flag);
+
+/*! \brief Set a custom double control.
+ *
+ * \param idx [in] Index of the custom control to set.
+ * \param flag [in] Double to be used for the cutom control.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setCustomDouble(
+        ER4CL_ARGIN uint16_t idx,
+        ER4CL_ARGIN double value);
 
 /*! \brief Reset the error status for the Orbit washer.
  *
@@ -765,7 +776,6 @@ ErrorCodes_t getQueueStatus(
 
 /*! \brief Reads data packets from the device into a buffer.
  * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.
- * \a buffer is allocated by method init() with #ER4CL_DATA_ARRAY_SIZE items and freed by method deinit().\n
  * Calling this method with \a dataRead greater than the actual number of available data packets will return an error code,
  * but the returned \a buffer will still contain all the available data packets, and \a dataRead will be smaller than
  * \a dataToRead. \n
@@ -786,7 +796,6 @@ ErrorCodes_t readData(
 
 /*! \brief As readData, but returns also a buffer for unfiltered data.
  * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.
- * \a buffer is allocated by method init() with #ER4CL_DATA_ARRAY_SIZE items and freed by method deinit().\n
  * Calling this method with \a dataRead greater than the actual number of available data packets will return an error code,
  * but the returned \a buffer will still contain all the available data packets, and \a dataRead will be smaller than
  * \a dataToRead. \n
@@ -1379,13 +1388,26 @@ ErrorCodes_t readCalibrationEeprom(
 /*! \brief Get the available custom controls of type flag (active/inactive).
  *
  * \param customFlags [out] Names of the available custom controls.
- * \param customFlagsDefault [out] Deafault values for the available custom controls.
+ * \param customFlagsDefault [out] Default values for the available custom controls.
  * \return Success if there's at least one custom flag control available.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCustomFlags(
         ER4CL_ARGOUT std::vector <std::string> &customFlags,
         ER4CL_ARGOUT std::vector <bool> &customFlagsDefault);
+
+/*! \brief Get the available custom controls of type double (floating point values).
+ *
+ * \param customDoubles [out] Names of the available custom controls.
+ * \param customDoublesRanges [out] Ranges for the available custom controls.
+ * \param customDoublesDefault [out] Default values for the available custom controls.
+ * \return Success if there's at least one custom flag control available.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getCustomDoubles(
+        ER4CL_ARGOUT std::vector <std::string> &customDoubles,
+        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &customDoublesRanges,
+        ER4CL_ARGOUT std::vector <double> &customDoublesDefault);
 
 /*! \brief Availability of Nanion's temperature controller.
  *

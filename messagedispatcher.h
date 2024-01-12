@@ -192,6 +192,7 @@ public:
     /*! Device specific controls */
 
     ErrorCodes_t setCustomFlag(uint16_t idx, bool flag, bool applyFlag);
+    ErrorCodes_t setCustomDouble(uint16_t idx, double value, bool applyFlag);
 
     virtual ErrorCodes_t resetWasherError();
     virtual ErrorCodes_t setWasherPresetSpeeds(vector <int8_t> speedValues);
@@ -282,6 +283,7 @@ public:
     /*! Device specific controls */
 
     ErrorCodes_t getCustomFlags(vector <string> &customFlags, vector <bool> &customFlagsDefault);
+    ErrorCodes_t getCustomDoubles(vector <string> &customDoubles, vector <RangedMeasurement_t> &customDoublesRanges, vector <double> &customDoublesDefault);
 
     ErrorCodes_t hasNanionTemperatureController();
     virtual ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature);
@@ -554,6 +556,12 @@ protected:
     vector <string> customFlagsNames;
     vector <bool> customFlagsDefault;
     vector <BoolArrayCoder *> customFlagsCoders;
+
+    uint16_t customDoublesNum = 0;
+    vector <string> customDoublesNames;
+    vector <RangedMeasurement_t> customDoublesRanges;
+    vector <double> customDoublesDefault;
+    vector <DoubleCoder *> customDoublesCoders;
 
     string edhFormat;
 

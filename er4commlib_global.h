@@ -1,4 +1,4 @@
-//  Copyright (C) 2021 Filippo Cona
+//  Copyright (C) 2021-2023 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -108,7 +108,8 @@ typedef enum {
     DeviceENPREDR3_V03,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPREDR3_V04,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPR,                 /*!< eNPR. */
-    DeviceENPRHC,               /*!< eNPR-HC. */
+    DeviceENPRHC_V01,           /*!< eNPR-HC. */
+    DeviceENPRHC_V02,           /*!< eNPR-HC with 200ksps option. */
     DeviceE4nEDR3_V04,          /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
     DeviceE4eEDR3,              /*!< e4 Elements (Legacy version for EDR3). */
     DeviceE4n_V01,              /*!< e4 Orbit mini. */
@@ -130,6 +131,8 @@ typedef enum {
     DeviceENPR2Channels_V02,    /*!< eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms. */
     DeviceOrbitMiniSine_V01,    /*!< Orbit mini prototype with additional sinusoidal waveforms. */
     DeviceE16nSine_V01,         /*!< e16 Orbit TC with additional sinusoidal waveforms. */
+    DeviceENPRNanopipette_V01,  /*!< eNPR prototype with 2 channels with independent current ranges and PWM control. */
+    DeviceE1ULN_V01,            /*!< e1ULN prototype with eNPR PCB. */
     DeviceFakeENPR,             /*!< Fake eNPR. */
     DeviceFakeENPRHC,           /*!< Fake eNPR-HC. */
     DeviceFakeE16n,             /*!< Fake e16 Orbit TC. */

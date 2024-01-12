@@ -20,6 +20,7 @@
 #include "messagedispatcher_e1plus.h"
 #include "messagedispatcher_e1light.h"
 #include "messagedispatcher_e1hc.h"
+#include "messagedispatcher_e1uln.h"
 #include "messagedispatcher_enpr.h"
 #include "messagedispatcher_enpr_hc.h"
 #include "messagedispatcher_e2hc.h"
@@ -62,7 +63,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionENPR, DeviceSubversionENPR, 4, DeviceENPREDR3_V03},                                       //    8,  2,  4 : eNPR (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 8, DeviceENPREDR3_V04},                                       //    8,  2,  8 : eNPR (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                                             //    8,  2,129 : eNPR
-    {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC},                                         //    8,  8,129 : eNPR-HC
+    {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC_V01},                                     //    8,  8,129 : eNPR-HC
+    {DeviceVersionENPR, DeviceSubversionENPRHC, 130, DeviceENPRHC_V02},                                     //    8,  8,130 : eNPR-HC with 200ksps option
     {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nEDR3_V04},                                          //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nEDR3_V04},                                          //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
@@ -75,8 +77,9 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                                              //    3,  5,135 : e16 Orbit TC
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                                              //    3,  5,136 : e16 Orbit TC
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16HC, 4, DeviceE16HC_V01},                                          //    3, 10,  4 : e16HC No voltage amplifier
-    {DeviceVersionE16, DeviceSubversionE16HC, 5, DeviceE16HC_V02},                                          //    3, 10,  5 : e16HC
+    {DeviceVersionE16, DeviceSubversionE16HCREMI8, 4, DeviceE16HC_V01},                                     //    3, 10,  4 : e16HC No voltage amplifier
+    {DeviceVersionE16, DeviceSubversionE16HCREMI8, 5, DeviceE16HC_V02},                                     //    3, 10,  5 : e16HC
+    {DeviceVersionE16, DeviceSubversionE16HC, 6, DeviceE16HC_V02},                                          //    3, 11,  6 : e16HC
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   11,  1,130 : e2HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                                  //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                                         //    6,  5,129 : testboard EL06b
@@ -93,6 +96,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 130, DeviceENPR2Channels_V02},                  //  254, 17,130 : eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},              //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionE16nSineWave, 129, DeviceE16nSine_V01},                        //  254, 19,129 : e16 Orbit TC prototype with additional sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionENPRNanopipette, 129, DeviceENPRNanopipette_V01},              //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
+    {DeviceVersionPrototype, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                  //  254, 21,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeENPR}
 };
 
@@ -291,8 +296,12 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_eNPR(deviceId);
         break;
 
-    case DeviceENPRHC:
-        messageDispatcher = new MessageDispatcher_eNPR_HC_V00(deviceId);
+    case DeviceENPRHC_V01:
+        messageDispatcher = new MessageDispatcher_eNPR_HC_V01(deviceId);
+        break;
+
+    case DeviceENPRHC_V02:
+        messageDispatcher = new MessageDispatcher_eNPR_HC_V02(deviceId);
         break;
 
     case DeviceE4nEDR3_V04:
@@ -393,6 +402,14 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE16nSine_V01:
         messageDispatcher = new MessageDispatcher_e16n_sine_V01(deviceId);
+        break;
+
+    case DeviceENPRNanopipette_V01:
+        messageDispatcher = new MessageDispatcher_eNPR_2Channels_V03(deviceId);
+        break;
+
+    case DeviceE1ULN_V01:
+        messageDispatcher = new MessageDispatcher_e1ULN_V01(deviceId);
         break;
 
     case DeviceFakeENPR:
@@ -1495,6 +1512,19 @@ ErrorCodes_t MessageDispatcher::setCustomFlag(uint16_t idx, bool flag, bool appl
     }
 }
 
+ErrorCodes_t MessageDispatcher::setCustomDouble(uint16_t idx, double value, bool applyFlag) {
+    if (idx < customDoublesNum) {
+        customDoublesCoders[idx]->encode(value, txStatus);
+        if (applyFlag) {
+            this->stackOutgoingMessage(txStatus);
+        }
+        return Success;
+
+    } else {
+        return ErrorValueOutOfRange;
+    }
+}
+
 ErrorCodes_t MessageDispatcher::resetWasherError() {
     return ErrorFeatureNotImplemented;
 }
@@ -2293,6 +2323,22 @@ ErrorCodes_t MessageDispatcher::getCustomFlags(vector <string> &customFlags, vec
             customFlags[idx] = customFlagsNames[idx];
         }
         customFlagsDefault = this->customFlagsDefault;
+        return Success;
+
+    } else {
+        return ErrorFeatureNotImplemented;
+    }
+}
+
+ErrorCodes_t MessageDispatcher::getCustomDoubles(vector <string> &customDoubles, vector <RangedMeasurement_t> &customDoublesRanges, vector <double> &customDoublesDefault) {
+    if (customDoublesNum > 0) {
+        customDoubles.resize(customDoublesNum);
+        customDoublesRanges.resize(customDoublesNum);
+        for (unsigned int idx = 0; idx < customDoublesNum; idx++) {
+            customDoubles[idx] = customDoublesNames[idx];
+            customDoublesRanges[idx] = this->customDoublesRanges[idx];
+        }
+        customDoublesDefault = this->customDoublesDefault;
         return Success;
 
     } else {

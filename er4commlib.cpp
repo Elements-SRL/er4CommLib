@@ -425,74 +425,32 @@ ErrorCodes_t setCurrentRange(
 
 ErrorCodes_t setVoltageRange(
         uint16_t voltageRangeIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setVoltageRange(voltageRangeIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(setVoltageRange, voltageRangeIdx)
 }
 
 ErrorCodes_t setVoltageReferenceRange(
         uint16_t voltageRangeIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setVoltageReferenceRange(voltageRangeIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(setVoltageReferenceRange, voltageRangeIdx)
 }
 
 ErrorCodes_t setSamplingRate(
         uint16_t samplingRateIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setSamplingRate(samplingRateIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(setSamplingRate, samplingRateIdx)
 }
 
 ErrorCodes_t setOversamplingRatio(
         uint16_t oversamplingRatioIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setOversamplingRatio(oversamplingRatioIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(setOversamplingRatio, oversamplingRatioIdx)
 }
 
 ErrorCodes_t setVoltageStimulusLpf(
         uint16_t filterIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setVoltageStimulusLpf(filterIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(setVoltageStimulusLpf, filterIdx)
 }
 
 ErrorCodes_t setVoltageReferenceLpf(
         uint16_t filterIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setVoltageReferenceLpf(filterIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(setVoltageReferenceLpf, filterIdx)
 }
 
 ErrorCodes_t selectStimulusChannel(
@@ -543,14 +501,7 @@ ErrorCodes_t digitalOffsetCompensation(
 
 ErrorCodes_t digitalOffsetCompensationAutostop(
         bool on) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->digitalOffsetCompensationAutostop(on);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(digitalOffsetCompensationAutostop, on)
 }
 
 ErrorCodes_t zap(
@@ -601,151 +552,67 @@ ErrorCodes_t switchChannelOn(
 ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
         uint32_t idx,
         Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFastReferencePulseProtocolWave1Voltage(idx, voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setFastReferencePulseProtocolWave1Voltage, idx, voltage)
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave1Time(
         uint32_t idx,
         Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFastReferencePulseProtocolWave1Time(idx, time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setFastReferencePulseProtocolWave1Time, idx, time)
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
         uint32_t idx,
         Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFastReferencePulseProtocolWave2Voltage(idx, voltage);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setFastReferencePulseProtocolWave2Voltage, idx, voltage)
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Time(
         uint32_t idx,
         Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFastReferencePulseProtocolWave2Time(idx, time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setFastReferencePulseProtocolWave2Time, idx, time)
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
         uint32_t idx,
         Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFastReferencePulseProtocolWave2Duration(idx, time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setFastReferencePulseProtocolWave2Duration, idx, time)
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Period(
         uint32_t idx,
         Measurement_t time) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFastReferencePulseProtocolWave2Period(idx, time);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setFastReferencePulseProtocolWave2Period, idx, time)
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2PulseNumber(
         uint32_t idx,
         uint16_t pulseNumber) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setFastReferencePulseProtocolWave2PulseNumber(idx, pulseNumber);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setFastReferencePulseProtocolWave2PulseNumber, idx, pulseNumber)
 }
 
 ErrorCodes_t turnOnDigitalOutput(
         bool on) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->turnOnDigitalOutput(on);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(turnOnDigitalOutput, on)
 }
 
 ErrorCodes_t turnLedOn(
         uint16_t ledIndex,
         bool on) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->turnLedOn(ledIndex, on);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(turnLedOn, ledIndex, on)
 }
 
 ErrorCodes_t enableFrontEndResetDenoiser(
         bool on) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->enableFrontEndResetDenoiser(on);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL1(enableFrontEndResetDenoiser, on)
 }
 
 ErrorCodes_t resetDevice() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->resetDevice();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL0(resetDevice)
 }
 
 ErrorCodes_t resetDigitalOffsetCompensation() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->resetDigitalOffsetCompensation();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL0(resetDigitalOffsetCompensation)
 }
 
 ErrorCodes_t setCompensationsChannel(
@@ -816,27 +683,13 @@ ErrorCodes_t setDebugBit(
         uint16_t byteOffset,
         uint16_t bitOffset,
         bool status) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setDebugBit(byteOffset, bitOffset, status);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL3(setDebugBit, byteOffset, bitOffset, status)
 }
 
 ErrorCodes_t setDebugByte(
         uint16_t byteOffset,
         uint16_t byteValue) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setDebugByte(byteOffset, byteValue);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    MASS_CALL2(setDebugByte, byteOffset, byteValue)
 }
 
 /****************\

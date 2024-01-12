@@ -81,6 +81,9 @@
 
 static MessageDispatcher * messageDispatcher = nullptr;
 static std::vector <MessageDispatcher *> msgDisps;
+static unsigned int currentChannelsNum = 0;
+static unsigned int msgDispsNum = 0;
+static unsigned int totalCurrentChannelsNum = 0;
 
 namespace er4CommLib {
 
@@ -96,6 +99,10 @@ ErrorCodes_t detectDevices(
 
 ErrorCodes_t connect(
         std::vector <std::string> deviceIds) {
+
+    if (deviceIds.empty()) {
+        return ErrorUnknown; /*! \todo FCON sostituire */
+    }
 
     if (!msgDisps.empty()) {
         return ErrorDeviceAlreadyConnected;
@@ -120,7 +127,7 @@ ErrorCodes_t connect(
                       deviceSubversionCheck,
                       firmwareVersionCheck);
         if (deviceVersion != deviceVersionCheck || deviceSubversion != deviceSubversionCheck || firmwareVersion != firmwareVersionCheck) {
-            return ErrorUnknown; // definire un tipo di errore per questa situazione
+            return ErrorUnknown; /*! \todo FCON sostituire */
         }
     }
 
@@ -130,6 +137,12 @@ ErrorCodes_t connect(
     for (auto&& deviceId : deviceIds) {
         err = MessageDispatcher::connectDevice(deviceId, msgDisps[c++]);
     }
+
+    msgDispsNum = msgDisps.size();
+
+    unsigned int voltageChannelsNum;
+    msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
+    totalCurrentChannelsNum = currentChannelsNum*msgDispsNum;
 
     return err;
 }
@@ -145,6 +158,7 @@ ErrorCodes_t disconnect() {
         delete msgDisps[c++];
     }
     msgDisps.clear();
+    msgDispsNum = 0;
 
     return err;
 }
@@ -238,29 +252,42 @@ ErrorCodes_t checkProtocolAdimensional(
 }
 
 ErrorCodes_t setVoltageOffset(
-        unsigned int idx,
+        unsigned int channelIdx,
         Measurement_t voltage) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setVoltageOffset(idx, voltage);
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    if (channelIdx > totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ErrorCodes_t ret = Success;
+    if (channelIdx == totalCurrentChannelsNum) {
+        for (auto md : msgDisps) {
+            ret = md->setVoltageOffset(currentChannelsNum, voltage);
+        }
 
     } else {
-        ret = ErrorDeviceNotConnected;
+        ret = msgDisps[channelIdx/currentChannelsNum]->setVoltageOffset(channelIdx % currentChannelsNum, voltage);
     }
     return ret;
 }
 
 ErrorCodes_t checkVoltageOffset(
-        unsigned int idx,
+        unsigned int channelIdx,
         Measurement_t voltage,
         std::string &message) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->checkVoltageOffset(idx, voltage, message);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
+
+    if (channelIdx >= totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ErrorCodes_t ret = Success;
+    ret = msgDisps[channelIdx/currentChannelsNum]->checkVoltageOffset(channelIdx % currentChannelsNum, voltage, message);
     return ret;
 }
 

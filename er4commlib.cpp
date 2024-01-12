@@ -96,6 +96,7 @@ static MessageDispatcher * messageDispatcher = nullptr;
 static std::vector <MessageDispatcher *> msgDisps;
 static unsigned int voltageChannelsNum = 0;
 static unsigned int currentChannelsNum = 0;
+static unsigned int totalChannelsNum = 0;
 static unsigned int msgDispsNum = 0;
 static unsigned int totalCurrentChannelsNum = 0;
 static unsigned int msgDispCompensated = 0;
@@ -109,7 +110,7 @@ namespace er4CommLib {
 \************************/
 
 ErrorCodes_t detectDevices(
-        vector <string> &deviceIds) {
+        std::vector <std::string> &deviceIds) {
     /*! Gets number of devices */
     return MessageDispatcher::detectDevices(deviceIds);
 }
@@ -162,6 +163,7 @@ ErrorCodes_t connect(
     msgDispsNum = msgDisps.size();
 
     msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
+    totalChannelsNum = voltageChannelsNum+currentChannelsNum;
     totalCurrentChannelsNum = currentChannelsNum*msgDispsNum;
 
     for (auto md : msgDisps) {
@@ -966,8 +968,27 @@ ErrorCodes_t readData(
     }
 
     ErrorCodes_t ret = Success;
+    if (msgDispsNum == 1) {
+        return msgDisps[0]->getDataPackets(buffer, dataToRead, dataRead);
+    }
+
+    int c = 0;
+    unsigned int bufferOutIdx;
+    unsigned int bufferIdx = 0;
     for (auto md : msgDisps) {
-        return md->getDataPackets(buffer, dataToRead, dataRead);
+        ret = md->getDataPackets(buffer, dataToRead, dataRead);
+        if (c == 0) {
+            bufferOutIdx = 0;
+            for (unsigned int idx = 0; idx < dataRead; idx++) {
+                bufferOut[idx*totalCurrentChannelsNum] = buffer[idx*totalChannelsNum];
+
+                idx += voltageChannelsNum+totalCurrentChannelsNum;
+            }
+
+        } else {
+
+        }
+        c++;
     }
     return ret;
 }

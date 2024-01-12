@@ -791,7 +791,7 @@ ErrorCodes_t getChannelsNumber(
     }
 
     ErrorCodes_t ret = messageDispatcher->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
-    currentChannelsNum *= msgDisps.size();
+    currentChannelsNum *= msgDispsNum;
     return ret;
 }
 
@@ -857,6 +857,7 @@ ErrorCodes_t readData(
         }
         c++;
     }
+    buffer = bufferOut;
     return ret;
 }
 
@@ -865,12 +866,50 @@ ErrorCodes_t readAllData(
         unsigned int &dataRead,
         uint16_t * &buffer,
         uint16_t * &unfilteredBuffer) {
-    if (messageDispatcher != nullptr) {
-        return messageDispatcher->getAllDataPackets(buffer, unfilteredBuffer, dataToRead, dataRead);
-
-    } else {
+    if (msgDisps.empty()) {
         return ErrorDeviceNotConnected;
     }
+
+    ErrorCodes_t ret = Success;
+    if (msgDispsNum == 1) {
+        return msgDisps[0]->getAllDataPackets(buffer, unfilteredBuffer, dataToRead, dataRead);
+    }
+
+    int c = 0;
+    unsigned int bufferOutIdx;
+    unsigned int bufferIdx;
+    for (auto md : msgDisps) {
+        ret = md->getAllDataPackets(buffer, unfilteredBuffer, dataToRead, dataRead);
+        if (c == 0) {
+            bufferOutIdx = 0;
+            bufferIdx = 0;
+            for (unsigned int idx = 0; idx < dataRead; idx++) {
+                for (unsigned int chIdx = 0; chIdx < totalChannelsNum; chIdx++) {
+                    bufferOut[bufferOutIdx] = buffer[bufferIdx];
+                    unfilteredBufferOut[bufferOutIdx++] = unfilteredBuffer[bufferIdx++];
+                }
+
+                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum;
+            }
+
+        } else {
+            bufferOutIdx = voltageChannelsNum+c*currentChannelsNum;
+            bufferIdx = voltageChannelsNum;
+            for (unsigned int idx = 0; idx < dataRead; idx++) {
+                for (unsigned int chIdx = 0; chIdx < currentChannelsNum; chIdx++) {
+                    bufferOut[bufferOutIdx] = buffer[bufferIdx];
+                    unfilteredBufferOut[bufferOutIdx++] = unfilteredBuffer[bufferIdx++];
+                }
+
+                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum;
+                bufferIdx += voltageChannelsNum;
+            }
+        }
+        c++;
+    }
+    buffer = bufferOut;
+    unfilteredBuffer = unfilteredBufferOut;
+    return ret;
 }
 
 ErrorCodes_t purgeData() {

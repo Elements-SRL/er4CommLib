@@ -81,10 +81,13 @@
 
 static MessageDispatcher * messageDispatcher = nullptr;
 static std::vector <MessageDispatcher *> msgDisps;
+static unsigned int voltageChannelsNum = 0;
 static unsigned int currentChannelsNum = 0;
 static unsigned int msgDispsNum = 0;
 static unsigned int totalCurrentChannelsNum = 0;
 static unsigned int msgDispCompensated = 0;
+static uint16_t * bufferOut = nullptr;
+static uint16_t * unfilteredBufferOut = nullptr;
 
 namespace er4CommLib {
 
@@ -136,14 +139,23 @@ ErrorCodes_t connect(
     ErrorCodes_t err = Success;
     int c = 0;
     for (auto&& deviceId : deviceIds) {
-        err = MessageDispatcher::connectDevice(deviceId, msgDisps[c++]);
+        err = MessageDispatcher::connectDevice(deviceId, msgDisps[c]);
+        if (err != Success) {
+            msgDisps.clear();
+            return err;
+        }
     }
 
     msgDispsNum = msgDisps.size();
 
-    unsigned int voltageChannelsNum;
     msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
     totalCurrentChannelsNum = currentChannelsNum*msgDispsNum;
+
+    for (auto md : msgDisps) {
+        md->setMaxOutputPacketsNum(ER4CL_DATA_ARRAY_SIZE/(totalCurrentChannelsNum+voltageChannelsNum));
+    }
+    bufferOut = new (nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
+    unfilteredBufferOut = new (nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
 
     return err;
 }
@@ -160,6 +172,16 @@ ErrorCodes_t disconnect() {
     }
     msgDisps.clear();
     msgDispsNum = 0;
+
+    if (bufferOut != nullptr) {
+        delete [] bufferOut;
+        bufferOut = nullptr;
+    }
+
+    if (unfilteredBufferOut != nullptr) {
+        delete [] unfilteredBufferOut;
+        unfilteredBufferOut = nullptr;
+    }
 
     return err;
 }
@@ -963,7 +985,7 @@ ErrorCodes_t getQueueStatus(
     if (msgDisps.empty()) {
         return ErrorDeviceNotConnected;
     }
-    ErrorCodes_t ret;
+    ErrorCodes_t ret = Success;
     status.availableDataPackets = std::numeric_limits <unsigned int> ::max();
     QueueStatus_t statusn;
     for (auto md : msgDisps) {
@@ -1017,12 +1039,15 @@ ErrorCodes_t readData(
         unsigned int dataToRead,
         unsigned int &dataRead,
         uint16_t * &buffer) {
-    if (messageDispatcher != nullptr) {
-        return messageDispatcher->getDataPackets(buffer, dataToRead, dataRead);
-
-    } else {
+    if (msgDisps.empty()) {
         return ErrorDeviceNotConnected;
     }
+
+    ErrorCodes_t ret = Success;
+    for (auto md : msgDisps) {
+        return md->getDataPackets(buffer, dataToRead, dataRead);
+    }
+    return ret;
 }
 
 ErrorCodes_t readAllData(

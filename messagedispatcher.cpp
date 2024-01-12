@@ -1666,6 +1666,10 @@ ErrorCodes_t MessageDispatcher::setDebugByte(uint16_t byteOffset, uint16_t byteV
     return Success;
 }
 
+void MessageDispatcher::setMaxOutputPacketsNum(unsigned int maxPackets) {
+    maxOutputPacketsNum = maxPackets;
+}
+
 /****************\
  *  Rx methods  *
 \****************/

@@ -207,6 +207,7 @@ public:
 
     ErrorCodes_t setDebugBit(uint16_t byteOffset, uint16_t bitOffset, bool status);
     ErrorCodes_t setDebugByte(uint16_t byteOffset, uint16_t byteValue);
+    void setMaxOutputPacketsNum(unsigned int maxPackets);
 
     /****************\
      *  Rx methods  *

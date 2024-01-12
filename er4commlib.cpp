@@ -456,12 +456,22 @@ ErrorCodes_t updateWasherPresetSpeeds() {
 ErrorCodes_t setCurrentRange(
         uint16_t currentRangeIdx,
         uint16_t channelIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setCurrentRange(currentRangeIdx, channelIdx);
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    if (channelIdx > totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ErrorCodes_t ret = Success;
+    if (channelIdx == totalCurrentChannelsNum) {
+        for (auto md : msgDisps) {
+            ret = md->setCurrentRange(currentRangeIdx, currentChannelsNum);
+        }
 
     } else {
-        ret = ErrorDeviceNotConnected;
+        ret = msgDisps[channelIdx/currentChannelsNum]->setCurrentRange(currentRangeIdx, channelIdx % currentChannelsNum);
     }
     return ret;
 }

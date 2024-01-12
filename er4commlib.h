@@ -247,25 +247,25 @@ ErrorCodes_t checkProtocolAdimensional(
 
 /*! \brief Set a channel voltage offset.
  *
- * \param idx [in] Index of the channel.
+ * \param channelIdx [in] Index of the channel.
  * \param voltage [in] Value of the voltage offset.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageOffset(
-        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN unsigned int channelIdx,
         ER4CL_ARGIN Measurement_t voltage);
 
 /*! \brief Check if the applied voltage is valid in combination with the currently applied voltage protocol.
  *
- * \param idx [in] Index of the channel voltage offset to be checked.
+ * \param channelIdx [in] Index of the channel voltage offset to be checked.
  * \param voltage [in] Value of the voltage offset to be checked.
  * \param message [in] Error message in case the parameters set is invalid.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t checkVoltageOffset(
-        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN unsigned int channelIdx,
         ER4CL_ARGIN Measurement_t voltage,
         ER4CL_ARGIN std::string &message);
 

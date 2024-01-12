@@ -903,14 +903,10 @@ ErrorCodes_t getDeviceInfo(
         uint8_t &deviceVersion,
         uint8_t &deviceSubversion,
         uint32_t &firmwareVersion) {
-    ErrorCodes_t ret = Success;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getDeviceInfo(deviceVersion, deviceSubversion, firmwareVersion);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
-    return ret;
+    return msgDisps[0]->getDeviceInfo(deviceVersion, deviceSubversion, firmwareVersion);
 }
 
 ErrorCodes_t getDeviceInfo(
@@ -953,12 +949,24 @@ ErrorCodes_t getDeviceInfo(
 
 ErrorCodes_t getQueueStatus(
         QueueStatus_t &status) {
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
     ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getQueueStatus(status);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    status.availableDataPackets = std::numeric_limits <unsigned int> ::max();
+    QueueStatus_t statusn;
+    for (auto md : msgDisps) {
+        ret = md->getQueueStatus(statusn);
+        status.availableDataPackets = std::min(status.availableDataPackets, statusn.availableDataPackets);
+        status.bufferOverflowFlag = status.bufferOverflowFlag || statusn.bufferOverflowFlag;
+        status.lostDataFlag = status.lostDataFlag || statusn.lostDataFlag;
+        status.saturationFlag = status.saturationFlag || statusn.saturationFlag;
+        status.currentRangeIncreaseFlag = status.currentRangeIncreaseFlag || statusn.currentRangeIncreaseFlag;
+        status.currentRangeDecreaseFlag = status.currentRangeDecreaseFlag || statusn.currentRangeDecreaseFlag;
+        status.communicationErrorFlag = status.communicationErrorFlag || statusn.communicationErrorFlag;
+        if (ret != Success && ret != WarningNoDataAvailable) {
+            return ret;
+        }
     }
     return ret;
 }
@@ -966,37 +974,32 @@ ErrorCodes_t getQueueStatus(
 ErrorCodes_t getChannelsNumber(
         uint32_t &voltageChannelsNum,
         uint32_t &currentChannelsNum) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
+
+    ErrorCodes_t ret = messageDispatcher->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
+    currentChannelsNum *= msgDisps.size();
     return ret;
 }
 
 ErrorCodes_t convertVoltageValue(
         uint16_t intValue,
         double &fltValue) {
-    if (messageDispatcher != nullptr) {
-        return messageDispatcher->convertVoltageValue(intValue, fltValue);
-
-    } else {
+    if (msgDisps.empty()) {
         return ErrorDeviceNotConnected;
     }
+    return msgDisps[0]->convertVoltageValue(intValue, fltValue);
 }
 
 ErrorCodes_t convertCurrentValue(
         uint16_t intValue,
         uint16_t channelIdx,
         double &fltValue) {
-    if (messageDispatcher != nullptr) {
-        return messageDispatcher->convertCurrentValue(intValue, channelIdx, fltValue);
-
-    } else {
+    if (msgDisps.empty()) {
         return ErrorDeviceNotConnected;
     }
+    return msgDisps[channelIdx/msgDisps.size()]->convertCurrentValue(intValue, channelIdx, fltValue);
 }
 
 ErrorCodes_t readData(

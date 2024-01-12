@@ -1,4 +1,4 @@
-//  Copyright (C) 2021 Filippo Cona
+//  Copyright (C) 2021-2023 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -776,7 +776,6 @@ ErrorCodes_t getQueueStatus(
 
 /*! \brief Reads data packets from the device into a buffer.
  * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.
- * \a buffer is allocated by method init() with #ER4CL_DATA_ARRAY_SIZE items and freed by method deinit().\n
  * Calling this method with \a dataRead greater than the actual number of available data packets will return an error code,
  * but the returned \a buffer will still contain all the available data packets, and \a dataRead will be smaller than
  * \a dataToRead. \n
@@ -797,7 +796,6 @@ ErrorCodes_t readData(
 
 /*! \brief As readData, but returns also a buffer for unfiltered data.
  * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.
- * \a buffer is allocated by method init() with #ER4CL_DATA_ARRAY_SIZE items and freed by method deinit().\n
  * Calling this method with \a dataRead greater than the actual number of available data packets will return an error code,
  * but the returned \a buffer will still contain all the available data packets, and \a dataRead will be smaller than
  * \a dataToRead. \n

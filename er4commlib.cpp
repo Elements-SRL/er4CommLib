@@ -84,6 +84,7 @@ static std::vector <MessageDispatcher *> msgDisps;
 static unsigned int currentChannelsNum = 0;
 static unsigned int msgDispsNum = 0;
 static unsigned int totalCurrentChannelsNum = 0;
+static unsigned int msgDispCompensated = 0;
 
 namespace er4CommLib {
 
@@ -551,12 +552,22 @@ ErrorCodes_t setVoltageReferenceLpf(
 ErrorCodes_t selectStimulusChannel(
         uint16_t channelIdx,
         bool on) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->selectStimulusChannel(channelIdx, on);
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    if (channelIdx > totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ErrorCodes_t ret = Success;
+    if (channelIdx == totalCurrentChannelsNum) {
+        for (auto md : msgDisps) {
+            ret = md->selectStimulusChannel(currentChannelsNum, on);
+        }
 
     } else {
-        ret = ErrorDeviceNotConnected;
+        ret = msgDisps[channelIdx/currentChannelsNum]->selectStimulusChannel(channelIdx % currentChannelsNum, on);
     }
     return ret;
 }
@@ -564,12 +575,22 @@ ErrorCodes_t selectStimulusChannel(
 ErrorCodes_t digitalOffsetCompensation(
         uint16_t channelIdx,
         bool on) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->digitalOffsetCompensation(channelIdx, on);
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    if (channelIdx > totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ErrorCodes_t ret = Success;
+    if (channelIdx == totalCurrentChannelsNum) {
+        for (auto md : msgDisps) {
+            ret = md->digitalOffsetCompensation(currentChannelsNum, on);
+        }
 
     } else {
-        ret = ErrorDeviceNotConnected;
+        ret = msgDisps[channelIdx/currentChannelsNum]->digitalOffsetCompensation(channelIdx % currentChannelsNum, on);
     }
     return ret;
 }
@@ -588,12 +609,22 @@ ErrorCodes_t digitalOffsetCompensationAutostop(
 
 ErrorCodes_t zap(
         uint16_t channelIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->zap(channelIdx);
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    if (channelIdx > totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ErrorCodes_t ret = Success;
+    if (channelIdx == totalCurrentChannelsNum) {
+        for (auto md : msgDisps) {
+            ret = md->zap(currentChannelsNum);
+        }
 
     } else {
-        ret = ErrorDeviceNotConnected;
+        ret = msgDisps[channelIdx/currentChannelsNum]->zap(channelIdx % currentChannelsNum);
     }
     return ret;
 }
@@ -601,12 +632,22 @@ ErrorCodes_t zap(
 ErrorCodes_t switchChannelOn(
         uint16_t channelIdx,
         bool on) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->switchChannelOn(channelIdx, on);
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    if (channelIdx > totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ErrorCodes_t ret = Success;
+    if (channelIdx == totalCurrentChannelsNum) {
+        for (auto md : msgDisps) {
+            ret = md->switchChannelOn(currentChannelsNum, on);
+        }
 
     } else {
-        ret = ErrorDeviceNotConnected;
+        ret = msgDisps[channelIdx/currentChannelsNum]->switchChannelOn(channelIdx % currentChannelsNum, on);
     }
     return ret;
 }
@@ -763,49 +804,54 @@ ErrorCodes_t resetDigitalOffsetCompensation() {
 
 ErrorCodes_t setCompensationsChannel(
         uint16_t channelIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setCompensationsChannel(channelIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
+
+    if (channelIdx >= totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ErrorCodes_t ret = Success;
+    msgDispCompensated = channelIdx/currentChannelsNum;
+
+    ret = msgDisps[msgDispCompensated]->setCompensationsChannel(channelIdx % currentChannelsNum);
     return ret;
 }
 
 ErrorCodes_t turnCFastCompensationOn(
         bool on) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->turnCFastCompensationOn(on);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
+
+    ErrorCodes_t ret = Success;
+    ret = msgDisps[msgDispCompensated]->turnCFastCompensationOn(on);
+
     return ret;
 }
 
 ErrorCodes_t setCFastCompensationOptions(
         uint16_t optionIdx) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setCFastCompensationOptions(optionIdx);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
+
+    ErrorCodes_t ret = Success;
+    ret = msgDisps[msgDispCompensated]->setCFastCompensationOptions(optionIdx);
+
     return ret;
 }
 
 ErrorCodes_t setCFastCapacitance(
         Measurement_t value) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->setCFastCapacitance(value);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
+
+    ErrorCodes_t ret = Success;
+    ret = msgDisps[msgDispCompensated]->setCFastCapacitance(value);
+
     return ret;
 }
 

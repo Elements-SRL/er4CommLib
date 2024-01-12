@@ -99,6 +99,7 @@ static unsigned int currentChannelsNum = 0;
 static unsigned int totalChannelsNum = 0;
 static unsigned int msgDispsNum = 0;
 static unsigned int totalCurrentChannelsNum = 0;
+static unsigned int totalTotalChannelsNum = 0;
 static unsigned int msgDispCompensated = 0;
 static uint16_t * bufferOut = nullptr;
 static uint16_t * unfilteredBufferOut = nullptr;
@@ -165,6 +166,7 @@ ErrorCodes_t connect(
     msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
     totalCurrentChannelsNum = currentChannelsNum*msgDispsNum;
+    totalTotalChannelsNum = voltageChannelsNum+totalCurrentChannelsNum;
 
     for (auto md : msgDisps) {
         md->setMaxOutputPacketsNum(ER4CL_DATA_ARRAY_SIZE/(totalCurrentChannelsNum+voltageChannelsNum));
@@ -974,19 +976,31 @@ ErrorCodes_t readData(
 
     int c = 0;
     unsigned int bufferOutIdx;
-    unsigned int bufferIdx = 0;
+    unsigned int bufferIdx;
     for (auto md : msgDisps) {
         ret = md->getDataPackets(buffer, dataToRead, dataRead);
         if (c == 0) {
             bufferOutIdx = 0;
+            bufferIdx = 0;
             for (unsigned int idx = 0; idx < dataRead; idx++) {
-                bufferOut[idx*totalCurrentChannelsNum] = buffer[idx*totalChannelsNum];
+                for (unsigned int chIdx = 0; chIdx < totalChannelsNum; chIdx++) {
+                    bufferOut[bufferOutIdx++] = buffer[bufferIdx++];
+                }
 
-                idx += voltageChannelsNum+totalCurrentChannelsNum;
+                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum;
             }
 
         } else {
+            bufferOutIdx = voltageChannelsNum+c*currentChannelsNum;
+            bufferIdx = voltageChannelsNum;
+            for (unsigned int idx = 0; idx < dataRead; idx++) {
+                for (unsigned int chIdx = 0; chIdx < currentChannelsNum; chIdx++) {
+                    bufferOut[bufferOutIdx++] = buffer[bufferIdx++];
+                }
 
+                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum;
+                bufferIdx += voltageChannelsNum;
+            }
         }
         c++;
     }

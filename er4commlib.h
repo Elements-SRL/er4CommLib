@@ -1,4 +1,4 @@
-//  Copyright (C) 2021-2023 Filippo Cona
+//  Copyright (C) 2021-2024 Filippo Cona
 //
 //  This file is part of EDR4.
 //

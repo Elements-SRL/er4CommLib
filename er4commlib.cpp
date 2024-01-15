@@ -120,6 +120,8 @@ static unsigned int msgDispCompensated = 0;
 static uint16_t * bufferOut = nullptr;
 static uint16_t * unfilteredBufferOut = nullptr;
 
+//static pointerToile *
+
 namespace er4CommLib {
 
 /************************\
@@ -827,7 +829,7 @@ ErrorCodes_t convertCurrentValue(
     if (msgDisps.empty()) {
         return ErrorDeviceNotConnected;
     }
-    return msgDisps[channelIdx/msgDisps.size()]->convertCurrentValue(intValue, channelIdx, fltValue);
+    return msgDisps[channelIdx/currentChannelsNum]->convertCurrentValue(intValue, channelIdx%currentChannelsNum, fltValue);
 }
 
 ErrorCodes_t readData(
@@ -917,7 +919,7 @@ ErrorCodes_t readAllData(
                     unfilteredBufferOut[bufferOutIdx++] = unfilteredBuffer[bufferIdx++];
                 }
 
-                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum;
+                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum+1;
                 bufferIdx += voltageChannelsNum;
             }
         }

@@ -1239,136 +1239,59 @@ ErrorCodes_t readCalibrationEeprom(
 ErrorCodes_t getCustomFlags(
         vector <string> &customFlags,
         vector <bool> &customFlagsDefault) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCustomFlags(customFlags, customFlagsDefault);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST2(getCustomFlags, customFlags, customFlagsDefault)
 }
 
 ErrorCodes_t getCustomDoubles(
         vector <string> &customDoubles,
         vector <RangedMeasurement_t> &customDoublesRanges,
         vector <double> &customDoublesDefault) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCustomDoubles(customDoubles, customDoublesRanges,customDoublesDefault);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST3(getCustomDoubles, customDoubles, customDoublesRanges, customDoublesDefault)
 }
 
 ErrorCodes_t hasNanionTemperatureController() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->hasNanionTemperatureController();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST0(hasNanionTemperatureController)
 }
 
 ErrorCodes_t getTemperatureControllerRange(
         int &minTemperature,
         int &maxTemperature) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getTemperatureControllerRange(minTemperature, maxTemperature);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST2(getTemperatureControllerRange, minTemperature, maxTemperature)
 }
 
 ErrorCodes_t hasWasherControls() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->hasWasherControls();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST0(hasWasherControls)
 }
 
 ErrorCodes_t getWasherSpeedRange(
         RangedMeasurement_t &range) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getWasherSpeedRange(range);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST1(getWasherSpeedRange, range)
 }
 
 ErrorCodes_t getWasherStatus(
         WasherStatus_t &status,
         WasherError_t &error) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getWasherStatus(status, error);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST2(getWasherStatus, status, error)
 }
 
 ErrorCodes_t getWasherPresetSpeeds(
         vector <int8_t> &speedValue) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getWasherPresetSpeeds(speedValue);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST1(getWasherPresetSpeeds, speedValue)
 }
 
 
 ErrorCodes_t hasCFastCompensation() {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->hasCFastCompensation();
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST0(hasCFastCompensation)
 }
 
 ErrorCodes_t getCFastCompensationOptions(
         vector <string> &options) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCFastCompensationOptions(options);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST1(getCFastCompensationOptions, options)
 }
 
 ErrorCodes_t getCFastCapacitanceControl(
         CompensationControl_t &control) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCFastCapacitanceControl(control);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST1(getCFastCapacitanceControl, control)
 }
 
 ErrorCodes_t getVoltageOffsetCompensations(

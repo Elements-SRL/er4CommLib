@@ -1078,133 +1078,64 @@ ErrorCodes_t getProtocolVoltage(
         vector <string> &voltageNames,
         vector <RangedMeasurement_t> &ranges,
         vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolVoltage(voltageNames, ranges, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST3(getProtocolVoltage, voltageNames, ranges, defaultValues)
 }
 
 ErrorCodes_t getProtocolTime(
         vector <string> &timeNames,
         vector <RangedMeasurement_t> &ranges,
         vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolTime(timeNames, ranges, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST3(getProtocolTime, timeNames, ranges, defaultValues)
 }
 
 ErrorCodes_t getProtocolSlope(
         vector <string> &slopeNames,
         vector <RangedMeasurement_t> &ranges,
         vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolSlope(slopeNames, ranges, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST3(getProtocolSlope, slopeNames, ranges, defaultValues)
 }
 
 ErrorCodes_t getProtocolFrequency(
         vector <string> &frequencyNames,
         vector <RangedMeasurement_t> &ranges,
         vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolFrequency(frequencyNames, ranges, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST3(getProtocolFrequency, frequencyNames, ranges, defaultValues)
 }
 
 ErrorCodes_t getProtocolAdimensional(
         vector <string> &adimensionalNames,
         vector <RangedMeasurement_t> &ranges,
         vector <Measurement_t> &defaultValues) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST3(getProtocolAdimensional, adimensionalNames, ranges, defaultValues)
 }
 
 ErrorCodes_t getVoltageOffsetControls(
         RangedMeasurement_t &voltageRange) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getVoltageOffsetControls(voltageRange);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST1(getVoltageOffsetControls, voltageRange)
 }
 
-ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange,
+ErrorCodes_t getInsertionPulseControls(
+        RangedMeasurement_t &voltageRange,
         RangedMeasurement_t &durationRange) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getInsertionPulseControls(voltageRange, durationRange);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST2(getInsertionPulseControls, voltageRange, durationRange)
 }
 
 ErrorCodes_t hasReferencePulseControls(
         bool &referencePulseImplemented,
         bool &overrideReferencePulseImplemented) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->hasReferencePulseControls(referencePulseImplemented, overrideReferencePulseImplemented);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST2(hasReferencePulseControls, referencePulseImplemented, overrideReferencePulseImplemented)
 }
 
 ErrorCodes_t getReferencePulseControls(
         RangedMeasurement_t &voltageRange,
         RangedMeasurement_t &durationRange) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getReferencePulseControls(voltageRange, durationRange);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST2(getReferencePulseControls, voltageRange, durationRange)
 }
 
 ErrorCodes_t hasReferencePulseTrainControls(
         bool &referencePulseImplemented,
         bool &overrideReferencePulseImplemented) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->hasReferencePulseTrainControls(referencePulseImplemented, overrideReferencePulseImplemented);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST2(hasReferencePulseTrainControls, referencePulseImplemented, overrideReferencePulseImplemented)
 }
 
 ErrorCodes_t getReferencePulseTrainControls(
@@ -1212,77 +1143,35 @@ ErrorCodes_t getReferencePulseTrainControls(
         RangedMeasurement_t &durationRange,
         RangedMeasurement_t &periodRange,
         uint16_t &pulsesNumber) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getReferencePulseTrainControls(voltageRange, durationRange, periodRange, pulsesNumber);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->getReferencePulseTrainControls(voltageRange, durationRange, periodRange, pulsesNumber);
     }
-    return ret;
-}
 
 ErrorCodes_t getEdhFormat(
         string &format) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getEdhFormat(format);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST1(getEdhFormat, format)
 }
 
 ErrorCodes_t getRawDataFilterCutoffFrequency(
         RangedMeasurement_t &range,
         Measurement_t &defaultValue) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getRawDataFilterCutoffFrequency(range, defaultValue);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST2(getRawDataFilterCutoffFrequency, range, defaultValue)
 }
 
 ErrorCodes_t getLedsNumber(
         uint16_t &ledsNum) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getLedsNumber(ledsNum);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST1(getLedsNumber, ledsNum)
 }
 
 ErrorCodes_t getLedsColors(
         vector <uint32_t> &ledsColors) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getLedsColors(ledsColors);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST1(getLedsColors, ledsColors)
 }
 
 ErrorCodes_t getFastReferencePulseProtocolWave1Range(
         RangedMeasurement_t &voltageRange,
         RangedMeasurement_t &timeRange,
         uint16_t &nPulse) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFastReferencePulseProtocolWave1Range(voltageRange, timeRange, nPulse);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    CALL_FIRST3(getFastReferencePulseProtocolWave1Range, voltageRange, timeRange, nPulse)
 }
 
 ErrorCodes_t getFastReferencePulseProtocolWave2Range(
@@ -1290,14 +1179,7 @@ ErrorCodes_t getFastReferencePulseProtocolWave2Range(
         RangedMeasurement_t &timeRange,
         RangedMeasurement_t &durationRange,
         uint16_t &nPulse) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFastReferencePulseProtocolWave2Range(voltageRange, timeRange, durationRange, nPulse);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->getFastReferencePulseProtocolWave2Range(voltageRange, timeRange, durationRange, nPulse);
 }
 
 ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
@@ -1307,16 +1189,9 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
         RangedMeasurement_t &periodRange,
         uint16_t &pulsesPerTrain,
         uint16_t &nTrains) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getFastReferencePulseTrainProtocolWave2Range(voltageRange, timeRange, durationRange, periodRange, pulsesPerTrain, nTrains);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
+    return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->getFastReferencePulseTrainProtocolWave2Range(voltageRange, timeRange, durationRange, periodRange, pulsesPerTrain, nTrains);
 }
-//FINO A QUI -------------------
+
 /*************************\
  *  Calibration methods  *
 \*************************/

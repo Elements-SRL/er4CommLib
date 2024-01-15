@@ -74,7 +74,7 @@ ErrorCodes_t detectDevices(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t connect(
-        ER4CL_ARGIN std::string deviceId);
+        ER4CL_ARGIN std::vector <std::string> deviceId);
 
 /*! \brief Disconnects from connected device.
  * Calling this method if no device is connected will return an error code.

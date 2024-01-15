@@ -806,7 +806,7 @@ ErrorCodes_t getChannelsNumber(
         return ErrorDeviceNotConnected;
     }
 
-    ErrorCodes_t ret = messageDispatcher->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
+    ErrorCodes_t ret = msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
     currentChannelsNum *= msgDispsNum;
     return ret;
 }
@@ -1372,15 +1372,28 @@ ErrorCodes_t getCFastCapacitanceControl(
 }
 
 ErrorCodes_t getVoltageOffsetCompensations(
-        vector <Measurement_t> &offsets) {
+        std::vector <Measurement_t> &offsets) {
     ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->updateVoltageOffsetCompensations(offsets);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
     }
-    return ret;
+
+    if (msgDispsNum == 1) {
+        return msgDisps[0]->updateVoltageOffsetCompensations(offsets);
+    }
+
+    std::vector <Measurement_t> tempOffsets;
+
+    int c = 0;
+    for (auto md : msgDisps) {
+        ret = md->updateVoltageOffsetCompensations(tempOffsets);
+        for (unsigned int idx = 0; idx < currentChannelsNum; idx++) {
+            offsets[c+idx] = tempOffsets[idx];
+        }
+        c += currentChannelsNum;
+    }
+
+    return Success;
 }
 
 } // namespace er4CommLib

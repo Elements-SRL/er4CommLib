@@ -170,7 +170,7 @@ ErrorCodes_t connect(
     ErrorCodes_t err = Success;
     int c = 0;
     for (auto&& deviceId : deviceIds) {
-        err = MessageDispatcher::connectDevice(deviceId, msgDisps[c]);
+        err = MessageDispatcher::connectDevice(deviceId, msgDisps[c++]);
         if (err != Success) {
             msgDisps.clear();
             return err;
@@ -941,7 +941,15 @@ ErrorCodes_t getCurrentRanges(
 ErrorCodes_t getCurrentRange(
         RangedMeasurement_t &currentRange,
         uint16_t channelIdx) {
-    CALL_FIRST2(getCurrentRange, currentRange, channelIdx)
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    if (channelIdx > totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    return msgDisps[channelIdx/currentChannelsNum]->getCurrentRange(currentRange, channelIdx % currentChannelsNum);
 }
 
 ErrorCodes_t hasIndependentCurrentRanges() {
@@ -1305,7 +1313,7 @@ ErrorCodes_t getVoltageOffsetCompensations(
         return msgDisps[0]->updateVoltageOffsetCompensations(offsets);
     }
 
-    std::vector <Measurement_t> tempOffsets;
+    std::vector <Measurement_t> tempOffsets(currentChannelsNum);
 
     int c = 0;
     for (auto md : msgDisps) {

@@ -219,6 +219,7 @@ ErrorCodes_t MessageDispatcher::detectDevices(
             }
         }
     }
+    std::sort(deviceIds.begin(), deviceIds.end());
 
     return Success;
 }

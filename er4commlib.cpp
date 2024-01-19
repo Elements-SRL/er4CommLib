@@ -128,6 +128,7 @@ static std::vector <uint32_t> synchronizationMovingAverage;
 static uint32_t synchronizationMovingAverageIndex;
 static std::vector <uint32_t> availableSamples;
 static std::vector <uint32_t> previousAvailableSamples;
+static std::vector <uint32_t> previousDataRead;
 
 namespace er4CommLib {
 
@@ -205,7 +206,7 @@ ErrorCodes_t connect(
     samplesToDiscard.resize(totalCurrentChannelsNum);
     std::fill(samplesToDiscard.begin(), samplesToDiscard.end(), 0);
     synchronizationMovingAverageQueue.resize(totalCurrentChannelsNum);
-    for (auto q : synchronizationMovingAverageQueue) {
+    for (auto&& q : synchronizationMovingAverageQueue) {
         q.resize(SAMPLES_DISCARD_THRESHOLD);
         std::fill(q.begin(), q.end(), 0);
     }
@@ -216,7 +217,8 @@ ErrorCodes_t connect(
     std::fill(availableSamples.begin(), availableSamples.end(), 0);
     previousAvailableSamples.resize(totalCurrentChannelsNum);
     std::fill(previousAvailableSamples.begin(), previousAvailableSamples.end(), 0);
-
+    previousDataRead.resize(totalCurrentChannelsNum);
+    std::fill(previousDataRead.begin(), previousDataRead.end(), 0);
     return err;
 }
 
@@ -969,7 +971,8 @@ ErrorCodes_t readAllData(
                 bufferIdx += voltageChannelsNum;
             }
         }
-        newSamples = availableSamples[c]-previousAvailableSamples[c]+dataRead;
+        newSamples = availableSamples[c]-previousAvailableSamples[c]+previousDataRead[c];
+        previousDataRead[c] = dataRead;
         previousAvailableSamples[c] = availableSamples[c];
         synchronizationMovingAverage[c] += newSamples-synchronizationMovingAverageQueue[c][synchronizationMovingAverageIndex];
         synchronizationMovingAverageQueue[c][synchronizationMovingAverageIndex] = newSamples;

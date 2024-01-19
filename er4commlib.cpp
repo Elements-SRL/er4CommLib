@@ -96,6 +96,8 @@
     return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->func(arg1, arg2, arg3);\
 }
 
+#define SAMPLES_DISCARD_THRESHOLD 100000
+
 #include "er4commlib.h"
 
 #include <algorithm>
@@ -119,7 +121,13 @@ static unsigned int totalTotalChannelsNum = 0;
 static unsigned int msgDispCompensated = 0;
 static uint16_t * bufferOut = nullptr;
 static uint16_t * unfilteredBufferOut = nullptr;
-
+static std::vector <uint32_t> totalSamples;
+static std::vector <uint32_t> samplesToDiscard;
+static std::vector <std::vector <uint32_t>> synchronizationMovingAverageQueue;
+static std::vector <uint32_t> synchronizationMovingAverage;
+static uint32_t synchronizationMovingAverageIndex;
+static std::vector <uint32_t> availableSamples;
+static std::vector <uint32_t> previousAvailableSamples;
 
 namespace er4CommLib {
 
@@ -190,6 +198,24 @@ ErrorCodes_t connect(
     }
     bufferOut = new (nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
     unfilteredBufferOut = new (nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
+
+    /*! Synchronization stuff */
+    totalSamples.resize(totalCurrentChannelsNum);
+    std::fill(totalSamples.begin(), totalSamples.end(), 0);
+    samplesToDiscard.resize(totalCurrentChannelsNum);
+    std::fill(samplesToDiscard.begin(), samplesToDiscard.end(), 0);
+    synchronizationMovingAverageQueue.resize(totalCurrentChannelsNum);
+    for (auto q : synchronizationMovingAverageQueue) {
+        q.resize(SAMPLES_DISCARD_THRESHOLD);
+        std::fill(q.begin(), q.end(), 0);
+    }
+    synchronizationMovingAverage.resize(totalCurrentChannelsNum);
+    std::fill(synchronizationMovingAverage.begin(), synchronizationMovingAverage.end(), 0);
+    synchronizationMovingAverageIndex = 0;
+    availableSamples.resize(totalCurrentChannelsNum);
+    std::fill(availableSamples.begin(), availableSamples.end(), 0);
+    previousAvailableSamples.resize(totalCurrentChannelsNum);
+    std::fill(previousAvailableSamples.begin(), previousAvailableSamples.end(), 0);
 
     return err;
 }
@@ -789,8 +815,10 @@ ErrorCodes_t getQueueStatus(
     ErrorCodes_t ret = Success;
     status.availableDataPackets = std::numeric_limits <unsigned int> ::max();
     QueueStatus_t statusn;
+    int c = 0;
     for (auto md : msgDisps) {
         ret = md->getQueueStatus(statusn);
+        availableSamples[c++] = statusn.availableDataPackets;
         status.availableDataPackets = std::min(status.availableDataPackets, statusn.availableDataPackets);
         status.bufferOverflowFlag = status.bufferOverflowFlag || statusn.bufferOverflowFlag;
         status.lostDataFlag = status.lostDataFlag || statusn.lostDataFlag;
@@ -897,15 +925,29 @@ ErrorCodes_t readAllData(
         return msgDisps[0]->getAllDataPackets(buffer, unfilteredBuffer, dataToRead, dataRead);
     }
 
-    int c = 0;
+    unsigned int c = 0;
     unsigned int bufferOutIdx;
     unsigned int bufferIdx;
+    unsigned int dataToCopy;
+    unsigned int minTotalSamples = std::numeric_limits <unsigned int>::max();
+    unsigned int newSamples;
     for (auto md : msgDisps) {
-        ret = md->getAllDataPackets(buffer, unfilteredBuffer, dataToRead, dataRead);
+        if (totalSamples[c] > SAMPLES_DISCARD_THRESHOLD) {
+            samplesToDiscard[c]++;
+        }
+
+        ret = md->getAllDataPackets(buffer, unfilteredBuffer, dataToRead+samplesToDiscard[c], dataRead);
+        if (dataRead > dataToRead) {
+            dataToCopy = dataToRead;
+            samplesToDiscard[c] -= dataRead-dataToRead;
+
+        } else {
+            dataToCopy = dataRead;
+        }
         if (c == 0) {
             bufferOutIdx = 0;
             bufferIdx = 0;
-            for (unsigned int idx = 0; idx < dataRead; idx++) {
+            for (unsigned int idx = 0; idx < dataToCopy; idx++) {
                 for (unsigned int chIdx = 0; chIdx < totalChannelsNum; chIdx++) {
                     bufferOut[bufferOutIdx] = buffer[bufferIdx];
                     unfilteredBufferOut[bufferOutIdx++] = unfilteredBuffer[bufferIdx++];
@@ -917,7 +959,7 @@ ErrorCodes_t readAllData(
         } else {
             bufferOutIdx = voltageChannelsNum+c*currentChannelsNum;
             bufferIdx = voltageChannelsNum;
-            for (unsigned int idx = 0; idx < dataRead; idx++) {
+            for (unsigned int idx = 0; idx < dataToCopy; idx++) {
                 for (unsigned int chIdx = 0; chIdx < currentChannelsNum; chIdx++) {
                     bufferOut[bufferOutIdx] = buffer[bufferIdx];
                     unfilteredBufferOut[bufferOutIdx++] = unfilteredBuffer[bufferIdx++];
@@ -927,7 +969,25 @@ ErrorCodes_t readAllData(
                 bufferIdx += voltageChannelsNum;
             }
         }
+        newSamples = availableSamples[c]-previousAvailableSamples[c]+dataRead;
+        previousAvailableSamples[c] = availableSamples[c];
+        synchronizationMovingAverage[c] += newSamples-synchronizationMovingAverageQueue[c][synchronizationMovingAverageIndex];
+        synchronizationMovingAverageQueue[c][synchronizationMovingAverageIndex] = newSamples;
+        totalSamples[c] += synchronizationMovingAverage[c];
+        if (totalSamples[c] < minTotalSamples) {
+            minTotalSamples = totalSamples[c];
+        }
+        dataRead = dataToCopy;
         c++;
+    }
+
+    for (c = 0; c < totalCurrentChannelsNum; c++) {
+        totalSamples[c] -= minTotalSamples;
+    }
+
+    synchronizationMovingAverageIndex++;
+    if (synchronizationMovingAverageIndex >= SAMPLES_DISCARD_THRESHOLD) {
+        synchronizationMovingAverageIndex = 0;
     }
     buffer = bufferOut;
     unfilteredBuffer = unfilteredBufferOut;

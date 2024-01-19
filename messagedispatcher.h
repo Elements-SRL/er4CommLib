@@ -154,6 +154,7 @@ public:
     ErrorCodes_t enableFrontEndResetDenoiser(bool on);
 
     ErrorCodes_t resetDevice();
+    ErrorCodes_t holdDeviceReset(bool flag);
     ErrorCodes_t resetDigitalOffsetCompensation();
     ErrorCodes_t resetCalib();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);

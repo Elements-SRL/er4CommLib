@@ -937,12 +937,25 @@ ErrorCodes_t MessageDispatcher::enableFrontEndResetDenoiser(bool on) {
 }
 
 ErrorCodes_t MessageDispatcher::resetDevice() {
+    if (deviceResetCoder == nullptr) {
+        return ErrorFeatureNotImplemented;
+    }
     deviceResetCoder->encode(1, txStatus);
     this->stackOutgoingMessage(txStatus);
     deviceResetCoder->encode(0, txStatus);
     this->stackOutgoingMessage(txStatus);
 
     this->resetCalib();
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::holdDeviceReset(bool flag) {
+    if (deviceResetCoder == nullptr) {
+        return ErrorFeatureNotImplemented;
+    }
+    deviceResetCoder->encode(flag ? 1 : 0, txStatus);
+    this->stackOutgoingMessage(txStatus);
 
     return Success;
 }
@@ -1832,13 +1845,15 @@ ErrorCodes_t MessageDispatcher::getAllDataPackets(uint16_t * &data, uint16_t * &
 }
 
 ErrorCodes_t MessageDispatcher::purgeData() {
-    unique_lock <mutex> readDataMtxLock (readDataMtx);
+    unique_lock <mutex> readDataMtxLock(readDataMtx);
     /*! Performs a fake read of all available data samples. */
     outputBufferReadOffset = outputBufferWriteOffset;
     outputBufferAvailablePackets = 0;
     outputBufferOverflowFlag = false;
     bufferDataLossFlag = false;
     bufferSaturationFlag = false;
+    unique_lock <mutex> connectionMutexLock(connectionMutex);
+    FT_Purge(ftdiRxHandle, FT_PURGE_RX);
     return Success;
 }
 

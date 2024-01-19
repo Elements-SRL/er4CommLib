@@ -643,6 +643,15 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t resetDevice(
         ER4CL_ARGVOID);
 
+/*! \brief Holds the device in reset state.
+ *
+ * \param flag [in] True to keep the device in reset state, false to release it.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t holdDeviceReset(
+        ER4CL_ARGIN bool flag);
+
 /*! \brief Reset the digital offset compensations.
  *
  * \return Error code.

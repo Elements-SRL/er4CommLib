@@ -120,7 +120,6 @@ static unsigned int msgDispCompensated = 0;
 static uint16_t * bufferOut = nullptr;
 static uint16_t * unfilteredBufferOut = nullptr;
 
-//static pointerToile *
 
 namespace er4CommLib {
 
@@ -629,6 +628,11 @@ ErrorCodes_t enableFrontEndResetDenoiser(
 
 ErrorCodes_t resetDevice() {
     MASS_CALL0(resetDevice)
+}
+
+ErrorCodes_t holdDeviceReset(
+        bool flag) {
+    MASS_CALL1(holdDeviceReset, flag)
 }
 
 ErrorCodes_t resetDigitalOffsetCompensation() {

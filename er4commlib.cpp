@@ -137,9 +137,6 @@ static std::vector <uint32_t> availableSamples;
 static std::vector <uint32_t> sdSamplesToDiscard;
 
 
-//static std::vector <uint32_t> totalSamples;
-//static std::vector <uint32_t> previousAvailableSamples;
-//static std::vector <uint32_t> previousDataRead;
 //static FILE * fid = nullptr;
 
 namespace er4CommLib {
@@ -220,7 +217,7 @@ ErrorCodes_t connect(
     sdKfStateVariance.resize(totalCurrentChannelsNum);
     std::fill(sdKfStateVariance.begin(), sdKfStateVariance.end(), 0.0);
     sdKfInnovation.resize(totalCurrentChannelsNum);
-    std::fill(sdKfInnovation.begin(), sdKfStateVariance.end(), 0.0);
+    std::fill(sdKfInnovation.begin(), sdKfInnovation.end(), 0.0);
     sdKfStateEstimate.resize(totalCurrentChannelsNum);
     std::fill(sdKfStateEstimate.begin(), sdKfStateEstimate.end(), 0.0);
     sdKfMeasurementVariance.resize(totalCurrentChannelsNum);
@@ -231,13 +228,6 @@ ErrorCodes_t connect(
     std::fill(availableSamples.begin(), availableSamples.end(), 0);
     sdSamplesToDiscard.resize(totalCurrentChannelsNum);
     std::fill(sdSamplesToDiscard.begin(), sdSamplesToDiscard.end(), 0);
-
-//    totalSamples.resize(totalCurrentChannelsNum);
-//    std::fill(totalSamples.begin(), totalSamples.end(), 0);
-//    previousAvailableSamples.resize(totalCurrentChannelsNum);
-//    std::fill(previousAvailableSamples.begin(), previousAvailableSamples.end(), 0);
-//    previousDataRead.resize(totalCurrentChannelsNum);
-//    std::fill(previousDataRead.begin(), previousDataRead.end(), 0);
 
 //    fid = fopen("pippo.dat", "wb+");
     return err;
@@ -965,16 +955,15 @@ ErrorCodes_t readAllData(
     unsigned int dataToCopy;
     double sdPidControl= 0.0;
     double sdKfGain = 0.0;
-    unsigned int discardThreshold;
-    unsigned int minTotalSamples = std::numeric_limits <unsigned int>::max();
-    unsigned int newSamples;
+    unsigned int discardThreshold = 0;
+//    double ds = 0.0;
     for (auto md : msgDisps) {
         sdPidError[c] = (availableSamples[c] > dataToRead ? 1 : -1);
         sdPidIntegralError[c] += sdPidError[c];
         sdKfStateVariance[c] += SD_KF_STATE_ERROR;
         sdPidControl = SD_PID_KP*sdPidError[c]+SD_PID_KI*sdPidIntegralError[c];
         sdKfInnovation[c] = sdPidControl-sdKfStateEstimate[c];
-        sdKfMeasurementVariance[c] += SD_KF_MEASUREMENT_ERROR;
+        sdKfMeasurementVariance[c] = sdKfStateVariance[c]+SD_KF_MEASUREMENT_ERROR;
         sdKfGain = sdKfStateVariance[c]/sdKfMeasurementVariance[c];
         sdKfStateEstimate[c] += sdKfGain*sdKfInnovation[c];
         sdKfStateVariance[c] *= (1.0-sdKfGain);
@@ -983,6 +972,7 @@ ErrorCodes_t readAllData(
             discardThreshold = (unsigned int)(1.0/sdKfStateEstimate[c]);
             if (sdTotalReadSamples[c] > discardThreshold) {
                 sdSamplesToDiscard[c]++;
+//                ds = (double) sdSamplesToDiscard[c];
                 sdTotalReadSamples[c] -= discardThreshold;
             }
         }
@@ -1023,7 +1013,12 @@ ErrorCodes_t readAllData(
                 bufferIdx += voltageChannelsNum;
             }
         }
-//        fwrite((void *)&availableSamples[c], 4, 1, fid);
+//        double pippo = (double) c;
+//        fwrite((void *) &pippo, 8, 1, fid);
+//        fwrite((void *) &sdPidError[c], 8, 1, fid);
+//        fwrite((void *) &sdPidControl, 8, 1, fid);
+//        fwrite((void *) &sdKfStateVariance[c], 8, 1, fid);
+//        fwrite((void *) &ds, 8, 1, fid);
         dataRead = dataToCopy;
         c++;
     }

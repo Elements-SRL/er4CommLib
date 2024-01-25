@@ -3301,8 +3301,8 @@ void MessageDispatcher::uint322uint16(uint32_t from, vector <uint16_t> &to, size
 void MessageDispatcher::computeMinimumPacketNumber() {
     Measurement_t samplingRateInHz = samplingRate;
     samplingRateInHz.convertValue(UnitPfxNone);
-    minStoreFrameNumber = 1;//(unsigned long)ceil(FTD_FEW_PACKET_COEFF*samplingRateInHz.value/((double)packetsPerFrame));
-    minReadFrameNumber = 1;//(unsigned long)min(minStoreFrameNumber, (unsigned long)ceil(((double)FTD_MAX_BYTES_TO_WAIT_FOR)/(double)readFrameLength));
+    minStoreFrameNumber = (unsigned long)ceil(FTD_FEW_PACKET_COEFF*samplingRateInHz.value/((double)packetsPerFrame));
+    minReadFrameNumber = (unsigned long)min(minStoreFrameNumber, (unsigned long)ceil(((double)FTD_MAX_BYTES_TO_WAIT_FOR)/(double)readFrameLength));
     fewFramesSleep = (unsigned int)ceil(((double)(minReadFrameNumber*(unsigned long)packetsPerFrame))/samplingRateInHz.value*1.0e6);
 }
 

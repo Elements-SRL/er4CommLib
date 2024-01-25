@@ -96,7 +96,11 @@
     return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->func(arg1, arg2, arg3);\
 }
 
-#define SAMPLES_DISCARD_THRESHOLD 100000
+/*! Samples discard parameters */
+#define SD_PID_KP (1.0e-5)
+#define SD_PID_KI (5.0e-10)
+#define SD_KF_STATE_ERROR (1.0e-9)
+#define SD_KF_MEASUREMENT_ERROR (1.0e-3)
 
 #include "er4commlib.h"
 
@@ -121,14 +125,22 @@ static unsigned int totalTotalChannelsNum = 0;
 static unsigned int msgDispCompensated = 0;
 static uint16_t * bufferOut = nullptr;
 static uint16_t * unfilteredBufferOut = nullptr;
-static std::vector <uint32_t> totalSamples;
-static std::vector <uint32_t> samplesToDiscard;
-static std::vector <std::vector <uint32_t>> synchronizationMovingAverageQueue;
-static std::vector <uint32_t> synchronizationMovingAverage;
-static uint32_t synchronizationMovingAverageIndex;
+/*! Samples discard variables */
+static std::vector <double> sdPidError;
+static std::vector <double> sdPidIntegralError;
+static std::vector <double> sdKfStateVariance;
+static std::vector <double> sdKfInnovation;
+static std::vector <double> sdKfStateEstimate;
+static std::vector <double> sdKfMeasurementVariance;
+static std::vector <uint32_t> sdTotalReadSamples;
 static std::vector <uint32_t> availableSamples;
-static std::vector <uint32_t> previousAvailableSamples;
-static std::vector <uint32_t> previousDataRead;
+static std::vector <uint32_t> sdSamplesToDiscard;
+
+
+//static std::vector <uint32_t> totalSamples;
+//static std::vector <uint32_t> previousAvailableSamples;
+//static std::vector <uint32_t> previousDataRead;
+//static FILE * fid = nullptr;
 
 namespace er4CommLib {
 
@@ -201,24 +213,33 @@ ErrorCodes_t connect(
     unfilteredBufferOut = new (nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
 
     /*! Synchronization stuff */
-    totalSamples.resize(totalCurrentChannelsNum);
-    std::fill(totalSamples.begin(), totalSamples.end(), 0);
-    samplesToDiscard.resize(totalCurrentChannelsNum);
-    std::fill(samplesToDiscard.begin(), samplesToDiscard.end(), 0);
-    synchronizationMovingAverageQueue.resize(totalCurrentChannelsNum);
-    for (auto&& q : synchronizationMovingAverageQueue) {
-        q.resize(SAMPLES_DISCARD_THRESHOLD);
-        std::fill(q.begin(), q.end(), 0);
-    }
-    synchronizationMovingAverage.resize(totalCurrentChannelsNum);
-    std::fill(synchronizationMovingAverage.begin(), synchronizationMovingAverage.end(), 0);
-    synchronizationMovingAverageIndex = 0;
+    sdPidError.resize(totalCurrentChannelsNum);
+    std::fill(sdPidError.begin(), sdPidError.end(), 0.0);
+    sdPidIntegralError.resize(totalCurrentChannelsNum);
+    std::fill(sdPidIntegralError.begin(), sdPidIntegralError.end(), 0.0);
+    sdKfStateVariance.resize(totalCurrentChannelsNum);
+    std::fill(sdKfStateVariance.begin(), sdKfStateVariance.end(), 0.0);
+    sdKfInnovation.resize(totalCurrentChannelsNum);
+    std::fill(sdKfInnovation.begin(), sdKfStateVariance.end(), 0.0);
+    sdKfStateEstimate.resize(totalCurrentChannelsNum);
+    std::fill(sdKfStateEstimate.begin(), sdKfStateEstimate.end(), 0.0);
+    sdKfMeasurementVariance.resize(totalCurrentChannelsNum);
+    std::fill(sdKfMeasurementVariance.begin(), sdKfMeasurementVariance.end(), 0.0);
+    sdTotalReadSamples.resize(totalCurrentChannelsNum);
+    std::fill(sdTotalReadSamples.begin(), sdTotalReadSamples.end(), 0.0);
     availableSamples.resize(totalCurrentChannelsNum);
     std::fill(availableSamples.begin(), availableSamples.end(), 0);
-    previousAvailableSamples.resize(totalCurrentChannelsNum);
-    std::fill(previousAvailableSamples.begin(), previousAvailableSamples.end(), 0);
-    previousDataRead.resize(totalCurrentChannelsNum);
-    std::fill(previousDataRead.begin(), previousDataRead.end(), 0);
+    sdSamplesToDiscard.resize(totalCurrentChannelsNum);
+    std::fill(sdSamplesToDiscard.begin(), sdSamplesToDiscard.end(), 0);
+
+//    totalSamples.resize(totalCurrentChannelsNum);
+//    std::fill(totalSamples.begin(), totalSamples.end(), 0);
+//    previousAvailableSamples.resize(totalCurrentChannelsNum);
+//    std::fill(previousAvailableSamples.begin(), previousAvailableSamples.end(), 0);
+//    previousDataRead.resize(totalCurrentChannelsNum);
+//    std::fill(previousDataRead.begin(), previousDataRead.end(), 0);
+
+//    fid = fopen("pippo.dat", "wb+");
     return err;
 }
 
@@ -244,6 +265,11 @@ ErrorCodes_t disconnect() {
         delete [] unfilteredBufferOut;
         unfilteredBufferOut = nullptr;
     }
+
+//    if (fid != nullptr) {
+//        fclose(fid);
+//        fid = nullptr;
+//    }
 
     return err;
 }
@@ -819,7 +845,7 @@ ErrorCodes_t getQueueStatus(
     QueueStatus_t statusn;
     int c = 0;
     for (auto md : msgDisps) {
-        ret = md->getQueueStatus(statusn);
+        ErrorCodes_t retTemp = md->getQueueStatus(statusn);
         availableSamples[c++] = statusn.availableDataPackets;
         status.availableDataPackets = std::min(status.availableDataPackets, statusn.availableDataPackets);
         status.bufferOverflowFlag = status.bufferOverflowFlag || statusn.bufferOverflowFlag;
@@ -828,9 +854,11 @@ ErrorCodes_t getQueueStatus(
         status.currentRangeIncreaseFlag = status.currentRangeIncreaseFlag || statusn.currentRangeIncreaseFlag;
         status.currentRangeDecreaseFlag = status.currentRangeDecreaseFlag || statusn.currentRangeDecreaseFlag;
         status.communicationErrorFlag = status.communicationErrorFlag || statusn.communicationErrorFlag;
-        if (ret != Success && ret != WarningNoDataAvailable) {
-            return ret;
+        if (retTemp != Success && retTemp != WarningNoDataAvailable) {
+            return retTemp;
         }
+
+        ret = (ErrorCodes_t)((unsigned int)ret | (unsigned int)retTemp);
     }
     return ret;
 }
@@ -922,6 +950,10 @@ ErrorCodes_t readAllData(
         return ErrorDeviceNotConnected;
     }
 
+    if (dataToRead == 0) {
+        return WarningNoDataAvailable;
+    }
+
     ErrorCodes_t ret = Success;
     if (msgDispsNum == 1) {
         return msgDisps[0]->getAllDataPackets(buffer, unfilteredBuffer, dataToRead, dataRead);
@@ -931,21 +963,41 @@ ErrorCodes_t readAllData(
     unsigned int bufferOutIdx;
     unsigned int bufferIdx;
     unsigned int dataToCopy;
+    double sdPidControl= 0.0;
+    double sdKfGain = 0.0;
+    unsigned int discardThreshold;
     unsigned int minTotalSamples = std::numeric_limits <unsigned int>::max();
     unsigned int newSamples;
     for (auto md : msgDisps) {
-        if (totalSamples[c] > SAMPLES_DISCARD_THRESHOLD) {
-            samplesToDiscard[c]++;
+        sdPidError[c] = (availableSamples[c] > dataToRead ? 1 : -1);
+        sdPidIntegralError[c] += sdPidError[c];
+        sdKfStateVariance[c] += SD_KF_STATE_ERROR;
+        sdPidControl = SD_PID_KP*sdPidError[c]+SD_PID_KI*sdPidIntegralError[c];
+        sdKfInnovation[c] = sdPidControl-sdKfStateEstimate[c];
+        sdKfMeasurementVariance[c] += SD_KF_MEASUREMENT_ERROR;
+        sdKfGain = sdKfStateVariance[c]/sdKfMeasurementVariance[c];
+        sdKfStateEstimate[c] += sdKfGain*sdKfInnovation[c];
+        sdKfStateVariance[c] *= (1.0-sdKfGain);
+
+        if (sdKfStateEstimate[c] > 0.0) {
+            discardThreshold = (unsigned int)(1.0/sdKfStateEstimate[c]);
+            if (sdTotalReadSamples[c] > discardThreshold) {
+                sdSamplesToDiscard[c]++;
+                sdTotalReadSamples[c] -= discardThreshold;
+            }
         }
 
-        ret = md->getAllDataPackets(buffer, unfilteredBuffer, dataToRead+samplesToDiscard[c], dataRead);
+        ret = md->getAllDataPackets(buffer, unfilteredBuffer, dataToRead+sdSamplesToDiscard[c], dataRead);
         if (dataRead > dataToRead) {
             dataToCopy = dataToRead;
-            samplesToDiscard[c] -= dataRead-dataToRead;
+            sdSamplesToDiscard[c] -= dataRead-dataToRead;
 
         } else {
             dataToCopy = dataRead;
         }
+
+        sdTotalReadSamples[c] += dataRead;
+
         if (c == 0) {
             bufferOutIdx = 0;
             bufferIdx = 0;
@@ -971,27 +1023,11 @@ ErrorCodes_t readAllData(
                 bufferIdx += voltageChannelsNum;
             }
         }
-        newSamples = availableSamples[c]-previousAvailableSamples[c]+previousDataRead[c];
-        previousDataRead[c] = dataRead;
-        previousAvailableSamples[c] = availableSamples[c];
-        synchronizationMovingAverage[c] += newSamples-synchronizationMovingAverageQueue[c][synchronizationMovingAverageIndex];
-        synchronizationMovingAverageQueue[c][synchronizationMovingAverageIndex] = newSamples;
-        totalSamples[c] += synchronizationMovingAverage[c];
-        if (totalSamples[c] < minTotalSamples) {
-            minTotalSamples = totalSamples[c];
-        }
+//        fwrite((void *)&availableSamples[c], 4, 1, fid);
         dataRead = dataToCopy;
         c++;
     }
 
-    for (c = 0; c < totalCurrentChannelsNum; c++) {
-        totalSamples[c] -= minTotalSamples;
-    }
-
-    synchronizationMovingAverageIndex++;
-    if (synchronizationMovingAverageIndex >= SAMPLES_DISCARD_THRESHOLD) {
-        synchronizationMovingAverageIndex = 0;
-    }
     buffer = bufferOut;
     unfilteredBuffer = unfilteredBufferOut;
     return ret;

@@ -136,6 +136,8 @@ static std::vector <uint32_t> sdTotalReadSamples;
 static std::vector <uint32_t> availableSamples;
 static std::vector <uint32_t> sdSamplesToDiscard;
 
+static void allocateSampleDiscardVariables();
+static void resetSampleDiscardVariables();
 
 //static FILE * fid = nullptr;
 
@@ -181,7 +183,7 @@ ErrorCodes_t connect(
                       deviceSubversionCheck,
                       firmwareVersionCheck);
         if (deviceVersion != deviceVersionCheck || deviceSubversion != deviceSubversionCheck || firmwareVersion != firmwareVersionCheck) {
-            return ErrorUnknown; /*! \todo FCON sostituire */
+            return ErrorConnectingDifferentDevices;
         }
     }
 
@@ -210,24 +212,8 @@ ErrorCodes_t connect(
     unfilteredBufferOut = new (nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
 
     /*! Synchronization stuff */
-    sdPidError.resize(totalCurrentChannelsNum);
-    std::fill(sdPidError.begin(), sdPidError.end(), 0.0);
-    sdPidIntegralError.resize(totalCurrentChannelsNum);
-    std::fill(sdPidIntegralError.begin(), sdPidIntegralError.end(), 0.0);
-    sdKfStateVariance.resize(totalCurrentChannelsNum);
-    std::fill(sdKfStateVariance.begin(), sdKfStateVariance.end(), 0.0);
-    sdKfInnovation.resize(totalCurrentChannelsNum);
-    std::fill(sdKfInnovation.begin(), sdKfInnovation.end(), 0.0);
-    sdKfStateEstimate.resize(totalCurrentChannelsNum);
-    std::fill(sdKfStateEstimate.begin(), sdKfStateEstimate.end(), 0.0);
-    sdKfMeasurementVariance.resize(totalCurrentChannelsNum);
-    std::fill(sdKfMeasurementVariance.begin(), sdKfMeasurementVariance.end(), 0.0);
-    sdTotalReadSamples.resize(totalCurrentChannelsNum);
-    std::fill(sdTotalReadSamples.begin(), sdTotalReadSamples.end(), 0.0);
-    availableSamples.resize(totalCurrentChannelsNum);
-    std::fill(availableSamples.begin(), availableSamples.end(), 0);
-    sdSamplesToDiscard.resize(totalCurrentChannelsNum);
-    std::fill(sdSamplesToDiscard.begin(), sdSamplesToDiscard.end(), 0);
+    allocateSampleDiscardVariables();
+    resetSampleDiscardVariables();
 
 //    fid = fopen("pippo.dat", "wb+");
     return err;
@@ -674,6 +660,11 @@ ErrorCodes_t resetDevice() {
     MASS_CALL0(resetDevice)
 }
 
+ErrorCodes_t resetSynchronizationVariables() {
+    resetSampleDiscardVariables();
+    return Success;
+}
+
 ErrorCodes_t holdDeviceReset(
         bool flag) {
     MASS_CALL1(holdDeviceReset, flag)
@@ -892,6 +883,10 @@ ErrorCodes_t readData(
         return ErrorDeviceNotConnected;
     }
 
+    if (dataToRead == 0) {
+        return WarningNoDataAvailable;
+    }
+
     ErrorCodes_t ret = Success;
     if (msgDispsNum == 1) {
         return msgDisps[0]->getDataPackets(buffer, dataToRead, dataRead);
@@ -900,12 +895,44 @@ ErrorCodes_t readData(
     int c = 0;
     unsigned int bufferOutIdx;
     unsigned int bufferIdx;
+    unsigned int dataToCopy;
+    double sdPidControl= 0.0;
+    double sdKfGain = 0.0;
+    unsigned int discardThreshold = 0;
     for (auto md : msgDisps) {
-        ret = md->getDataPackets(buffer, dataToRead, dataRead);
+        sdPidError[c] = (availableSamples[c] > dataToRead ? 1 : -1);
+        sdPidIntegralError[c] += sdPidError[c];
+        sdKfStateVariance[c] += SD_KF_STATE_ERROR;
+        sdPidControl = SD_PID_KP*sdPidError[c]+SD_PID_KI*sdPidIntegralError[c];
+        sdKfInnovation[c] = sdPidControl-sdKfStateEstimate[c];
+        sdKfMeasurementVariance[c] = sdKfStateVariance[c]+SD_KF_MEASUREMENT_ERROR;
+        sdKfGain = sdKfStateVariance[c]/sdKfMeasurementVariance[c];
+        sdKfStateEstimate[c] += sdKfGain*sdKfInnovation[c];
+        sdKfStateVariance[c] *= (1.0-sdKfGain);
+
+        if (sdKfStateEstimate[c] > 0.0) {
+            discardThreshold = (unsigned int)(1.0/sdKfStateEstimate[c]);
+            if (sdTotalReadSamples[c] > discardThreshold) {
+                sdSamplesToDiscard[c]++;
+                sdTotalReadSamples[c] -= discardThreshold;
+            }
+        }
+
+        ret = md->getDataPackets(buffer, dataToRead+sdSamplesToDiscard[c], dataRead);
+        if (dataRead > dataToRead) {
+            dataToCopy = dataToRead;
+            sdSamplesToDiscard[c] -= dataRead-dataToRead;
+
+        } else {
+            dataToCopy = dataRead;
+        }
+
+        sdTotalReadSamples[c] += dataRead;
+
         if (c == 0) {
             bufferOutIdx = 0;
             bufferIdx = 0;
-            for (unsigned int idx = 0; idx < dataRead; idx++) {
+            for (unsigned int idx = 0; idx < dataToCopy; idx++) {
                 for (unsigned int chIdx = 0; chIdx < totalChannelsNum; chIdx++) {
                     bufferOut[bufferOutIdx++] = buffer[bufferIdx++];
                 }
@@ -916,7 +943,7 @@ ErrorCodes_t readData(
         } else {
             bufferOutIdx = voltageChannelsNum+c*currentChannelsNum;
             bufferIdx = voltageChannelsNum;
-            for (unsigned int idx = 0; idx < dataRead; idx++) {
+            for (unsigned int idx = 0; idx < dataToCopy; idx++) {
                 for (unsigned int chIdx = 0; chIdx < currentChannelsNum; chIdx++) {
                     bufferOut[bufferOutIdx++] = buffer[bufferIdx++];
                 }
@@ -1428,3 +1455,27 @@ ErrorCodes_t getVoltageOffsetCompensations(
 }
 
 } // namespace er4CommLib
+
+void allocateSampleDiscardVariables() {
+    sdPidError.resize(totalCurrentChannelsNum);
+    sdPidIntegralError.resize(totalCurrentChannelsNum);
+    sdKfStateVariance.resize(totalCurrentChannelsNum);
+    sdKfInnovation.resize(totalCurrentChannelsNum);
+    sdKfStateEstimate.resize(totalCurrentChannelsNum);
+    sdKfMeasurementVariance.resize(totalCurrentChannelsNum);
+    sdTotalReadSamples.resize(totalCurrentChannelsNum);
+    availableSamples.resize(totalCurrentChannelsNum);
+    sdSamplesToDiscard.resize(totalCurrentChannelsNum);
+}
+
+void resetSampleDiscardVariables() {
+    std::fill(sdPidError.begin(), sdPidError.end(), 0.0);
+    std::fill(sdPidIntegralError.begin(), sdPidIntegralError.end(), 0.0);
+    std::fill(sdKfStateVariance.begin(), sdKfStateVariance.end(), 0.0);
+    std::fill(sdKfInnovation.begin(), sdKfInnovation.end(), 0.0);
+    std::fill(sdKfStateEstimate.begin(), sdKfStateEstimate.end(), 0.0);
+    std::fill(sdKfMeasurementVariance.begin(), sdKfMeasurementVariance.end(), 0.0);
+    std::fill(sdTotalReadSamples.begin(), sdTotalReadSamples.end(), 0.0);
+    std::fill(availableSamples.begin(), availableSamples.end(), 0);
+    std::fill(sdSamplesToDiscard.begin(), sdSamplesToDiscard.end(), 0);
+}

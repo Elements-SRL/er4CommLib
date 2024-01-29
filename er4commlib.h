@@ -643,6 +643,14 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t resetDevice(
         ER4CL_ARGVOID);
 
+/*! \brief Reset the variables of the algorithm for data synchronization between distinct devices.
+ *
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t resetSynchronizationVariables(
+        ER4CL_ARGVOID);
+
 /*! \brief Holds the device in reset state.
  *
  * \param flag [in] True to keep the device in reset state, false to release it.

@@ -16,5 +16,5 @@
 #   along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
 
 VERSION_MAJOR = 1
-VERSION_MINOR = 2
-VERSION_BUILD = 1
+VERSION_MINOR = 4
+VERSION_BUILD = 0

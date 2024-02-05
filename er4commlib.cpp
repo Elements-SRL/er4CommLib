@@ -822,13 +822,13 @@ ErrorCodes_t getQueueStatus(
         return ErrorDeviceNotConnected;
     }
     ErrorCodes_t ret = Success;
-    status.availableDataPackets = std::numeric_limits <unsigned int> ::max();
+    status.availableDataPackets = (std::numeric_limits <unsigned int> ::max)();
     QueueStatus_t statusn;
     int c = 0;
     for (auto md : msgDisps) {
         ErrorCodes_t retTemp = md->getQueueStatus(statusn);
         availableSamples[c++] = statusn.availableDataPackets;
-        status.availableDataPackets = std::min(status.availableDataPackets, statusn.availableDataPackets);
+        status.availableDataPackets = (std::min)(status.availableDataPackets, statusn.availableDataPackets);
         status.bufferOverflowFlag = status.bufferOverflowFlag || statusn.bufferOverflowFlag;
         status.lostDataFlag = status.lostDataFlag || statusn.lostDataFlag;
         status.saturationFlag = status.saturationFlag || statusn.saturationFlag;

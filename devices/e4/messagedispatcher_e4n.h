@@ -19,10 +19,7 @@
 #define MESSAGEDISPATCHER_E4N_H
 
 #include "messagedispatcher.h"
-
-#include <iostream>
-
-using namespace std;
+#include "messagedispatcher_e4e.h"
 
 class MessageDispatcher_e4n_V01 : public MessageDispatcher {
 public:
@@ -175,7 +172,7 @@ private:
 
 class MessageDispatcher_e4n_El03c_LegacyEdr3_V04 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e4n_El03c_LegacyEdr3_V04(string id);
+    MessageDispatcher_e4n_El03c_LegacyEdr3_V04(std::string id);
     virtual ~MessageDispatcher_e4n_El03c_LegacyEdr3_V04();
 
     ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
@@ -293,6 +290,18 @@ protected:
     int maxControllerTemperature = 60;
 
     InfoStruct_t infoStruct;
+};
+
+class MessageDispatcher_e4n_El03c_LegacyEdr3_V05 : public MessageDispatcher_e4e_El03c_LegacyEdr3_V05 {
+public:
+    MessageDispatcher_e4n_El03c_LegacyEdr3_V05(std::string id);
+    ~MessageDispatcher_e4n_El03c_LegacyEdr3_V05();
+
+    ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
+
+protected:
+    int minControllerTemperature = -10;
+    int maxControllerTemperature = 60;
 };
 
 #endif // MESSAGEDISPATCHER_E4N_H

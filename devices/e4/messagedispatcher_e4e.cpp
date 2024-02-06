@@ -1,4 +1,4 @@
-//  Copyright (C) 2021 Filippo Cona
+//  Copyright (C) 2021-2024 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -1113,7 +1113,7 @@ ErrorCodes_t MessageDispatcher_e4e_V01::updateVoltageOffsetCompensations(vector 
     return Success;
 }
 
-MessageDispatcher_e4e_El03c_LegacyEdr3_V00::MessageDispatcher_e4e_El03c_LegacyEdr3_V00(string id) :
+MessageDispatcher_e4e_El03c_LegacyEdr3_V05::MessageDispatcher_e4e_El03c_LegacyEdr3_V05(string id) :
     MessageDispatcherLegacyEdr3(id) {
 
     /************************\
@@ -1952,11 +1952,11 @@ MessageDispatcher_e4e_El03c_LegacyEdr3_V00::MessageDispatcher_e4e_El03c_LegacyEd
 
 }
 
-MessageDispatcher_e4e_El03c_LegacyEdr3_V00::~MessageDispatcher_e4e_El03c_LegacyEdr3_V00() {
+MessageDispatcher_e4e_El03c_LegacyEdr3_V05::~MessageDispatcher_e4e_El03c_LegacyEdr3_V05() {
 
 }
 
-void MessageDispatcher_e4e_El03c_LegacyEdr3_V00::initializeDevice() {
+void MessageDispatcher_e4e_El03c_LegacyEdr3_V05::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -1966,7 +1966,7 @@ void MessageDispatcher_e4e_El03c_LegacyEdr3_V00::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_e4e_El03c_LegacyEdr3_V00::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e4e_El03c_LegacyEdr3_V05::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -2165,7 +2165,7 @@ bool MessageDispatcher_e4e_El03c_LegacyEdr3_V00::checkProtocolValidity(string &m
     return validFlag;
 }
 
-void MessageDispatcher_e4e_El03c_LegacyEdr3_V00::setFerdParameters() {
+void MessageDispatcher_e4e_El03c_LegacyEdr3_V05::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {

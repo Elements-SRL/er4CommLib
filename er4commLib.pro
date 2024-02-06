@@ -1,4 +1,4 @@
-#   Copyright (C) 2021 Filippo Cona
+#   Copyright (C) 2021-2024 Filippo Cona
 # 
 #   This file is part of EDR4.
 # 
@@ -32,11 +32,11 @@ TEMPLATE = lib
 CONFIG += c++14
 
 # use as static library
-DEFINES += ER4COMMLIB_STATIC
-CONFIG += staticlib
+#DEFINES += ER4COMMLIB_STATIC
+#CONFIG += staticlib
 
 # or create .dll
-#DEFINES += ER4COMMLIB_LIBRARY
+DEFINES += ER4COMMLIB_LIBRARY
 #DEFINES += OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
 
 include(./version.pri)

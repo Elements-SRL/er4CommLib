@@ -1,4 +1,4 @@
-//  Copyright (C) 2021-2023 Filippo Cona
+//  Copyright (C) 2021-2024 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -74,7 +74,7 @@ ErrorCodes_t detectDevices(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t connect(
-        ER4CL_ARGIN std::string deviceId);
+        ER4CL_ARGIN std::vector <std::string> deviceId);
 
 /*! \brief Disconnects from connected device.
  * Calling this method if no device is connected will return an error code.
@@ -247,25 +247,25 @@ ErrorCodes_t checkProtocolAdimensional(
 
 /*! \brief Set a channel voltage offset.
  *
- * \param idx [in] Index of the channel.
+ * \param channelIdx [in] Index of the channel.
  * \param voltage [in] Value of the voltage offset.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageOffset(
-        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN unsigned int channelIdx,
         ER4CL_ARGIN Measurement_t voltage);
 
 /*! \brief Check if the applied voltage is valid in combination with the currently applied voltage protocol.
  *
- * \param idx [in] Index of the channel voltage offset to be checked.
+ * \param channelIdx [in] Index of the channel voltage offset to be checked.
  * \param voltage [in] Value of the voltage offset to be checked.
  * \param message [in] Error message in case the parameters set is invalid.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t checkVoltageOffset(
-        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN unsigned int channelIdx,
         ER4CL_ARGIN Measurement_t voltage,
         ER4CL_ARGIN std::string &message);
 
@@ -642,6 +642,23 @@ ErrorCodes_t enableFrontEndResetDenoiser(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t resetDevice(
         ER4CL_ARGVOID);
+
+/*! \brief Reset the variables of the algorithm for data synchronization between distinct devices.
+ *
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t resetSynchronizationVariables(
+        ER4CL_ARGVOID);
+
+/*! \brief Holds the device in reset state.
+ *
+ * \param flag [in] True to keep the device in reset state, false to release it.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t holdDeviceReset(
+        ER4CL_ARGIN bool flag);
 
 /*! \brief Reset the digital offset compensations.
  *

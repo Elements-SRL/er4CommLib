@@ -1,4 +1,4 @@
-//  Copyright (C) 2021 Filippo Cona
+//  Copyright (C) 2021-2024 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -2842,4 +2842,47 @@ bool MessageDispatcher_e4n_El03c_LegacyEdr3_V04::checkProtocolValidity(string &m
         break;
     }
     return validFlag;
+}
+
+MessageDispatcher_e4n_El03c_LegacyEdr3_V05::MessageDispatcher_e4n_El03c_LegacyEdr3_V05(string di) :
+    MessageDispatcher_e4e_El03c_LegacyEdr3_V05(di) {
+
+    /****************************\
+     * Device specific controls *
+    \****************************/
+
+    nanionTemperatureControllerFlag = true;
+
+    /**********\
+     * Coders *
+    \**********/
+
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+
+    digitalOffsetCompensationResetFlag = true;
+
+    /*! Device specific controls */
+
+    customFlagsNum = 1;
+    customFlagsNames.resize(customFlagsNum);
+    customFlagsNames[0] = "Trigger selection";
+    customFlagsDefault.resize(customFlagsNum);
+    customFlagsDefault[0] = false;
+
+    customFlagsCoders.resize(customFlagsNum);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[0] = new BoolArrayCoder(boolConfig);
+}
+
+MessageDispatcher_e4n_El03c_LegacyEdr3_V05::~MessageDispatcher_e4n_El03c_LegacyEdr3_V05() {
+
+}
+
+ErrorCodes_t MessageDispatcher_e4n_El03c_LegacyEdr3_V05::getTemperatureControllerRange(int &minTemperature, int &maxTemperature) {
+    minTemperature = minControllerTemperature;
+    maxTemperature = maxControllerTemperature;
+    return Success;
 }

@@ -1,4 +1,4 @@
-//  Copyright (C) 2021 Filippo Cona
+//  Copyright (C) 2021-2024 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -134,10 +134,10 @@ protected:
     InfoStruct_t infoStruct;
 };
 
-class MessageDispatcher_e4e_El03c_LegacyEdr3_V00 : public MessageDispatcherLegacyEdr3 {
+class MessageDispatcher_e4e_El03c_LegacyEdr3_V05 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e4e_El03c_LegacyEdr3_V00(string id);
-    virtual ~MessageDispatcher_e4e_El03c_LegacyEdr3_V00();
+    MessageDispatcher_e4e_El03c_LegacyEdr3_V05(string id);
+    virtual ~MessageDispatcher_e4e_El03c_LegacyEdr3_V05();
 
 protected:
     typedef struct {

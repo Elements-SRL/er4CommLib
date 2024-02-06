@@ -1,4 +1,4 @@
-//  Copyright (C) 2021 Filippo Cona
+//  Copyright (C) 2021-2024 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -67,7 +67,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionENPR, DeviceSubversionENPRHC, 130, DeviceENPRHC_V02},                                     //    8,  8,130 : eNPR-HC with 200ksps option
     {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nEDR3_V04},                                          //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nEDR3_V04},                                          //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3},                                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4n, 15, DeviceE4nEDR3_V05},                                          //    4,  3, 15 : e4 Orbit mini (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3_V05},                                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 129, DeviceE4n_V01},                                             //    4,  3,129 : e4 Orbit mini
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e_V01},                                             //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses_V01},                        //    3,  4,129 : e16 Orbit customized for fast pulses
@@ -219,6 +220,7 @@ ErrorCodes_t MessageDispatcher::detectDevices(
             }
         }
     }
+    std::sort(deviceIds.begin(), deviceIds.end());
 
     return Success;
 }
@@ -308,8 +310,12 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_e4n_El03c_LegacyEdr3_V04(deviceId);
         break;
 
-    case DeviceE4eEDR3:
-        messageDispatcher = new MessageDispatcher_e4e_El03c_LegacyEdr3_V00(deviceId);
+    case DeviceE4nEDR3_V05:
+        messageDispatcher = new MessageDispatcher_e4n_El03c_LegacyEdr3_V05(deviceId);
+        break;
+
+    case DeviceE4eEDR3_V05:
+        messageDispatcher = new MessageDispatcher_e4e_El03c_LegacyEdr3_V05(deviceId);
         break;
 
     case DeviceE4n_V01:
@@ -936,12 +942,25 @@ ErrorCodes_t MessageDispatcher::enableFrontEndResetDenoiser(bool on) {
 }
 
 ErrorCodes_t MessageDispatcher::resetDevice() {
+    if (deviceResetCoder == nullptr) {
+        return ErrorFeatureNotImplemented;
+    }
     deviceResetCoder->encode(1, txStatus);
     this->stackOutgoingMessage(txStatus);
     deviceResetCoder->encode(0, txStatus);
     this->stackOutgoingMessage(txStatus);
 
     this->resetCalib();
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::holdDeviceReset(bool flag) {
+    if (deviceResetCoder == nullptr) {
+        return ErrorFeatureNotImplemented;
+    }
+    deviceResetCoder->encode(flag ? 1 : 0, txStatus);
+    this->stackOutgoingMessage(txStatus);
 
     return Success;
 }
@@ -1666,6 +1685,10 @@ ErrorCodes_t MessageDispatcher::setDebugByte(uint16_t byteOffset, uint16_t byteV
     return Success;
 }
 
+void MessageDispatcher::setMaxOutputPacketsNum(unsigned int maxPackets) {
+    maxOutputPacketsNum = maxPackets;
+}
+
 /****************\
  *  Rx methods  *
 \****************/
@@ -1827,13 +1850,15 @@ ErrorCodes_t MessageDispatcher::getAllDataPackets(uint16_t * &data, uint16_t * &
 }
 
 ErrorCodes_t MessageDispatcher::purgeData() {
-    unique_lock <mutex> readDataMtxLock (readDataMtx);
+    unique_lock <mutex> readDataMtxLock(readDataMtx);
     /*! Performs a fake read of all available data samples. */
     outputBufferReadOffset = outputBufferWriteOffset;
     outputBufferAvailablePackets = 0;
     outputBufferOverflowFlag = false;
     bufferDataLossFlag = false;
     bufferSaturationFlag = false;
+    unique_lock <mutex> connectionMutexLock(connectionMutex);
+    FT_Purge(ftdiRxHandle, FT_PURGE_RX);
     return Success;
 }
 

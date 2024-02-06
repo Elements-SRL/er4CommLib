@@ -1,4 +1,4 @@
-//  Copyright (C) 2021-2023 Filippo Cona
+//  Copyright (C) 2021-2024 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -45,11 +45,11 @@ typedef enum ErrorCode {
     ErrorListDeviceFailed =             ErrorGroupDeviceDetection +     0x00000002, /*!< Error returned when device detection fails.
                                                                                      *   This error may be due to problems with FTDI driver installation too. */
 
-    ErrorEepromAlreadyConnected =       ErrorGroupEepromCommunication +  0x00000001, /*!< Error returned when trying to connect to a device eeprom which is already connected. */
-    ErrorEepromConnectionFailed =       ErrorGroupEepromCommunication +  0x00000002, /*!< Error returned when connection to a device eeprom fails. */
-    ErrorEepromDisconnectionFailed =    ErrorGroupEepromCommunication +  0x00000003, /*!< Error returned when disconnection from a device eeprom fails. */
-    ErrorEepromNotConnected =           ErrorGroupEepromCommunication +  0x00000004, /*!< Error returned when trying to communicate with a device eeprom if none is connected. */
-    ErrorEepromReadFailed =             ErrorGroupEepromCommunication +  0x00000005, /*!< Error returned when reading from a device eeprom fails. */
+    ErrorEepromAlreadyConnected =       ErrorGroupEepromCommunication + 0x00000001, /*!< Error returned when trying to connect to a device eeprom which is already connected. */
+    ErrorEepromConnectionFailed =       ErrorGroupEepromCommunication + 0x00000002, /*!< Error returned when connection to a device eeprom fails. */
+    ErrorEepromDisconnectionFailed =    ErrorGroupEepromCommunication + 0x00000003, /*!< Error returned when disconnection from a device eeprom fails. */
+    ErrorEepromNotConnected =           ErrorGroupEepromCommunication + 0x00000004, /*!< Error returned when trying to communicate with a device eeprom if none is connected. */
+    ErrorEepromReadFailed =             ErrorGroupEepromCommunication + 0x00000005, /*!< Error returned when reading from a device eeprom fails. */
     ErrorEepromWriteFailed =            ErrorGroupEepromCommunication + 0x00000006, /*!< Error returned when writing on a device eeprom fails. */
     ErrorEepromNotRecognized =          ErrorGroupEepromCommunication + 0x00000007, /*!< Error returned when the eeprom is not recognized. */
     ErrorEepromInvalidAddress =         ErrorGroupEepromCommunication + 0x00000008, /*!< Error returned when trying to read or write an invalid eeprom address. */
@@ -62,6 +62,8 @@ typedef enum ErrorCode {
     ErrorFtdiConfigurationFailed =      ErrorGroupDeviceConnection +    0x00000006, /*!< Error returned when FTDI communication channel configuration fails. */
     ErrorDeviceDisconnectionFailed =    ErrorGroupDeviceConnection +    0x00000007, /*!< Error returned when disconnection from a device fails. */
     ErrorDeviceCommunicationFailed =    ErrorGroupDeviceConnection +    0x00000008, /*!< Error returned when the FTDI communication fails. */
+    ErrorConnectingDifferentDevices =   ErrorGroupDeviceConnection +    0x00000009, /*!< Error returned when Trying to connect to different devices at the same time,
+                                                                                         i.e. different information is returned when calling the getDeviceInfo method. */
 
     ErrorSendMessageFailed =            ErrorGroupDeviceCommands +      0x00000001, /*!< Error returned when sending a message to a device fails. */
     ErrorCommandNotImplemented =        ErrorGroupDeviceCommands +      0x00000002, /*!< Error returned when trying to use a command that is not implemented for the current device. */

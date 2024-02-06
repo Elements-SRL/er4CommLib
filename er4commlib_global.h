@@ -1,4 +1,4 @@
-//  Copyright (C) 2021-2023 Filippo Cona
+//  Copyright (C) 2021-2024 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -111,7 +111,8 @@ typedef enum {
     DeviceENPRHC_V01,           /*!< eNPR-HC. */
     DeviceENPRHC_V02,           /*!< eNPR-HC with 200ksps option. */
     DeviceE4nEDR3_V04,          /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
-    DeviceE4eEDR3,              /*!< e4 Elements (Legacy version for EDR3). */
+    DeviceE4nEDR3_V05,          /*!< e4 Orbit mini (Legacy version for EDR3). */
+    DeviceE4eEDR3_V05,          /*!< e4 Elements (Legacy version for EDR3). */
     DeviceE4n_V01,              /*!< e4 Orbit mini. */
     DeviceE4e_V01,              /*!< e4 Elements version. */
     DeviceE16FastPulses_V01,    /*!< e16 Orbit customized for fast pulses. */

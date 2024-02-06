@@ -1,4 +1,4 @@
-//  Copyright (C) 2021 Filippo Cona
+//  Copyright (C) 2021-2024 Filippo Cona
 //
 //  This file is part of EDR4.
 //
@@ -154,6 +154,7 @@ public:
     ErrorCodes_t enableFrontEndResetDenoiser(bool on);
 
     ErrorCodes_t resetDevice();
+    ErrorCodes_t holdDeviceReset(bool flag);
     ErrorCodes_t resetDigitalOffsetCompensation();
     ErrorCodes_t resetCalib();
     ErrorCodes_t resetDigitalOffsetCompensation(bool reset);
@@ -207,6 +208,7 @@ public:
 
     ErrorCodes_t setDebugBit(uint16_t byteOffset, uint16_t bitOffset, bool status);
     ErrorCodes_t setDebugByte(uint16_t byteOffset, uint16_t byteValue);
+    void setMaxOutputPacketsNum(unsigned int maxPackets);
 
     /****************\
      *  Rx methods  *

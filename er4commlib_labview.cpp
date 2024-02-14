@@ -11,6 +11,8 @@
 namespace er4cl = er4CommLib;
 
 static void input2Measurement(LVMeasurement_t i, Measurement_t &m);
+static void measurement2Output(Measurement_t m, LVMeasurement_t &o);
+static void rangedMeasurement2Output(RangedMeasurement_t r, LVRangedMeasurement_t &o);
 
 /************************\
  *  Connection methods  *
@@ -267,719 +269,476 @@ ErrorCodes_t setVoltageReferenceRange(
 
 ErrorCodes_t setSamplingRate(
         uint16_t samplingRateIdx) {
-    MASS_CALL1(setSamplingRate, samplingRateIdx)
+    return er4cl::setSamplingRate(samplingRateIdx);
 }
 
 ErrorCodes_t setOversamplingRatio(
         uint16_t oversamplingRatioIdx) {
-    MASS_CALL1(setOversamplingRatio, oversamplingRatioIdx)
+    return er4cl::setOversamplingRatio(oversamplingRatioIdx);
 }
 
 ErrorCodes_t setVoltageStimulusLpf(
         uint16_t filterIdx) {
-    MASS_CALL1(setVoltageStimulusLpf, filterIdx)
+    return er4cl::setVoltageStimulusLpf(filterIdx);
 }
 
 ErrorCodes_t setVoltageReferenceLpf(
         uint16_t filterIdx) {
-    MASS_CALL1(setVoltageReferenceLpf, filterIdx)
+    return er4cl::setVoltageReferenceLpf(filterIdx);
 }
 
 ErrorCodes_t selectStimulusChannel(
         uint16_t channelIdx,
         bool on) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    if (channelIdx > totalCurrentChannelsNum) {
-        return ErrorValueOutOfRange;
-    }
-
-    ErrorCodes_t ret = Success;
-    if (channelIdx == totalCurrentChannelsNum) {
-        for (auto md : msgDisps) {
-            ret = md->selectStimulusChannel(currentChannelsNum, on);
-        }
-
-    } else {
-        ret = msgDisps[channelIdx/currentChannelsNum]->selectStimulusChannel(channelIdx % currentChannelsNum, on);
-    }
-    return ret;
+    return er4cl::selectStimulusChannel(channelIdx, on);
 }
 
 ErrorCodes_t digitalOffsetCompensation(
         uint16_t channelIdx,
         bool on) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    if (channelIdx > totalCurrentChannelsNum) {
-        return ErrorValueOutOfRange;
-    }
-
-    ErrorCodes_t ret = Success;
-    if (channelIdx == totalCurrentChannelsNum) {
-        for (auto md : msgDisps) {
-            ret = md->digitalOffsetCompensation(currentChannelsNum, on);
-        }
-
-    } else {
-        ret = msgDisps[channelIdx/currentChannelsNum]->digitalOffsetCompensation(channelIdx % currentChannelsNum, on);
-    }
-    return ret;
+    return er4cl::digitalOffsetCompensation(channelIdx, on);
 }
 
 ErrorCodes_t digitalOffsetCompensationAutostop(
         bool on) {
-    MASS_CALL1(digitalOffsetCompensationAutostop, on)
+    return er4cl::digitalOffsetCompensationAutostop(on);
 }
 
 ErrorCodes_t zap(
         uint16_t channelIdx) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    if (channelIdx > totalCurrentChannelsNum) {
-        return ErrorValueOutOfRange;
-    }
-
-    ErrorCodes_t ret = Success;
-    if (channelIdx == totalCurrentChannelsNum) {
-        for (auto md : msgDisps) {
-            ret = md->zap(currentChannelsNum);
-        }
-
-    } else {
-        ret = msgDisps[channelIdx/currentChannelsNum]->zap(channelIdx % currentChannelsNum);
-    }
-    return ret;
+    return er4cl::zap(channelIdx);
 }
 
 ErrorCodes_t switchChannelOn(
         uint16_t channelIdx,
         bool on) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    if (channelIdx > totalCurrentChannelsNum) {
-        return ErrorValueOutOfRange;
-    }
-
-    ErrorCodes_t ret = Success;
-    if (channelIdx == totalCurrentChannelsNum) {
-        for (auto md : msgDisps) {
-            ret = md->switchChannelOn(currentChannelsNum, on);
-        }
-
-    } else {
-        ret = msgDisps[channelIdx/currentChannelsNum]->switchChannelOn(channelIdx % currentChannelsNum, on);
-    }
-    return ret;
+    return er4cl::switchChannelOn(channelIdx, on);
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
         uint32_t idx,
-        Measurement_t voltage) {
-    MASS_CALL2(setFastReferencePulseProtocolWave1Voltage, idx, voltage)
+        LVMeasurement_t lvVoltage) {
+    Measurement_t voltage;
+    input2Measurement(lvVoltage, voltage);
+    return er4cl::setFastReferencePulseProtocolWave1Voltage(idx, voltage);
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave1Time(
         uint32_t idx,
-        Measurement_t time) {
-    MASS_CALL2(setFastReferencePulseProtocolWave1Time, idx, time)
+        LVMeasurement_t lvTime) {
+    Measurement_t time;
+    input2Measurement(lvTime, time);
+    return er4cl::setFastReferencePulseProtocolWave1Time(idx, time);
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
         uint32_t idx,
-        Measurement_t voltage) {
-    MASS_CALL2(setFastReferencePulseProtocolWave2Voltage, idx, voltage)
+        LVMeasurement_t lvVoltage) {
+    Measurement_t voltage;
+    input2Measurement(lvVoltage, voltage);
+    return er4cl::setFastReferencePulseProtocolWave2Voltage(idx, voltage);
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Time(
         uint32_t idx,
-        Measurement_t time) {
-    MASS_CALL2(setFastReferencePulseProtocolWave2Time, idx, time)
+        LVMeasurement_t lvTime) {
+    Measurement_t time;
+    input2Measurement(lvTime, time);
+    return er4cl::setFastReferencePulseProtocolWave2Time(idx, time);
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
         uint32_t idx,
-        Measurement_t time) {
-    MASS_CALL2(setFastReferencePulseProtocolWave2Duration, idx, time)
+        LVMeasurement_t lvTime) {
+    Measurement_t time;
+    input2Measurement(lvTime, time);
+    return er4cl::setFastReferencePulseProtocolWave2Duration(idx, time);
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2Period(
         uint32_t idx,
-        Measurement_t time) {
-    MASS_CALL2(setFastReferencePulseProtocolWave2Period, idx, time)
+        LVMeasurement_t lvTime) {
+    Measurement_t time;
+    input2Measurement(lvTime, time);
+    return er4cl::setFastReferencePulseProtocolWave2Period(idx, time);
 }
 
 ErrorCodes_t setFastReferencePulseProtocolWave2PulseNumber(
         uint32_t idx,
         uint16_t pulseNumber) {
-    MASS_CALL2(setFastReferencePulseProtocolWave2PulseNumber, idx, pulseNumber)
+    return er4cl::setFastReferencePulseProtocolWave2PulseNumber(idx, pulseNumber);
 }
 
 ErrorCodes_t turnOnDigitalOutput(
         bool on) {
-    MASS_CALL1(turnOnDigitalOutput, on)
+    return er4cl::turnOnDigitalOutput(on);
 }
 
 ErrorCodes_t turnLedOn(
         uint16_t ledIndex,
         bool on) {
-    MASS_CALL2(turnLedOn, ledIndex, on)
+    return er4cl::turnLedOn(ledIndex, on);
 }
 
 ErrorCodes_t enableFrontEndResetDenoiser(
         bool on) {
-    MASS_CALL1(enableFrontEndResetDenoiser, on)
+    return er4cl::enableFrontEndResetDenoiser(on);
 }
 
 ErrorCodes_t resetDevice() {
-    MASS_CALL0(resetDevice)
+    return er4cl::resetDevice();
 }
 
 ErrorCodes_t resetSynchronizationVariables() {
-    resetSampleDiscardVariables();
+    er4cl::resetSynchronizationVariables();
     return Success;
 }
 
 ErrorCodes_t holdDeviceReset(
         bool flag) {
-    MASS_CALL1(holdDeviceReset, flag)
+    return er4cl::holdDeviceReset(flag);
 }
 
 ErrorCodes_t resetDigitalOffsetCompensation() {
-    MASS_CALL0(resetDigitalOffsetCompensation)
+    return er4cl::resetDigitalOffsetCompensation();
 }
 
 ErrorCodes_t setCompensationsChannel(
         uint16_t channelIdx) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    if (channelIdx >= totalCurrentChannelsNum) {
-        return ErrorValueOutOfRange;
-    }
-
-    ErrorCodes_t ret = Success;
-    msgDispCompensated = channelIdx/currentChannelsNum;
-
-    ret = msgDisps[msgDispCompensated]->setCompensationsChannel(channelIdx % currentChannelsNum);
-    return ret;
+    return er4cl::setCompensationsChannel(channelIdx);
 }
 
 ErrorCodes_t turnCFastCompensationOn(
         bool on) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    ErrorCodes_t ret = Success;
-    ret = msgDisps[msgDispCompensated]->turnCFastCompensationOn(on);
-
-    return ret;
+    return er4cl::turnCFastCompensationOn(on);
 }
 
 ErrorCodes_t setCFastCompensationOptions(
         uint16_t optionIdx) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    ErrorCodes_t ret = Success;
-    ret = msgDisps[msgDispCompensated]->setCFastCompensationOptions(optionIdx);
-
-    return ret;
+    return er4cl::setCFastCompensationOptions(optionIdx);
 }
 
 ErrorCodes_t setCFastCapacitance(
-        Measurement_t value) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    ErrorCodes_t ret = Success;
-    ret = msgDisps[msgDispCompensated]->setCFastCapacitance(value);
-
-    return ret;
+        LVMeasurement_t lvValue) {
+    Measurement_t value;
+    input2Measurement(lvValue, value);
+    return er4cl::setCFastCapacitance(value);
 }
-
-//ErrorCodes_t CommLib::resetDigitalOffsetCompensation(bool reset) {
-//    ErrorCodes_t ret;
-//    if (messageDispatcher != nullptr) {
-//        ret = messageDispatcher->resetDigitalOffsetCompensation(reset);
-
-//    } else {
-//        ret = ErrorDeviceNotConnected;
-//    }
-//    return ret;
-//}
 
 ErrorCodes_t setDebugBit(
         uint16_t byteOffset,
         uint16_t bitOffset,
         bool status) {
-    MASS_CALL3(setDebugBit, byteOffset, bitOffset, status)
+    return er4cl::setDebugBit(byteOffset, bitOffset, status);
 }
 
 ErrorCodes_t setDebugByte(
         uint16_t byteOffset,
         uint16_t byteValue) {
-    MASS_CALL2(setDebugByte, byteOffset, byteValue)
+    return er4cl::setDebugByte(byteOffset, byteValue);
 }
 
 /****************\
  *  Rx methods  *
 \****************/
 
-//ErrorCodes_t CommLib::isDeviceUpgradable(
-//        string &upgradeNotes,
-//        string &notificationTag) {
-//    ErrorCodes_t ret = Success;
-//    if (messageDispatcher != nullptr) {
-//        ret = messageDispatcher->isDeviceUpgradable(upgradeNotes, notificationTag);
-
-//    } else {
-//        ret = ErrorDeviceNotConnected;
-//    }
-//    return ret;
-//}
-
 ErrorCodes_t getDeviceInfo(
         uint8_t &deviceVersion,
         uint8_t &deviceSubversion,
         uint32_t &firmwareVersion) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-    return msgDisps[0]->getDeviceInfo(deviceVersion, deviceSubversion, firmwareVersion);
-}
-
-ErrorCodes_t getDeviceInfo(
-        string deviceId,
-        uint8_t &deviceVersion,
-        uint8_t &deviceSubversion,
-        uint32_t &firmwareVersion) {
-    ErrorCodes_t ret = Success;
-    /*! Initializes eeprom */
-    /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
-    FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
-    if (deviceId == "ePatch Demo") {
-        ftdiEepromId = FtdiEepromIdDemo;
-    }
-
-    /*! ftdiEeprom is deleted by the messageDispatcher if one is created successfully */
-    FtdiEeprom * ftdiEeprom = nullptr;
-    switch (ftdiEepromId) {
-    case FtdiEepromId56:
-        ftdiEeprom = new FtdiEeprom56(deviceId);
-        break;
-
-    case FtdiEepromIdDemo:
-        ftdiEeprom = new FtdiEepromDemo(deviceId);
-        break;
-    }
-
-    if (ftdiEeprom != nullptr) {
-        DeviceTuple_t deviceTuple = ftdiEeprom->getDeviceTuple();
-
-        deviceVersion = deviceTuple.version;
-        deviceSubversion = deviceTuple.subversion;
-        firmwareVersion = deviceTuple.fwVersion;
-
-    } else {
-        ret = ErrorEepromNotRecognized;
-    }
-    return ret;
+    return er4cl::getDeviceInfo(deviceVersion, deviceSubversion, firmwareVersion);
 }
 
 ErrorCodes_t getQueueStatus(
         QueueStatus_t &status) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-    ErrorCodes_t ret = Success;
-    status.availableDataPackets = (std::numeric_limits <unsigned int> ::max)();
-    QueueStatus_t statusn;
-    int c = 0;
-    for (auto md : msgDisps) {
-        ErrorCodes_t retTemp = md->getQueueStatus(statusn);
-        availableSamples[c++] = statusn.availableDataPackets;
-        status.availableDataPackets = (std::min)(status.availableDataPackets, statusn.availableDataPackets);
-        status.bufferOverflowFlag = status.bufferOverflowFlag || statusn.bufferOverflowFlag;
-        status.lostDataFlag = status.lostDataFlag || statusn.lostDataFlag;
-        status.saturationFlag = status.saturationFlag || statusn.saturationFlag;
-        status.currentRangeIncreaseFlag = status.currentRangeIncreaseFlag || statusn.currentRangeIncreaseFlag;
-        status.currentRangeDecreaseFlag = status.currentRangeDecreaseFlag || statusn.currentRangeDecreaseFlag;
-        status.communicationErrorFlag = status.communicationErrorFlag || statusn.communicationErrorFlag;
-        if (retTemp != Success && retTemp != WarningNoDataAvailable) {
-            return retTemp;
-        }
-
-        ret = (ErrorCodes_t)((unsigned int)ret | (unsigned int)retTemp);
-    }
-    return ret;
+    return er4cl::getQueueStatus(status);
 }
 
 ErrorCodes_t getChannelsNumber(
         uint32_t &voltageChannelsNum,
         uint32_t &currentChannelsNum) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    ErrorCodes_t ret = msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
-    currentChannelsNum *= msgDispsNum;
-    return ret;
+    return er4cl::getChannelsNumber(voltageChannelsNum, currentChannelsNum);
 }
 
 ErrorCodes_t convertVoltageValue(
         uint16_t intValue,
         double &fltValue) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-    return msgDisps[0]->convertVoltageValue(intValue, fltValue);
+    return er4cl::convertVoltageValue(intValue, fltValue);
 }
 
 ErrorCodes_t convertCurrentValue(
         uint16_t intValue,
         uint16_t channelIdx,
         double &fltValue) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-    return msgDisps[channelIdx/currentChannelsNum]->convertCurrentValue(intValue, channelIdx%currentChannelsNum, fltValue);
+    return er4cl::convertCurrentValue(intValue, channelIdx, fltValue);
 }
 
 ErrorCodes_t readData(
         unsigned int dataToRead,
         unsigned int &dataRead,
-        uint16_t * &buffer) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    if (dataToRead == 0) {
-        return WarningNoDataAvailable;
-    }
-
-    ErrorCodes_t ret = Success;
-    if (msgDispsNum == 1) {
-        return msgDisps[0]->getDataPackets(buffer, dataToRead, dataRead);
-    }
-
-    int c = 0;
-    unsigned int bufferOutIdx;
-    unsigned int bufferIdx;
-    unsigned int dataToCopy;
-    double sdPidControl= 0.0;
-    double sdKfGain = 0.0;
-    unsigned int discardThreshold = 0;
-    for (auto md : msgDisps) {
-        sdPidError[c] = (availableSamples[c] > dataToRead ? 1 : -1);
-        sdPidIntegralError[c] += sdPidError[c];
-        sdKfStateVariance[c] += SD_KF_STATE_ERROR;
-        sdPidControl = SD_PID_KP*sdPidError[c]+SD_PID_KI*sdPidIntegralError[c];
-        sdKfInnovation[c] = sdPidControl-sdKfStateEstimate[c];
-        sdKfMeasurementVariance[c] = sdKfStateVariance[c]+SD_KF_MEASUREMENT_ERROR;
-        sdKfGain = sdKfStateVariance[c]/sdKfMeasurementVariance[c];
-        sdKfStateEstimate[c] += sdKfGain*sdKfInnovation[c];
-        sdKfStateVariance[c] *= (1.0-sdKfGain);
-
-        if (sdKfStateEstimate[c] > 0.0) {
-            discardThreshold = (unsigned int)(1.0/sdKfStateEstimate[c]);
-            if (sdTotalReadSamples[c] > discardThreshold) {
-                sdSamplesToDiscard[c]++;
-                sdTotalReadSamples[c] -= discardThreshold;
-            }
-        }
-
-        ret = md->getDataPackets(buffer, dataToRead+sdSamplesToDiscard[c], dataRead);
-        if (dataRead > dataToRead) {
-            dataToCopy = dataToRead;
-            sdSamplesToDiscard[c] -= dataRead-dataToRead;
-
-        } else {
-            dataToCopy = dataRead;
-        }
-
-        sdTotalReadSamples[c] += dataRead;
-
-        if (c == 0) {
-            bufferOutIdx = 0;
-            bufferIdx = 0;
-            for (unsigned int idx = 0; idx < dataToCopy; idx++) {
-                for (unsigned int chIdx = 0; chIdx < totalChannelsNum; chIdx++) {
-                    bufferOut[bufferOutIdx++] = buffer[bufferIdx++];
-                }
-
-                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum;
-            }
-
-        } else {
-            bufferOutIdx = voltageChannelsNum+c*currentChannelsNum;
-            bufferIdx = voltageChannelsNum;
-            for (unsigned int idx = 0; idx < dataToCopy; idx++) {
-                for (unsigned int chIdx = 0; chIdx < currentChannelsNum; chIdx++) {
-                    bufferOut[bufferOutIdx++] = buffer[bufferIdx++];
-                }
-
-                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum;
-                bufferIdx += voltageChannelsNum;
-            }
-        }
-        c++;
-    }
-    buffer = bufferOut;
-    return ret;
+        int16_t * lvBuffer) {
+    uint16_t * buffer = (uint16_t *)lvBuffer;
+    return er4cl::readData(dataToRead, dataRead, buffer);
 }
 
 ErrorCodes_t readAllData(
         unsigned int dataToRead,
         unsigned int &dataRead,
-        uint16_t * &buffer,
-        uint16_t * &unfilteredBuffer) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    if (dataToRead == 0) {
-        return WarningNoDataAvailable;
-    }
-
-    ErrorCodes_t ret = Success;
-    if (msgDispsNum == 1) {
-        return msgDisps[0]->getAllDataPackets(buffer, unfilteredBuffer, dataToRead, dataRead);
-    }
-
-    unsigned int c = 0;
-    unsigned int bufferOutIdx;
-    unsigned int bufferIdx;
-    unsigned int dataToCopy;
-    double sdPidControl= 0.0;
-    double sdKfGain = 0.0;
-    unsigned int discardThreshold = 0;
-//    double ds = 0.0;
-    for (auto md : msgDisps) {
-        sdPidError[c] = (availableSamples[c] > dataToRead ? 1 : -1);
-        sdPidIntegralError[c] += sdPidError[c];
-        sdKfStateVariance[c] += SD_KF_STATE_ERROR;
-        sdPidControl = SD_PID_KP*sdPidError[c]+SD_PID_KI*sdPidIntegralError[c];
-        sdKfInnovation[c] = sdPidControl-sdKfStateEstimate[c];
-        sdKfMeasurementVariance[c] = sdKfStateVariance[c]+SD_KF_MEASUREMENT_ERROR;
-        sdKfGain = sdKfStateVariance[c]/sdKfMeasurementVariance[c];
-        sdKfStateEstimate[c] += sdKfGain*sdKfInnovation[c];
-        sdKfStateVariance[c] *= (1.0-sdKfGain);
-
-        if (sdKfStateEstimate[c] > 0.0) {
-            discardThreshold = (unsigned int)(1.0/sdKfStateEstimate[c]);
-            if (sdTotalReadSamples[c] > discardThreshold) {
-                sdSamplesToDiscard[c]++;
-//                ds = (double) sdSamplesToDiscard[c];
-                sdTotalReadSamples[c] -= discardThreshold;
-            }
-        }
-
-        ret = md->getAllDataPackets(buffer, unfilteredBuffer, dataToRead+sdSamplesToDiscard[c], dataRead);
-        if (dataRead > dataToRead) {
-            dataToCopy = dataToRead;
-            sdSamplesToDiscard[c] -= dataRead-dataToRead;
-
-        } else {
-            dataToCopy = dataRead;
-        }
-
-        sdTotalReadSamples[c] += dataRead;
-
-        if (c == 0) {
-            bufferOutIdx = 0;
-            bufferIdx = 0;
-            for (unsigned int idx = 0; idx < dataToCopy; idx++) {
-                for (unsigned int chIdx = 0; chIdx < totalChannelsNum; chIdx++) {
-                    bufferOut[bufferOutIdx] = buffer[bufferIdx];
-                    unfilteredBufferOut[bufferOutIdx++] = unfilteredBuffer[bufferIdx++];
-                }
-
-                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum;
-            }
-
-        } else {
-            bufferOutIdx = voltageChannelsNum+c*currentChannelsNum;
-            bufferIdx = voltageChannelsNum;
-            for (unsigned int idx = 0; idx < dataToCopy; idx++) {
-                for (unsigned int chIdx = 0; chIdx < currentChannelsNum; chIdx++) {
-                    bufferOut[bufferOutIdx] = buffer[bufferIdx];
-                    unfilteredBufferOut[bufferOutIdx++] = unfilteredBuffer[bufferIdx++];
-                }
-
-                bufferOutIdx += totalTotalChannelsNum-totalChannelsNum+1;
-                bufferIdx += voltageChannelsNum;
-            }
-        }
-//        double pippo = (double) c;
-//        fwrite((void *) &pippo, 8, 1, fid);
-//        fwrite((void *) &sdPidError[c], 8, 1, fid);
-//        fwrite((void *) &sdPidControl, 8, 1, fid);
-//        fwrite((void *) &sdKfStateVariance[c], 8, 1, fid);
-//        fwrite((void *) &ds, 8, 1, fid);
-        dataRead = dataToCopy;
-        c++;
-    }
-
-    buffer = bufferOut;
-    unfilteredBuffer = unfilteredBufferOut;
-    return ret;
+        int16_t * lvBuffer,
+        int16_t * lvUnfilteredBuffer) {
+    uint16_t * buffer = (uint16_t *)lvBuffer;
+    uint16_t * unfilteredBuffer = (uint16_t *)lvUnfilteredBuffer;
+    return er4cl::readAllData(dataToRead, dataRead, buffer, unfilteredBuffer);
 }
 
 ErrorCodes_t purgeData() {
-    MASS_CALL0(purgeData)
+    return er4cl::purgeData();
 }
 
 ErrorCodes_t getCurrentRanges(
-        vector <RangedMeasurement_t> &currentRanges,
-        vector <uint16_t> &defaultOptions) {
-    CALL_FIRST2(getCurrentRanges, currentRanges, defaultOptions)
+        LVRangedMeasurement_t * lvCurrentRanges,
+        uint16_t * lvDefaultOptions) {
+    std::vector <RangedMeasurement_t> currentRanges;
+    std::vector <uint16_t> defaultOptions;
+    ErrorCodes_t ret = getCurrentRanges(currentRanges, defaultOptions);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < currentRanges.size(); idx++) {
+            rangedMeasurement2Output(currentRanges[idx], lvCurrentRanges[idx]);
+            lvDefaultOptions[idx] = defaultOptions[idx];
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getCurrentRange(
-        RangedMeasurement_t &currentRange,
+        LVRangedMeasurement_t * lvCurrentRange,
         uint16_t channelIdx) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
+    RangedMeasurement_t currentRange;
+    ErrorCodes_t ret = er4cl::getCurrentRange(currentRange, channelIdx);
+    if (ret == Success) {
+        rangedMeasurement2Output(currentRange, lvCurrentRange[0]);
     }
-
-    if (channelIdx > totalCurrentChannelsNum) {
-        return ErrorValueOutOfRange;
-    }
-
-    return msgDisps[channelIdx/currentChannelsNum]->getCurrentRange(currentRange, channelIdx % currentChannelsNum);
+    return ret;
 }
 
 ErrorCodes_t hasIndependentCurrentRanges() {
-    CALL_FIRST0(hasIndependentCurrentRanges)
+    return er4cl::hasIndependentCurrentRanges();
 }
 
 ErrorCodes_t getVoltageRanges(
-        vector <RangedMeasurement_t> &voltageRanges,
-        uint16_t &defaultOption,
-        vector <string> &extensions) {
-    CALL_FIRST3(getVoltageRanges, voltageRanges, defaultOption, extensions)
+        LVRangedMeasurement_t * lvVoltageRanges,
+        uint16_t &defaultOption) {
+    std::vector <RangedMeasurement_t> voltageRanges;
+    std::vector <std::string> extensions;
+    ErrorCodes_t ret = getVoltageRanges(voltageRanges, defaultOption, extensions);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < voltageRanges.size(); idx++) {
+            rangedMeasurement2Output(voltageRanges[idx], lvVoltageRanges[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getVoltageRange(
-        RangedMeasurement_t &voltageRange) {
-    CALL_FIRST1(getVoltageRange, voltageRange)
+        LVRangedMeasurement_t * lvVoltageRange) {
+    RangedMeasurement_t voltageRange;
+    ErrorCodes_t ret = er4cl::getVoltageRange(voltageRange);
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRange, lvVoltageRange[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t getVoltageReferenceRanges(
-        vector <RangedMeasurement_t> &ranges,
+        LVRangedMeasurement_t * lvVoltageRanges,
         uint16_t &defaultOption) {
-    CALL_FIRST2(getVoltageReferenceRanges, ranges, defaultOption)
+    std::vector <RangedMeasurement_t> voltageRanges;
+    ErrorCodes_t ret = getVoltageReferenceRanges(voltageRanges, defaultOption);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < voltageRanges.size(); idx++) {
+            rangedMeasurement2Output(voltageRanges[idx], lvVoltageRanges[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getSamplingRates(
-        vector <Measurement_t> &samplingRates,
+        LVMeasurement_t * lvSamplingRates,
         uint16_t &defaultOption) {
-    CALL_FIRST2(getSamplingRates, samplingRates, defaultOption)
+    std::vector <Measurement_t> samplingRates;
+    ErrorCodes_t ret = getSamplingRates(samplingRates, defaultOption);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < samplingRates.size(); idx++) {
+            measurement2Output(samplingRates[idx], lvSamplingRates[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getSamplingRate(
-        Measurement_t &samplingRate) {
-    CALL_FIRST1(getSamplingRate, samplingRate)
+        LVMeasurement_t * lvSamplingRate) {
+    Measurement_t samplingRate;
+    ErrorCodes_t ret = er4cl::getSamplingRate(samplingRate);
+    if (ret == Success) {
+        measurement2Output(samplingRate, lvSamplingRate[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t getRealSamplingRates(
-        vector <Measurement_t> &samplingRates) {
-    CALL_FIRST1(getRealSamplingRates, samplingRates)
+        LVMeasurement_t * lvSamplingRates) {
+    std::vector <Measurement_t> samplingRates;
+    ErrorCodes_t ret = getRealSamplingRates(samplingRates);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < samplingRates.size(); idx++) {
+            measurement2Output(samplingRates[idx], lvSamplingRates[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getRealSamplingRate(
-        Measurement_t &samplingRate) {
-    CALL_FIRST1(getRealSamplingRate, samplingRate)
+        LVMeasurement_t * lvSamplingRate) {
+    Measurement_t samplingRate;
+    ErrorCodes_t ret = er4cl::getRealSamplingRate(samplingRate);
+    if (ret == Success) {
+        measurement2Output(samplingRate, lvSamplingRate[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t getOversamplingRatios(
-        vector <uint16_t> &oversamplingRatios) {
-    CALL_FIRST1(getOversamplingRatios, oversamplingRatios)
+        uint16_t * lvOversamplingRatios) {
+    std::vector <uint16_t> oversamplingRatios;
+    ErrorCodes_t ret = getOversamplingRatios(oversamplingRatios);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < oversamplingRatios.size(); idx++) {
+            lvOversamplingRatios[idx] = oversamplingRatios[idx];
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getOversamplingRatio(
         uint16_t &oversamplingRatio) {
-    CALL_FIRST1(getOversamplingRatio, oversamplingRatio)
+    return er4cl::getOversamplingRatio(oversamplingRatio);
 }
 
 ErrorCodes_t getVoltageStimulusLpfs(
-        vector <Measurement_t> &filterOptions,
+        LVMeasurement_t * lvFilterOptions,
         uint16_t &defaultOption,
         int16_t &voltageRangeIdx) {
-    CALL_FIRST3(getVoltageStimulusLpfs, filterOptions, defaultOption, voltageRangeIdx)
+    std::vector <Measurement_t> filterOptions;
+    ErrorCodes_t ret = getVoltageStimulusLpfs(filterOptions, defaultOption, voltageRangeIdx);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < filterOptions.size(); idx++) {
+            measurement2Output(filterOptions[idx], lvFilterOptions[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getVoltageReferenceLpfs(
-        vector <Measurement_t> &filterOptions,
+        LVMeasurement_t * lvFilterOptions,
         uint16_t &defaultOption,
         int16_t &voltageRangeIdx) {
-    CALL_FIRST3(getVoltageReferenceLpfs, filterOptions, defaultOption, voltageRangeIdx)
+    std::vector <Measurement_t> filterOptions;
+    ErrorCodes_t ret = getVoltageReferenceLpfs(filterOptions, defaultOption, voltageRangeIdx);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < filterOptions.size(); idx++) {
+            measurement2Output(filterOptions[idx], lvFilterOptions[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t hasSelectStimulusChannel(
         bool &selectStimulusChannelFlag,
         bool &singleChannelSSCFlag) {
-    CALL_FIRST2(hasSelectStimulusChannel, selectStimulusChannelFlag, singleChannelSSCFlag)
+    return er4cl::hasSelectStimulusChannel(selectStimulusChannelFlag, singleChannelSSCFlag);
 }
 
 ErrorCodes_t hasDigitalOffsetCompensation(
         bool &digitalOffsetCompensationFlag,
         bool &singleChannelDOCFlag,
         bool &selectableDOCAutostopFlag) {
-    CALL_FIRST3(hasDigitalOffsetCompensation, digitalOffsetCompensationFlag, singleChannelDOCFlag, selectableDOCAutostopFlag)
+    return er4cl::hasDigitalOffsetCompensation(digitalOffsetCompensationFlag, singleChannelDOCFlag, selectableDOCAutostopFlag);
 }
 
 ErrorCodes_t hasZap(
         bool &zappableDeviceFlag,
         bool &singleChannelZapFlag) {
-    CALL_FIRST2(hasZap, zappableDeviceFlag, singleChannelZapFlag)
+    er4cl::hasZap(zappableDeviceFlag, singleChannelZapFlag);
 }
 
 ErrorCodes_t hasChannelOn(
         bool &channelOnFlag,
         bool &singleChannelOnFlag) {
-    CALL_FIRST2(hasChannelOn, channelOnFlag, singleChannelOnFlag)
+    return er4cl::hasChannelOn(channelOnFlag, singleChannelOnFlag);
 }
 
 ErrorCodes_t getSwitchedOnChannels(
         uint32_t &channelsMask) {
-    CALL_FIRST1(getSwitchedOnChannels, channelsMask)
+    return er4cl::getSwitchedOnChannels(channelsMask);
 }
 
 ErrorCodes_t hasDigitalOffsetCompensationReset() {
-    CALL_FIRST0(hasDigitalOffsetCompensationReset)
+    return er4cl::hasDigitalOffsetCompensationReset();
 }
 
 ErrorCodes_t hasDigitalOutput() {
-    CALL_FIRST0(hasDigitalOutput)
+    return er4cl::hasDigitalOutput();
 }
 
 ErrorCodes_t hasFrontEndResetDenoiser() {
-    CALL_FIRST0(hasFrontEndResetDenoiser)
+    return er4cl::hasFrontEndResetDenoiser();
 }
 
 ErrorCodes_t getProtocolList(
-        vector <string> &names,
-        vector <string> &images,
-        vector <vector <uint16_t>> &voltages,
-        vector <vector <uint16_t>> &times,
-        vector <vector <uint16_t>> &slopes,
-        vector <vector <uint16_t>> &frequencies,
-        vector <vector <uint16_t>> &adimensionals) {
-    return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->getProtocolList(names, images, voltages, times, slopes, frequencies, adimensionals);
+        uint16_t * lvVoltages,
+        uint16_t * lvTimes,
+        uint16_t * lvSlopes,
+        uint16_t * lvFrequencies,
+        uint16_t * lvAdimensionals) {
+    std::vector <std::string> names;
+    std::vector <std::string> images;
+    std::vector <std::vector <uint16_t>> voltages;
+    std::vector <std::vector <uint16_t>> times;
+    std::vector <std::vector <uint16_t>> slopes;
+    std::vector <std::vector <uint16_t>> frequencies;
+    std::vector <std::vector <uint16_t>> adimensionals;
+
+    ErrorCodes_t ret = er4cl::getProtocolList(names, images, voltages, times, slopes, frequencies, adimensionals);
+    if (ret == Success) {
+        uint32_t voltageIdx = 0;
+        uint32_t timeIdx = 0;
+        uint32_t slopeIdx = 0;
+        uint32_t frequencyIdx = 0;
+        uint32_t adimensionalIdx = 0;
+        for (uint32_t idx = 0; idx < names.size(); idx++) {
+            for (uint32_t idx2 = 0; idx2 < voltages.size(); idx2++) {
+                lvVoltages[voltageIdx++] = voltages[idx][idx2];
+            }
+            lvVoltages[voltageIdx++] = -1;
+            for (uint32_t idx2 = 0; idx2 < times.size(); idx2++) {
+                lvTimes[timeIdx++] = times[idx][idx2];
+            }
+            lvTimes[timeIdx++] = -1;
+            for (uint32_t idx2 = 0; idx2 < slopes.size(); idx2++) {
+                lvSlopes[slopeIdx++] = slopes[idx][idx2];
+            }
+            lvSlopes[slopeIdx++] = -1;
+            for (uint32_t idx2 = 0; idx2 < frequencies.size(); idx2++) {
+                lvFrequencies[frequencyIdx++] = frequencies[idx][idx2];
+            }
+            lvFrequencies[frequencyIdx++] = -1;
+            for (uint32_t idx2 = 0; idx2 < adimensionals.size(); idx2++) {
+                lvAdimensionals[adimensionalIdx++] = adimensionals[idx][idx2];
+            }
+            lvAdimensionals[adimensionalIdx++] = -1;
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getTriangularProtocolIdx(
@@ -1241,4 +1000,16 @@ void input2Measurement(LVMeasurement_t i, Measurement_t &m) {
     m.value = i.value;
     m.prefix = i.prefix;
     m.unit = "";
+}
+
+void measurement2Output(Measurement_t m, LVMeasurement_t &o) {
+    o.value = m.value;
+    o.prefix = m.prefix;
+}
+
+void rangedMeasurement2Output(RangedMeasurement_t r, LVRangedMeasurement_t &o) {
+    o.min = r.min;
+    o.max = r.max;
+    o.step = r.step;
+    o.prefix = r.prefix;
 }

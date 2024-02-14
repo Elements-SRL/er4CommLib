@@ -768,7 +768,7 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t readData(
         ER4CL_ARGIN unsigned int dataToRead,
         ER4CL_ARGOUT unsigned int &dataRead,
-        ER4CL_ARGOUT int16_t * &buffer);
+        ER4CL_ARGOUT int16_t * buffer);
 
 /*! \brief As readData, but returns also a buffer for unfiltered data.
  * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.
@@ -790,8 +790,8 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t readAllData(
         ER4CL_ARGIN unsigned int dataToRead,
         ER4CL_ARGOUT unsigned int &dataRead,
-        ER4CL_ARGOUT uint16_t * buffer,
-        ER4CL_ARGOUT uint16_t * unfilteredBuffer);
+        ER4CL_ARGOUT int16_t * buffer,
+        ER4CL_ARGOUT int16_t * unfilteredBuffer);
 
 /*! \brief Converts an integer number to the corresponding voltage value.
  * The converted voltage's unit depends on the device configuration.

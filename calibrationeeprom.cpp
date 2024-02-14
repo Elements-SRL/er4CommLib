@@ -17,6 +17,8 @@
 
 #include "calibrationeeprom.h"
 
+using namespace er4CommLib;
+
 CalibrationEeprom::CalibrationEeprom(uint32 channel) :
     channelIdx(channel) {
 

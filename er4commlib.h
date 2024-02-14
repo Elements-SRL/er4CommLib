@@ -21,37 +21,17 @@
 #ifndef ER4COMMLIB_H
 #define ER4COMMLIB_H
 
+#ifdef ER4COMMLIB_LABVIEW_WRAPPER
+#include "er4commlib_global_addendum.h"
+#endif
+
 #include <vector>
 #include <string>
 
 #include "er4commlib_global.h"
 #include "er4commlib_errorcodes.h"
 
-class MessageDispatcher;
-
 namespace er4CommLib {
-
-/*! \struct QueueStatus_t
- * \brief Struct that contains information on the device status.
- * Returned by getQueueStatus.
- */
-typedef struct {
-    unsigned int availableDataPackets; /*!< Number of data packets available for read.
-                                        * Each data packets consists of 1 sample per channel.
-                                        * Successful calls to readData reduce this number. */
-    bool bufferOverflowFlag; /*!< This flag is true if the internal buffer has been filled and old data has been overwritten.
-                              *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool lostDataFlag; /*!< This flag is true if the device has sent too much data and some has been lost.
-                        *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool saturationFlag; /*!< This flag is true if some data saturates the front end range.
-                          *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool currentRangeIncreaseFlag; /*!< This flag is true if any current channel is above the threshold that suggests an increase of front end current range.
-                                    *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool currentRangeDecreaseFlag; /*!< This flag is true if all current channels are below the threshold that suggests a decrease of front end current range.
-                                    *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool communicationErrorFlag; /*!< This flag is true after a communication error with the device.
-                                  *   This flag is reset if the communication restarts successfully. */
-} QueueStatus_t;
 
 /************************\
  *  Connection methods  *
@@ -706,15 +686,6 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCFastCapacitance(
         ER4CL_ARGIN Measurement_t value);
 
-///*! \brief Reset the device's digital offset compensation.
-// *
-// * \param reset [in] False sets the digital offset compensation in normal operation state, true sets in reset state.
-// * \return Error code.
-// */
-//ER4COMMLIBSHARED_EXPORT
-//ErrorCodes_t resetDigitalOffsetCompensation(
-//        ER4CL_ARGIN bool reset);
-
 /*! \brief Set a bit of the communication protocol for debug purposes.
  *
  * \param byteOffset [in] Offset of the byte the bit belongs to.
@@ -742,16 +713,6 @@ ErrorCodes_t setDebugByte(
 /****************\
  *  Rx methods  *
 \****************/
-
-///*! \brief Get notification of possible upgrades for the connected device.
-// * Returns Success if there are upgrades available.
-// *
-// * \param upgradeNotes [out] Notes of the available upgrades.
-// * \return Error code.
-// */
-//ErrorCodes_t isDeviceUpgradable(
-//        ER4CL_ARGOUT std::string &upgradeNotes,
-//        ER4CL_ARGOUT std::string &notificationTag);
 
 /*! \brief Get the device identification information (to be used when the device is already connected).
  *

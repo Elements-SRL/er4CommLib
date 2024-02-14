@@ -31,14 +31,36 @@ CONFIG(release, debug|release) {
 TEMPLATE = lib
 CONFIG += c++14
 
-# use as static library
-#DEFINES += ER4COMMLIB_STATIC
-#CONFIG += staticlib
+DEFINES += ER4COMMLIB_LABVIEW_WRAPPER
+#DEFINES += ER4COMMLIB_PYTHON_WRAPPER
 
-# or create .dll
-DEFINES += ER4COMMLIB_LIBRARY
-#DEFINES += OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
+contains(DEFINES, ER4COMMLIB_LABVIEW_WRAPPER) {
+    # create .dll
+    DEFINES += ER4COMMLIB_LIBRARY
+    #DEFINES += OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
+    SOURCES += er4commlib_labview.cpp
+    HEADERS += er4commlib_labview.h
+    include($$(LABVIEW_TO_C_PATH)/includelabview.pri)
+}
 
+contains(DEFINES, ER4COMMLIB_PYTHON_WRAPPER) {
+    # create .dll
+    DEFINES += ER4COMMLIB_LIBRARY
+    #DEFINES += OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
+    TARGET = er4CommLibPython
+    CONFIG -= app_bundle
+
+    SOURCES += er4commlib_python.cpp
+    LIBS += -L"$$(LOCAL_PYTHON_3_10_7)\libs" -lpython310
+    INCLUDEPATH += $$(LOCAL_PYBIND_11)\include \
+            "$$(LOCAL_PYTHON_3_10_7)\include"
+}
+
+! contains(DEFINES, E384COMMLIB_LIBRARY) {
+    # build statically
+    DEFINES += ER4COMMLIB_STATIC
+    CONFIG += staticlib
+}
 include(./version.pri)
 
 DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
@@ -48,7 +70,6 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
-    devices/e1/messagedispatcher_e1uln.cpp \
     er4commlib.cpp \
     ftdieeprom.cpp \
     ftdieeprom56.cpp \
@@ -59,6 +80,7 @@ SOURCES += \
     devices/e1/messagedispatcher_e1light.cpp \
     devices/e1/messagedispatcher_e1plus.cpp \
     devices/e1/messagedispatcher_e1hc.cpp \
+    devices/e1/messagedispatcher_e1uln.cpp \
     devices/eNPR/messagedispatcher_enpr.cpp \
     devices/eNPR/messagedispatcher_enpr_hc.cpp \
     devices/e2/messagedispatcher_e2hc.cpp \
@@ -78,10 +100,10 @@ SOURCES += \
     devices/fake/messagedispatcher_fake_e16fastpulses.cpp
 
 HEADERS += \
-    devices/e1/messagedispatcher_e1uln.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
+    er4commlib_global_addendum.h \
     ftdieeprom.h \
     ftdieeprom56.h \
     ftdieepromdemo.h \
@@ -91,6 +113,7 @@ HEADERS += \
     devices/e1/messagedispatcher_e1light.h \
     devices/e1/messagedispatcher_e1plus.h \
     devices/e1/messagedispatcher_e1hc.h \
+    devices/e1/messagedispatcher_e1uln.h \
     devices/eNPR/messagedispatcher_enpr.h \
     devices/eNPR/messagedispatcher_enpr_hc.h \
     devices/e2/messagedispatcher_e2hc.h \

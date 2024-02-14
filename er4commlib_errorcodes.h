@@ -21,7 +21,9 @@
 #ifndef ER4COMMLIB_ERRORCODES_H
 #define ER4COMMLIB_ERRORCODES_H
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
 namespace er4CommLib {
+#endif
 
 /*! \enum ErrorGroups_t
  *  \brief Enumerated error groups.
@@ -81,6 +83,8 @@ typedef enum ErrorCode {
     ErrorUnknown =                                                      0xFFFFFFFF  /*!< Undefined error. */
 } ErrorCodes_t;
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
 } // er4CommLib
+#endif
 
 #endif // ER4COMMLIB_ERRORCODES_H

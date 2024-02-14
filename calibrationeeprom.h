@@ -24,8 +24,6 @@
 #include "libMPSSE_spi.h"
 #include "er4commlib_errorcodes.h"
 
-using namespace er4CommLib;
-
 /*! EEPROM constants */
 #define CEE_XCBUS_DIR 0x09 /*! Set high output pins: FPGA reset 0x01 + SPI program 0x08 */
 #define CEE_SPI_PROG_ENABLE 0x00

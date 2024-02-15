@@ -31,13 +31,14 @@ CONFIG(release, debug|release) {
 TEMPLATE = lib
 CONFIG += c++14
 
-DEFINES += ER4COMMLIB_LABVIEW_WRAPPER
+#DEFINES += ER4COMMLIB_LABVIEW_WRAPPER
 #DEFINES += ER4COMMLIB_PYTHON_WRAPPER
 
 contains(DEFINES, ER4COMMLIB_LABVIEW_WRAPPER) {
     # create .dll
     DEFINES += ER4COMMLIB_LIBRARY
     #DEFINES += OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
+    TARGET = er4CommLibLabview
     SOURCES += er4commlib_labview.cpp
     HEADERS += er4commlib_labview.h
     include($$(LABVIEW_TO_C_PATH)/includelabview.pri)
@@ -56,7 +57,7 @@ contains(DEFINES, ER4COMMLIB_PYTHON_WRAPPER) {
             "$$(LOCAL_PYTHON_3_10_7)\include"
 }
 
-! contains(DEFINES, E384COMMLIB_LIBRARY) {
+! contains(DEFINES, ER4COMMLIB_LIBRARY) {
     # build statically
     DEFINES += ER4COMMLIB_STATIC
     CONFIG += staticlib

@@ -17,7 +17,9 @@
 
 #include "calibrationeeprom.h"
 
-using namespace er4CommLib;
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
 
 CalibrationEeprom::CalibrationEeprom(uint32 channel) :
     channelIdx(channel) {
@@ -256,3 +258,7 @@ ErrorCodes_t CalibrationEeprom::getStatus(unsigned char &eepromStatus) {
 unsigned int CalibrationEeprom::getMemorySize() {
     return CEE_EEPROM_SIZE;
 }
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif

@@ -1199,8 +1199,8 @@ ErrorCodes_t getInsertionPulseControls(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasReferencePulseControls(
-        ER4CL_ARGOUT bool referencePulseImplemented,
-        ER4CL_ARGOUT bool overrideReferencePulseImplemented);
+        ER4CL_ARGOUT bool &referencePulseImplemented,
+        ER4CL_ARGOUT bool &overrideReferencePulseImplemented);
 
 /*! \brief Get reference pulse controls definition.
  *
@@ -1221,8 +1221,8 @@ ErrorCodes_t getReferencePulseControls(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasReferencePulseTrainControls(
-        ER4CL_ARGOUT bool referencePulseImplemented,
-        ER4CL_ARGOUT bool overrideReferencePulseImplemented);
+        ER4CL_ARGOUT bool &referencePulseImplemented,
+        ER4CL_ARGOUT bool &overrideReferencePulseImplemented);
 
 /*! \brief Get reference train pulse controls definition.
  *

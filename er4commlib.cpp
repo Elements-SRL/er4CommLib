@@ -1208,7 +1208,7 @@ ErrorCodes_t getSealTestProtocolIdx(
         uint16_t &idx) {
     CALL_FIRST1(getSealTestProtocolIdx, idx)
 }
-// DA QUI-------------------------------------
+
 ErrorCodes_t getProtocolVoltage(
         vector <string> &voltageNames,
         vector <RangedMeasurement_t> &ranges,

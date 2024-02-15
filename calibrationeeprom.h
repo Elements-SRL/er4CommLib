@@ -39,22 +39,24 @@
 #define CEE_GET_STATUS_CMD 0x05
 #define CEE_WRITE_ENABLE_CMD 0x06
 
-namespace er4cl = er4CommLib;
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
 
 class CalibrationEeprom {
 public:
     CalibrationEeprom(uint32 channel);
     ~CalibrationEeprom();
 
-    er4cl::ErrorCodes_t openConnection();
-    er4cl::ErrorCodes_t closeConnection();
-    er4cl::ErrorCodes_t enableFPGA(bool flag);
-    er4cl::ErrorCodes_t enableWrite();
-    er4cl::ErrorCodes_t writeBytes(unsigned char * values, unsigned int addr, unsigned int size);
-    er4cl::ErrorCodes_t pollWriteDone();
-    er4cl::ErrorCodes_t readBytes(unsigned char * values, unsigned int addr, unsigned int size);
-    er4cl::ErrorCodes_t readByte(unsigned char * value, unsigned int addr, bool start = true, bool end = true);
-    er4cl::ErrorCodes_t getStatus(unsigned char &eepromStatus);
+    ErrorCodes_t openConnection();
+    ErrorCodes_t closeConnection();
+    ErrorCodes_t enableFPGA(bool flag);
+    ErrorCodes_t enableWrite();
+    ErrorCodes_t writeBytes(unsigned char * values, unsigned int addr, unsigned int size);
+    ErrorCodes_t pollWriteDone();
+    ErrorCodes_t readBytes(unsigned char * values, unsigned int addr, unsigned int size);
+    ErrorCodes_t readByte(unsigned char * value, unsigned int addr, bool start = true, bool end = true);
+    ErrorCodes_t getStatus(unsigned char &eepromStatus);
 
     static unsigned int getMemorySize();
 
@@ -68,5 +70,9 @@ private:
     unsigned char writeBuffer[256];
     unsigned char readBuffer[256];
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // CALIBRATIONEEPROM_H

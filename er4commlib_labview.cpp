@@ -13,6 +13,7 @@ namespace er4cl = er4CommLib;
 static void input2Measurement(LVMeasurement_t i, Measurement_t &m);
 static void measurement2Output(Measurement_t m, LVMeasurement_t &o);
 static void rangedMeasurement2Output(RangedMeasurement_t r, LVRangedMeasurement_t &o);
+static void compensationControl2Output(CompensationControl_t c, LVCompensationControl_t &o);
 
 /************************\
  *  Connection methods  *
@@ -668,7 +669,7 @@ ErrorCodes_t hasDigitalOffsetCompensation(
 ErrorCodes_t hasZap(
         bool &zappableDeviceFlag,
         bool &singleChannelZapFlag) {
-    er4cl::hasZap(zappableDeviceFlag, singleChannelZapFlag);
+    return er4cl::hasZap(zappableDeviceFlag, singleChannelZapFlag);
 }
 
 ErrorCodes_t hasChannelOn(
@@ -743,257 +744,337 @@ ErrorCodes_t getProtocolList(
 
 ErrorCodes_t getTriangularProtocolIdx(
         uint16_t &idx) {
-    CALL_FIRST1(getTriangularProtocolIdx, idx)
+    return er4cl::getTriangularProtocolIdx(idx);
 }
 
 ErrorCodes_t getSealTestProtocolIdx(
         uint16_t &idx) {
-    CALL_FIRST1(getSealTestProtocolIdx, idx)
+    return er4cl::getSealTestProtocolIdx(idx);
 }
-// DA QUI-------------------------------------
+
 ErrorCodes_t getProtocolVoltage(
-        vector <string> &voltageNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
-    CALL_FIRST3(getProtocolVoltage, voltageNames, ranges, defaultValues)
+        LVRangedMeasurement_t * lvRanges,
+        LVMeasurement_t * lvDefaultValues) {
+    std::vector <std::string> voltageNames;
+    std::vector <RangedMeasurement_t> ranges;
+    std::vector <Measurement_t> defaultValues;
+    ErrorCodes_t ret = er4cl::getProtocolVoltage(voltageNames, ranges, defaultValues);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < voltageNames.size(); idx++) {
+            rangedMeasurement2Output(ranges[idx], lvRanges[idx]);
+            measurement2Output(defaultValues[idx], lvDefaultValues[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getProtocolTime(
-        vector <string> &timeNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
-    CALL_FIRST3(getProtocolTime, timeNames, ranges, defaultValues)
+        LVRangedMeasurement_t * lvRanges,
+        LVMeasurement_t * lvDefaultValues) {
+    std::vector <std::string> timeNames;
+    std::vector <RangedMeasurement_t> ranges;
+    std::vector <Measurement_t> defaultValues;
+    ErrorCodes_t ret = er4cl::getProtocolTime(timeNames, ranges, defaultValues);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < timeNames.size(); idx++) {
+            rangedMeasurement2Output(ranges[idx], lvRanges[idx]);
+            measurement2Output(defaultValues[idx], lvDefaultValues[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getProtocolSlope(
-        vector <string> &slopeNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
-    CALL_FIRST3(getProtocolSlope, slopeNames, ranges, defaultValues)
+        LVRangedMeasurement_t * lvRanges,
+        LVMeasurement_t * lvDefaultValues) {
+    std::vector <std::string> slopeNames;
+    std::vector <RangedMeasurement_t> ranges;
+    std::vector <Measurement_t> defaultValues;
+    ErrorCodes_t ret = er4cl::getProtocolSlope(slopeNames, ranges, defaultValues);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < slopeNames.size(); idx++) {
+            rangedMeasurement2Output(ranges[idx], lvRanges[idx]);
+            measurement2Output(defaultValues[idx], lvDefaultValues[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getProtocolFrequency(
-        vector <string> &frequencyNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
-    CALL_FIRST3(getProtocolFrequency, frequencyNames, ranges, defaultValues)
+        LVRangedMeasurement_t * lvRanges,
+        LVMeasurement_t * lvDefaultValues) {
+    std::vector <std::string> frequencyNames;
+    std::vector <RangedMeasurement_t> ranges;
+    std::vector <Measurement_t> defaultValues;
+    ErrorCodes_t ret = er4cl::getProtocolFrequency(frequencyNames, ranges, defaultValues);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < frequencyNames.size(); idx++) {
+            rangedMeasurement2Output(ranges[idx], lvRanges[idx]);
+            measurement2Output(defaultValues[idx], lvDefaultValues[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getProtocolAdimensional(
-        vector <string> &adimensionalNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
-    CALL_FIRST3(getProtocolAdimensional, adimensionalNames, ranges, defaultValues)
+        LVRangedMeasurement_t * lvRanges,
+        LVMeasurement_t * lvDefaultValues) {
+    std::vector <std::string> adimensionalNames;
+    std::vector <RangedMeasurement_t> ranges;
+    std::vector <Measurement_t> defaultValues;
+    ErrorCodes_t ret = er4cl::getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < adimensionalNames.size(); idx++) {
+            rangedMeasurement2Output(ranges[idx], lvRanges[idx]);
+            measurement2Output(defaultValues[idx], lvDefaultValues[idx]);
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getVoltageOffsetControls(
-        RangedMeasurement_t &voltageRange) {
-    CALL_FIRST1(getVoltageOffsetControls, voltageRange)
+        LVRangedMeasurement_t * lvVoltageRange) {
+    RangedMeasurement_t voltageRange;
+    ErrorCodes_t ret = er4cl::getVoltageOffsetControls(voltageRange);
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRange, lvVoltageRange[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t getInsertionPulseControls(
-        RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &durationRange) {
-    CALL_FIRST2(getInsertionPulseControls, voltageRange, durationRange)
+        LVRangedMeasurement_t * lvVoltageRange,
+        LVRangedMeasurement_t * lvDurationRange) {
+    RangedMeasurement_t voltageRange;
+    RangedMeasurement_t durationRange;
+    ErrorCodes_t ret = er4cl::getInsertionPulseControls(voltageRange, durationRange);
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRange, lvVoltageRange[0]);
+        rangedMeasurement2Output(durationRange, lvDurationRange[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t hasReferencePulseControls(
         bool &referencePulseImplemented,
         bool &overrideReferencePulseImplemented) {
-    CALL_FIRST2(hasReferencePulseControls, referencePulseImplemented, overrideReferencePulseImplemented)
+    return er4cl::hasReferencePulseControls(referencePulseImplemented, overrideReferencePulseImplemented);
 }
 
 ErrorCodes_t getReferencePulseControls(
-        RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &durationRange) {
-    CALL_FIRST2(getReferencePulseControls, voltageRange, durationRange)
+        LVRangedMeasurement_t * lvVoltageRange,
+        LVRangedMeasurement_t * lvDurationRange) {
+    RangedMeasurement_t voltageRange;
+    RangedMeasurement_t durationRange;
+    ErrorCodes_t ret = er4cl::getReferencePulseControls(voltageRange, durationRange);
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRange, lvVoltageRange[0]);
+        rangedMeasurement2Output(durationRange, lvDurationRange[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t hasReferencePulseTrainControls(
         bool &referencePulseImplemented,
         bool &overrideReferencePulseImplemented) {
-    CALL_FIRST2(hasReferencePulseTrainControls, referencePulseImplemented, overrideReferencePulseImplemented)
+    return er4cl::hasReferencePulseTrainControls(referencePulseImplemented, overrideReferencePulseImplemented);
 }
 
 ErrorCodes_t getReferencePulseTrainControls(
-        RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &durationRange,
-        RangedMeasurement_t &periodRange,
+        LVRangedMeasurement_t * lvVoltageRange,
+        LVRangedMeasurement_t * lvDurationRange,
+        LVRangedMeasurement_t * lvPeriodRange,
         uint16_t &pulsesNumber) {
-    return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->getReferencePulseTrainControls(voltageRange, durationRange, periodRange, pulsesNumber);
+    RangedMeasurement_t voltageRange;
+    RangedMeasurement_t durationRange;
+    RangedMeasurement_t periodRange;
+    ErrorCodes_t ret = er4cl::getReferencePulseTrainControls(voltageRange, durationRange, periodRange, pulsesNumber);
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRange, lvVoltageRange[0]);
+        rangedMeasurement2Output(durationRange, lvDurationRange[0]);
+        rangedMeasurement2Output(periodRange, lvPeriodRange[0]);
     }
-
-ErrorCodes_t getEdhFormat(
-        string &format) {
-    CALL_FIRST1(getEdhFormat, format)
+    return ret;
 }
 
 ErrorCodes_t getRawDataFilterCutoffFrequency(
-        RangedMeasurement_t &range,
-        Measurement_t &defaultValue) {
-    CALL_FIRST2(getRawDataFilterCutoffFrequency, range, defaultValue)
+        LVRangedMeasurement_t * lvRange,
+        LVMeasurement_t * lvDefaultValue) {
+    RangedMeasurement_t range;
+    Measurement_t defaultValue;
+    ErrorCodes_t ret = er4cl::getRawDataFilterCutoffFrequency(range, defaultValue);
+    if (ret == Success) {
+        rangedMeasurement2Output(range, lvRange[0]);
+        measurement2Output(defaultValue, lvDefaultValue[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t getLedsNumber(
         uint16_t &ledsNum) {
-    CALL_FIRST1(getLedsNumber, ledsNum)
+    return er4cl::getLedsNumber(ledsNum);
 }
 
 ErrorCodes_t getLedsColors(
-        vector <uint32_t> &ledsColors) {
-    CALL_FIRST1(getLedsColors, ledsColors)
+        uint32_t * lvLedsColors) {
+    std::vector <uint32_t> ledsColors;
+    ErrorCodes_t ret = er4cl::getLedsColors(ledsColors);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < ledsColors.size(); idx++) {
+            lvLedsColors[idx] = ledsColors[idx];
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getFastReferencePulseProtocolWave1Range(
-        RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &timeRange,
+        LVRangedMeasurement_t * lvVoltageRange,
+        LVRangedMeasurement_t * lvTimeRange,
         uint16_t &nPulse) {
-    CALL_FIRST3(getFastReferencePulseProtocolWave1Range, voltageRange, timeRange, nPulse)
+    RangedMeasurement_t voltageRange;
+    RangedMeasurement_t timeRange;
+    ErrorCodes_t ret = er4cl::getFastReferencePulseProtocolWave1Range(voltageRange, timeRange, nPulse);
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRange, lvVoltageRange[0]);
+        rangedMeasurement2Output(timeRange, lvTimeRange[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t getFastReferencePulseProtocolWave2Range(
-        RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &timeRange,
-        RangedMeasurement_t &durationRange,
+        LVRangedMeasurement_t * lvVoltageRange,
+        LVRangedMeasurement_t * lvTimeRange,
+        LVRangedMeasurement_t * lvDurationRange,
         uint16_t &nPulse) {
-    return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->getFastReferencePulseProtocolWave2Range(voltageRange, timeRange, durationRange, nPulse);
+    RangedMeasurement_t voltageRange;
+    RangedMeasurement_t timeRange;
+    RangedMeasurement_t durationRange;
+    ErrorCodes_t ret = er4cl::getFastReferencePulseProtocolWave2Range(voltageRange, timeRange, durationRange, nPulse);
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRange, lvVoltageRange[0]);
+        rangedMeasurement2Output(timeRange, lvTimeRange[0]);
+        rangedMeasurement2Output(durationRange, lvDurationRange[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
-        RangedMeasurement_t &voltageRange,
-        RangedMeasurement_t &timeRange,
-        RangedMeasurement_t &durationRange,
-        RangedMeasurement_t &periodRange,
+        LVRangedMeasurement_t * lvVoltageRange,
+        LVRangedMeasurement_t * lvTimeRange,
+        LVRangedMeasurement_t * lvDurationRange,
+        LVRangedMeasurement_t * lvPeriodRange,
         uint16_t &pulsesPerTrain,
         uint16_t &nTrains) {
-    return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->getFastReferencePulseTrainProtocolWave2Range(voltageRange, timeRange, durationRange, periodRange, pulsesPerTrain, nTrains);
-}
-
-/*************************\
- *  Calibration methods  *
-\*************************/
-
-ErrorCodes_t getCalibrationEepromSize(
-        uint32_t &size) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCalibrationEepromSize(size);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t writeCalibrationEeprom(
-        vector <uint32_t> value,
-        vector <uint32_t> address,
-        vector <uint32_t> size) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->writeCalibrationEeprom(value, address, size);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
-    }
-    return ret;
-}
-
-ErrorCodes_t readCalibrationEeprom(
-        vector <uint32_t> &value,
-        vector <uint32_t> address,
-        vector <uint32_t> size) {
-    ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->readCalibrationEeprom(value, address, size);
-
-    } else {
-        ret = ErrorDeviceNotConnected;
+    RangedMeasurement_t voltageRange;
+    RangedMeasurement_t timeRange;
+    RangedMeasurement_t durationRange;
+    RangedMeasurement_t periodRange;
+    ErrorCodes_t ret = er4cl::getFastReferencePulseTrainProtocolWave2Range(voltageRange, timeRange, durationRange, periodRange, pulsesPerTrain, nTrains);
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRange, lvVoltageRange[0]);
+        rangedMeasurement2Output(timeRange, lvTimeRange[0]);
+        rangedMeasurement2Output(durationRange, lvDurationRange[0]);
+        rangedMeasurement2Output(periodRange, lvPeriodRange[0]);
     }
     return ret;
 }
 
 ErrorCodes_t getCustomFlags(
-        vector <string> &customFlags,
-        vector <bool> &customFlagsDefault) {
-    CALL_FIRST2(getCustomFlags, customFlags, customFlagsDefault)
+        bool * lvCustomFlagsDefault) {
+    std::vector <std::string> customFlags;
+    std::vector <bool> customFlagsDefault;
+    ErrorCodes_t ret = er4cl::getCustomFlags(customFlags, customFlagsDefault);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < customFlags.size(); idx++) {
+            lvCustomFlagsDefault[idx] = customFlagsDefault[idx];
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t getCustomDoubles(
-        vector <string> &customDoubles,
-        vector <RangedMeasurement_t> &customDoublesRanges,
-        vector <double> &customDoublesDefault) {
-    CALL_FIRST3(getCustomDoubles, customDoubles, customDoublesRanges, customDoublesDefault)
+        LVRangedMeasurement_t * lvCustomDoublesRanges,
+        double * lvCustomDoublesDefault) {
+    std::vector <std::string> customDoubles;
+    std::vector <RangedMeasurement_t> customDoublesRanges;
+    std::vector <double> customDoublesDefault;
+    ErrorCodes_t ret = er4cl::getCustomDoubles(customDoubles, customDoublesRanges, customDoublesDefault);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < customDoubles.size(); idx++) {
+            rangedMeasurement2Output(customDoublesRanges[idx], lvCustomDoublesRanges[idx]);
+            lvCustomDoublesDefault[idx] = customDoublesDefault[idx];
+        }
+    }
+    return ret;
 }
 
 ErrorCodes_t hasNanionTemperatureController() {
-    CALL_FIRST0(hasNanionTemperatureController)
+    return er4cl::hasNanionTemperatureController();
 }
 
 ErrorCodes_t getTemperatureControllerRange(
         int &minTemperature,
         int &maxTemperature) {
-    CALL_FIRST2(getTemperatureControllerRange, minTemperature, maxTemperature)
+    return er4cl::getTemperatureControllerRange(minTemperature, maxTemperature);
 }
 
 ErrorCodes_t hasWasherControls() {
-    CALL_FIRST0(hasWasherControls)
+    return er4cl::hasWasherControls();
 }
 
 ErrorCodes_t getWasherSpeedRange(
-        RangedMeasurement_t &range) {
-    CALL_FIRST1(getWasherSpeedRange, range)
+        LVRangedMeasurement_t * lvRange) {
+    RangedMeasurement_t range;
+    ErrorCodes_t ret = er4cl::getWasherSpeedRange(range);
+    if (ret == Success) {
+        rangedMeasurement2Output(range, lvRange[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t getWasherStatus(
         WasherStatus_t &status,
         WasherError_t &error) {
-    CALL_FIRST2(getWasherStatus, status, error)
+    return er4cl::getWasherStatus(status, error);
 }
 
 ErrorCodes_t getWasherPresetSpeeds(
-        vector <int8_t> &speedValue) {
-    CALL_FIRST1(getWasherPresetSpeeds, speedValue)
+        int8_t * lvSpeedValue) {
+    std::vector <int8_t> speedValue;
+    ErrorCodes_t ret = er4cl::getWasherPresetSpeeds(speedValue);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < speedValue.size(); idx++) {
+            lvSpeedValue[idx] = speedValue[idx];
+        }
+    }
+    return ret;
 }
 
 
 ErrorCodes_t hasCFastCompensation() {
-    CALL_FIRST0(hasCFastCompensation)
-}
-
-ErrorCodes_t getCFastCompensationOptions(
-        vector <string> &options) {
-    CALL_FIRST1(getCFastCompensationOptions, options)
+    return er4cl::hasCFastCompensation();
 }
 
 ErrorCodes_t getCFastCapacitanceControl(
-        CompensationControl_t &control) {
-    CALL_FIRST1(getCFastCapacitanceControl, control)
+        LVCompensationControl_t * lvControl) {
+    CompensationControl_t control;
+    ErrorCodes_t ret = er4cl::getCFastCapacitanceControl(control);
+    if (ret == Success) {
+        compensationControl2Output(control, lvControl[0]);
+    }
+    return ret;
 }
 
 ErrorCodes_t getVoltageOffsetCompensations(
-        std::vector <Measurement_t> &offsets) {
-    ErrorCodes_t ret;
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    if (msgDispsNum == 1) {
-        return msgDisps[0]->updateVoltageOffsetCompensations(offsets);
-    }
-
-    std::vector <Measurement_t> tempOffsets(currentChannelsNum);
-
-    int c = 0;
-    for (auto md : msgDisps) {
-        ret = md->updateVoltageOffsetCompensations(tempOffsets);
-        for (unsigned int idx = 0; idx < currentChannelsNum; idx++) {
-            offsets[c+idx] = tempOffsets[idx];
+        LVMeasurement_t * lvOffsets) {
+    std::vector <Measurement_t> offsets;
+    ErrorCodes_t ret = er4cl::getVoltageOffsetCompensations(offsets);
+    if (ret == Success) {
+        for (uint32_t idx = 0; idx < offsets.size(); idx++) {
+            measurement2Output(offsets[idx], lvOffsets[idx]);
         }
-        c += currentChannelsNum;
     }
-
-    return Success;
+    return ret;
 }
 
 void input2Measurement(LVMeasurement_t i, Measurement_t &m) {
@@ -1012,4 +1093,16 @@ void rangedMeasurement2Output(RangedMeasurement_t r, LVRangedMeasurement_t &o) {
     o.max = r.max;
     o.step = r.step;
     o.prefix = r.prefix;
+}
+
+void compensationControl2Output(CompensationControl_t c, LVCompensationControl_t &o) {
+    o.implemented = c.implemented;
+    o.min = c.min;
+    o.max = c.max;
+    o.compensable = c.compensable;
+    o.steps = c.steps;
+    o.step = c.step;
+    o.decimals = c.decimals;
+    o.value = c.value;
+    o.prefix = c.prefix;
 }

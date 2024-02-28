@@ -114,7 +114,6 @@
 
 #include "ftd2xx_win.h"
 
-static MessageDispatcher * messageDispatcher = nullptr;
 static std::vector <MessageDispatcher *> msgDisps;
 static unsigned int voltageChannelsNum = 0;
 static unsigned int currentChannelsNum = 0;
@@ -1334,8 +1333,8 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
 ErrorCodes_t getCalibrationEepromSize(
         uint32_t &size) {
     ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCalibrationEepromSize(size);
+    if (!msgDisps.empty()) {
+        ret = msgDisps[0]->getCalibrationEepromSize(size);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1348,8 +1347,8 @@ ErrorCodes_t writeCalibrationEeprom(
         vector <uint32_t> address,
         vector <uint32_t> size) {
     ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->writeCalibrationEeprom(value, address, size);
+    if (!msgDisps.empty()) {
+        ret = msgDisps[0]->writeCalibrationEeprom(value, address, size);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1362,8 +1361,8 @@ ErrorCodes_t readCalibrationEeprom(
         vector <uint32_t> address,
         vector <uint32_t> size) {
     ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->readCalibrationEeprom(value, address, size);
+    if (!msgDisps.empty()) {
+        ret = msgDisps[0]->readCalibrationEeprom(value, address, size);
 
     } else {
         ret = ErrorDeviceNotConnected;

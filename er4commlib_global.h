@@ -172,22 +172,22 @@ typedef enum {
  * \brief Struct that contains information on the device status.
  * Returned by getQueueStatus.
  */
-typedef struct {
-    unsigned int availableDataPackets; /*!< Number of data packets available for read.
-                                        *   Each data packets consists of 1 sample per channel.
-                                        *   Successful calls to readData reduce this number. */
-    bool bufferOverflowFlag; /*!< This flag is true if the internal buffer has been filled and old data has been overwritten.
-                              *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool lostDataFlag; /*!< This flag is true if the device has sent too much data and some has been lost.
-                        *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool saturationFlag; /*!< This flag is true if some data saturates the front end range.
-                          *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool currentRangeIncreaseFlag; /*!< This flag is true if any current channel is above the threshold that suggests an increase of front end current range.
-                                    *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool currentRangeDecreaseFlag; /*!< This flag is true if all current channels are below the threshold that suggests a decrease of front end current range.
-                                    *   This flag is reset after a call to getQueueStatus or to purgeData. */
-    bool communicationErrorFlag; /*!< This flag is true after a communication error with the device.
-                                  *   This flag is reset if the communication restarts successfully. */
+typedef struct QueueStatus {
+    unsigned int availableDataPackets = 0; /*!< Number of data packets available for read.
+                                            *   Each data packets consists of 1 sample per channel.
+                                            *   Successful calls to readData reduce this number. */
+    bool bufferOverflowFlag = false; /*!< This flag is true if the internal buffer has been filled and old data has been overwritten.
+                                      *   This flag is reset after a call to getQueueStatus or to purgeData. */
+    bool lostDataFlag = false; /*!< This flag is true if the device has sent too much data and some has been lost.
+                                *   This flag is reset after a call to getQueueStatus or to purgeData. */
+    bool saturationFlag = false; /*!< This flag is true if some data saturates the front end range.
+                                  *   This flag is reset after a call to getQueueStatus or to purgeData. */
+    bool currentRangeIncreaseFlag = false; /*!< This flag is true if any current channel is above the threshold that suggests an increase of front end current range.
+                                            *   This flag is reset after a call to getQueueStatus or to purgeData. */
+    bool currentRangeDecreaseFlag = false; /*!< This flag is true if all current channels are below the threshold that suggests a decrease of front end current range.
+                                            *   This flag is reset after a call to getQueueStatus or to purgeData. */
+    bool communicationErrorFlag = false; /*!< This flag is true after a communication error with the device.
+                                          *   This flag is reset if the communication restarts successfully. */
 } QueueStatus_t;
 
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER

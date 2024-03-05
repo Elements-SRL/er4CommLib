@@ -826,14 +826,26 @@ ErrorCodes_t getQueueStatus(
     int c = 0;
     for (auto md : msgDisps) {
         ErrorCodes_t retTemp = md->getQueueStatus(statusn);
-        availableSamples[c++] = statusn.availableDataPackets;
-        status.availableDataPackets = (std::min)(status.availableDataPackets, statusn.availableDataPackets);
-        status.bufferOverflowFlag = status.bufferOverflowFlag || statusn.bufferOverflowFlag;
-        status.lostDataFlag = status.lostDataFlag || statusn.lostDataFlag;
-        status.saturationFlag = status.saturationFlag || statusn.saturationFlag;
-        status.currentRangeIncreaseFlag = status.currentRangeIncreaseFlag || statusn.currentRangeIncreaseFlag;
-        status.currentRangeDecreaseFlag = status.currentRangeDecreaseFlag || statusn.currentRangeDecreaseFlag;
-        status.communicationErrorFlag = status.communicationErrorFlag || statusn.communicationErrorFlag;
+        availableSamples[c] = statusn.availableDataPackets;
+        if (c == 0) {
+            status.availableDataPackets = statusn.availableDataPackets;
+            status.bufferOverflowFlag = statusn.bufferOverflowFlag;
+            status.lostDataFlag = statusn.lostDataFlag;
+            status.saturationFlag = statusn.saturationFlag;
+            status.currentRangeIncreaseFlag = statusn.currentRangeIncreaseFlag;
+            status.currentRangeDecreaseFlag = statusn.currentRangeDecreaseFlag;
+            status.communicationErrorFlag = statusn.communicationErrorFlag;
+
+        } else {
+            status.availableDataPackets = (std::min)(status.availableDataPackets, statusn.availableDataPackets);
+            status.bufferOverflowFlag |= statusn.bufferOverflowFlag;
+            status.lostDataFlag |= statusn.lostDataFlag;
+            status.saturationFlag |= statusn.saturationFlag;
+            status.currentRangeIncreaseFlag |= statusn.currentRangeIncreaseFlag;
+            status.currentRangeDecreaseFlag |= statusn.currentRangeDecreaseFlag;
+            status.communicationErrorFlag |= statusn.communicationErrorFlag;
+        }
+        c++;
         if (retTemp != Success && retTemp != WarningNoDataAvailable) {
             return retTemp;
         }

@@ -153,7 +153,7 @@ typedef enum {
 /*! \enum UnitPfx_t
  * \brief Enumerates the unit prefixes used.
  */
-typedef enum {
+typedef enum UnitPfx {
     UnitPfxFemto    = 0,    /*!< 10^-15 */
     UnitPfxPico     = 1,    /*!< 10^-12 */
     UnitPfxNano     = 2,    /*!< 10^-9 */
@@ -209,8 +209,8 @@ namespace er4CommLib {
  * \brief Structure used manage physical quantities that define a value with its unit and unit prefix.
  */
 typedef struct LVMeasurement {
-    double value; /*!< Numerical value. */
-    UnitPfx_t prefix; /*!< Unit prefix in the range [femto, Peta]. */
+    double value = 0.0; /*!< Numerical value. */
+    UnitPfx_t prefix = UnitPfxNone; /*!< Unit prefix in the range [femto, Peta]. */
 } LVMeasurement_t;
 
 /*! \typedef LVRangedMeasurement_t
@@ -220,9 +220,9 @@ typedef struct LVMeasurement {
  * \brief Structure used manage physical ranges that define a range with its unit and unit prefix.
  */
 typedef struct LVRangedMeasurement {
-    double min; /*!< Minimum value. */
-    double max; /*!< Maximum value. */
-    double step; /*!< Resolution. */
+    double min = 0.0; /*!< Minimum value. */
+    double max = 0.0; /*!< Maximum value. */
+    double step = 1.0; /*!< Resolution. */
     UnitPfx_t prefix = UnitPfxNone; /*!< Unit prefix in the range [femto, Peta]. */
 } LVRangedMeasurement_t;
 

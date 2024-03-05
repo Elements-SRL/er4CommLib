@@ -747,7 +747,7 @@ ErrorCodes_t getDeviceInfo(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getQueueStatus(
-        ER4CL_ARGOUT QueueStatus_t * status);
+        ER4CL_ARGOUT QueueStatus_t & status);
 
 /*! \brief Reads data packets from the device into a buffer.
  * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.
@@ -931,7 +931,7 @@ ErrorCodes_t getSamplingRates(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getSamplingRate(
-        ER4CL_ARGOUT LVMeasurement_t &samplingRate);
+        ER4CL_ARGOUT LVMeasurement_t * lvSamplingRate);
 
 /*! \brief Get the real sampling rates available for the device.
  *

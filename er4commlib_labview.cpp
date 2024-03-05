@@ -599,7 +599,7 @@ ErrorCodes_t getRealSamplingRates(
 }
 
 ErrorCodes_t getRealSamplingRate(
-        LVMeasurement_t * lvSamplingRate) {
+        LVMeasurement_t  * lvSamplingRate) {
     Measurement_t samplingRate;
     ErrorCodes_t ret = er4cl::getRealSamplingRate(samplingRate);
     if (ret == Success) {

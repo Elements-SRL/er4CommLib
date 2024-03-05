@@ -241,35 +241,6 @@ typedef struct LVCompensationControl {
     UnitPfx_t prefix = UnitPfxNone; /*!< Unit prefix in the range [femto, Peta]. */
 } LVCompensationControl_t;
 
-//#include "lv_prolog.h"
-//typedef struct {
-//    int32 cnt;                              /* number of measurements that follow */
-//    CharMeasurement_t item[1];              /* cnt measurements */
-//} LMeas, *LMeasPtr, **LMeasHandle;
-
-//typedef struct {
-//    int32 cnt[2];                           /* size of matrix of measurements that follow */
-//    CharMeasurement_t item[1];              /* cnt vector of measurements */
-//} LVecMeas, *LVecMeasPtr, **LVecMeasHandle;
-
-//typedef struct {
-//    int32 cnt;                              /* number of ranged measurements that follow */
-//    CharRangedMeasurement_t	item[1];        /* cnt ranged measurements */
-//} LRange, *LRangePtr, **LRangeHandle;
-
-//typedef struct {
-//    int32 cnt;                              /* number of compensation controls that follow */
-//    CharCompensationControl_t item[1];      /* cnt compensation control */
-//} LComp, *LCompPtr, **LCompHandle;
-
-//#define LVecBuf(sp)	(&((sp))->item[0])                          /* pointer to first item of vector */
-//#define LVecItem(sp, n)	((&((sp))->item[n]))                    /* pointer to n-th item of vector */
-//#define LVecLen(sp)	(((sp))->cnt)                               /* # of items in vector */
-//#define LMatS1(sp) (((sp))->cnt[0])                             /* # of rows in matrix */
-//#define LMatS2(sp) (((sp))->cnt[1])                             /* # of cols in matrix */
-//#define LMatLen(sp)	(LMatS1(sp)*LMatS2(sp))                     /* # of items in matrix */
-//#define LMatItem(sp, m, n) ((&((sp))->item[m+n*LMatS1(sp)]))    /* pointer to n-th item of vector */
-//#include "lv_epilog.h"
 #endif
 
 /******************************\

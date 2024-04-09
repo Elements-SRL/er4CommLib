@@ -1,20 +1,3 @@
-//  Copyright (C) 2021-2024 Filippo Cona
-//
-//  This file is part of EDR4.
-//
-//  EDR4 is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  EDR4 is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public License
-//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
-
 #define MASS_CALL0(func) {\
     if (msgDisps.empty()) {\
         return ErrorDeviceNotConnected;\
@@ -114,7 +97,6 @@
 
 #include "ftd2xx_win.h"
 
-static MessageDispatcher * messageDispatcher = nullptr;
 static std::vector <MessageDispatcher *> msgDisps;
 static unsigned int voltageChannelsNum = 0;
 static unsigned int currentChannelsNum = 0;
@@ -827,14 +809,26 @@ ErrorCodes_t getQueueStatus(
     int c = 0;
     for (auto md : msgDisps) {
         ErrorCodes_t retTemp = md->getQueueStatus(statusn);
-        availableSamples[c++] = statusn.availableDataPackets;
-        status.availableDataPackets = (std::min)(status.availableDataPackets, statusn.availableDataPackets);
-        status.bufferOverflowFlag = status.bufferOverflowFlag || statusn.bufferOverflowFlag;
-        status.lostDataFlag = status.lostDataFlag || statusn.lostDataFlag;
-        status.saturationFlag = status.saturationFlag || statusn.saturationFlag;
-        status.currentRangeIncreaseFlag = status.currentRangeIncreaseFlag || statusn.currentRangeIncreaseFlag;
-        status.currentRangeDecreaseFlag = status.currentRangeDecreaseFlag || statusn.currentRangeDecreaseFlag;
-        status.communicationErrorFlag = status.communicationErrorFlag || statusn.communicationErrorFlag;
+        availableSamples[c] = statusn.availableDataPackets;
+        if (c == 0) {
+            status.availableDataPackets = statusn.availableDataPackets;
+            status.bufferOverflowFlag = statusn.bufferOverflowFlag;
+            status.lostDataFlag = statusn.lostDataFlag;
+            status.saturationFlag = statusn.saturationFlag;
+            status.currentRangeIncreaseFlag = statusn.currentRangeIncreaseFlag;
+            status.currentRangeDecreaseFlag = statusn.currentRangeDecreaseFlag;
+            status.communicationErrorFlag = statusn.communicationErrorFlag;
+
+        } else {
+            status.availableDataPackets = (std::min)(status.availableDataPackets, statusn.availableDataPackets);
+            status.bufferOverflowFlag |= statusn.bufferOverflowFlag;
+            status.lostDataFlag |= statusn.lostDataFlag;
+            status.saturationFlag |= statusn.saturationFlag;
+            status.currentRangeIncreaseFlag |= statusn.currentRangeIncreaseFlag;
+            status.currentRangeDecreaseFlag |= statusn.currentRangeDecreaseFlag;
+            status.communicationErrorFlag |= statusn.communicationErrorFlag;
+        }
+        c++;
         if (retTemp != Success && retTemp != WarningNoDataAvailable) {
             return retTemp;
         }
@@ -1208,7 +1202,7 @@ ErrorCodes_t getSealTestProtocolIdx(
         uint16_t &idx) {
     CALL_FIRST1(getSealTestProtocolIdx, idx)
 }
-// DA QUI-------------------------------------
+
 ErrorCodes_t getProtocolVoltage(
         vector <string> &voltageNames,
         vector <RangedMeasurement_t> &ranges,
@@ -1334,8 +1328,8 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
 ErrorCodes_t getCalibrationEepromSize(
         uint32_t &size) {
     ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->getCalibrationEepromSize(size);
+    if (!msgDisps.empty()) {
+        ret = msgDisps[0]->getCalibrationEepromSize(size);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1348,8 +1342,8 @@ ErrorCodes_t writeCalibrationEeprom(
         vector <uint32_t> address,
         vector <uint32_t> size) {
     ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->writeCalibrationEeprom(value, address, size);
+    if (!msgDisps.empty()) {
+        ret = msgDisps[0]->writeCalibrationEeprom(value, address, size);
 
     } else {
         ret = ErrorDeviceNotConnected;
@@ -1362,8 +1356,8 @@ ErrorCodes_t readCalibrationEeprom(
         vector <uint32_t> address,
         vector <uint32_t> size) {
     ErrorCodes_t ret;
-    if (messageDispatcher != nullptr) {
-        ret = messageDispatcher->readCalibrationEeprom(value, address, size);
+    if (!msgDisps.empty()) {
+        ret = msgDisps[0]->readCalibrationEeprom(value, address, size);
 
     } else {
         ret = ErrorDeviceNotConnected;

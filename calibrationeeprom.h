@@ -1,20 +1,3 @@
-//  Copyright (C) 2021-2024 Filippo Cona
-//
-//  This file is part of EDR4.
-//
-//  EDR4 is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  EDR4 is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public License
-//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
-
 #ifndef CALIBRATIONEEPROM_H
 #define CALIBRATIONEEPROM_H
 
@@ -23,8 +6,6 @@
 #include "ftd2xx_win.h"
 #include "libMPSSE_spi.h"
 #include "er4commlib_errorcodes.h"
-
-using namespace er4CommLib;
 
 /*! EEPROM constants */
 #define CEE_XCBUS_DIR 0x09 /*! Set high output pins: FPGA reset 0x01 + SPI program 0x08 */
@@ -40,6 +21,10 @@ using namespace er4CommLib;
 #define CEE_READ_CMD 0x03
 #define CEE_GET_STATUS_CMD 0x05
 #define CEE_WRITE_ENABLE_CMD 0x06
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
 
 class CalibrationEeprom {
 public:
@@ -68,5 +53,9 @@ private:
     unsigned char writeBuffer[256];
     unsigned char readBuffer[256];
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // CALIBRATIONEEPROM_H

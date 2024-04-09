@@ -1,20 +1,3 @@
-//  Copyright (C) 2021-2024 Filippo Cona
-//
-//  This file is part of EDR4.
-//
-//  EDR4 is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  EDR4 is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public License
-//  along with EDR4.  If not, see <http://www.gnu.org/licenses/>.
-
 #include "messagedispatcher.h"
 
 #include "messagedispatcher_e1plus.h"
@@ -69,7 +52,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nEDR3_V04},                                          //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nEDR3_V04},                                          //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 15, DeviceE4nEDR3_V05},                                          //    4,  3, 15 : e4 Orbit mini (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3_V05},                                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
+    {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3_V05},                                          //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 129, DeviceE4n_V01},                                             //    4,  3,129 : e4 Orbit mini
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e_V01},                                             //    4,  8,129 : e4 Elements version
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses_V01},                        //    3,  4,129 : e16 Orbit customized for fast pulses

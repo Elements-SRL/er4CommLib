@@ -252,7 +252,7 @@ ErrorCodes_t applyReferencePulseTrain(
         ER4CL_ARGIN LVMeasurement_t voltage,
         ER4CL_ARGIN LVMeasurement_t duration,
         ER4CL_ARGIN LVMeasurement_t period,
-        ER4CL_ARGIN uint16_t number);
+        ER4CL_ARGIN unsigned short number);
 
 /*! \brief Override the voltage reference switch.
  *
@@ -297,7 +297,7 @@ ErrorCodes_t applyDacExt(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCustomFlag(
-        ER4CL_ARGIN uint16_t idx,
+        ER4CL_ARGIN unsigned short idx,
         ER4CL_ARGIN bool flag);
 
 /*! \brief Set a custom double control.
@@ -309,7 +309,7 @@ ErrorCodes_t setCustomFlag(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCustomDouble(
-        ER4CL_ARGIN uint16_t idx,
+        ER4CL_ARGIN unsigned short idx,
         ER4CL_ARGIN double value);
 
 /*! \brief Reset the error status for the Orbit washer.
@@ -329,7 +329,7 @@ ErrorCodes_t resetWasherError(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setWasherPresetSpeeds(
-        ER4CL_ARGIN int8_t * speedValues);
+        ER4CL_ARGIN char * speedValues);
 
 /*! \brief Start the Orbit washer at a given preset speed.
  *
@@ -339,7 +339,7 @@ ErrorCodes_t setWasherPresetSpeeds(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t startWasher(
-        ER4CL_ARGIN uint16_t speedIdx);
+        ER4CL_ARGIN unsigned short speedIdx);
 
 /*! \brief Forces an update of the washer status, otherwise the update is done automatically after a reset.
  *
@@ -369,8 +369,8 @@ ErrorCodes_t updateWasherPresetSpeeds(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCurrentRange(
-        ER4CL_ARGIN uint16_t currentRangeIdx,
-        ER4CL_ARGIN uint16_t channelIdx = 0);
+        ER4CL_ARGIN unsigned short currentRangeIdx,
+        ER4CL_ARGIN unsigned short channelIdx = 0);
 
 /*! \brief Set the voltage range.
  *
@@ -380,7 +380,7 @@ ErrorCodes_t setCurrentRange(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageRange(
-        ER4CL_ARGIN uint16_t voltageRangeIdx);
+        ER4CL_ARGIN unsigned short voltageRangeIdx);
 
 /*! \brief Set the voltage range for the reference.
  *
@@ -390,7 +390,7 @@ ErrorCodes_t setVoltageRange(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageReferenceRange(
-        ER4CL_ARGIN uint16_t voltageRangeIdx);
+        ER4CL_ARGIN unsigned short voltageRangeIdx);
 
 /*! \brief Set the sampling rate.
  *
@@ -400,7 +400,7 @@ ErrorCodes_t setVoltageReferenceRange(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setSamplingRate(
-        ER4CL_ARGIN uint16_t samplingRateIdx);
+        ER4CL_ARGIN unsigned short samplingRateIdx);
 
 /*! \brief Set the oversampling ratio.
  *
@@ -410,7 +410,7 @@ ErrorCodes_t setSamplingRate(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setOversamplingRatio(
-        ER4CL_ARGIN uint16_t oversamplingRatioIdx);
+        ER4CL_ARGIN unsigned short oversamplingRatioIdx);
 
 /*! \brief Sets the low pass filter on the voltage stimulus.
  *
@@ -420,7 +420,7 @@ ErrorCodes_t setOversamplingRatio(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageStimulusLpf(
-        ER4CL_ARGIN uint16_t filterIdx);
+        ER4CL_ARGIN unsigned short filterIdx);
 
 /*! \brief Sets the low pass filter on the voltage reference.
  *
@@ -430,7 +430,7 @@ ErrorCodes_t setVoltageStimulusLpf(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageReferenceLpf(
-        ER4CL_ARGIN uint16_t filterIdx);
+        ER4CL_ARGIN unsigned short filterIdx);
 
 /*! \brief Select channels for voltage stimulation.
  * On multi channel devices it is possible to apply the voltage stimulus only on a subset
@@ -444,7 +444,7 @@ ErrorCodes_t setVoltageReferenceLpf(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t selectStimulusChannel(
-        ER4CL_ARGIN uint16_t channelIdx,
+        ER4CL_ARGIN unsigned short channelIdx,
         ER4CL_ARGIN bool on);
 
 /*! \brief Execute digital offset compensation.
@@ -459,7 +459,7 @@ ErrorCodes_t selectStimulusChannel(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t digitalOffsetCompensation(
-        ER4CL_ARGIN uint16_t channelIdx,
+        ER4CL_ARGIN unsigned short channelIdx,
         ER4CL_ARGIN bool on);
 
 /*! \brief Activate autostop feature for digital offset compensation.
@@ -482,7 +482,7 @@ ErrorCodes_t digitalOffsetCompensationAutostop(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t zap(
-        ER4CL_ARGIN uint16_t channelIdx);
+        ER4CL_ARGIN unsigned short channelIdx);
 
 /*! \brief Channel on.
  * Switch on the channel. Switched off channel do not send data and are constantly compensated to reduce current offset.
@@ -495,7 +495,7 @@ ErrorCodes_t zap(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t switchChannelOn(
-        ER4CL_ARGIN uint16_t channelIdx,
+        ER4CL_ARGIN unsigned short channelIdx,
         ER4CL_ARGIN bool on);
 
 /*! \brief Set the voltage of a waveform 1 item for the fast pulses protocol.
@@ -507,7 +507,7 @@ ErrorCodes_t switchChannelOn(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
-        ER4CL_ARGIN uint32_t idx,
+        ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN LVMeasurement_t voltage);
 
 /*! \brief Set the duration of a waveform 1 item for the fast pulses protocol.
@@ -519,7 +519,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave1Time(
-        ER4CL_ARGIN uint32_t idx,
+        ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN LVMeasurement_t time);
 
 /*! \brief Set the voltage of a waveform 2 item for the fast pulses protocol.
@@ -531,7 +531,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave1Time(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
-        ER4CL_ARGIN uint32_t idx,
+        ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN LVMeasurement_t voltage);
 
 /*! \brief Set the waiting time of a waveform 2 item for the fast pulses protocol.
@@ -543,7 +543,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave2Time(
-        ER4CL_ARGIN uint32_t idx,
+        ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN LVMeasurement_t time);
 
 /*! \brief Set the duration of a waveform 2 item for the fast pulses protocol.
@@ -555,7 +555,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Time(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
-        ER4CL_ARGIN uint32_t idx,
+        ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN LVMeasurement_t time);
 
 /*! \brief Set the pulse train period of a waveform 2 item for the fast pulses protocol.
@@ -567,7 +567,7 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Duration(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave2Period(
-        ER4CL_ARGIN uint32_t idx,
+        ER4CL_ARGIN unsigned int idx,
         ER4CL_ARGIN LVMeasurement_t time);
 
 /*! \brief Set the number of pulses in a pulse train of a waveform 2 item for the fast pulses protocol.
@@ -579,8 +579,8 @@ ErrorCodes_t setFastReferencePulseProtocolWave2Period(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setFastReferencePulseProtocolWave2PulseNumber(
-        ER4CL_ARGIN uint32_t idx,
-        ER4CL_ARGIN uint16_t pulseNumber);
+        ER4CL_ARGIN unsigned int idx,
+        ER4CL_ARGIN unsigned short pulseNumber);
 
 /*! \brief Turn on the digital output.
  *
@@ -602,7 +602,7 @@ ErrorCodes_t turnOnDigitalOutput(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t turnLedOn(
-        ER4CL_ARGIN uint16_t ledIndex,
+        ER4CL_ARGIN unsigned short ledIndex,
         ER4CL_ARGIN bool on);
 
 /*! \brief Enable the front end reset denoiser.
@@ -662,7 +662,7 @@ ErrorCodes_t resetDigitalOffsetCompensation(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCompensationsChannel(
-        ER4CL_ARGIN uint16_t channelIdx);
+        ER4CL_ARGIN unsigned short channelIdx);
 
 /*! \brief Turn on/off cFast compensation.
  *
@@ -682,7 +682,7 @@ ErrorCodes_t turnCFastCompensationOn(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCFastCompensationOptions(
-        ER4CL_ARGIN uint16_t optionIdx);
+        ER4CL_ARGIN unsigned short optionIdx);
 
 /*! \brief Sets the value of the cFast capacitance.
  *
@@ -704,8 +704,8 @@ ErrorCodes_t setCFastCapacitance(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setDebugBit(
-        ER4CL_ARGIN uint16_t byteOffset,
-        ER4CL_ARGIN uint16_t bitOffset,
+        ER4CL_ARGIN unsigned short byteOffset,
+        ER4CL_ARGIN unsigned short bitOffset,
         ER4CL_ARGIN bool status);
 
 /*! \brief Set a byte of the communication protocol for debug purposes.
@@ -717,8 +717,8 @@ ErrorCodes_t setDebugBit(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setDebugByte(
-        ER4CL_ARGIN uint16_t byteOffset,
-        ER4CL_ARGIN uint16_t byteValue);
+        ER4CL_ARGIN unsigned short byteOffset,
+        ER4CL_ARGIN unsigned short byteValue);
 
 /****************\
  *  Rx methods  *
@@ -734,9 +734,9 @@ ErrorCodes_t setDebugByte(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getDeviceInfo(
-        ER4CL_ARGOUT uint8_t &deviceVersion,
-        ER4CL_ARGOUT uint8_t &deviceSubversion,
-        ER4CL_ARGOUT uint32_t &firmwareVersion);
+        ER4CL_ARGOUT unsigned char &deviceVersion,
+        ER4CL_ARGOUT unsigned char &deviceSubversion,
+        ER4CL_ARGOUT unsigned int &firmwareVersion);
 
 /*! \brief Returns information on the queue status.
  * Calling this method if no device is connected will return an error code.
@@ -768,7 +768,7 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t readData(
         ER4CL_ARGIN unsigned int dataToRead,
         ER4CL_ARGOUT unsigned int &dataRead,
-        ER4CL_ARGOUT int16_t * buffer);
+        ER4CL_ARGOUT short * buffer);
 
 /*! \brief As readData, but returns also a buffer for unfiltered data.
  * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.
@@ -790,8 +790,8 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t readAllData(
         ER4CL_ARGIN unsigned int dataToRead,
         ER4CL_ARGOUT unsigned int &dataRead,
-        ER4CL_ARGOUT int16_t * buffer,
-        ER4CL_ARGOUT int16_t * unfilteredBuffer);
+        ER4CL_ARGOUT short * buffer,
+        ER4CL_ARGOUT short * unfilteredBuffer);
 
 /*! \brief Converts an integer number to the corresponding voltage value.
  * The converted voltage's unit depends on the device configuration.
@@ -803,7 +803,7 @@ ErrorCodes_t readAllData(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t convertVoltageValue(
-        ER4CL_ARGIN uint16_t intValue,
+        ER4CL_ARGIN unsigned short intValue,
         ER4CL_ARGOUT double &fltValue);
 
 /*! \brief Converts an integer number to the corresponding current value.
@@ -817,8 +817,8 @@ ErrorCodes_t convertVoltageValue(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t convertCurrentValue(
-        ER4CL_ARGIN uint16_t intValue,
-        ER4CL_ARGIN uint16_t channelIdx,
+        ER4CL_ARGIN unsigned short intValue,
+        ER4CL_ARGIN unsigned short channelIdx,
         ER4CL_ARGOUT double &fltValue);
 
 /*! \brief Purges data read from the device.
@@ -840,8 +840,8 @@ ErrorCodes_t purgeData(ER4CL_ARGVOID);
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getChannelsNumber(
-        ER4CL_ARGOUT uint32_t &voltageChannelsNum,
-        ER4CL_ARGOUT uint32_t &currentChannelsNum);
+        ER4CL_ARGOUT unsigned int &voltageChannelsNum,
+        ER4CL_ARGOUT unsigned int &currentChannelsNum);
 
 /*! \brief Get the current ranges available in voltage clamp for the device.
  *
@@ -853,7 +853,7 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRanges(
         ER4CL_ARGOUT LVRangedMeasurement_t * currentRanges,
-        ER4CL_ARGOUT uint16_t * defaultOptions);
+        ER4CL_ARGOUT unsigned short * defaultOptions);
 
 /*! \brief Get the current range currently applied on a given channel.
  *
@@ -865,8 +865,8 @@ ErrorCodes_t getCurrentRanges(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRange(
-        ER4CL_ARGOUT LVRangedMeasurement_t &currentRange,
-        ER4CL_ARGIN uint16_t channelIdx = 0);
+        ER4CL_ARGOUT LVRangedMeasurement_t *currentRange,
+        ER4CL_ARGIN unsigned short channelIdx = 0);
 
 /*! \brief Check if the device can set the current range independently on each channel.
  *
@@ -887,7 +887,7 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRanges(
         ER4CL_ARGOUT LVRangedMeasurement_t * voltageRanges,
-        ER4CL_ARGOUT uint16_t &defaultOption);
+        ER4CL_ARGOUT unsigned short &defaultOption);
 
 /*! \brief Get the voltage range currently applied.
  *
@@ -897,7 +897,7 @@ ErrorCodes_t getVoltageRanges(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRange(
-        ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange);
+        ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange);
 
 /*! \brief Get the voltage ranges available for the reference.
  *
@@ -909,7 +909,7 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageReferenceRanges(
         ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
-        ER4CL_ARGOUT uint16_t &defaultOption);
+        ER4CL_ARGOUT unsigned short &defaultOption);
 
 /*! \brief Get the sampling rates available for the device.
  *
@@ -921,7 +921,7 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getSamplingRates(
         ER4CL_ARGOUT LVMeasurement_t * samplingRates,
-        ER4CL_ARGOUT uint16_t &defaultOption);
+        ER4CL_ARGOUT unsigned short &defaultOption);
 
 /*! \brief Get the sampling rate currently applied.
  *
@@ -963,7 +963,7 @@ ErrorCodes_t getRealSamplingRate(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getOversamplingRatios(
-        ER4CL_ARGOUT uint16_t * oversamplingRatios);
+        ER4CL_ARGOUT unsigned short * oversamplingRatios);
 
 /*! \brief Get the oversampling ratio currently applied.
  *
@@ -973,7 +973,7 @@ ErrorCodes_t getOversamplingRatios(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getOversamplingRatio(
-        ER4CL_ARGOUT uint16_t &oversamplingRatio);
+        ER4CL_ARGOUT unsigned short &oversamplingRatio);
 
 /*! \brief Get the available options for the voltage stimulus low pass filter.
  *
@@ -986,8 +986,8 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageStimulusLpfs(
         ER4CL_ARGOUT LVMeasurement_t * filterOptions,
-        ER4CL_ARGOUT uint16_t &defaultOption,
-        ER4CL_ARGOUT int16_t &voltageRangeIdx);
+        ER4CL_ARGOUT unsigned short &defaultOption,
+        ER4CL_ARGOUT short &voltageRangeIdx);
 
 /*! \brief Get the available options for the voltage reference low pass filter.
  *
@@ -1000,8 +1000,8 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageReferenceLpfs(
         ER4CL_ARGOUT LVMeasurement_t * filterOptions,
-        ER4CL_ARGOUT uint16_t &defaultOption,
-        ER4CL_ARGOUT int16_t &voltageRangeIdx);
+        ER4CL_ARGOUT unsigned short &defaultOption,
+        ER4CL_ARGOUT short &voltageRangeIdx);
 
 /*! \brief Get the select channels for voltage stimulation feature availability.
  *
@@ -1062,7 +1062,7 @@ ErrorCodes_t hasChannelOn(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getSwitchedOnChannels(
-        ER4CL_ARGOUT uint32_t &channelsMask);
+        ER4CL_ARGOUT unsigned int &channelsMask);
 
 /*! \brief Get the digital offset compensation reset availability.
  *
@@ -1102,11 +1102,11 @@ ErrorCodes_t hasFrontEndResetDenoiser(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolList(
-        ER4CL_ARGOUT uint16_t * voltages,
-        ER4CL_ARGOUT uint16_t * times,
-        ER4CL_ARGOUT uint16_t * slopes,
-        ER4CL_ARGOUT uint16_t * frequencies,
-        ER4CL_ARGOUT uint16_t * adimensionals);
+        ER4CL_ARGOUT unsigned short * voltages,
+        ER4CL_ARGOUT unsigned short * times,
+        ER4CL_ARGOUT unsigned short * slopes,
+        ER4CL_ARGOUT unsigned short * frequencies,
+        ER4CL_ARGOUT unsigned short * adimensionals);
 
 /*! \brief Get triangular protocol index.
  *
@@ -1116,7 +1116,7 @@ ErrorCodes_t getProtocolList(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getTriangularProtocolIdx(
-        ER4CL_ARGOUT uint16_t &idx);
+        ER4CL_ARGOUT unsigned short &idx);
 
 /*! \brief Get seal test protocol index.
  *
@@ -1126,7 +1126,7 @@ ErrorCodes_t getTriangularProtocolIdx(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getSealTestProtocolIdx(
-        ER4CL_ARGOUT uint16_t &idx);
+        ER4CL_ARGOUT unsigned short &idx);
 
 /*! \brief Get protocol applicable voltage range.
  *
@@ -1260,7 +1260,7 @@ ErrorCodes_t getReferencePulseTrainControls(
         ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange,
         ER4CL_ARGOUT LVRangedMeasurement_t &durationRange,
         ER4CL_ARGOUT LVRangedMeasurement_t &periodRange,
-        ER4CL_ARGOUT uint16_t &pulsesNumber);
+        ER4CL_ARGOUT unsigned short &pulsesNumber);
 
 /*! \brief Get the raw data filter applicable cut off frequency range.
  *
@@ -1282,7 +1282,7 @@ ErrorCodes_t getRawDataFilterCutoffFrequency(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getLedsNumber(
-        ER4CL_ARGOUT uint16_t &ledsNum);
+        ER4CL_ARGOUT unsigned short &ledsNum);
 
 /*! \brief Get the LEDs colors for the device.
  *
@@ -1292,7 +1292,7 @@ ErrorCodes_t getLedsNumber(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getLedsColors(
-        ER4CL_ARGOUT uint32_t * ledsColors);
+        ER4CL_ARGOUT unsigned int * ledsColors);
 
 /*! \brief Get the parameters ranges for waveform 1 in the reference pulse protocol.
  *
@@ -1306,7 +1306,7 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getFastReferencePulseProtocolWave1Range(
         ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange,
         ER4CL_ARGOUT LVRangedMeasurement_t &timeRange,
-        ER4CL_ARGOUT uint16_t &nPulse);
+        ER4CL_ARGOUT unsigned short &nPulse);
 
 /*! \brief Get the parameters ranges for waveform 2 in the reference pulse protocol.
  *
@@ -1322,7 +1322,7 @@ ErrorCodes_t getFastReferencePulseProtocolWave2Range(
         ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange,
         ER4CL_ARGOUT LVRangedMeasurement_t &timeRange,
         ER4CL_ARGOUT LVRangedMeasurement_t &durationRange,
-        ER4CL_ARGOUT uint16_t &nPulse);
+        ER4CL_ARGOUT unsigned short &nPulse);
 
 /*! \brief Get the parameters ranges for waveform 2 in the reference train pulse protocol.
  *
@@ -1341,8 +1341,8 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
         ER4CL_ARGOUT LVRangedMeasurement_t &timeRange,
         ER4CL_ARGOUT LVRangedMeasurement_t &durationRange,
         ER4CL_ARGOUT LVRangedMeasurement_t &periodRange,
-        ER4CL_ARGOUT uint16_t &pulsesPerTrain,
-        ER4CL_ARGOUT uint16_t &nTrains);
+        ER4CL_ARGOUT unsigned short &pulsesPerTrain,
+        ER4CL_ARGOUT unsigned short &nTrains);
 
 /*************************\
  *  Calibration methods  *
@@ -1356,7 +1356,7 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCalibrationEepromSize(
-        ER4CL_ARGOUT uint32_t &size);
+        ER4CL_ARGOUT unsigned int &size);
 
 /*! \brief Get the available custom controls of type flag (active/inactive).
  *
@@ -1440,7 +1440,7 @@ ErrorCodes_t getWasherStatus(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getWasherPresetSpeeds(
-        ER4CL_ARGOUT int8_t * speedValue);
+        ER4CL_ARGOUT char * speedValue);
 
 /*! \brief Tell if the device implements CFast compensation.
  *

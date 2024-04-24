@@ -185,6 +185,7 @@ namespace er4CommLib {
 #ifdef ER4COMMLIB_LABVIEW_WRAPPER
 #define _NI_int8_DEFINED_
 #include "extcode.h"
+
 /*! \typedef LVMeasurement_t
  */
 

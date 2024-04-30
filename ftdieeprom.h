@@ -79,6 +79,7 @@ typedef enum {
     DeviceSubversionE16nSineWave = 19,
     DeviceSubversionENPRNanopipette = 20,
     DeviceSubversionE1ULN = 21,
+    DeviceSubversionE4TtlPulseTrain = 22,
 
     /*! Subversions used for ver = 0xFF */
     DeviceSubversionUndefined = 0xFF

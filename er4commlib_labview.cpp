@@ -426,6 +426,25 @@ ErrorCodes_t setCFastCapacitance(
     return er4cl::setCFastCapacitance(value);
 }
 
+ErrorCodes_t setTtlPulseTrain(
+        LVMeasurement_t pulseDurationIn,
+        LVMeasurement_t pulseDelayIn,
+        LVMeasurement_t periodIn,
+        uint32_t numberOfPulses) {
+    Measurement_t pulseDuration;
+    Measurement_t pulseDelay;
+    Measurement_t period;
+    input2Measurement(pulseDurationIn, pulseDuration);
+    input2Measurement(pulseDelayIn, pulseDelay);
+    input2Measurement(periodIn, period);
+
+    return er4cl::setTtlPulseTrain(pulseDuration, pulseDelay, period, numberOfPulses);
+}
+
+ErrorCodes_t startTtlPulseTrain() {
+    return er4cl::startTtlPulseTrain();
+}
+
 ErrorCodes_t setDebugBit(
         uint16_t byteOffset,
         uint16_t bitOffset,
@@ -1063,6 +1082,10 @@ ErrorCodes_t getCFastCapacitanceControl(
         compensationControl2Output(control, lvControl[0]);
     }
     return ret;
+}
+
+ErrorCodes_t hasTtlPulseTrain() {
+    return er4cl::hasTtlPulseTrain();
 }
 
 ErrorCodes_t getVoltageOffsetCompensations(

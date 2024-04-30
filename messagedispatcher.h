@@ -189,6 +189,9 @@ public:
     ErrorCodes_t setCFastCompensationOptions(uint16_t optionIdx);
     ErrorCodes_t setCFastCapacitance(Measurement_t capacitance);
 
+    ErrorCodes_t setTtlPulseTrain(Measurement_t pulseDuration, Measurement_t pulseDelay, Measurement_t period, unsigned int numberOfPulses);
+    ErrorCodes_t startTtlPulseTrain();
+
     ErrorCodes_t setDebugBit(uint16_t byteOffset, uint16_t bitOffset, bool status);
     ErrorCodes_t setDebugByte(uint16_t byteOffset, uint16_t byteValue);
     void setMaxOutputPacketsNum(unsigned int maxPackets);
@@ -280,6 +283,8 @@ public:
     ErrorCodes_t hasCFastCompensation();
     ErrorCodes_t getCFastCompensationOptions(vector <string> &options);
     ErrorCodes_t getCFastCapacitanceControl(CompensationControl_t &control);
+
+    ErrorCodes_t hasTtlPulseTrain();
 
     virtual ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets);
 
@@ -480,6 +485,13 @@ protected:
     vector <DoubleCoder *> protocolAdimensionalCoders;
     vector <Measurement_t> protocolAdimensionalDefault;
     vector <Measurement_t> selectedProtocolAdimensional;
+
+    bool ttlPulseTrainImplementedFlag = false;
+    DoubleCoder * ttlPulseTrainDelayCoder = nullptr;
+    DoubleCoder * ttlPulseTrainDurationCoder = nullptr;
+    DoubleCoder * ttlPulseTrainPeriodCoder = nullptr;
+    BoolArrayCoder * ttlPulseTrainPulsesNumberCoder = nullptr;
+    BoolArrayCoder * ttlPulseTrainStartCoder = nullptr;
 
     vector <Measurement_t> selectedVoltageOffset;
     Measurement_t minSelectedVoltageOffset = {0, UnitPfxMilli, "V"};

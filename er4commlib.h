@@ -669,6 +669,29 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCFastCapacitance(
         ER4CL_ARGIN Measurement_t value);
 
+/*! \brief Configures the TTL pulse train parameters.
+ *
+ * \param pulseDuration [in] Duration of the TTL pulses.
+ * \param pulseDelay [in] Delay before the first pulse.
+ * \param period [in] Period of the TTL pulses.
+ * \param numberOfPulses [in] Number of pulses. 0 disables the feature.
+ *
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setTtlPulseTrain(
+        ER4CL_ARGIN Measurement_t pulseDuration,
+        ER4CL_ARGIN Measurement_t pulseDelay,
+        ER4CL_ARGIN Measurement_t period,
+        ER4CL_ARGIN uint32_t numberOfPulses);
+
+/*! \brief Starts the TTL pulse train.
+ *
+ * \return Error code.
+ */
+ErrorCodes_t startTtlPulseTrain(
+        ER4CL_ARGVOID);
+
 /*! \brief Set a bit of the communication protocol for debug purposes.
  *
  * \param byteOffset [in] Offset of the byte the bit belongs to.
@@ -1451,6 +1474,14 @@ ErrorCodes_t getCFastCompensationOptions(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCFastCapacitanceControl(
         ER4CL_ARGOUT CompensationControl_t &control);
+
+/*! \brief Check if the TTL pulse train feature is implemented for the current device.
+ *
+ * \return Success if the device implements the TTL pulse train.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasTtlPulseTrain(
+        ER4CL_ARGVOID);
 
 /*! \brief Get the voltage offset compensated with the digital compensation.
  *

@@ -709,16 +709,13 @@ ErrorCodes_t setCFastCapacitance(
     return ret;
 }
 
-//ErrorCodes_t CommLib::resetDigitalOffsetCompensation(bool reset) {
-//    ErrorCodes_t ret;
-//    if (messageDispatcher != nullptr) {
-//        ret = messageDispatcher->resetDigitalOffsetCompensation(reset);
+ErrorCodes_t setTtlPulseTrain(Measurement_t pulseDuration, Measurement_t pulseDelay, Measurement_t period, unsigned int numberOfPulses) {
+    MASS_CALL4(setTtlPulseTrain, pulseDuration, pulseDelay, period, numberOfPulses)
+}
 
-//    } else {
-//        ret = ErrorDeviceNotConnected;
-//    }
-//    return ret;
-//}
+ErrorCodes_t startTtlPulseTrain() {
+    MASS_CALL0(startTtlPulseTrain)
+}
 
 ErrorCodes_t setDebugBit(
         uint16_t byteOffset,
@@ -1421,6 +1418,10 @@ ErrorCodes_t getCFastCompensationOptions(
 ErrorCodes_t getCFastCapacitanceControl(
         CompensationControl_t &control) {
     CALL_FIRST1(getCFastCapacitanceControl, control)
+}
+
+ErrorCodes_t hasTtlPulseTrain() {
+    CALL_FIRST0(hasTtlPulseTrain)
 }
 
 ErrorCodes_t getVoltageOffsetCompensations(

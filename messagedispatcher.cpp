@@ -83,6 +83,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionE16nSineWave, 129, DeviceE16nSine_V01},                        //  254, 19,129 : e16 Orbit TC prototype with additional sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionENPRNanopipette, 129, DeviceENPRNanopipette_V01},              //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
     {DeviceVersionPrototype, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                  //  254, 21,129 : e1ULN prototype with eNPR PCB
+    {DeviceVersionPrototype, DeviceSubversionE4TtlPulseTrain, 129, DeviceE4TtlPulseTrain_V01},              //  254, 22,129 : e4 customized with ttl pulse train
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeENPR}
 };
 
@@ -400,6 +401,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE1ULN_V01:
         messageDispatcher = new MessageDispatcher_e1ULN_V01(deviceId);
+        break;
+
+    case DeviceE4TtlPulseTrain_V01:
+        messageDispatcher = new MessageDispatcher_e4e_trigger_V01(deviceId);
         break;
 
     case DeviceFakeENPR:
@@ -1645,6 +1650,31 @@ ErrorCodes_t MessageDispatcher::setCFastCapacitance(Measurement_t capacitance) {
     return ret;
 }
 
+ErrorCodes_t MessageDispatcher::setTtlPulseTrain(Measurement_t pulseDuration, Measurement_t pulseDelay, Measurement_t period, unsigned int numberOfPulses) {
+    if (!ttlPulseTrainImplementedFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    ttlPulseTrainDelayCoder->encode(pulseDelay.getNoPrefixValue(), txStatus);
+    ttlPulseTrainDurationCoder->encode(pulseDuration.getNoPrefixValue(), txStatus);
+    ttlPulseTrainPeriodCoder->encode(period.getNoPrefixValue(), txStatus);
+    ttlPulseTrainPulsesNumberCoder->encode(numberOfPulses, txStatus);
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::startTtlPulseTrain() {
+    if (!ttlPulseTrainImplementedFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    ttlPulseTrainStartCoder->encode(1, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    ttlPulseTrainStartCoder->encode(0, txStatus);
+
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::setDebugBit(uint16_t byteOffset, uint16_t bitOffset, bool status) {
     BoolCoder::CoderConfig_t boolConfig;
     boolConfig.initialByte = byteOffset;
@@ -2414,6 +2444,14 @@ ErrorCodes_t MessageDispatcher::getCFastCapacitanceControl(CompensationControl_t
         ret = Success;
     }
     return ret;
+}
+
+ErrorCodes_t MessageDispatcher::hasTtlPulseTrain() {
+    if (!ttlPulseTrainImplementedFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::updateVoltageOffsetCompensations(vector <Measurement_t> &) {

@@ -3,6 +3,9 @@
 
 #include "messagedispatcher_enpr_hc.h"
 
+using namespace std;
+using namespace er4CommLib;
+
 /********************************************************************************************\
  *                                                                                          *
  *                                 MessageDispatcherFake                                    *

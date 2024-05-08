@@ -190,8 +190,8 @@ ErrorCodes_t connect(
     for (auto md : msgDisps) {
         md->setMaxOutputPacketsNum(ER4CL_DATA_ARRAY_SIZE/(totalCurrentChannelsNum+voltageChannelsNum));
     }
-    bufferOut = new (nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
-    unfilteredBufferOut = new (nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
+    bufferOut = new (std::nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
+    unfilteredBufferOut = new (std::nothrow) uint16_t[ER4CL_DATA_ARRAY_SIZE];
 
     /*! Synchronization stuff */
     allocateSampleDiscardVariables();
@@ -414,7 +414,7 @@ ErrorCodes_t resetWasherError() {
 }
 
 ErrorCodes_t setWasherPresetSpeeds(
-        vector <int8_t> speedValues) {
+        std::vector <int8_t> speedValues) {
     MASS_CALL1(setWasherPresetSpeeds, speedValues)
 }
 
@@ -758,7 +758,7 @@ ErrorCodes_t getDeviceInfo(
 }
 
 ErrorCodes_t getDeviceInfo(
-        string deviceId,
+        std::string deviceId,
         uint8_t &deviceVersion,
         uint8_t &deviceSubversion,
         uint32_t &firmwareVersion) {
@@ -1051,8 +1051,8 @@ ErrorCodes_t purgeData() {
 }
 
 ErrorCodes_t getCurrentRanges(
-        vector <RangedMeasurement_t> &currentRanges,
-        vector <uint16_t> &defaultOptions) {
+        std::vector <RangedMeasurement_t> &currentRanges,
+        std::vector <uint16_t> &defaultOptions) {
     CALL_FIRST2(getCurrentRanges, currentRanges, defaultOptions)
 }
 
@@ -1075,9 +1075,9 @@ ErrorCodes_t hasIndependentCurrentRanges() {
 }
 
 ErrorCodes_t getVoltageRanges(
-        vector <RangedMeasurement_t> &voltageRanges,
+        std::vector <RangedMeasurement_t> &voltageRanges,
         uint16_t &defaultOption,
-        vector <string> &extensions) {
+        std::vector <std::string> &extensions) {
     CALL_FIRST3(getVoltageRanges, voltageRanges, defaultOption, extensions)
 }
 
@@ -1087,13 +1087,13 @@ ErrorCodes_t getVoltageRange(
 }
 
 ErrorCodes_t getVoltageReferenceRanges(
-        vector <RangedMeasurement_t> &ranges,
+        std::vector <RangedMeasurement_t> &ranges,
         uint16_t &defaultOption) {
     CALL_FIRST2(getVoltageReferenceRanges, ranges, defaultOption)
 }
 
 ErrorCodes_t getSamplingRates(
-        vector <Measurement_t> &samplingRates,
+        std::vector <Measurement_t> &samplingRates,
         uint16_t &defaultOption) {
     CALL_FIRST2(getSamplingRates, samplingRates, defaultOption)
 }
@@ -1104,7 +1104,7 @@ ErrorCodes_t getSamplingRate(
 }
 
 ErrorCodes_t getRealSamplingRates(
-        vector <Measurement_t> &samplingRates) {
+        std::vector <Measurement_t> &samplingRates) {
     CALL_FIRST1(getRealSamplingRates, samplingRates)
 }
 
@@ -1114,7 +1114,7 @@ ErrorCodes_t getRealSamplingRate(
 }
 
 ErrorCodes_t getOversamplingRatios(
-        vector <uint16_t> &oversamplingRatios) {
+        std::vector <uint16_t> &oversamplingRatios) {
     CALL_FIRST1(getOversamplingRatios, oversamplingRatios)
 }
 
@@ -1124,14 +1124,14 @@ ErrorCodes_t getOversamplingRatio(
 }
 
 ErrorCodes_t getVoltageStimulusLpfs(
-        vector <Measurement_t> &filterOptions,
+        std::vector <Measurement_t> &filterOptions,
         uint16_t &defaultOption,
         int16_t &voltageRangeIdx) {
     CALL_FIRST3(getVoltageStimulusLpfs, filterOptions, defaultOption, voltageRangeIdx)
 }
 
 ErrorCodes_t getVoltageReferenceLpfs(
-        vector <Measurement_t> &filterOptions,
+        std::vector <Measurement_t> &filterOptions,
         uint16_t &defaultOption,
         int16_t &voltageRangeIdx) {
     CALL_FIRST3(getVoltageReferenceLpfs, filterOptions, defaultOption, voltageRangeIdx)
@@ -1180,13 +1180,13 @@ ErrorCodes_t hasFrontEndResetDenoiser() {
 }
 
 ErrorCodes_t getProtocolList(
-        vector <string> &names,
-        vector <string> &images,
-        vector <vector <uint16_t>> &voltages,
-        vector <vector <uint16_t>> &times,
-        vector <vector <uint16_t>> &slopes,
-        vector <vector <uint16_t>> &frequencies,
-        vector <vector <uint16_t>> &adimensionals) {
+        std::vector <std::string> &names,
+        std::vector <std::string> &images,
+        std::vector <std::vector <uint16_t>> &voltages,
+        std::vector <std::vector <uint16_t>> &times,
+        std::vector <std::vector <uint16_t>> &slopes,
+        std::vector <std::vector <uint16_t>> &frequencies,
+        std::vector <std::vector <uint16_t>> &adimensionals) {
     return (msgDisps.empty()) ? ErrorDeviceNotConnected : msgDisps[0]->getProtocolList(names, images, voltages, times, slopes, frequencies, adimensionals);
 }
 
@@ -1201,37 +1201,37 @@ ErrorCodes_t getSealTestProtocolIdx(
 }
 
 ErrorCodes_t getProtocolVoltage(
-        vector <string> &voltageNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
+        std::vector <std::string> &voltageNames,
+        std::vector <RangedMeasurement_t> &ranges,
+        std::vector <Measurement_t> &defaultValues) {
     CALL_FIRST3(getProtocolVoltage, voltageNames, ranges, defaultValues)
 }
 
 ErrorCodes_t getProtocolTime(
-        vector <string> &timeNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
+        std::vector <std::string> &timeNames,
+        std::vector <RangedMeasurement_t> &ranges,
+        std::vector <Measurement_t> &defaultValues) {
     CALL_FIRST3(getProtocolTime, timeNames, ranges, defaultValues)
 }
 
 ErrorCodes_t getProtocolSlope(
-        vector <string> &slopeNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
+        std::vector <std::string> &slopeNames,
+        std::vector <RangedMeasurement_t> &ranges,
+        std::vector <Measurement_t> &defaultValues) {
     CALL_FIRST3(getProtocolSlope, slopeNames, ranges, defaultValues)
 }
 
 ErrorCodes_t getProtocolFrequency(
-        vector <string> &frequencyNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
+        std::vector <std::string> &frequencyNames,
+        std::vector <RangedMeasurement_t> &ranges,
+        std::vector <Measurement_t> &defaultValues) {
     CALL_FIRST3(getProtocolFrequency, frequencyNames, ranges, defaultValues)
 }
 
 ErrorCodes_t getProtocolAdimensional(
-        vector <string> &adimensionalNames,
-        vector <RangedMeasurement_t> &ranges,
-        vector <Measurement_t> &defaultValues) {
+        std::vector <std::string> &adimensionalNames,
+        std::vector <RangedMeasurement_t> &ranges,
+        std::vector <Measurement_t> &defaultValues) {
     CALL_FIRST3(getProtocolAdimensional, adimensionalNames, ranges, defaultValues)
 }
 
@@ -1273,7 +1273,7 @@ ErrorCodes_t getReferencePulseTrainControls(
     }
 
 ErrorCodes_t getEdhFormat(
-        string &format) {
+        std::string &format) {
     CALL_FIRST1(getEdhFormat, format)
 }
 
@@ -1289,7 +1289,7 @@ ErrorCodes_t getLedsNumber(
 }
 
 ErrorCodes_t getLedsColors(
-        vector <uint32_t> &ledsColors) {
+        std::vector <uint32_t> &ledsColors) {
     CALL_FIRST1(getLedsColors, ledsColors)
 }
 
@@ -1335,9 +1335,9 @@ ErrorCodes_t getCalibrationEepromSize(
 }
 
 ErrorCodes_t writeCalibrationEeprom(
-        vector <uint32_t> value,
-        vector <uint32_t> address,
-        vector <uint32_t> size) {
+        std::vector <uint32_t> value,
+        std::vector <uint32_t> address,
+        std::vector <uint32_t> size) {
     ErrorCodes_t ret;
     if (!msgDisps.empty()) {
         ret = msgDisps[0]->writeCalibrationEeprom(value, address, size);
@@ -1349,9 +1349,9 @@ ErrorCodes_t writeCalibrationEeprom(
 }
 
 ErrorCodes_t readCalibrationEeprom(
-        vector <uint32_t> &value,
-        vector <uint32_t> address,
-        vector <uint32_t> size) {
+        std::vector <uint32_t> &value,
+        std::vector <uint32_t> address,
+        std::vector <uint32_t> size) {
     ErrorCodes_t ret;
     if (!msgDisps.empty()) {
         ret = msgDisps[0]->readCalibrationEeprom(value, address, size);
@@ -1363,15 +1363,15 @@ ErrorCodes_t readCalibrationEeprom(
 }
 
 ErrorCodes_t getCustomFlags(
-        vector <string> &customFlags,
-        vector <bool> &customFlagsDefault) {
+        std::vector <std::string> &customFlags,
+        std::vector <bool> &customFlagsDefault) {
     CALL_FIRST2(getCustomFlags, customFlags, customFlagsDefault)
 }
 
 ErrorCodes_t getCustomDoubles(
-        vector <string> &customDoubles,
-        vector <RangedMeasurement_t> &customDoublesRanges,
-        vector <double> &customDoublesDefault) {
+        std::vector <std::string> &customDoubles,
+        std::vector <RangedMeasurement_t> &customDoublesRanges,
+        std::vector <double> &customDoublesDefault) {
     CALL_FIRST3(getCustomDoubles, customDoubles, customDoublesRanges, customDoublesDefault)
 }
 
@@ -1401,7 +1401,7 @@ ErrorCodes_t getWasherStatus(
 }
 
 ErrorCodes_t getWasherPresetSpeeds(
-        vector <int8_t> &speedValue) {
+        std::vector <int8_t> &speedValue) {
     CALL_FIRST1(getWasherPresetSpeeds, speedValue)
 }
 
@@ -1411,7 +1411,7 @@ ErrorCodes_t hasCFastCompensation() {
 }
 
 ErrorCodes_t getCFastCompensationOptions(
-        vector <string> &options) {
+        std::vector <std::string> &options) {
     CALL_FIRST1(getCFastCompensationOptions, options)
 }
 

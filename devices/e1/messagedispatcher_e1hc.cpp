@@ -1,5 +1,8 @@
 #include "messagedispatcher_e1hc.h"
 
+using namespace std;
+using namespace er4CommLib;
+
 MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00::MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(string id) :
     MessageDispatcherLegacyEdr3(id) {
 

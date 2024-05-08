@@ -1,6 +1,9 @@
 #include "messagedispatcher_e16hc.h"
 #include "messagedispatcher.h"
 
+using namespace std;
+using namespace er4CommLib;
+
 MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
     MessageDispatcher(id) {
 

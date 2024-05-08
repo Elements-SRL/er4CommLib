@@ -33,6 +33,9 @@
 #include <unistd.h>
 #endif
 
+using namespace std;
+using namespace er4cl;
+
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                                     //    9,  2,  4 : e1b EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightEL03C, 2, DeviceE1LightEL03cEDR3},                             //    9,  4,  2 : e1Light EL03c chip (Legacy version for EDR3)

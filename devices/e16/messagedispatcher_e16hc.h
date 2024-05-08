@@ -5,7 +5,7 @@
 
 class MessageDispatcher_e16HC_V02 : public MessageDispatcher {
 public:
-    MessageDispatcher_e16HC_V02(string id);
+    MessageDispatcher_e16HC_V02(std::string id);
     virtual ~MessageDispatcher_e16HC_V02();
 
 protected:
@@ -107,8 +107,8 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
-    ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) override;
+    bool checkProtocolValidity(std::string &message) override;
+    er4cl::ErrorCodes_t updateVoltageOffsetCompensations(std::vector <er4cl::Measurement_t> &offsets) override;
     void updateVoltageReferenceOffsetCalibration();
 
     /*! Device specific controls */
@@ -121,12 +121,12 @@ private:
         VoltageReferenceRangesNum
     };
 
-    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
+    er4cl::Measurement_t voltageReferenceOffsetCalibration = {0.0, er4cl::UnitPfxNone, "V"};
 };
 
 class MessageDispatcher_e16HC_V01 : public MessageDispatcher_e16HC_V02 {
 public:
-    MessageDispatcher_e16HC_V01(string id);
+    MessageDispatcher_e16HC_V01(std::string id);
     virtual ~MessageDispatcher_e16HC_V01();
 
 private:

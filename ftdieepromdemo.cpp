@@ -1,6 +1,6 @@
 #include "ftdieepromdemo.h"
 
-FtdiEepromDemo::FtdiEepromDemo(string deviceId) :
+FtdiEepromDemo::FtdiEepromDemo(std::string deviceId) :
     FtdiEeprom(deviceId) {
 
     this->loadData();
@@ -10,8 +10,8 @@ FtdiEepromDemo::~FtdiEepromDemo() {
 
 }
 
-ErrorCodes_t FtdiEepromDemo::openConnection(char channel) {
-    ErrorCodes_t ret;
+er4cl::ErrorCodes_t FtdiEepromDemo::openConnection(char channel) {
+    er4cl::ErrorCodes_t ret;
     if (!connectionOpened) {
         /*! Appends the channel to the serial */
         communicationSerial = deviceId+channel;
@@ -20,59 +20,59 @@ ErrorCodes_t FtdiEepromDemo::openConnection(char channel) {
         connectionOpened = true;
 
         if (connectionOpened) {
-            ret = Success;
+            ret = er4cl::Success;
 
         } else {
-            ret = ErrorEepromConnectionFailed;
+            ret = er4cl::ErrorEepromConnectionFailed;
         }
 
     } else {
-        ret = ErrorEepromAlreadyConnected;
+        ret = er4cl::ErrorEepromAlreadyConnected;
     }
     return ret;
 }
 
-ErrorCodes_t FtdiEepromDemo::closeConnection() {
-    ErrorCodes_t ret;
+er4cl::ErrorCodes_t FtdiEepromDemo::closeConnection() {
+    er4cl::ErrorCodes_t ret;
     if (connectionOpened) {
         /*! Fake disconnection */
         connectionOpened = false;
 
         if (connectionOpened) {
-            ret = ErrorEepromDisconnectionFailed;
+            ret = er4cl::ErrorEepromDisconnectionFailed;
 
         } else {
-            ret = Success;
+            ret = er4cl::Success;
         }
 
     } else {
-        ret = ErrorEepromNotConnected;
+        ret = er4cl::ErrorEepromNotConnected;
     }
     return ret;
 }
 
-ErrorCodes_t FtdiEepromDemo::loadData() {
-    ErrorCodes_t ret;
+er4cl::ErrorCodes_t FtdiEepromDemo::loadData() {
+    er4cl::ErrorCodes_t ret;
     ret = this->openConnection();
-    if ((ret != Success) && (ret != ErrorEepromAlreadyConnected)) {
+    if ((ret != er4cl::Success) && (ret != er4cl::ErrorEepromAlreadyConnected)) {
         return ret;
     }
 
     ret = this->loadDeviceTuple();
-    if (ret != Success) {
+    if (ret != er4cl::Success) {
         return ret;
     }
 
     ret = this->closeConnection();
-    if (ret != Success) {
+    if (ret != er4cl::Success) {
         return ret;
     }
 
     return ret;
 }
 
-ErrorCodes_t FtdiEepromDemo::loadDeviceTuple() {
-    ErrorCodes_t ret = Success;
+er4cl::ErrorCodes_t FtdiEepromDemo::loadDeviceTuple() {
+    er4cl::ErrorCodes_t ret = er4cl::Success;
 
     deviceTuple.version = DeviceVersionDemo;
     deviceTuple.subversion = DeviceSubversionDemo;
@@ -81,8 +81,8 @@ ErrorCodes_t FtdiEepromDemo::loadDeviceTuple() {
     return ret;
 }
 
-ErrorCodes_t FtdiEepromDemo::loadVcOffset() {
-    ErrorCodes_t ret = Success;
+er4cl::ErrorCodes_t FtdiEepromDemo::loadVcOffset() {
+    er4cl::ErrorCodes_t ret = er4cl::Success;
 
     vcOffset = 1650.0;
 

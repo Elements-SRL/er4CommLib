@@ -1,5 +1,8 @@
 #include "messagedispatcher_enpr.h"
 
+using namespace std;
+using namespace er4CommLib;
+
 MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     MessageDispatcher(di) {
 

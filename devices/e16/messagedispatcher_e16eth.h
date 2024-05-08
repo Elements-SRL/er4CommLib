@@ -5,7 +5,7 @@
 
 class MessageDispatcher_e16ETH_LegacyEdr3_V01: public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e16ETH_LegacyEdr3_V01(string id);
+    MessageDispatcher_e16ETH_LegacyEdr3_V01(std::string id);
     virtual ~MessageDispatcher_e16ETH_LegacyEdr3_V01();
 
 protected:
@@ -106,7 +106,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
 
     /*! Device specific controls */

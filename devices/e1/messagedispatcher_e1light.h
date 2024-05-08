@@ -5,7 +5,7 @@
 
 class MessageDispatcher_e1Light_El03f_LegacyEdr3_V01 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(string id);
+    MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(std::string id);
     virtual ~MessageDispatcher_e1Light_El03f_LegacyEdr3_V01();
 
 protected:
@@ -103,7 +103,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
 
     /*! Device specific controls */
@@ -112,7 +112,7 @@ protected:
 
 class MessageDispatcher_e1Light_El03c_LegacyEdr3_V01 : public MessageDispatcher_e1Light_El03f_LegacyEdr3_V01 {
 public:
-    MessageDispatcher_e1Light_El03c_LegacyEdr3_V01(string id);
+    MessageDispatcher_e1Light_El03c_LegacyEdr3_V01(std::string id);
     ~MessageDispatcher_e1Light_El03c_LegacyEdr3_V01();
 };
 #endif // MESSAGEDISPATCHER_E1LIGHT_H

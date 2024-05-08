@@ -5,17 +5,17 @@
 
 class FtdiEepromDemo : public FtdiEeprom {
 public:
-    FtdiEepromDemo(string deviceId);
+    FtdiEepromDemo(std::string deviceId);
     ~FtdiEepromDemo();
 
-    ErrorCodes_t openConnection(char channel = 'A') override;
-    ErrorCodes_t closeConnection() override;
+    er4cl::ErrorCodes_t openConnection(char channel = 'A') override;
+    er4cl::ErrorCodes_t closeConnection() override;
 
 protected:
     /*! FtdiEeprom interface */
-    ErrorCodes_t loadData() override;
-    ErrorCodes_t loadDeviceTuple() override;
-    ErrorCodes_t loadVcOffset() override;
+    er4cl::ErrorCodes_t loadData() override;
+    er4cl::ErrorCodes_t loadDeviceTuple() override;
+    er4cl::ErrorCodes_t loadVcOffset() override;
 };
 
 #endif // FTDIEEPROMDEMO_H

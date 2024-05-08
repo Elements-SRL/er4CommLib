@@ -9,14 +9,14 @@
 
 class FtdiEeprom56 : public FtdiEeprom {
 public:
-    FtdiEeprom56(string deviceId);
+    FtdiEeprom56(std::string deviceId);
     ~FtdiEeprom56();
 
 protected:
     /*! FtdiEeprom interface */
-    ErrorCodes_t loadData() override;
-    ErrorCodes_t loadDeviceTuple() override;
-    ErrorCodes_t loadVcOffset() override;
+    er4cl::ErrorCodes_t loadData() override;
+    er4cl::ErrorCodes_t loadDeviceTuple() override;
+    er4cl::ErrorCodes_t loadVcOffset() override;
 };
 
 #endif // FTDIEEPROM56_H

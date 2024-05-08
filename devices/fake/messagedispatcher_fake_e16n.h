@@ -3,6 +3,9 @@
 
 #include "messagedispatcher_e16n.h"
 
+using namespace std;
+using namespace er4CommLib;
+
 /********************************************************************************************\
  *                                                                                          *
  *                                 MessageDispatcherFake                                    *

@@ -1,6 +1,9 @@
 #include "messagedispatcher_e16eth.h"
 #include "messagedispatcher.h"
 
+using namespace std;
+using namespace er4CommLib;
+
 MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01(string id):
     MessageDispatcherLegacyEdr3(id){
 

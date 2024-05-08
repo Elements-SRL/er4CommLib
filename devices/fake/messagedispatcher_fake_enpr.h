@@ -15,22 +15,22 @@ public:
      *  Ctor / Dtor  *
     \*****************/
 
-    MessageDispatcher_fake_eNPR(string di);
+    MessageDispatcher_fake_eNPR(std::string di);
     ~MessageDispatcher_fake_eNPR();
 
     /************************\
      *  Connection methods  *
     \************************/
 
-    ErrorCodes_t connect(FtdiEeprom * ftdiEeprom) override;
-    ErrorCodes_t disconnectDevice() override;
+    er4cl::ErrorCodes_t connect(FtdiEeprom * ftdiEeprom) override;
+    er4cl::ErrorCodes_t disconnectDevice() override;
 
     /******************************\
      *  Tx methods for generator  *
     \******************************/
 
-    ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag) override;
-    ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) override;
+    er4cl::ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag) override;
+    er4cl::ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) override;
 
 protected:
     enum SamplingRates {
@@ -49,21 +49,21 @@ protected:
 
     double genResistance = 50.0e6;
 
-    RangedMeasurement_t genVcVoltageResolution;
+    er4cl::RangedMeasurement_t genVcVoltageResolution;
     double genVoltage = 0.0;
     double genVoltageStep = 0.0;
     double genVoltageAmp = 0.0;
     double genVoltageNorm;
     uint16_t genVoltageInt;
 
-    RangedMeasurement_t genVcCurrentResolution;
+    er4cl::RangedMeasurement_t genVcCurrentResolution;
     double genCurrent = 0.0;
     double genCurrentStep = 0.0;
     double genCurrentAmp = 0.0;
     double genCurrentNorm;
     uint16_t genCurrentInt;
 
-    Measurement_t genSamplingRate;
+    er4cl::Measurement_t genSamplingRate;
     double samplingTime = 0.0001;
     double integrationStep = 0.01;
     int integrationItemStepsNum;

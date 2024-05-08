@@ -3,11 +3,9 @@
 
 #include "messagedispatcher.h"
 
-using namespace std;
-
 class MessageDispatcher_e2HC_V00 : public MessageDispatcher {
 public:
-    MessageDispatcher_e2HC_V00(string di);
+    MessageDispatcher_e2HC_V00(std::string di);
     virtual ~MessageDispatcher_e2HC_V00();
 
 protected:
@@ -93,7 +91,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
@@ -111,7 +109,7 @@ private:
 
 class MessageDispatcher_e2HC_V01 : public MessageDispatcher_e2HC_V00 {
 public:
-    MessageDispatcher_e2HC_V01(string di);
+    MessageDispatcher_e2HC_V01(std::string di);
     virtual ~MessageDispatcher_e2HC_V01();
 
 private:

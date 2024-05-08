@@ -3,13 +3,9 @@
 
 #include "messagedispatcher.h"
 
-#include <iostream>
-
-using namespace std;
-
 class MessageDispatcher_eNPR : public MessageDispatcher {
 public:
-    MessageDispatcher_eNPR(string di);
+    MessageDispatcher_eNPR(std::string di);
     virtual ~MessageDispatcher_eNPR();
 
 protected:
@@ -90,7 +86,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
 
     /*! Device specific controls */
@@ -124,12 +120,12 @@ private:
 
 class MessageDispatcher_eNPR_2Channels_V01 : public MessageDispatcher_eNPR {
 public:
-    MessageDispatcher_eNPR_2Channels_V01(string di);
+    MessageDispatcher_eNPR_2Channels_V01(std::string di);
     virtual ~MessageDispatcher_eNPR_2Channels_V01();
 
 protected:
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     void updateVoltageReferenceOffsetCalibration();
 
 private:
@@ -171,22 +167,22 @@ private:
         ProtocolsNum
     };
 
-    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
+    er4cl::Measurement_t voltageReferenceOffsetCalibration = {0.0, er4cl::UnitPfxNone, "V"};
 };
 
 class MessageDispatcher_eNPR_2Channels_V02 : public MessageDispatcher_eNPR_2Channels_V01 {
 public:
-    MessageDispatcher_eNPR_2Channels_V02(string di);
+    MessageDispatcher_eNPR_2Channels_V02(std::string di);
     virtual ~MessageDispatcher_eNPR_2Channels_V02();
 };
 
 class MessageDispatcher_eNPR_2Channels_V03 : public MessageDispatcher_eNPR_2Channels_V02 {
 public:
-    MessageDispatcher_eNPR_2Channels_V03(string di);
+    MessageDispatcher_eNPR_2Channels_V03(std::string di);
     virtual ~MessageDispatcher_eNPR_2Channels_V03();
 
 protected:
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
 
 private:
     enum VoltageRanges {
@@ -227,7 +223,7 @@ private:
 
 class MessageDispatcher_eNPR_FL_V02 : public MessageDispatcher_eNPR {
 public:
-    MessageDispatcher_eNPR_FL_V02(string di);
+    MessageDispatcher_eNPR_FL_V02(std::string di);
     virtual ~MessageDispatcher_eNPR_FL_V02();
 
 protected:
@@ -251,7 +247,7 @@ protected:
 
 class MessageDispatcher_eNPR_FL_V01 : public MessageDispatcher_eNPR {
 public:
-    MessageDispatcher_eNPR_FL_V01(string di);
+    MessageDispatcher_eNPR_FL_V01(std::string di);
     virtual ~MessageDispatcher_eNPR_FL_V01();
 
 protected:
@@ -291,7 +287,7 @@ private:
 
 class MessageDispatcher_eNPR_LegacyEdr3_V04 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_eNPR_LegacyEdr3_V04(string id);
+    MessageDispatcher_eNPR_LegacyEdr3_V04(std::string id);
     virtual ~MessageDispatcher_eNPR_LegacyEdr3_V04();
 
 protected:
@@ -396,7 +392,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
 
     /*! Device specific controls */
@@ -405,7 +401,7 @@ protected:
 
 class MessageDispatcher_eNPR_LegacyEdr3_V03 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_eNPR_LegacyEdr3_V03(string id);
+    MessageDispatcher_eNPR_LegacyEdr3_V03(std::string id);
     virtual ~MessageDispatcher_eNPR_LegacyEdr3_V03();
 
 protected:
@@ -519,7 +515,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
 
     /*! Device specific controls */

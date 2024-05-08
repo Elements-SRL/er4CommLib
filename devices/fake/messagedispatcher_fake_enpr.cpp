@@ -1,5 +1,8 @@
 #include "messagedispatcher_fake_enpr.h"
 
+using namespace std;
+using namespace er4CommLib;
+
 MessageDispatcher_fake_eNPR::MessageDispatcher_fake_eNPR(string di) :
     MessageDispatcher_eNPR(di) {
 

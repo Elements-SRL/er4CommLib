@@ -1,5 +1,8 @@
 #include "messagedispatcher_el06d_el06e.h"
 
+using namespace std;
+using namespace er4CommLib;
+
 MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     MessageDispatcher(id) {
 

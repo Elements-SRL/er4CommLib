@@ -14,6 +14,8 @@
 
 #include "er4commlib.h"
 
+namespace er4cl = er4CommLib;
+
 typedef enum {
     FtdiEepromId56,
     FtdiEepromIdDemo
@@ -105,32 +107,29 @@ inline bool operator != (const DeviceTuple_t &a, const DeviceTuple_t &b) {
     return !(a == b);
 }
 
-using namespace std;
-using namespace er4CommLib;
-
 class FtdiEeprom {
 public:
-    FtdiEeprom(string deviceId);
+    FtdiEeprom(std::string deviceId);
     virtual ~FtdiEeprom();
 
-    virtual ErrorCodes_t openConnection(char channel = 'A');
-    virtual ErrorCodes_t closeConnection();
+    virtual er4cl::ErrorCodes_t openConnection(char channel = 'A');
+    virtual er4cl::ErrorCodes_t closeConnection();
     DeviceTuple_t getDeviceTuple();
     uint16_t getVcOffset();
-    ErrorCodes_t readEepromWord(DWORD address, LPWORD result);
+    er4cl::ErrorCodes_t readEepromWord(DWORD address, LPWORD result);
 
 protected:
-    string deviceId;
+    std::string deviceId;
     char communicationChannel;
-    string communicationSerial;
+    std::string communicationSerial;
     DeviceTuple_t deviceTuple;
     uint16_t vcOffset;
     bool connectionOpened = false;
     FT_HANDLE handler;
 
-    virtual ErrorCodes_t loadData() = 0;
-    virtual ErrorCodes_t loadDeviceTuple() = 0;
-    virtual ErrorCodes_t loadVcOffset() = 0;
+    virtual er4cl::ErrorCodes_t loadData() = 0;
+    virtual er4cl::ErrorCodes_t loadDeviceTuple() = 0;
+    virtual er4cl::ErrorCodes_t loadVcOffset() = 0;
 };
 
 #endif // FTDIEEPROM_H

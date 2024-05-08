@@ -1,6 +1,6 @@
 #include "ftdieeprom.h"
 
-FtdiEeprom::FtdiEeprom(string deviceId) :
+FtdiEeprom::FtdiEeprom(std::string deviceId) :
     deviceId(deviceId) {
 
 }
@@ -9,8 +9,8 @@ FtdiEeprom::~FtdiEeprom() {
 
 }
 
-ErrorCodes_t FtdiEeprom::openConnection(char channel) {
-    ErrorCodes_t ret;
+er4cl::ErrorCodes_t FtdiEeprom::openConnection(char channel) {
+    er4cl::ErrorCodes_t ret;
     if (!connectionOpened) {
         /*! Appends the channel to the serial */
         communicationSerial = deviceId+channel;
@@ -20,49 +20,49 @@ ErrorCodes_t FtdiEeprom::openConnection(char channel) {
         connectionOpened = (result == FT_OK);
 
         if (connectionOpened) {
-            ret = Success;
+            ret = er4cl::Success;
 
         } else {
-            ret = ErrorEepromConnectionFailed;
+            ret = er4cl::ErrorEepromConnectionFailed;
         }
 
     } else {
-        ret = ErrorEepromAlreadyConnected;
+        ret = er4cl::ErrorEepromAlreadyConnected;
     }
     return ret;
 }
 
-ErrorCodes_t FtdiEeprom::closeConnection() {
-    ErrorCodes_t ret;
+er4cl::ErrorCodes_t FtdiEeprom::closeConnection() {
+    er4cl::ErrorCodes_t ret;
     if (connectionOpened) {
         connectionOpened = (FT_Close(handler) != FT_OK);
 
         if (connectionOpened) {
-            ret = ErrorEepromDisconnectionFailed;
+            ret = er4cl::ErrorEepromDisconnectionFailed;
 
         } else {
-            ret = Success;
+            ret = er4cl::Success;
         }
 
     } else {
-        ret = ErrorEepromNotConnected;
+        ret = er4cl::ErrorEepromNotConnected;
     }
     return ret;
 }
 
-ErrorCodes_t FtdiEeprom::readEepromWord(DWORD address, LPWORD result) {
-    ErrorCodes_t ret;
+er4cl::ErrorCodes_t FtdiEeprom::readEepromWord(DWORD address, LPWORD result) {
+    er4cl::ErrorCodes_t ret;
     if (connectionOpened) {
         FT_STATUS ftRet = FT_ReadEE(handler, address, result);
         if (ftRet != FT_OK) {
-            ret = ErrorEepromReadFailed;
+            ret = er4cl::ErrorEepromReadFailed;
 
         } else {
-            ret = Success;
+            ret = er4cl::Success;
         }
 
     } else {
-        ret = ErrorEepromNotConnected;
+        ret = er4cl::ErrorEepromNotConnected;
     }
     return ret;
 }

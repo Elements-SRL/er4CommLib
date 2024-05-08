@@ -6,10 +6,10 @@
 
 class MessageDispatcher_e4n_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e4n_V01(string di);
+    MessageDispatcher_e4n_V01(std::string di);
     virtual ~MessageDispatcher_e4n_V01();
 
-    ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
+    er4cl::ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
 
 protected:
     typedef struct {
@@ -96,9 +96,9 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
-    ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) override;
+    er4cl::ErrorCodes_t updateVoltageOffsetCompensations(std::vector <er4cl::Measurement_t> &offsets) override;
 
     /*! Device specific controls */
     int minControllerTemperature = -10;
@@ -122,11 +122,11 @@ private:
 
 class MessageDispatcher_e4n_sine_V01 : public MessageDispatcher_e4n_V01 {
 public:
-    MessageDispatcher_e4n_sine_V01(string di);
+    MessageDispatcher_e4n_sine_V01(std::string di);
     virtual ~MessageDispatcher_e4n_sine_V01();
 
 protected:
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
 
 private:
     enum ProtocolFrequencyRanges {
@@ -158,7 +158,7 @@ public:
     MessageDispatcher_e4n_El03c_LegacyEdr3_V04(std::string id);
     virtual ~MessageDispatcher_e4n_El03c_LegacyEdr3_V04();
 
-    ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
+    er4cl::ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
 
 protected:
     typedef struct {
@@ -266,7 +266,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
 
     /*! Device specific controls */
     int minControllerTemperature = -10;
@@ -280,7 +280,7 @@ public:
     MessageDispatcher_e4n_El03c_LegacyEdr3_V05(std::string id);
     ~MessageDispatcher_e4n_El03c_LegacyEdr3_V05();
 
-    ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
+    er4cl::ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
 
 protected:
     int minControllerTemperature = -10;

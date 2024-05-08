@@ -3,14 +3,12 @@
 
 #include "messagedispatcher.h"
 
-using namespace std;
-
 class MessageDispatcher_EL06c : public MessageDispatcher {
 public:
-    MessageDispatcher_EL06c(string di);
+    MessageDispatcher_EL06c(std::string di);
     virtual ~MessageDispatcher_EL06c();
 
-    ErrorCodes_t setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false) override;
+    er4cl::ErrorCodes_t setProtocolVoltage(unsigned int idx, er4cl::Measurement_t voltage, bool applyFlag = false) override;
 
 protected:
     typedef struct {
@@ -100,7 +98,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;

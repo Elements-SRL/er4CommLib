@@ -5,7 +5,7 @@
 
 class MessageDispatcher_eNPR_HC_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_eNPR_HC_V01(string di);
+    MessageDispatcher_eNPR_HC_V01(std::string di);
     virtual ~MessageDispatcher_eNPR_HC_V01();
 
 protected:
@@ -104,7 +104,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
@@ -112,7 +112,7 @@ protected:
 
 class MessageDispatcher_eNPR_HC_V02 : public MessageDispatcher_eNPR_HC_V01 {
 public:
-    MessageDispatcher_eNPR_HC_V02(string di);
+    MessageDispatcher_eNPR_HC_V02(std::string di);
     virtual ~MessageDispatcher_eNPR_HC_V02();
 
 protected:

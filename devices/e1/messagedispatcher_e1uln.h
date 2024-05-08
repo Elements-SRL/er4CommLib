@@ -3,13 +3,9 @@
 
 #include "messagedispatcher.h"
 
-#include <iostream>
-
-using namespace std;
-
 class MessageDispatcher_e1ULN_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e1ULN_V01(string di);
+    MessageDispatcher_e1ULN_V01(std::string di);
     virtual ~MessageDispatcher_e1ULN_V01();
 
 protected:
@@ -110,7 +106,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
 
     /*! Device specific controls */

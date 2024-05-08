@@ -3,13 +3,9 @@
 
 #include "messagedispatcher.h"
 
-#include <iostream>
-
-using namespace std;
-
 class MessageDispatcher_e4e_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e4e_V01(string di);
+    MessageDispatcher_e4e_V01(std::string di);
     virtual ~MessageDispatcher_e4e_V01();
 
 protected:
@@ -109,9 +105,9 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
-    ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) override;
+    er4cl::ErrorCodes_t updateVoltageOffsetCompensations(std::vector <er4cl::Measurement_t> &offsets) override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
@@ -119,7 +115,7 @@ protected:
 
 class MessageDispatcher_e4e_trigger_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e4e_trigger_V01(string di);
+    MessageDispatcher_e4e_trigger_V01(std::string di);
     virtual ~MessageDispatcher_e4e_trigger_V01();
 
 protected:
@@ -219,9 +215,9 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
-    ErrorCodes_t updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) override;
+    er4cl::ErrorCodes_t updateVoltageOffsetCompensations(std::vector <er4cl::Measurement_t> &offsets) override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
@@ -229,7 +225,7 @@ protected:
 
 class MessageDispatcher_e4e_El03c_LegacyEdr3_V05 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e4e_El03c_LegacyEdr3_V05(string id);
+    MessageDispatcher_e4e_El03c_LegacyEdr3_V05(std::string id);
     virtual ~MessageDispatcher_e4e_El03c_LegacyEdr3_V05();
 
 protected:
@@ -329,7 +325,7 @@ protected:
     };
 
     void initializeDevice() override;
-    bool checkProtocolValidity(string &message) override;
+    bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
 
 

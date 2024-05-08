@@ -1,5 +1,8 @@
 #include "messagedispatcher_e16n.h"
 
+using namespace std;
+using namespace er4CommLib;
+
 MessageDispatcher_e16n_V01::MessageDispatcher_e16n_V01(string di) :
     MessageDispatcher(di) {
 

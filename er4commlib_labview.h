@@ -843,17 +843,28 @@ ErrorCodes_t getChannelsNumber(
         ER4CL_ARGOUT unsigned int &voltageChannelsNum,
         ER4CL_ARGOUT unsigned int &currentChannelsNum);
 
-/*! \brief Get the current ranges available in voltage clamp for the device.
+/*! \brief Get the number of current ranges available in voltage clamp for the device.
  *
- * \param currentRanges [out] Array containing all the available current ranges in voltage clamp.
- * \param defaultValue [out] Default options.
+ * \param currentRangesNum [out] Number of the available current ranges in voltage clamp.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getCurrentRanges(
-        ER4CL_ARGOUT LVRangedMeasurement_t * currentRanges,
-        ER4CL_ARGOUT unsigned short * defaultOptions);
+ErrorCodes_t getCurrentRangesNum(
+        ER4CL_ARGOUT unsigned short & currentRangesNum);
+
+/*! \brief Get the nth current range.
+ *
+ * \param currentRange [out] Nth current range.
+ * \param currentRangeIndex [in] Current range index.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getNthCurrentRange(
+        ER4CL_ARGOUT LVRangedMeasurement_t * currentRange,
+        ER4CL_ARGIN unsigned short currentRangeIndex);
+
 
 /*! \brief Get the current range currently applied on a given channel.
  *
@@ -865,7 +876,7 @@ ErrorCodes_t getCurrentRanges(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRange(
-        ER4CL_ARGOUT LVRangedMeasurement_t *currentRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t * currentRange,
         ER4CL_ARGIN unsigned short channelIdx = 0);
 
 /*! \brief Check if the device can set the current range independently on each channel.
@@ -877,17 +888,27 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasIndependentCurrentRanges(
         ER4CL_ARGVOID);
 
-/*! \brief Get the voltage ranges available in voltage clamp for the device.
+/*! \brief Get the number of voltage ranges available in voltage clamp for the device.
  *
- * \param voltageRanges [out] Array containing all the available voltage ranges in voltage clamp.
- * \param defaultValue [out] Default option.
+ * \param voltageRangesNum [out] Number of the available voltage ranges in voltage clamp.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getVoltageRanges(
-        ER4CL_ARGOUT LVRangedMeasurement_t * voltageRanges,
-        ER4CL_ARGOUT unsigned short &defaultOption);
+ErrorCodes_t getVoltageRangesNum(
+        ER4CL_ARGOUT unsigned short & voltageRangesNum);
+
+/*! \brief Get the nth voltage range.
+ *
+ * \param voltageRange [out]  Nth voltage range.
+ * \param voltageRangeIndex [in] Voltage range index.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getNthVoltageRange(
+        ER4CL_ARGOUT LVRangedMeasurement_t * voltageRange,
+        ER4CL_ARGIN unsigned short voltageRangeIndex);
 
 /*! \brief Get the voltage range currently applied.
  *
@@ -899,29 +920,51 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRange(
         ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange);
 
-/*! \brief Get the voltage ranges available for the reference.
+/*! \brief Get the voltage reference ranges num available for the reference.
  *
- * \param voltageRanges [out] Array containing all the available voltage ranges for the reference.
+ * \param voltageRangesNum [out] Number of the available voltage ranges for the reference.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageReferenceRangesNum(
+        ER4CL_ARGOUT unsigned short &voltageRangesNum);
+
+/*! \brief Get the nth voltage reference range.
+ *
+ * \param voltageReferneceRange [out]  Nth voltage reference range.
+ * \param voltageReferneceRangeIndex [in] voltage reference range index.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getNthVoltageReferenceRange(
+        ER4CL_ARGOUT LVRangedMeasurement_t * voltageReferneceRange,
+        ER4CL_ARGIN unsigned short voltageReferneceRangeIndex);
+
+/*! \brief Get the number of sampling rates available for the device.
+ *
+ * \param samplingRatesNum [out] Number of all the available sampling rates.
  * \param defaultValue [out] Default option.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getVoltageReferenceRanges(
-        ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+ErrorCodes_t getSamplingRatesNum(
+        ER4CL_ARGOUT unsigned short &samplingRatesNum,
         ER4CL_ARGOUT unsigned short &defaultOption);
 
-/*! \brief Get the sampling rates available for the device.
+/*! \brief Get the nth sampling rate.
  *
- * \param samplingRates [out] Array containing all the available sampling rates.
- * \param defaultValue [out] Default option.
+ * \param samplingRate [out]  Nth sampling rate.
+ * \param samplingRateIndex [in] sampling rate index.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getSamplingRates(
-        ER4CL_ARGOUT LVMeasurement_t * samplingRates,
-        ER4CL_ARGOUT unsigned short &defaultOption);
+ErrorCodes_t getNthSamplingRateRange(
+        ER4CL_ARGOUT LVMeasurement_t * samplingRate,
+        ER4CL_ARGIN unsigned short samplingRateIndex);
 
 /*! \brief Get the sampling rate currently applied.
  *
@@ -933,16 +976,28 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getSamplingRate(
         ER4CL_ARGOUT LVMeasurement_t * lvSamplingRate);
 
-/*! \brief Get the real sampling rates available for the device.
+/*! \brief Get the number of real sampling rates available for the device.
  *
- * \param samplingRates [out] Array containing all the available real sampling rates
+ * \param samplingRatesNum [out] Number of all the available real sampling rates
  *                            (may slightly differ from displayed sampling rates).
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getRealSamplingRates(
-        ER4CL_ARGOUT LVMeasurement_t * samplingRates);
+ErrorCodes_t getRealSamplingRatesNum(
+        ER4CL_ARGOUT unsigned short &samplingRatesNum);
+
+/*! \brief Get the nth  real sampling rate.
+ *
+ * \param realSamplingRate [out]  Nth real sampling rate.
+ * \param realSamplingRateIndex [in] real sampling rate index.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getNthRealSamplingRate(
+        ER4CL_ARGOUT LVMeasurement_t * realSamplingRate,
+        ER4CL_ARGIN unsigned short realSamplingRateIndex);
 
 /*! \brief Get the real sampling rate currently applied.
  *
@@ -975,9 +1030,20 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getOversamplingRatio(
         ER4CL_ARGOUT unsigned short &oversamplingRatio);
 
+/*! \brief Get the number of available options for the voltage stimulus low pass filter.
+ *
+ * \param filterOptionsNum [out] Available options for the voltage stimulus low pass filter.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageStimulusLpfsNum(
+        ER4CL_ARGOUT unsigned short &filterOptionsNum);
+
 /*! \brief Get the available options for the voltage stimulus low pass filter.
  *
- * \param filterOptions [out] Available options for the voltage stimulus low pass filter.
+ * \param filterOptions [out] Number of available options for the voltage stimulus low pass filter.
+ * \param filterIndex [in] Index of the filter option.
  * \param defaultOption [out] Option selected by default.
  * \param voltageRangeIdx [out] Voltage range index in which this filter can be used (-1 if it's available for all ranges).
  * \return Error code.
@@ -986,12 +1052,22 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageStimulusLpfs(
         ER4CL_ARGOUT LVMeasurement_t * filterOptions,
+        ER4CL_ARGIN unsigned short filterIdx,
         ER4CL_ARGOUT unsigned short &defaultOption,
         ER4CL_ARGOUT short &voltageRangeIdx);
 
 /*! \brief Get the available options for the voltage reference low pass filter.
  *
+ * \param filterOptionsNum [out] Number of available options for the voltage reference low pass filter.
+ * \return Error code.
+ */
+ErrorCodes_t getVoltageReferenceLpfsNum(
+        ER4CL_ARGOUT unsigned short &filterOptionsNum);
+
+/*! \brief Get the available options for the voltage reference low pass filter.
+ *
  * \param filterOptions [out] Available options for the voltage reference low pass filter.
+ * \param filterIndex [in] Index of the filter option.
  * \param defaultOption [out] Option selected by default.
  * \param voltageRangeIdx [out] Voltage range index in which this filter can be used (-1 if it's available for all ranges).
  * \return Error code.
@@ -1000,6 +1076,7 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageReferenceLpfs(
         ER4CL_ARGOUT LVMeasurement_t * filterOptions,
+        ER4CL_ARGIN unsigned short filterIdx,
         ER4CL_ARGOUT unsigned short &defaultOption,
         ER4CL_ARGOUT short &voltageRangeIdx);
 
@@ -1130,19 +1207,43 @@ ErrorCodes_t getSealTestProtocolIdx(
 
 /*! \brief Get protocol applicable voltage range.
  *
- * \param ranges [out] Ranges of applicable voltage in protocols.
- * \param defaultValues [out] Default values.
+ * \param protocolVoltageNum [out] Number of ranges of applicable voltage in protocols.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolVoltageNum(
+        ER4CL_ARGOUT unsigned short &protocolVoltageNum);
+
+/*! \brief Get protocol applicable voltage range.
+ *
+ * \param range [out] Range of applicable voltage in protocol.
+ * \param rangeIdx [in] Index of the desired range.
+ * \param defaultValue [out] Default value.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolVoltage(
         ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+        ER4CL_ARGIN unsigned short rangeIdx,
         ER4CL_ARGOUT LVMeasurement_t * defaultValues);
+
+/*! \brief Get the number of protocol applicable time range.
+ *
+ * \param rangesNum [out] Ranges of applicable time in protocols.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolTimeNum(
+        ER4CL_ARGOUT unsigned short &rangesNum);
+
 
 /*! \brief Get protocol applicable time range.
  *
  * \param ranges [out] Ranges of applicable time in protocols.
+ * \param rangeIdx [in] Index of the desired range.
  * \param defaultValues [out] Default values.
  * \return Error code.
  */
@@ -1150,11 +1251,23 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolTime(
         ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+        ER4CL_ARGIN unsigned short rangeIdx,
         ER4CL_ARGOUT LVMeasurement_t * defaultValues);
+
+/*! \brief Get number of protocol applicable slope range.
+ *
+ * \param rangesNum [out] Ranges of applicable slope in protocols.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolSlopeNum(
+        ER4CL_ARGOUT unsigned short &rangesNum);
 
 /*! \brief Get protocol applicable slope range.
  *
  * \param ranges [out] Ranges of applicable slope in protocols.
+ * \param rangeIdx [in] Index of the desired range.
  * \param defaultValues [out] Default values.
  * \return Error code.
  */
@@ -1162,11 +1275,23 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolSlope(
         ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+        ER4CL_ARGIN unsigned short rangeIdx,
         ER4CL_ARGOUT LVMeasurement_t * defaultValues);
+
+/*! \brief Get number of protocol applicable frequency range.
+ *
+ * \param rangesNum [out] Ranges of applicable frequency in protocols.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolFrequencyNum(
+        ER4CL_ARGOUT unsigned short &rangesNum);
 
 /*! \brief Get protocol applicable frequency range.
  *
  * \param ranges [out] Ranges of applicable frequency in protocols.
+ * \param rangeIdx [in] Index of the desired range.
  * \param defaultValues [out] Default values.
  * \return Error code.
  */
@@ -1174,11 +1299,23 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolFrequency(
         ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+        ER4CL_ARGIN unsigned short rangeIdx,
         ER4CL_ARGOUT LVMeasurement_t * defaultValues);
+
+/*! \brief Get number of protocol applicable adimensional range.
+ *
+ * \param rangesNum [out] Ranges of applicable adimensional in protocols.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolAdimensionalNum(
+        ER4CL_ARGOUT unsigned short &rangesNum);
 
 /*! \brief Get protocol applicable adimensional range.
  *
  * \param ranges [out] Ranges of applicable adimensional in protocols.
+ * \param rangeIdx [in] Index of the desired range.
  * \param defaultValues [out] Default values.
  * \return Error code.
  */
@@ -1186,6 +1323,7 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolAdimensional(
         ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+        ER4CL_ARGIN unsigned short rangeIdx,
         ER4CL_ARGOUT LVMeasurement_t * defaultValues);
 
 /*! \brief Availability of single channels voltage offset controls.

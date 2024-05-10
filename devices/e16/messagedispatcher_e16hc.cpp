@@ -236,6 +236,14 @@ MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
         currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
         currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
     }
+    gpRanges.resize(gpChannelsNum);
+    gpResolutions.resize(gpChannelsNum);
+    gpOffsets.resize(gpChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < gpChannelsNum; channelIdx++) {
+        gpRanges[channelIdx] = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]];
+        gpResolutions[channelIdx] = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]].step;
+        gpOffsets[channelIdx] = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]].min;
+    }
     voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
     voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step*(double)voltageRangeDivider;
     voltageReferenceRange = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];

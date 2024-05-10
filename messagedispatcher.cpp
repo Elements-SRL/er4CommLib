@@ -686,7 +686,7 @@ ErrorCodes_t MessageDispatcher::setGpRange(uint16_t gpRangeIdx, uint16_t channel
     gpResolutions[channelIdx] = gpRanges[channelIdx].step;
     gpOffsets[channelIdx] = gpRanges[channelIdx].min;
 
-    gpRangeCoders[channelIdx]->encode(gpRangeIdx, txStatus);
+//    gpRangeCoders[channelIdx]->encode(gpRangeIdx, txStatus);
     if (applyFlag) {
         this->stackOutgoingMessage(txStatus);
     }

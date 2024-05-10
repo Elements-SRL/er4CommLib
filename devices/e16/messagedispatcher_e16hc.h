@@ -3,10 +3,13 @@
 
 #include "messagedispatcher.h"
 
-class MessageDispatcher_e16HC_V02 : public MessageDispatcher {
+class MessageDispatcher_e16HC_V03 : public MessageDispatcher {
 public:
-    MessageDispatcher_e16HC_V02(std::string id);
-    virtual ~MessageDispatcher_e16HC_V02();
+    MessageDispatcher_e16HC_V03(std::string id);
+    virtual ~MessageDispatcher_e16HC_V03();
+
+    virtual er4cl::ErrorCodes_t getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption) override;
+    virtual er4cl::ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
 
 protected:
     typedef struct {
@@ -22,6 +25,17 @@ protected:
     enum VoltageRanges {
         VoltageRange500mV,
         VoltageRangesNum
+    };
+
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRange15V,
+        VoltageReferenceRangesNum
+    };
+
+    enum GpChannels {
+        GpChannelVoltageReference,
+        GpChannelsNum
     };
 
     enum SamplingRates {
@@ -114,14 +128,16 @@ protected:
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 
-private:
-    enum VoltageReferenceRanges {
-        VoltageReferenceRange2V,
-        VoltageReferenceRange15V,
-        VoltageReferenceRangesNum
-    };
-
     er4cl::Measurement_t voltageReferenceOffsetCalibration = {0.0, er4cl::UnitPfxNone, "V"};
+};
+
+class MessageDispatcher_e16HC_V02 : public MessageDispatcher_e16HC_V03 {
+public:
+    MessageDispatcher_e16HC_V02(std::string id);
+    virtual ~MessageDispatcher_e16HC_V02();
+
+    er4cl::ErrorCodes_t getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption) override;
+    er4cl::ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
 };
 
 class MessageDispatcher_e16HC_V01 : public MessageDispatcher_e16HC_V02 {
@@ -129,7 +145,6 @@ public:
     MessageDispatcher_e16HC_V01(std::string id);
     virtual ~MessageDispatcher_e16HC_V01();
 
-private:
     enum VoltageReferenceRanges {
         VoltageReferenceRange2V,
         VoltageReferenceRangesNum

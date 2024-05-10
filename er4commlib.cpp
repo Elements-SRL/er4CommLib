@@ -100,6 +100,7 @@
 static std::vector <MessageDispatcher *> msgDisps;
 static unsigned int voltageChannelsNum = 0;
 static unsigned int currentChannelsNum = 0;
+static unsigned int gpChannelsNum = 0;
 static unsigned int totalChannelsNum = 0;
 static unsigned int msgDispsNum = 0;
 static unsigned int totalCurrentChannelsNum = 0;
@@ -182,7 +183,7 @@ ErrorCodes_t connect(
 
     msgDispsNum = msgDisps.size();
 
-    msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
+    msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum, gpChannelsNum);
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
     totalCurrentChannelsNum = currentChannelsNum*msgDispsNum;
     totalTotalChannelsNum = voltageChannelsNum+totalCurrentChannelsNum;
@@ -462,6 +463,12 @@ ErrorCodes_t setVoltageRange(
 ErrorCodes_t setVoltageReferenceRange(
         uint16_t voltageRangeIdx) {
     MASS_CALL1(setVoltageReferenceRange, voltageRangeIdx)
+}
+
+ErrorCodes_t setGpRange(
+        ER4CL_ARGIN uint16_t gpRangeIdx,
+        ER4CL_ARGIN uint16_t channelIdx) {
+    MASS_CALL2(setGpRange, gpRangeIdx, channelIdx)
 }
 
 ErrorCodes_t setSamplingRate(
@@ -835,18 +842,6 @@ ErrorCodes_t getQueueStatus(
     return ret;
 }
 
-ErrorCodes_t getChannelsNumber(
-        uint32_t &voltageChannelsNum,
-        uint32_t &currentChannelsNum) {
-    if (msgDisps.empty()) {
-        return ErrorDeviceNotConnected;
-    }
-
-    ErrorCodes_t ret = msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum);
-    currentChannelsNum *= msgDispsNum;
-    return ret;
-}
-
 ErrorCodes_t convertVoltageValue(
         uint16_t intValue,
         double &fltValue) {
@@ -864,6 +859,16 @@ ErrorCodes_t convertCurrentValue(
         return ErrorDeviceNotConnected;
     }
     return msgDisps[channelIdx/currentChannelsNum]->convertCurrentValue(intValue, channelIdx%currentChannelsNum, fltValue);
+}
+
+ErrorCodes_t convertGpValue(
+        uint16_t intValue,
+        uint16_t channelIdx,
+        double &fltValue) {
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+    return msgDisps[0]->convertGpValue(intValue, channelIdx, fltValue);
 }
 
 ErrorCodes_t readData(
@@ -1050,6 +1055,19 @@ ErrorCodes_t purgeData() {
     MASS_CALL0(purgeData)
 }
 
+ErrorCodes_t getChannelsNumber(
+        uint32_t &voltageChannelsNum,
+        uint32_t &currentChannelsNum,
+        uint32_t &gpChannelsNum) {
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    ErrorCodes_t ret = msgDisps[0]->getChannelsNumber(voltageChannelsNum, currentChannelsNum, gpChannelsNum);
+    currentChannelsNum *= msgDispsNum;
+    return ret;
+}
+
 ErrorCodes_t getCurrentRanges(
         std::vector <RangedMeasurement_t> &currentRanges,
         std::vector <uint16_t> &defaultOptions) {
@@ -1063,7 +1081,7 @@ ErrorCodes_t getCurrentRange(
         return ErrorDeviceNotConnected;
     }
 
-    if (channelIdx > totalCurrentChannelsNum) {
+    if (channelIdx > currentChannelsNum) {
         return ErrorValueOutOfRange;
     }
 
@@ -1072,6 +1090,27 @@ ErrorCodes_t getCurrentRange(
 
 ErrorCodes_t hasIndependentCurrentRanges() {
     CALL_FIRST0(hasIndependentCurrentRanges)
+}
+
+ErrorCodes_t getGpRanges(
+        std::vector <std::vector <RangedMeasurement_t>> &gpRanges,
+        std::vector <uint16_t> &defaultOptions,
+        std::vector <std::string> &names) {
+    CALL_FIRST3(getGpRanges, gpRanges, defaultOptions, names)
+}
+
+ErrorCodes_t getGpRange(
+        RangedMeasurement_t &gpRange,
+        uint16_t channelIdx) {
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    if (channelIdx > gpChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    return msgDisps[channelIdx/gpChannelsNum]->getGpRange(gpRange, channelIdx % gpChannelsNum);
 }
 
 ErrorCodes_t getVoltageRanges(
@@ -1090,6 +1129,11 @@ ErrorCodes_t getVoltageReferenceRanges(
         std::vector <RangedMeasurement_t> &ranges,
         uint16_t &defaultOption) {
     CALL_FIRST2(getVoltageReferenceRanges, ranges, defaultOption)
+}
+
+ErrorCodes_t getVoltageReferenceRange(
+        RangedMeasurement_t &range) {
+    CALL_FIRST1(getVoltageReferenceRange, range)
 }
 
 ErrorCodes_t getSamplingRates(
@@ -1426,7 +1470,7 @@ ErrorCodes_t hasTtlPulseTrain() {
 
 ErrorCodes_t getVoltageOffsetCompensations(
         std::vector <Measurement_t> &offsets) {
-    ErrorCodes_t ret;
+    ErrorCodes_t ret = Success;
     if (msgDisps.empty()) {
         return ErrorDeviceNotConnected;
     }
@@ -1446,7 +1490,7 @@ ErrorCodes_t getVoltageOffsetCompensations(
         c += currentChannelsNum;
     }
 
-    return Success;
+    return ret;
 }
 
 } // namespace er4CommLib

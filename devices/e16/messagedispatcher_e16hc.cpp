@@ -4,7 +4,7 @@
 using namespace std;
 using namespace er4CommLib;
 
-MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
+MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
     MessageDispatcher(id) {
 
     /************************\
@@ -22,6 +22,7 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
 
     voltageChannelsNum = 1;
     currentChannelsNum = 16;
+    gpChannelsNum = GpChannelsNum;
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
     readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
@@ -84,6 +85,42 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
     voltageReferenceRangesArray[VoltageReferenceRange15V].prefix = UnitPfxMilli;
     voltageReferenceRangesArray[VoltageReferenceRange15V].unit = "V";
     defaultVoltageReferenceRangeIdx = VoltageReferenceRange2V;
+
+    double Vcm = 1650.0;
+    double levels = 4095.0;
+    double R114 = 11.0e3;
+    double R108 = 4.99e3;
+    double R114partR108 = R108/(R108+R114);
+    double R103 = 162e3;
+    double R99 = 26.7e3;
+    double VadcExt = 1250.0;
+    double R104 = 110.0e3;
+    double R106 = 49.9e3;
+    double U25Bpin5 = VadcExt*R106/(R104+R106);
+    double R101 = 162.0e3;
+    double R100 = 26.7e3;
+
+    gpRangesNum.resize(gpChannelsNum);
+    gpRangesNum[GpChannelVoltageReference] = VoltageReferenceRangesNum;
+    gpRangesArray.resize(gpChannelsNum);
+    gpRangesArray[GpChannelVoltageReference].resize(VoltageReferenceRangesNum);
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].step = 1000.0/R114partR108/levels;
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].min = -Vcm;
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].max = gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].min+levels*gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].step;
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].prefix = UnitPfxMilli;
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].unit = "V";
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].step = 1000.0/(R99/R103)/(R100/R101)/levels;
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].min = -Vcm-U25Bpin5*(1.0+R100/R101)/(R100/R101)/(R99/R103);
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].max = gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].min+levels*gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].step;
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].prefix = UnitPfxMilli;
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].unit = "V";
+    gpNames.resize(gpChannelsNum);
+    gpNames[GpChannelVoltageReference] = "Voltage reference";
+    defaultGpRangesIdx.resize(gpChannelsNum);
+    defaultGpRangesIdx[GpChannelVoltageReference] = VoltageReferenceRange2V;
+    selectedGpRangesIdx.resize(gpChannelsNum);
+    gpResolutions.resize(gpChannelsNum);
+    gpOffsets.resize(gpChannelsNum);
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
@@ -643,10 +680,10 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
     /*! Voltage reference range */
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 2;
-    boolConfig.bitsNum = 2;
+    boolConfig.bitsNum = 3;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b01 */
-    voltageReferenceRangeCoder->addMapItem(2); /*!< Enable DCDC and connect to the voltage amplifier -> 0b10 */
+    voltageReferenceRangeCoder->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b001 */
+    voltageReferenceRangeCoder->addMapItem(6); /*!< Enable DCDC and connect to the voltage amplifier -> 0b110 */
 
     /*! Sampling rate */
     boolConfig.initialByte = 1;
@@ -940,12 +977,27 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e16HC_V02::~MessageDispatcher_e16HC_V02() {
+MessageDispatcher_e16HC_V03::~MessageDispatcher_e16HC_V03() {
 
 }
 
-void MessageDispatcher_e16HC_V02::initializeDevice() {
+ErrorCodes_t MessageDispatcher_e16HC_V03::getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption) {
+    ranges.resize(1);
+    ranges[0] = voltageReferenceRangesArray[VoltageReferenceRange15V];
+    defaultOption = 0;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher_e16HC_V03::setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag) {
+    if (channelIdx == 0) { /*! Channel 0 contains the voltage reference range */
+        MessageDispatcher::setVoltageReferenceRange(gpRangeIdx, false);
+    }
+    return MessageDispatcher::setGpRange(gpRangeIdx, channelIdx, applyFlag);
+}
+
+void MessageDispatcher_e16HC_V03::initializeDevice() {
     this->updateVoltageReferenceOffsetCalibration();
+    this->setGpRange(defaultGpRangesIdx[GpChannelVoltageReference], GpChannelVoltageReference, false);
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -955,7 +1007,7 @@ void MessageDispatcher_e16HC_V02::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_e16HC_V02::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e16HC_V03::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1154,14 +1206,14 @@ bool MessageDispatcher_e16HC_V02::checkProtocolValidity(string &message) {
     return validFlag;
 }
 
-ErrorCodes_t MessageDispatcher_e16HC_V02::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
+ErrorCodes_t MessageDispatcher_e16HC_V03::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
     for (int idx = 0; idx < currentChannelsNum; idx++) {
         offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
     }
     return Success;
 }
 
-void MessageDispatcher_e16HC_V02::updateVoltageReferenceOffsetCalibration() {
+void MessageDispatcher_e16HC_V03::updateVoltageReferenceOffsetCalibration() {
     /*! Voltage DAC Ext */
     /*! \todo FCON serve davvero ricreare i coder? */
     DoubleCoder::CoderConfig_t doubleConfig;
@@ -1189,6 +1241,52 @@ void MessageDispatcher_e16HC_V02::updateVoltageReferenceOffsetCalibration() {
     doubleConfig.minValue = -vcm_mV*voltageAmplifierGain;
     doubleConfig.maxValue = (maxDacExtVoltage-vcm_mV)*voltageAmplifierGain-doubleConfig.resolution;
     dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
+}
+
+MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
+    MessageDispatcher_e16HC_V03(id) {
+
+    gpChannelsNum = 0;
+    totalChannelsNum = voltageChannelsNum+currentChannelsNum;
+
+    readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
+
+    maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
+
+    gpRangesNum.clear();
+    gpRangesArray.clear();
+    gpNames.clear();
+    defaultGpRangesIdx.clear();
+    selectedGpRangesIdx.clear();
+    gpResolutions.clear();
+    gpOffsets.clear();
+
+    /**********\
+     * Coders *
+    \**********/
+
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+
+    /*! Voltage reference range */
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 2;
+    voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    voltageReferenceRangeCoder->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b01 */
+    voltageReferenceRangeCoder->addMapItem(2); /*!< Enable DCDC and connect to the voltage amplifier -> 0b10 */
+}
+
+MessageDispatcher_e16HC_V02::~MessageDispatcher_e16HC_V02() {
+
+}
+
+ErrorCodes_t MessageDispatcher_e16HC_V02::getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption) {
+    return MessageDispatcher::getVoltageReferenceRanges(ranges, defaultOption);
+}
+
+ErrorCodes_t MessageDispatcher_e16HC_V02::setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag) {
+    return MessageDispatcher::setGpRange(gpRangeIdx, channelIdx, applyFlag);
 }
 
 MessageDispatcher_e16HC_V01::MessageDispatcher_e16HC_V01(string id) :

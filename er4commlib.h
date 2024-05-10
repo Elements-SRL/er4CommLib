@@ -394,6 +394,17 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageReferenceRange(
         ER4CL_ARGIN uint16_t voltageRangeIdx);
 
+/*! \brief Set the general purpose range on a given channel.
+ *
+ * \param gpRangeIdx [in] Index of the range to be set.
+ * \param channelIdx [in] Index of the channel to set the range for.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setGpRange(
+        ER4CL_ARGIN uint16_t gpRangeIdx,
+        ER4CL_ARGIN uint16_t channelIdx);
+
 /*! \brief Set the sampling rate.
  *
  * \param samplingRateIdx [in] Index of the sampling rate to be set.
@@ -826,6 +837,20 @@ ErrorCodes_t convertCurrentValue(
         ER4CL_ARGIN uint16_t channelIdx,
         ER4CL_ARGOUT double &fltValue);
 
+/*! \brief Converts an integer number to the corresponding general purpose value.
+ * The converted unit depends on the device configuration.
+ *
+ * \param intValue [in] Integer value to be converted.
+ * \param channelIdx [in] Index of the channel to be converted.
+ * \param fltValue [out] Floating point converted value.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t convertGpValue(
+        ER4CL_ARGIN uint16_t intValue,
+        ER4CL_ARGIN uint16_t channelIdx,
+        ER4CL_ARGOUT double &fltValue);
+
 /*! \brief Purges data read from the device.
  * This command is useful to get rid of data acquired during the device configuration (e.g. during setting of sampling rate or digital offset compensation).
  * Calling this method if no device is connected will return an error code.
@@ -844,7 +869,8 @@ ErrorCodes_t purgeData(ER4CL_ARGVOID);
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getChannelsNumber(
         ER4CL_ARGOUT uint32_t &voltageChannelsNum,
-        ER4CL_ARGOUT uint32_t &currentChannelsNum);
+        ER4CL_ARGOUT uint32_t &currentChannelsNum,
+        ER4CL_ARGOUT uint32_t &gpChannelsNum);
 
 /*! \brief Get the current ranges available in voltage clamp for the device.
  *
@@ -877,6 +903,30 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasIndependentCurrentRanges(
         ER4CL_ARGVOID);
 
+/*! \brief Get the general purpose channel ranges available for the device.
+ *
+ * \param gpRanges [out] Array containing all the available ranges.
+ * \param defaultValue [out] Default options.
+ * \param names [out] Names of the channels.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getGpRanges(
+        ER4CL_ARGOUT std::vector <std::vector <RangedMeasurement_t>> &gpRanges,
+        ER4CL_ARGOUT std::vector <uint16_t> &defaultOptions,
+        ER4CL_ARGOUT std::vector <std::string> &names);
+
+/*! \brief Get the general purpose channel range currently applied on a given channel.
+ *
+ * \param gpRange [out] range currently applied.
+ * \param channelIdx [in] Channel index.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getGpRange(
+        ER4CL_ARGOUT RangedMeasurement_t &gpRange,
+        ER4CL_ARGIN uint16_t channelIdx = 0);
+
 /*! \brief Get the voltage ranges available in voltage clamp for the device.
  *
  * \param voltageRanges [out] Array containing all the available voltage ranges in voltage clamp.
@@ -892,7 +942,7 @@ ErrorCodes_t getVoltageRanges(
 
 /*! \brief Get the voltage range currently applied.
  *
- * \param voltageRange [out] Voltage range currently.
+ * \param voltageRange [out] Voltage range currently applied.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
@@ -909,6 +959,15 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageReferenceRanges(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT uint16_t &defaultOption);
+
+/*! \brief Get the voltage range currently applied for the reference.
+ *
+ * \param range [out] Voltage range currently applied.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageReferenceRange(
+        ER4CL_ARGOUT RangedMeasurement_t &range);
 
 /*! \brief Get the sampling rates available for the device.
  *

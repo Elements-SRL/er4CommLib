@@ -95,7 +95,8 @@ typedef enum {
     DeviceE16eEDR3,             /*!< e16e (Legacy version for EDR3). */
     DeviceE16ETHEDR3,           /*!< e16ETH (LegacyVersion for EDR3). */
     DeviceE16HC_V01,            /*!< e16HC (no voltage amplifier). */
-    DeviceE16HC_V02,            /*!< e16HC. */
+    DeviceE16HC_V02,            /*!< e16HC (no DAC readout). */
+    DeviceE16HC_V03,            /*!< e16HC. */
     DeviceENPREDR3_V03,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPREDR3_V04,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPR,                 /*!< eNPR. */

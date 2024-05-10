@@ -66,8 +66,9 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                                              //    3,  5,136 : e16 Orbit TC
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16HCREMI8, 4, DeviceE16HC_V01},                                     //    3, 10,  4 : e16HC No voltage amplifier
-    {DeviceVersionE16, DeviceSubversionE16HCREMI8, 5, DeviceE16HC_V02},                                     //    3, 10,  5 : e16HC
-    {DeviceVersionE16, DeviceSubversionE16HC, 6, DeviceE16HC_V02},                                          //    3, 11,  6 : e16HC
+    {DeviceVersionE16, DeviceSubversionE16HCREMI8, 5, DeviceE16HC_V02},                                     //    3, 10,  5 : e16HC No DAC readout
+    {DeviceVersionE16, DeviceSubversionE16HC, 6, DeviceE16HC_V02},                                          //    3, 11,  6 : e16HC No DAC readout
+    {DeviceVersionE16, DeviceSubversionE16HC, 7, DeviceE16HC_V03},                                          //    3, 11,  7 : e16HC
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   11,  1,130 : e2HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                                  //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                                         //    6,  5,129 : testboard EL06b
@@ -346,6 +347,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_e16HC_V02(deviceId);
         break;
 
+    case DeviceE16HC_V03:
+        messageDispatcher = new MessageDispatcher_e16HC_V03(deviceId);
+        break;
+
     case DeviceE2HC_V01:
         messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
         break;
@@ -580,6 +585,12 @@ ErrorCodes_t MessageDispatcher::convertCurrentValue(uint16_t uintValue, uint16_t
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::convertGpValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue) {
+    fltValue = ((double)((int16_t)uintValue))*gpResolutions[channelIdx]+gpOffsets[channelIdx];
+
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag) {
     if (voltageRangeIdx < voltageRangesNum) {
         selectedVoltageRangeIdx = voltageRangeIdx;
@@ -659,6 +670,28 @@ ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, uint16
     } else {
         return ErrorValueOutOfRange;
     }
+}
+
+ErrorCodes_t MessageDispatcher::setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag) {
+    if (channelIdx >= gpRangesNum.size()) {
+        return ErrorValueOutOfRange;
+    }
+
+    if (gpRangeIdx > gpRangesNum[channelIdx]) {
+        return ErrorValueOutOfRange;
+    }
+
+    selectedGpRangesIdx[channelIdx] = gpRangeIdx;
+    gpRanges[channelIdx] = gpRangesArray[channelIdx][gpRangeIdx];
+    gpResolutions[channelIdx] = gpRanges[channelIdx].step;
+    gpOffsets[channelIdx] = gpRanges[channelIdx].min;
+
+    gpRangeCoders[channelIdx]->encode(gpRangeIdx, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) {
@@ -1879,9 +1912,10 @@ ErrorCodes_t MessageDispatcher::purgeData() {
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber) {
+ErrorCodes_t MessageDispatcher::getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber, uint32_t &gpChannelsNumber) {
     voltageChannelsNumber = voltageChannelsNum;
     currentChannelsNumber = currentChannelsNum;
+    gpChannelsNumber = gpChannelsNum;
     return Success;
 }
 
@@ -1892,6 +1926,9 @@ ErrorCodes_t MessageDispatcher::getCurrentRanges(vector <RangedMeasurement_t> &c
 }
 
 ErrorCodes_t MessageDispatcher::getCurrentRange(RangedMeasurement_t &currentRange, uint16_t channelIdx) {
+    if (channelIdx >= selectedCurrentRangesIdx.size()) {
+        return ErrorValueOutOfRange;
+    }
     currentRange = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
     return Success;
 }
@@ -1902,6 +1939,21 @@ ErrorCodes_t MessageDispatcher::hasIndependentCurrentRanges() {
         ret = ErrorFeatureNotImplemented;
     }
     return ret;
+}
+
+ErrorCodes_t MessageDispatcher::getGpRanges(std::vector <std::vector <er4cl::RangedMeasurement_t>> &gpRanges, std::vector <uint16_t> &defaultOptions, std::vector <std::string> &names) {
+    gpRanges = gpRangesArray;
+    defaultOptions = defaultGpRangesIdx;
+    names = gpNames;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getGpRange(er4cl::RangedMeasurement_t &gpRange, uint16_t channelIdx) {
+    if (channelIdx >= selectedGpRangesIdx.size()) {
+        return ErrorValueOutOfRange;
+    }
+    gpRange = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]];
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::getVoltageRanges(vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption, vector <string> &extensions) {
@@ -1927,6 +1979,15 @@ ErrorCodes_t MessageDispatcher::getVoltageReferenceRanges(vector <RangedMeasurem
 
     ranges = voltageReferenceRangesArray;
     defaultOption = defaultVoltageReferenceRangeIdx;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getVoltageReferenceRange(RangedMeasurement_t &range) {
+    if (!dacExtControllableFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    range = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
     return Success;
 }
 
@@ -3254,7 +3315,7 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                     unfilteredValue = value;
                     increaseRangeFlag = false;
 
-                } else {
+                } else if (channelIdx < voltageChannelsNum+currentChannelsNum) {
                     if ((value > UINT16_CURRENT_RANGE_INCREASE_MINIMUM_THRESHOLD) && (value < UINT16_CURRENT_RANGE_INCREASE_MAXIMUM_THRESHOLD)) {
                         /*! Suggest to increase range if any of the channels is above the threshold */
                         increaseRangeFlag = true;

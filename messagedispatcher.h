@@ -112,9 +112,11 @@ public:
     er4cl::ErrorCodes_t turnOnLsbNoise(bool flag);
     er4cl::ErrorCodes_t convertVoltageValue(uint16_t uintValue, double &fltValue);
     er4cl::ErrorCodes_t convertCurrentValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue);
+    er4cl::ErrorCodes_t convertGpValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue);
     er4cl::ErrorCodes_t setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag = true);
     er4cl::ErrorCodes_t setVoltageReferenceRange(uint16_t voltageRangeIdx, bool applyFlag = true);
     virtual er4cl::ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag = true);
+    virtual er4cl::ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true);
     virtual er4cl::ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag = true);
     virtual er4cl::ErrorCodes_t setOversamplingRatio(uint16_t oversamplingRatioIdx, bool applyFlag = true);
 
@@ -205,15 +207,19 @@ public:
     er4cl::ErrorCodes_t getAllDataPackets(uint16_t * &data, uint16_t * &unfilteredData, unsigned int packetsNumber, unsigned int &packetsRead);
     er4cl::ErrorCodes_t purgeData();
 
-    er4cl::ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber);
+    er4cl::ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber, uint32_t &gpChannelsNumber);
 
     er4cl::ErrorCodes_t getCurrentRanges(std::vector <er4cl::RangedMeasurement_t> &currentRanges, std::vector <uint16_t> &defaultOptions);
     er4cl::ErrorCodes_t getCurrentRange(er4cl::RangedMeasurement_t &currentRange, uint16_t channelIdx);
     er4cl::ErrorCodes_t hasIndependentCurrentRanges();
 
+    er4cl::ErrorCodes_t getGpRanges(std::vector <std::vector <er4cl::RangedMeasurement_t>> &gpRanges, std::vector <uint16_t> &defaultOptions, std::vector <std::string> &names);
+    er4cl::ErrorCodes_t getGpRange(er4cl::RangedMeasurement_t &gpRange, uint16_t channelIdx);
+
     er4cl::ErrorCodes_t getVoltageRanges(std::vector <er4cl::RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption, std::vector <std::string> &extensions);
     er4cl::ErrorCodes_t getVoltageRange(er4cl::RangedMeasurement_t &voltageRange);
-    er4cl::ErrorCodes_t getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption);
+    virtual er4cl::ErrorCodes_t getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption);
+    er4cl::ErrorCodes_t getVoltageReferenceRange(er4cl::RangedMeasurement_t &range);
 
     er4cl::ErrorCodes_t getSamplingRates(std::vector <er4cl::Measurement_t> &samplingRates, uint16_t &defaultOption);
     er4cl::ErrorCodes_t getSamplingRate(er4cl::Measurement_t &samplingRate);
@@ -368,22 +374,33 @@ protected:
 
     uint32_t currentRangesNum;
     uint32_t selectedCurrentRangeIdx = 0;
+    std::vector <uint16_t> selectedCurrentRangesIdx;
     std::vector <er4cl::RangedMeasurement_t> currentRangesArray;
     std::vector <uint16_t> defaultCurrentRangesIdx;
     std::vector <BoolRandomArrayCoder *> currentRangeCoders;
 
     uint32_t voltageRangesNum;
+    uint16_t selectedVoltageRangeIdx = 0;
     std::vector <er4cl::RangedMeasurement_t> voltageRangesArray;
     std::vector <std::string> voltageRangesExtensions;
     uint16_t defaultVoltageRangeIdx = 0;
     BoolRandomArrayCoder * voltageRangeCoder;
 
+
     uint32_t voltageReferenceRangesNum = 0;
+    uint16_t selectedVoltageReferenceRangeIdx = 0;
     std::vector <er4cl::RangedMeasurement_t> voltageReferenceRangesArray;
     uint16_t defaultVoltageReferenceRangeIdx = 0;
     BoolRandomArrayCoder * voltageReferenceRangeCoder;
 
     int16_t voltageRangeDivider = 1; /*! Divides the voltage data received from the amplifier */
+
+    std::vector <uint32_t> gpRangesNum;
+    std::vector <uint16_t> selectedGpRangesIdx;
+    std::vector <std::vector <er4cl::RangedMeasurement_t>> gpRangesArray;
+    std::vector <uint16_t> defaultGpRangesIdx;
+    std::vector <BoolRandomArrayCoder *> gpRangeCoders;
+    std::vector <std::string> gpNames;
 
     uint32_t samplingRatesNum;
     std::vector <er4cl::Measurement_t> samplingRatesArray;
@@ -674,19 +691,19 @@ protected:
     /*! Front end configuration */
     std::vector <double> currentResolutions;
     double voltageResolution = 1.0;
+    std::vector <double> gpResolutions;
+    std::vector <double> gpOffsets;
 
     double voltageOffsetCorrected = 0.0; /*!< Value currently corrected in applied voltages by the device (expressed in the unit of the liquid junction control) */
     double voltageOffsetCorrection = 0.0; /*!< Value to be used to correct the measured votlage values (expressed in the unit of current voltage range) */
 
     er4cl::Measurement_t voltageOffsetCompensationGain = {1.0, er4cl::UnitPfxNone, "V"};
 
-    uint16_t selectedVoltageRangeIdx = 0;
-    uint16_t selectedVoltageReferenceRangeIdx = 0;
-    std::vector <uint16_t> selectedCurrentRangesIdx;
     bool independentCurrentRangesFlag = false;
     er4cl::RangedMeasurement_t voltageRange;
     er4cl::RangedMeasurement_t voltageReferenceRange;
     std::vector <er4cl::RangedMeasurement_t> currentRanges;
+    std::vector <er4cl::RangedMeasurement_t> gpRanges;
 
     uint16_t selectedSamplingRateIdx = 0;
     er4cl::Measurement_t baseSamplingRate = {1.0, er4cl::UnitPfxKilo, "Hz"};

@@ -693,6 +693,15 @@ MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
     voltageReferenceRangeCoder->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b001 */
     voltageReferenceRangeCoder->addMapItem(6); /*!< Enable DCDC and connect to the voltage amplifier -> 0b110 */
 
+    /*! Gp range */
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 1;
+    gpRangeCoders.resize(1);
+    gpRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
+    gpRangeCoders[0]->addMapItem(0); /*!< 2V    -> 0b0*/
+    gpRangeCoders[0]->addMapItem(1); /*!< 15V   -> 0b1*/
+
     /*! Sampling rate */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 2;

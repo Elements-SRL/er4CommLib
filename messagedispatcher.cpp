@@ -1544,29 +1544,25 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2PulseNumber(un
 }
 
 ErrorCodes_t MessageDispatcher::setCustomFlag(uint16_t idx, bool flag, bool applyFlag) {
-    if (idx < customFlagsNum) {
-        customFlagsCoders[idx]->encode(flag ? 1 : 0, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-        return Success;
-
-    } else {
+    if (idx >= customFlagsNum) {
         return ErrorValueOutOfRange;
     }
+    customFlagsCoders[idx]->encode(flag ? 1 : 0, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setCustomDouble(uint16_t idx, double value, bool applyFlag) {
-    if (idx < customDoublesNum) {
-        customDoublesCoders[idx]->encode(value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-        return Success;
-
-    } else {
+    if (idx >= customDoublesNum) {
         return ErrorValueOutOfRange;
     }
+    customDoublesCoders[idx]->encode(value, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::resetWasherError() {
@@ -2420,33 +2416,29 @@ ErrorCodes_t MessageDispatcher::readCalibrationEeprom(std::vector <uint32_t> &va
 }
 
 ErrorCodes_t MessageDispatcher::getCustomFlags(vector <string> &customFlags, vector <bool> &customFlagsDefault) {
-    if (customFlagsNum > 0) {
-        customFlags.resize(customFlagsNum);
-        for (unsigned int idx = 0; idx < customFlagsNum; idx++) {
-            customFlags[idx] = customFlagsNames[idx];
-        }
-        customFlagsDefault = this->customFlagsDefault;
-        return Success;
-
-    } else {
+    if (customFlagsNum == 0) {
         return ErrorFeatureNotImplemented;
     }
+    customFlags.resize(customFlagsNum);
+    for (unsigned int idx = 0; idx < customFlagsNum; idx++) {
+        customFlags[idx] = customFlagsNames[idx];
+    }
+    customFlagsDefault = this->customFlagsDefault;
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::getCustomDoubles(vector <string> &customDoubles, vector <RangedMeasurement_t> &customDoublesRanges, vector <double> &customDoublesDefault) {
-    if (customDoublesNum > 0) {
-        customDoubles.resize(customDoublesNum);
-        customDoublesRanges.resize(customDoublesNum);
-        for (unsigned int idx = 0; idx < customDoublesNum; idx++) {
-            customDoubles[idx] = customDoublesNames[idx];
-            customDoublesRanges[idx] = this->customDoublesRanges[idx];
-        }
-        customDoublesDefault = this->customDoublesDefault;
-        return Success;
-
-    } else {
+    if (customDoublesNum == 0) {
         return ErrorFeatureNotImplemented;
     }
+    customDoubles.resize(customDoublesNum);
+    customDoublesRanges.resize(customDoublesNum);
+    for (unsigned int idx = 0; idx < customDoublesNum; idx++) {
+        customDoubles[idx] = customDoublesNames[idx];
+        customDoublesRanges[idx] = this->customDoublesRanges[idx];
+    }
+    customDoublesDefault = this->customDoublesDefault;
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::hasNanionTemperatureController() {
@@ -3329,6 +3321,9 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
                     }
 
                     this->processCurrentData(channelIdx, value, unfilteredValue);
+
+                } else { // GP values
+                    unfilteredValue = value;
                 }
 
                 outputDataBuffer[outputBufferWriteOffset][channelIdx] = value;

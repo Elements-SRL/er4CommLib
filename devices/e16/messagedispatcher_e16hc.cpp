@@ -23,7 +23,7 @@ MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
     voltageChannelsNum = 1;
     currentChannelsNum = 16;
     gpChannelsNum = GpChannelsNum;
-    totalChannelsNum = voltageChannelsNum+currentChannelsNum;
+    totalChannelsNum = voltageChannelsNum+currentChannelsNum+gpChannelsNum;
 
     readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
 
@@ -93,10 +93,10 @@ MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
     double R114partR108 = R108/(R108+R114);
     double R103 = 162e3;
     double R99 = 26.7e3;
-    double VadcExt = 1250.0;
+    double VadcVRef = 1250.0;
     double R104 = 110.0e3;
     double R106 = 49.9e3;
-    double U25Bpin5 = VadcExt*R106/(R104+R106);
+    double U25Bpin5 = VadcVRef*R106/(R104+R106);
     double R101 = 162.0e3;
     double R100 = 26.7e3;
 
@@ -106,12 +106,14 @@ MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
     gpRangesArray[GpChannelVoltageReference].resize(VoltageReferenceRangesNum);
     gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].step = 1000.0/R114partR108/levels;
     gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].min = -Vcm;
-    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].max = gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].min+levels*gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].step;
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].max = voltageReferenceRangesArray[VoltageReferenceRange2V].max;
+//    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].max = gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].min+levels*gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].step;
     gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].prefix = UnitPfxMilli;
     gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange2V].unit = "V";
     gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].step = 1000.0/(R99/R103)/(R100/R101)/levels;
     gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].min = -Vcm-U25Bpin5*(1.0+R100/R101)/(R100/R101)/(R99/R103);
-    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].max = gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].min+levels*gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].step;
+    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].max = voltageReferenceRangesArray[VoltageReferenceRange15V].max;
+//    gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].max = gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].min+levels*gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].step;
     gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].prefix = UnitPfxMilli;
     gpRangesArray[GpChannelVoltageReference][VoltageReferenceRange15V].unit = "V";
     gpNames.resize(gpChannelsNum);

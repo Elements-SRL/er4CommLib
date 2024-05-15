@@ -453,8 +453,6 @@ ErrorCodes_t MessageDispatcher::disconnectDevice() {
         return ErrorDeviceNotConnected;
     }
 
-    this->deinit();
-
     if (!stopConnectionFlag) {
         stopConnectionFlag = true;
 
@@ -463,6 +461,7 @@ ErrorCodes_t MessageDispatcher::disconnectDevice() {
             txThread.join();
         }
 
+        this->deinit();
 
         if (connectionStatus == ConnectionStatus_t::Connected) {
             FT_STATUS ftRet;

@@ -3355,8 +3355,8 @@ void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
     }
 
     /*! If too many packets are written but not read from the user the buffer saturates */
-    if (outputBufferAvailablePackets > ER4CL_OUTPUT_BUFFER_SIZE/totalChannelsNum) {
-        outputBufferAvailablePackets = ER4CL_OUTPUT_BUFFER_SIZE/totalChannelsNum; /*!< Saturates available packets */
+    if (outputBufferAvailablePackets > ER4CL_OUTPUT_BUFFER_SIZE) {
+        outputBufferAvailablePackets = ER4CL_OUTPUT_BUFFER_SIZE; /*!< Saturates available packets */
         outputBufferReadOffset = outputBufferWriteOffset; /*! Move read offset just on top of the write offset so that it can read up to 1 position before after a full buffer read */
         outputBufferOverflowFlag = true;
     }
@@ -3565,8 +3565,8 @@ void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
     }
 
     /*! If too many packets are written but not read from the user the buffer saturates */
-    if (outputBufferAvailablePackets > ER4CL_OUTPUT_BUFFER_SIZE/totalChannelsNum) {
-        outputBufferAvailablePackets = ER4CL_OUTPUT_BUFFER_SIZE/totalChannelsNum; /*!< Saturates available packets */
+    if (outputBufferAvailablePackets > ER4CL_OUTPUT_BUFFER_SIZE) {
+        outputBufferAvailablePackets = ER4CL_OUTPUT_BUFFER_SIZE; /*!< Saturates available packets */
         outputBufferReadOffset = outputBufferWriteOffset; /*! Move read offset just on top of the write offset so that it can read up to 1 position before after a full buffer read */
         outputBufferOverflowFlag = true;
     }

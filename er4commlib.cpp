@@ -38,8 +38,9 @@ ErrorCodes_t detectDevices(
         char * deviceIds) {
     /*! Gets number of devices */
     vector <std::string> deviceIdsStr;
-    return MessageDispatcher::detectDevices(deviceIdsStr);
+    ErrorCodes_t ret = MessageDispatcher::detectDevices(deviceIdsStr);
     sprintf(deviceIds, "%s", deviceIdsStr[0].c_str());
+    return ret;
 }
 
 ErrorCodes_t connectDevice(

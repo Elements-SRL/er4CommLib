@@ -218,7 +218,7 @@ public:
 
     er4cl::ErrorCodes_t getVoltageRanges(std::vector <er4cl::RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption, std::vector <std::string> &extensions);
     er4cl::ErrorCodes_t getVoltageRange(er4cl::RangedMeasurement_t &voltageRange);
-    virtual er4cl::ErrorCodes_t getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption);
+    er4cl::ErrorCodes_t getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption);
     er4cl::ErrorCodes_t getVoltageReferenceRange(er4cl::RangedMeasurement_t &range);
 
     er4cl::ErrorCodes_t getSamplingRates(std::vector <er4cl::Measurement_t> &samplingRates, uint16_t &defaultOption);

@@ -1000,13 +1000,6 @@ MessageDispatcher_e16HC_V03::~MessageDispatcher_e16HC_V03() {
 
 }
 
-ErrorCodes_t MessageDispatcher_e16HC_V03::getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption) {
-    ranges.resize(1);
-    ranges[0] = voltageReferenceRangesArray[VoltageReferenceRange15V];
-    defaultOption = 0;
-    return Success;
-}
-
 ErrorCodes_t MessageDispatcher_e16HC_V03::setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag) {
     if (channelIdx == 0) { /*! Channel 0 contains the voltage reference range */
         MessageDispatcher::setVoltageReferenceRange(gpRangeIdx, false);
@@ -1298,10 +1291,6 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
 
 MessageDispatcher_e16HC_V02::~MessageDispatcher_e16HC_V02() {
 
-}
-
-ErrorCodes_t MessageDispatcher_e16HC_V02::getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption) {
-    return MessageDispatcher::getVoltageReferenceRanges(ranges, defaultOption);
 }
 
 ErrorCodes_t MessageDispatcher_e16HC_V02::setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag) {

@@ -8,7 +8,6 @@ public:
     MessageDispatcher_e16HC_V03(std::string id);
     virtual ~MessageDispatcher_e16HC_V03();
 
-    virtual er4cl::ErrorCodes_t getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption) override;
     virtual er4cl::ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
 
 protected:
@@ -136,7 +135,6 @@ public:
     MessageDispatcher_e16HC_V02(std::string id);
     virtual ~MessageDispatcher_e16HC_V02();
 
-    er4cl::ErrorCodes_t getVoltageReferenceRanges(std::vector <er4cl::RangedMeasurement_t> &ranges, uint16_t &defaultOption) override;
     er4cl::ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
 };
 

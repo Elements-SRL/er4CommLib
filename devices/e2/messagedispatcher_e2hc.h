@@ -3,6 +3,10 @@
 
 #include "messagedispatcher.h"
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
+
 class MessageDispatcher_e2HC_V00 : public MessageDispatcher {
 public:
     MessageDispatcher_e2HC_V00(std::string di);
@@ -120,5 +124,9 @@ private:
         SamplingRatesNum
     };
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // MESSAGEDISPATCHER_E2HC_H

@@ -97,6 +97,8 @@
 
 #include "ftd2xx_win.h"
 
+using namespace er4CommLib;
+
 static std::vector <MessageDispatcher *> msgDisps;
 static unsigned int voltageChannelsNum = 0;
 static unsigned int currentChannelsNum = 0;

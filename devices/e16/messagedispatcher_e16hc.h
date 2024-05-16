@@ -3,12 +3,16 @@
 
 #include "messagedispatcher.h"
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
+
 class MessageDispatcher_e16HC_V03 : public MessageDispatcher {
 public:
     MessageDispatcher_e16HC_V03(std::string id);
     virtual ~MessageDispatcher_e16HC_V03();
 
-    virtual er4cl::ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
+    virtual ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
 
 protected:
     typedef struct {
@@ -121,13 +125,13 @@ protected:
 
     void initializeDevice() override;
     bool checkProtocolValidity(std::string &message) override;
-    er4cl::ErrorCodes_t updateVoltageOffsetCompensations(std::vector <er4cl::Measurement_t> &offsets) override;
+    ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) override;
     void updateVoltageReferenceOffsetCalibration();
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 
-    er4cl::Measurement_t voltageReferenceOffsetCalibration = {0.0, er4cl::UnitPfxNone, "V"};
+    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
 };
 
 class MessageDispatcher_e16HC_V02 : public MessageDispatcher_e16HC_V03 {
@@ -135,7 +139,7 @@ public:
     MessageDispatcher_e16HC_V02(std::string id);
     virtual ~MessageDispatcher_e16HC_V02();
 
-    er4cl::ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
+    ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
 };
 
 class MessageDispatcher_e16HC_V01 : public MessageDispatcher_e16HC_V02 {
@@ -148,5 +152,9 @@ public:
         VoltageReferenceRangesNum
     };
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // MESSAGEDISPATCHER_E16HC_H

@@ -392,6 +392,18 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setVoltageReferenceRange(
         ER4CL_ARGIN unsigned short voltageRangeIdx);
 
+/*! \brief Set the general purpose range on a given channel.
+ *
+ * \param gpRangeIdx [in] Index of the range to be set.
+ * \param channelIdx [in] Index of the channel to set the range for.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setGpRange(
+        ER4CL_ARGIN unsigned short gpRangeIdx,
+        ER4CL_ARGIN unsigned short channelIdx);
+
 /*! \brief Set the sampling rate.
  *
  * \param samplingRateIdx [in] Index of the sampling rate to be set.
@@ -694,6 +706,32 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCFastCapacitance(
         ER4CL_ARGIN LVMeasurement_t value);
 
+/*! \brief Configures the TTL pulse train parameters.
+ *
+ * \param pulseDuration [in] Duration of the TTL pulses.
+ * \param pulseDelay [in] Delay before the first pulse.
+ * \param period [in] Period of the TTL pulses.
+ * \param numberOfPulses [in] Number of pulses. 0 disables the feature.
+ *
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setTtlPulseTrain(
+        ER4CL_ARGIN LVMeasurement_t pulseDuration,
+        ER4CL_ARGIN LVMeasurement_t pulseDelay,
+        ER4CL_ARGIN LVMeasurement_t period,
+        ER4CL_ARGIN uint32_t numberOfPulses);
+
+/*! \brief Starts the TTL pulse train.
+ *
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t startTtlPulseTrain(
+        ER4CL_ARGVOID);
+
 /*! \brief Set a bit of the communication protocol for debug purposes.
  *
  * \param byteOffset [in] Offset of the byte the bit belongs to.
@@ -821,6 +859,21 @@ ErrorCodes_t convertCurrentValue(
         ER4CL_ARGIN unsigned short channelIdx,
         ER4CL_ARGOUT double &fltValue);
 
+/*! \brief Converts an integer number to the corresponding general purpose value.
+ * The converted unit depends on the device configuration.
+ *
+ * \param intValue [in] Integer value to be converted.
+ * \param channelIdx [in] Index of the channel to be converted.
+ * \param fltValue [out] Floating point converted value.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t convertGpValue(
+        ER4CL_ARGIN unsigned short intValue,
+        ER4CL_ARGIN unsigned short channelIdx,
+        ER4CL_ARGOUT double &fltValue);
+
 /*! \brief Purges data read from the device.
  * This command is useful to get rid of data acquired during the device configuration (e.g. during setting of sampling rate or digital offset compensation).
  * Calling this method if no device is connected will return an error code.
@@ -834,14 +887,16 @@ ErrorCodes_t purgeData(ER4CL_ARGVOID);
 /*! \brief Get the number of channels for the device.
  *
  * \param voltageChannelsNum [out] Number of voltage channels.
- * \param currentChannelsNum [out] Number of current channels (each current channel is reutrned raw, filtered and averaged).
+ * \param currentChannelsNum [out] Number of current channels.
+ * \param gpChannelsNum [out] Number of general purpose channels.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getChannelsNumber(
         ER4CL_ARGOUT unsigned int &voltageChannelsNum,
-        ER4CL_ARGOUT unsigned int &currentChannelsNum);
+        ER4CL_ARGOUT uint32_t &currentChannelsNum,
+        ER4CL_ARGOUT uint32_t &gpChannelsNum);
 
 /*! \brief Get the number of current ranges available in voltage clamp for the device.
  *
@@ -865,7 +920,6 @@ ErrorCodes_t getNthCurrentRange(
         ER4CL_ARGOUT LVRangedMeasurement_t * currentRange,
         ER4CL_ARGIN unsigned short currentRangeIndex);
 
-
 /*! \brief Get the current range currently applied on a given channel.
  *
  * \param currentRange [out] Current range currently applied.
@@ -877,7 +931,7 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCurrentRange(
         ER4CL_ARGOUT LVRangedMeasurement_t * currentRange,
-        ER4CL_ARGIN unsigned short channelIdx = 0);
+        ER4CL_ARGIN unsigned short channelIdx);
 
 /*! \brief Check if the device can set the current range independently on each channel.
  *
@@ -887,6 +941,44 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasIndependentCurrentRanges(
         ER4CL_ARGVOID);
+
+/*! \brief Get the number of general purpose ranges available in a given channel.
+ *
+ * \param gpRangesNum [out] Number of the available general purpose ranges.
+ * \param channelIdx [in] Channel index.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getGpRangesNum(
+        ER4CL_ARGOUT unsigned short &gpRangesNum,
+        ER4CL_ARGIN unsigned short channelIdx);
+
+/*! \brief Get the general purpose channel ranges available for the device.
+ *
+ * \param gpRange [out] Nth general purpose range for a given channel.
+ * \param rangeIdx [in] Nth range.
+ * \param channelIdx [in] Channel index.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getNthGpRange(
+        ER4CL_ARGOUT LVRangedMeasurement_t * gpRange,
+        ER4CL_ARGIN unsigned short rangeIdx,
+        ER4CL_ARGIN unsigned short channelIdx);
+
+/*! \brief Get the general purpose channel range currently applied on a given channel.
+ *
+ * \param gpRange [out] range currently applied.
+ * \param channelIdx [in] Channel index.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getGpRange(
+        ER4CL_ARGOUT LVRangedMeasurement_t * gpRange,
+        ER4CL_ARGIN unsigned short channelIdx);
 
 /*! \brief Get the number of voltage ranges available in voltage clamp for the device.
  *
@@ -912,13 +1004,13 @@ ErrorCodes_t getNthVoltageRange(
 
 /*! \brief Get the voltage range currently applied.
  *
- * \param voltageRange [out] Voltage range currently.
+ * \param voltageRange [out] Voltage range currently applied.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRange(
-        ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange);
+        ER4CL_ARGOUT LVRangedMeasurement_t * voltageRange);
 
 /*! \brief Get the voltage reference ranges num available for the reference.
  *
@@ -941,6 +1033,16 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getNthVoltageReferenceRange(
         ER4CL_ARGOUT LVRangedMeasurement_t * voltageReferneceRange,
         ER4CL_ARGIN unsigned short voltageReferneceRangeIndex);
+
+/*! \brief Get the voltage range currently applied for the reference.
+ *
+ * \param range [out] Voltage range currently applied.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageReferenceRange(
+        ER4CL_ARGOUT LVRangedMeasurement_t * range);
 
 /*! \brief Get the number of sampling rates available for the device.
  *
@@ -1598,6 +1700,15 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCFastCapacitanceControl(
         ER4CL_ARGOUT LVCompensationControl_t &control);
+
+/*! \brief Check if the TTL pulse train feature is implemented for the current device.
+ *
+ * \return Success if the device implements the TTL pulse train.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasTtlPulseTrain(
+        ER4CL_ARGVOID);
 
 /*! \brief Get the voltage offset compensated with the digital compensation.
  *

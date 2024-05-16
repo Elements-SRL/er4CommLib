@@ -3,6 +3,10 @@
 
 #include "messagedispatcher.h"
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
+
 class MessageDispatcher_eNPR : public MessageDispatcher {
 public:
     MessageDispatcher_eNPR(std::string di);
@@ -167,7 +171,7 @@ private:
         ProtocolsNum
     };
 
-    er4cl::Measurement_t voltageReferenceOffsetCalibration = {0.0, er4cl::UnitPfxNone, "V"};
+    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
 };
 
 class MessageDispatcher_eNPR_2Channels_V02 : public MessageDispatcher_eNPR_2Channels_V01 {
@@ -521,5 +525,9 @@ protected:
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // MESSAGEDISPATCHER_ENPR_H

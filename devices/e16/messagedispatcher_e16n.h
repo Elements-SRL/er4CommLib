@@ -3,21 +3,25 @@
 
 #include "messagedispatcher.h"
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
+
 class MessageDispatcher_e16n_V01 : public MessageDispatcher {
 public:
     MessageDispatcher_e16n_V01(std::string di);
     virtual ~MessageDispatcher_e16n_V01();
 
-    er4cl::ErrorCodes_t resetWasherError() override;
-    er4cl::ErrorCodes_t setWasherPresetSpeeds(std::vector <int8_t> speedValues) override;
-    er4cl::ErrorCodes_t startWasher(uint16_t speedIdx) override;
-    er4cl::ErrorCodes_t updateWasherState() override;
-    er4cl::ErrorCodes_t updateWasherPresetSpeeds() override;
+    ErrorCodes_t resetWasherError() override;
+    ErrorCodes_t setWasherPresetSpeeds(std::vector <int8_t> speedValues) override;
+    ErrorCodes_t startWasher(uint16_t speedIdx) override;
+    ErrorCodes_t updateWasherState() override;
+    ErrorCodes_t updateWasherPresetSpeeds() override;
 
-    er4cl::ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
-    er4cl::ErrorCodes_t getWasherSpeedRange(er4cl::RangedMeasurement_t &range) override;
-    er4cl::ErrorCodes_t getWasherStatus(er4cl::WasherStatus_t &status, er4cl::WasherError_t &error) override;
-    er4cl::ErrorCodes_t getWasherPresetSpeeds(std::vector <int8_t> &speedValue) override;
+    ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
+    ErrorCodes_t getWasherSpeedRange(RangedMeasurement_t &range) override;
+    ErrorCodes_t getWasherStatus(WasherStatus_t &status, WasherError_t &error) override;
+    ErrorCodes_t getWasherPresetSpeeds(std::vector <int8_t> &speedValue) override;
 
 protected:
     enum {
@@ -133,7 +137,7 @@ protected:
     int maxControllerTemperature = 60;
 
     InfoStruct_t infoStruct;
-    er4cl::RangedMeasurement_t washerSpeedRange;
+    RangedMeasurement_t washerSpeedRange;
     std::vector <int8_t> washerSpeeds;
 
     BoolArrayCoder * washerResetCoder;
@@ -183,5 +187,9 @@ class MessageDispatcher_dlp : public MessageDispatcher_e16n_V01 {
 public:
     MessageDispatcher_dlp(std::string di);
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // MESSAGEDISPATCHER_E16N_H

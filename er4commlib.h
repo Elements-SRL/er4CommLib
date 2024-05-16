@@ -700,6 +700,7 @@ ErrorCodes_t setTtlPulseTrain(
  *
  * \return Error code.
  */
+ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t startTtlPulseTrain(
         ER4CL_ARGVOID);
 
@@ -863,7 +864,8 @@ ErrorCodes_t purgeData(ER4CL_ARGVOID);
 /*! \brief Get the number of channels for the device.
  *
  * \param voltageChannelsNum [out] Number of voltage channels.
- * \param currentChannelsNum [out] Number of current channels (each current channel is reutrned raw, filtered and averaged).
+ * \param currentChannelsNum [out] Number of current channels.
+ * \param gpChannelsNum [out] Number of general purpose channels.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT

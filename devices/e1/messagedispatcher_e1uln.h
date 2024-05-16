@@ -3,6 +3,10 @@
 
 #include "messagedispatcher.h"
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
+
 class MessageDispatcher_e1ULN_V01 : public MessageDispatcher {
 public:
     MessageDispatcher_e1ULN_V01(std::string di);
@@ -112,5 +116,9 @@ protected:
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // MESSAGEDISPATCHER_E1ULN_V01_H

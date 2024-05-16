@@ -3,12 +3,16 @@
 
 #include "messagedispatcher.h"
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
+
 class MessageDispatcher_EL06b : public MessageDispatcher {
 public:
     MessageDispatcher_EL06b(std::string di);
     virtual ~MessageDispatcher_EL06b();
 
-    er4cl::ErrorCodes_t setProtocolVoltage(unsigned int idx, er4cl::Measurement_t voltage, bool applyFlag = false) override;
+    ErrorCodes_t setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false) override;
 
 protected:
     typedef struct {
@@ -112,5 +116,9 @@ private:
         SamplingRatesNum
     };
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // MESSAGEDISPATCHER_EL06B_H

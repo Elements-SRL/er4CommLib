@@ -34,7 +34,7 @@
 #endif
 
 using namespace std;
-using namespace er4cl;
+using namespace er4CommLib;
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                                     //    9,  2,  4 : e1b EL03c chip (Legacy version for EDR3)
@@ -1936,14 +1936,14 @@ ErrorCodes_t MessageDispatcher::hasIndependentCurrentRanges() {
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::getGpRanges(std::vector <std::vector <er4cl::RangedMeasurement_t>> &gpRanges, std::vector <uint16_t> &defaultOptions, std::vector <std::string> &names) {
+ErrorCodes_t MessageDispatcher::getGpRanges(std::vector <std::vector <RangedMeasurement_t>> &gpRanges, std::vector <uint16_t> &defaultOptions, std::vector <std::string> &names) {
     gpRanges = gpRangesArray;
     defaultOptions = defaultGpRangesIdx;
     names = gpNames;
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::getGpRange(er4cl::RangedMeasurement_t &gpRange, uint16_t channelIdx) {
+ErrorCodes_t MessageDispatcher::getGpRange(RangedMeasurement_t &gpRange, uint16_t channelIdx) {
     if (channelIdx >= selectedGpRangesIdx.size()) {
         return ErrorValueOutOfRange;
     }

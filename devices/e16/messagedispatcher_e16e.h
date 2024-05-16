@@ -3,6 +3,10 @@
 
 #include "messagedispatcher.h"
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
+
 class MessageDispatcher_e16e_LegacyEdr3_V00: public MessageDispatcherLegacyEdr3 {
 public:
     MessageDispatcher_e16e_LegacyEdr3_V00(std::string id);
@@ -112,5 +116,9 @@ protected:
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // MESSAGEDISPATCHER_E16E_H

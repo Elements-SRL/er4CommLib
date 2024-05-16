@@ -3,6 +3,10 @@
 
 #include "messagedispatcher.h"
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
+
 class MessageDispatcher_e16FastPulses_V02: public MessageDispatcher {
 public:
     MessageDispatcher_e16FastPulses_V02(std::string id);
@@ -107,7 +111,7 @@ protected:
     void initializeDevice() override;
     bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
-    er4cl::ErrorCodes_t updateVoltageOffsetCompensations(std::vector <er4cl::Measurement_t> &offsets) override;
+    ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
@@ -217,7 +221,7 @@ protected:
     void initializeDevice() override;
     bool checkProtocolValidity(std::string &message) override;
     virtual void setFerdParameters() override;
-    er4cl::ErrorCodes_t updateVoltageOffsetCompensations(std::vector <er4cl::Measurement_t> &offsets) override;
+    ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
@@ -332,5 +336,9 @@ protected:
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // MESSAGEDISPATCHER_E16FASTPULSES_H

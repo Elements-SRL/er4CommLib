@@ -268,6 +268,12 @@ ErrorCodes_t setVoltageReferenceRange(
     return er4cl::setVoltageReferenceRange(voltageRangeIdx);
 }
 
+ErrorCodes_t setGpRange(
+        uint16_t gpRangeIdx,
+        uint16_t channelIdx) {
+    return er4cl::setGpRange(gpRangeIdx, channelIdx);
+}
+
 ErrorCodes_t setSamplingRate(
         uint16_t samplingRateIdx) {
     return er4cl::setSamplingRate(samplingRateIdx);
@@ -474,12 +480,6 @@ ErrorCodes_t getQueueStatus(
     return er4cl::getQueueStatus(status);
 }
 
-ErrorCodes_t getChannelsNumber(
-        uint32_t &voltageChannelsNum,
-        uint32_t &currentChannelsNum) {
-    return er4cl::getChannelsNumber(voltageChannelsNum, currentChannelsNum);
-}
-
 ErrorCodes_t convertVoltageValue(
         uint16_t intValue,
         double &fltValue) {
@@ -491,6 +491,13 @@ ErrorCodes_t convertCurrentValue(
         uint16_t channelIdx,
         double &fltValue) {
     return er4cl::convertCurrentValue(intValue, channelIdx, fltValue);
+}
+
+ErrorCodes_t convertGpValue(
+        uint16_t intValue,
+        uint16_t channelIdx,
+        double &fltValue) {
+    return er4cl::convertGpValue(intValue, channelIdx, fltValue);
 }
 
 ErrorCodes_t readData(
@@ -515,11 +522,18 @@ ErrorCodes_t purgeData() {
     return er4cl::purgeData();
 }
 
+ErrorCodes_t getChannelsNumber(
+        uint32_t &voltageChannelsNum,
+        uint32_t &currentChannelsNum,
+        uint32_t &gpChannelsNum) {
+    return er4cl::getChannelsNumber(voltageChannelsNum, currentChannelsNum, gpChannelsNum);
+}
+
 ErrorCodes_t getCurrentRangesNum(
         uint16_t &currentRangesNum) {
     std::vector <RangedMeasurement_t> currentRanges;
     std::vector <uint16_t> defaultOptions;
-    ErrorCodes_t ret = getCurrentRanges(currentRanges, defaultOptions);
+    ErrorCodes_t ret = er4cl::getCurrentRanges(currentRanges, defaultOptions);
     currentRangesNum = currentRanges.size();
     return ret;
 }
@@ -529,10 +543,12 @@ ErrorCodes_t getNthCurrentRange(
         uint16_t currentRangeIndex) {
     std::vector <RangedMeasurement_t> currentRanges;
     std::vector <uint16_t> defaultOptions;
-    ErrorCodes_t ret = getCurrentRanges(currentRanges, defaultOptions);
-    RangedMeasurement_t r = currentRanges[currentRangeIndex];
-    if (ret == Success && currentRangeIndex < currentRanges.size() && currentRangeIndex >= 0) {
-        rangedMeasurement2Output(r, *lvCurrentRange);
+    ErrorCodes_t ret = er4cl::getCurrentRanges(currentRanges, defaultOptions);
+    if (currentRangeIndex >= currentRanges.size()) {
+        return ErrorValueOutOfRange;
+    }
+    if (ret == Success) {
+        rangedMeasurement2Output(currentRanges[currentRangeIndex], * lvCurrentRange);
     }
     return ret;
 }
@@ -552,12 +568,59 @@ ErrorCodes_t hasIndependentCurrentRanges() {
     return er4cl::hasIndependentCurrentRanges();
 }
 
+ErrorCodes_t getGpRangesNum(
+        uint16_t &gpRangesNum,
+        uint16_t channelIdx) {
+
+    std::vector <std::vector <RangedMeasurement_t>> gpRanges;
+    std::vector <uint16_t> defaultOptions;
+    std::vector <std::string> names;
+    ErrorCodes_t ret = er4cl::getGpRanges(gpRanges, defaultOptions, names);
+    if (channelIdx >= gpRanges.size()) {
+        return ErrorValueOutOfRange;
+    }
+    gpRangesNum = gpRanges[channelIdx].size();
+    return ret;
+}
+
+ErrorCodes_t getNthGpRange(
+        LVRangedMeasurement_t * lvGpRange,
+        uint16_t rangeIdx,
+        uint16_t channelIdx) {
+
+    std::vector <std::vector <RangedMeasurement_t>> gpRanges;
+    std::vector <uint16_t> defaultOptions;
+    std::vector <std::string> names;
+    ErrorCodes_t ret = er4cl::getGpRanges(gpRanges, defaultOptions, names);
+    if (channelIdx >= gpRanges.size()) {
+        return ErrorValueOutOfRange;
+    }
+    if (rangeIdx >= gpRanges[channelIdx].size()) {
+        return ErrorValueOutOfRange;
+    }
+    if (ret == Success) {
+        rangedMeasurement2Output(gpRanges[channelIdx][rangeIdx], * lvGpRange);
+    }
+    return ret;
+}
+
+ErrorCodes_t getGpRange(
+        LVRangedMeasurement_t * lvGpRange,
+        uint16_t channelIdx) {
+    RangedMeasurement_t gpRange;
+    ErrorCodes_t ret = er4cl::getGpRange(gpRange, channelIdx);
+    if (ret == Success) {
+        rangedMeasurement2Output(gpRange, lvGpRange[0]);
+    }
+    return ret;
+}
+
 ErrorCodes_t getVoltageRangesNum(
-        uint16 &voltageRangesNum){
+        uint16 &voltageRangesNum) {
     std::vector <RangedMeasurement_t> voltageRanges;
     uint16_t defaultOptions;
     std::vector <std::string> extensions;
-    ErrorCodes_t ret = getVoltageRanges(voltageRanges, defaultOptions, extensions);
+    ErrorCodes_t ret = er4cl::getVoltageRanges(voltageRanges, defaultOptions, extensions);
     voltageRangesNum = voltageRanges.size();
     return ret;
 }
@@ -568,9 +631,12 @@ ErrorCodes_t getNthVoltageRange(
     std::vector <RangedMeasurement_t> voltageRanges;
     uint16_t defaultOptions;
     std::vector <std::string> extensions;
-    ErrorCodes_t ret = getVoltageRanges(voltageRanges, defaultOptions, extensions);
-    if (ret == Success && voltageRangeIndex < voltageRanges.size() && voltageRangeIndex >= 0) {
-        rangedMeasurement2Output(voltageRanges[voltageRangeIndex], *lvVoltageRange);
+    ErrorCodes_t ret = er4cl::getVoltageRanges(voltageRanges, defaultOptions, extensions);
+    if (voltageRangeIndex >= voltageRanges.size()) {
+        return ErrorValueOutOfRange;
+    }
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRanges[voltageRangeIndex], * lvVoltageRange);
     }
     return ret;
 }
@@ -590,7 +656,7 @@ ErrorCodes_t getVoltageReferenceRangesNum(
         uint16_t &voltageRangesNum){
     std::vector <RangedMeasurement_t> voltageRanges;
     uint16_t defaultOption;
-    ErrorCodes_t ret = getVoltageReferenceRanges(voltageRanges, defaultOption);
+    ErrorCodes_t ret = er4cl::getVoltageReferenceRanges(voltageRanges, defaultOption);
     voltageRangesNum = voltageRanges.size();
     return ret;
 }
@@ -600,9 +666,22 @@ ErrorCodes_t getNthVoltageReferenceRange(
         uint16_t voltageReferneceRangeIndex){
     std::vector <RangedMeasurement_t> voltageRanges;
     uint16_t defaultOption;
-    ErrorCodes_t ret = getVoltageReferenceRanges(voltageRanges, defaultOption);
-    if (ret == Success && voltageReferneceRangeIndex < voltageRanges.size() && voltageReferneceRangeIndex >= 0) {
+    ErrorCodes_t ret = er4cl::getVoltageReferenceRanges(voltageRanges, defaultOption);
+    if (voltageReferneceRangeIndex >= voltageRanges.size()) {
+        return ErrorValueOutOfRange;
+    }
+    if (ret == Success) {
         rangedMeasurement2Output(voltageRanges[voltageReferneceRangeIndex], voltageReferneceRange[0]);
+    }
+    return ret;
+}
+
+ErrorCodes_t getVoltageReferenceRange(
+        LVRangedMeasurement_t * lvRange) {
+    RangedMeasurement_t range;
+    ErrorCodes_t ret = er4cl::getVoltageReferenceRange(range);
+    if (ret == Success) {
+        rangedMeasurement2Output(range, lvRange[0]);
     }
     return ret;
 }
@@ -611,7 +690,7 @@ ErrorCodes_t getSamplingRatesNum(
         uint16_t &samplingRatesNum,
         uint16_t &defaultOption) {
     std::vector <Measurement_t> samplingRates;
-    ErrorCodes_t ret = getSamplingRates(samplingRates, defaultOption);
+    ErrorCodes_t ret = er4cl::getSamplingRates(samplingRates, defaultOption);
     samplingRatesNum = samplingRates.size();
     return ret;
 }
@@ -621,7 +700,7 @@ ErrorCodes_t getNthSamplingRateRange(
         uint16_t samplingRateIndex){
     std::vector <Measurement_t> samplingRates;
     uint16_t defaultOption;
-    ErrorCodes_t ret = getSamplingRates(samplingRates, defaultOption);
+    ErrorCodes_t ret = er4cl::getSamplingRates(samplingRates, defaultOption);
     if (ret == Success){
         measurement2Output(samplingRates[samplingRateIndex], lvSamplingRate[0]);
     }
@@ -641,7 +720,7 @@ ErrorCodes_t getSamplingRate(
 ErrorCodes_t getRealSamplingRatesNum(
         unsigned short &samplingRatesNum) {
     std::vector <Measurement_t> samplingRates;
-    ErrorCodes_t ret = getRealSamplingRates(samplingRates);
+    ErrorCodes_t ret = er4cl::getRealSamplingRates(samplingRates);
     samplingRatesNum = samplingRates.size();
     return ret;
 }
@@ -650,7 +729,7 @@ ErrorCodes_t getNthRealSamplingRate(
         LVMeasurement_t * realSamplingRate,
         unsigned short realSamplingRateIndex) {
     std::vector <Measurement_t> samplingRates;
-    ErrorCodes_t ret = getRealSamplingRates(samplingRates);
+    ErrorCodes_t ret = er4cl::getRealSamplingRates(samplingRates);
     if (ret == Success) {
         measurement2Output(samplingRates[realSamplingRateIndex], realSamplingRate[0]);
     }
@@ -670,7 +749,7 @@ ErrorCodes_t getRealSamplingRate(
 ErrorCodes_t getOversamplingRatios(
         uint16_t * lvOversamplingRatios) {
     std::vector <uint16_t> oversamplingRatios;
-    ErrorCodes_t ret = getOversamplingRatios(oversamplingRatios);
+    ErrorCodes_t ret = er4cl::getOversamplingRatios(oversamplingRatios);
     if (ret == Success) {
         for (uint32_t idx = 0; idx < oversamplingRatios.size(); idx++) {
             lvOversamplingRatios[idx] = oversamplingRatios[idx];
@@ -689,7 +768,7 @@ ErrorCodes_t getVoltageStimulusLpfsNum(
     std::vector <Measurement_t> filterOptions;
     uint16_t defaultOption;
     int16_t voltageRangeIdx;
-    ErrorCodes_t ret = getVoltageStimulusLpfs(filterOptions, defaultOption, voltageRangeIdx);
+    ErrorCodes_t ret = er4cl::getVoltageStimulusLpfs(filterOptions, defaultOption, voltageRangeIdx);
     filterOptionsNum = filterOptions.size();
     return ret;
 }
@@ -700,7 +779,7 @@ ErrorCodes_t getVoltageStimulusLpfs(
         uint16_t &defaultOption,
         int16_t &voltageRangeIdx) {
     std::vector <Measurement_t> filterOptions;
-    ErrorCodes_t ret = getVoltageStimulusLpfs(filterOptions, defaultOption, voltageRangeIdx);
+    ErrorCodes_t ret = er4cl::getVoltageStimulusLpfs(filterOptions, defaultOption, voltageRangeIdx);
     uint16_t filterOptionsNum = filterOptions.size();
     if (ret == Success && filterIdx < filterOptionsNum && filterIdx > 0) {
         measurement2Output(filterOptions[filterIdx], lvFilterOptions[0]);
@@ -713,7 +792,7 @@ ErrorCodes_t getVoltageReferenceLpfsNum(
     std::vector <Measurement_t> filterOptions;
     uint16_t defaultOption;
     int16_t voltageRangeIdx;
-    ErrorCodes_t ret = getVoltageReferenceLpfs(filterOptions, defaultOption, voltageRangeIdx);
+    ErrorCodes_t ret = er4cl::getVoltageReferenceLpfs(filterOptions, defaultOption, voltageRangeIdx);
     filterOptionsNum = filterOptions.size();
     return ret;
 }
@@ -724,9 +803,11 @@ ErrorCodes_t getVoltageReferenceLpfs(
         uint16_t &defaultOption,
         int16_t &voltageRangeIdx) {
     std::vector <Measurement_t> filterOptions;
-    ErrorCodes_t ret = getVoltageReferenceLpfs(filterOptions, defaultOption, voltageRangeIdx);
-    uint16_t filterOptionsNum = filterOptions.size();
-    if (ret == Success && filterIdx < filterOptionsNum && filterIdx > 0) {
+    ErrorCodes_t ret = er4cl::getVoltageReferenceLpfs(filterOptions, defaultOption, voltageRangeIdx);
+    if (filterIdx >= filterOptions.size()) {
+        return ErrorValueOutOfRange;
+    }
+    if (ret == Success) {
         measurement2Output(filterOptions[filterIdx], lvFilterOptions[0]);
     }
     return ret;
@@ -1180,7 +1261,6 @@ ErrorCodes_t getWasherPresetSpeeds(
     }
     return ret;
 }
-
 
 ErrorCodes_t hasCFastCompensation() {
     return er4cl::hasCFastCompensation();

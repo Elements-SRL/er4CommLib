@@ -3,6 +3,10 @@
 
 #include "messagedispatcher_enpr.h"
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
+
 /********************************************************************************************\
  *                                                                                          *
  *                                 MessageDispatcherFake                                    *
@@ -22,15 +26,15 @@ public:
      *  Connection methods  *
     \************************/
 
-    er4cl::ErrorCodes_t connect(FtdiEeprom * ftdiEeprom) override;
-    er4cl::ErrorCodes_t disconnectDevice() override;
+    ErrorCodes_t connect(FtdiEeprom * ftdiEeprom) override;
+    ErrorCodes_t disconnectDevice() override;
 
     /******************************\
      *  Tx methods for generator  *
     \******************************/
 
-    er4cl::ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag) override;
-    er4cl::ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) override;
+    ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag) override;
+    ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag) override;
 
 protected:
     enum SamplingRates {
@@ -49,24 +53,28 @@ protected:
 
     double genResistance = 50.0e6;
 
-    er4cl::RangedMeasurement_t genVcVoltageResolution;
+    RangedMeasurement_t genVcVoltageResolution;
     double genVoltage = 0.0;
     double genVoltageStep = 0.0;
     double genVoltageAmp = 0.0;
     double genVoltageNorm;
     uint16_t genVoltageInt;
 
-    er4cl::RangedMeasurement_t genVcCurrentResolution;
+    RangedMeasurement_t genVcCurrentResolution;
     double genCurrent = 0.0;
     double genCurrentStep = 0.0;
     double genCurrentAmp = 0.0;
     double genCurrentNorm;
     uint16_t genCurrentInt;
 
-    er4cl::Measurement_t genSamplingRate;
+    Measurement_t genSamplingRate;
     double samplingTime = 0.0001;
     double integrationStep = 0.01;
     int integrationItemStepsNum;
 };
+
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
 
 #endif // MESSAGEDISPATCHER_FAKE_ENPR_H

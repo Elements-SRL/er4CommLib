@@ -571,7 +571,7 @@ MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
         "EDH Version: 2.0\n"
         "\n"
         "Elements e16 HC\n"
-        "Channels: 16\n"
+        "Channels: 17\n"
         "\n"
         "Data header file\n"
         "\n"
@@ -1272,6 +1272,23 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
     selectedGpRangesIdx.clear();
     gpResolutions.clear();
     gpOffsets.clear();
+
+    edhFormat =
+        "EDH Version: 2.0\n"
+        "\n"
+        "Elements e16 HC\n"
+        "Channels: 16\n"
+        "\n"
+        "Data header file\n"
+        "\n"
+        "Amplifier Setup\n"
+        "Range: %currentRange%\n" // 200 pA
+        "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
+        "Final Bandwidth: SR/2 (no filter)\n"
+        "\n"
+        "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
+        "\n"
+        "Active channels: %activeChannels%\n"; // 2 3 4
 
     /**********\
      * Coders *

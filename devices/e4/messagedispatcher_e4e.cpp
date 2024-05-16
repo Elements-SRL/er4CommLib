@@ -1632,7 +1632,7 @@ MessageDispatcher_e4e_trigger_V01::MessageDispatcher_e4e_trigger_V01(string di) 
             "EDH Version: 2.0\n"
             "\n"
             "Elements e4\n"
-            "Channels: 4\n"
+            "Channels: 5\n"
             "\n"
             "Data header file\n"
             "\n"

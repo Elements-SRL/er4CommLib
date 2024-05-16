@@ -1116,8 +1116,9 @@ MessageDispatcher_e4e_trigger_V01::MessageDispatcher_e4e_trigger_V01(string di) 
     packetsPerFrame = 16;
 
     voltageChannelsNum = 1;
-    currentChannelsNum = 5;
-    totalChannelsNum = voltageChannelsNum+currentChannelsNum;
+    currentChannelsNum = 4;
+    gpChannelsNum = GpChannelsNum;
+    totalChannelsNum = voltageChannelsNum+currentChannelsNum+gpChannelsNum;
 
     readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
 
@@ -1127,6 +1128,33 @@ MessageDispatcher_e4e_trigger_V01::MessageDispatcher_e4e_trigger_V01(string di) 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
     txDataBytes = 61;
+
+    gpRangesNum.resize(gpChannelsNum);
+    gpRangesNum[GpChannelTrigger] = TriggerRangesNum;
+    gpRangesArray.resize(gpChannelsNum);
+    gpRangesArray[GpChannelTrigger].resize(TriggerRangesNum);
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].min = 0.0;
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].max = voltageReferenceRangesArray[TriggerRange3_3V].max;
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].step = gpRangesArray[GpChannelTrigger][TriggerRange3_3V].max/UINT16_MAX;
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].prefix = UnitPfxNone;
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].unit = "V";
+    gpNames.resize(gpChannelsNum);
+    gpNames[GpChannelTrigger] = "Digital trigger";
+    defaultGpRangesIdx.resize(gpChannelsNum);
+    defaultGpRangesIdx[GpChannelTrigger] = TriggerRange3_3V;
+    selectedGpRangesIdx.resize(gpChannelsNum);
+    gpResolutions.resize(gpChannelsNum);
+    gpOffsets.resize(gpChannelsNum);
+
+    /*! Default values */
+    gpRanges.resize(gpChannelsNum);
+    gpResolutions.resize(gpChannelsNum);
+    gpOffsets.resize(gpChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < gpChannelsNum; channelIdx++) {
+        gpRanges[channelIdx] = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]];
+        gpResolutions[channelIdx] = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]].step;
+        gpOffsets[channelIdx] = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]].min;
+    }
 
     /**********************\
      * Available settings *

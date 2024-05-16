@@ -136,6 +136,16 @@ protected:
         VoltageRangesNum
     };
 
+    enum TriggerRanges {
+        TriggerRange3_3V,
+        TriggerRangesNum
+    };
+
+    enum GpChannels {
+        GpChannelTrigger,
+        GpChannelsNum
+    };
+
     enum SamplingRates {
         SamplingRate1_25kHz,
         SamplingRate5kHz,

@@ -922,21 +922,24 @@ ErrorCodes_t getProtocolVoltageNum(
     return ret;
 }
 
-ErrorCodes_t getProtocolVoltage(
-        LVRangedMeasurement_t * lvRanges,
-        uint16_t rangeIdx,
-        LVMeasurement_t * lvDefaultValues) {
-    std::vector <std::string> voltageNames;
-    std::vector <RangedMeasurement_t> ranges;
-    std::vector <Measurement_t> defaultValues;
-    ErrorCodes_t ret = er4cl::getProtocolVoltage(voltageNames, ranges, defaultValues);
-    uint16_t rangesNum =  ranges.size();
-    if (ret == Success && rangeIdx < rangesNum && rangeIdx >= 0) {
-        rangedMeasurement2Output(ranges[rangeIdx], lvRanges[0]);
-        measurement2Output(defaultValues[rangeIdx], lvDefaultValues[0]);
-    }
-    return ret;
-}
+//ErrorCodes_t getProtocolVoltage(
+//        LVRangedMeasurement_t * lvRanges,
+//        uint16_t rangeIdx,
+//        LVMeasurement_t * lvDefaultValues) {
+//    std::vector <std::string> voltageNames;
+//    std::vector <RangedMeasurement_t> ranges;
+//    std::vector <Measurement_t> defaultValues;
+//    ErrorCodes_t ret = er4cl::getProtocolVoltage(voltageNames, ranges, defaultValues);
+//    uint16_t rangesNum =  ranges.size();
+//    if(rangeIdx < rangesNum) {
+//        return ErrorValueOutOfRange;
+//    }
+//    if (ret == Success) {
+//        rangedMeasurement2Output(ranges[rangeIdx], lvRanges[0]);
+//        measurement2Output(defaultValues[rangeIdx], lvDefaultValues[0]);
+//    }
+//    return ret;
+//}
 
 ErrorCodes_t getProtocolTimeNum(
         uint16_t &rangesNum){
@@ -948,10 +951,10 @@ ErrorCodes_t getProtocolTimeNum(
     return ret;
 }
 
-ErrorCodes_t getProtocolTime(
+ErrorCodes_t getProtocolTimeFeature(
         LVRangedMeasurement_t * lvRanges,
-        uint16_t rangeIdx,
-        LVMeasurement_t * lvDefaultValues) {
+        LVMeasurement_t * lvDefaultValues,
+        uint16_t rangeIdx) {
     std::vector <std::string> timeNames;
     std::vector <RangedMeasurement_t> ranges;
     std::vector <Measurement_t> defaultValues;
@@ -964,85 +967,85 @@ ErrorCodes_t getProtocolTime(
     return ret;
 }
 
-ErrorCodes_t getProtocolSlopeNum(
-        uint16_t &rangesNum){
-    std::vector <std::string> slopeNames;
-    std::vector <RangedMeasurement_t> ranges;
-    std::vector <Measurement_t> defaultValues;
-    ErrorCodes_t ret = er4cl::getProtocolSlope(slopeNames, ranges, defaultValues);
-    rangesNum =  ranges.size();
-    return ret;
-}
+//ErrorCodes_t getProtocolSlopeNum(
+//        uint16_t &rangesNum){
+//    std::vector <std::string> slopeNames;
+//    std::vector <RangedMeasurement_t> ranges;
+//    std::vector <Measurement_t> defaultValues;
+//    ErrorCodes_t ret = er4cl::getProtocolSlope(slopeNames, ranges, defaultValues);
+//    rangesNum =  ranges.size();
+//    return ret;
+//}
 
-ErrorCodes_t getProtocolSlope(
-        LVRangedMeasurement_t * lvRanges,
-        uint16_t rangeIdx,
-        LVMeasurement_t * lvDefaultValues) {
-    std::vector <std::string> slopeNames;
-    std::vector <RangedMeasurement_t> ranges;
-    std::vector <Measurement_t> defaultValues;
-    ErrorCodes_t ret = er4cl::getProtocolSlope(slopeNames, ranges, defaultValues);
-    uint16_t rangesNum =  ranges.size();
-    if (ret == Success && rangeIdx < rangesNum && rangeIdx >= 0) {
-            rangedMeasurement2Output(ranges[rangeIdx], lvRanges[0]);
-            measurement2Output(defaultValues[rangeIdx], lvDefaultValues[0]);
+//ErrorCodes_t getProtocolSlope(
+//        LVRangedMeasurement_t * lvRanges,
+//        uint16_t rangeIdx,
+//        LVMeasurement_t * lvDefaultValues) {
+//    std::vector <std::string> slopeNames;
+//    std::vector <RangedMeasurement_t> ranges;
+//    std::vector <Measurement_t> defaultValues;
+//    ErrorCodes_t ret = er4cl::getProtocolSlope(slopeNames, ranges, defaultValues);
+//    uint16_t rangesNum =  ranges.size();
+//    if (ret == Success && rangeIdx < rangesNum && rangeIdx >= 0) {
+//            rangedMeasurement2Output(ranges[rangeIdx], lvRanges[0]);
+//            measurement2Output(defaultValues[rangeIdx], lvDefaultValues[0]);
 
-    }
-    return ret;
-}
+//    }
+//    return ret;
+//}
 
-ErrorCodes_t getProtocolFrequencyNum(
-        uint16_t &rangesNum) {
-    std::vector <std::string> frequencyNames;
-    std::vector <RangedMeasurement_t> ranges;
-    std::vector <Measurement_t> defaultValues;
-    ErrorCodes_t ret = er4cl::getProtocolFrequency(frequencyNames, ranges, defaultValues);
-    rangesNum =  ranges.size();
-    return ret;
-}
+//ErrorCodes_t getProtocolFrequencyNum(
+//        uint16_t &rangesNum) {
+//    std::vector <std::string> frequencyNames;
+//    std::vector <RangedMeasurement_t> ranges;
+//    std::vector <Measurement_t> defaultValues;
+//    ErrorCodes_t ret = er4cl::getProtocolFrequency(frequencyNames, ranges, defaultValues);
+//    rangesNum =  ranges.size();
+//    return ret;
+//}
 
-ErrorCodes_t getProtocolFrequency(
-        LVRangedMeasurement_t * lvRanges,
-        uint16_t rangeIdx,
-        LVMeasurement_t * lvDefaultValues) {
-    std::vector <std::string> frequencyNames;
-    std::vector <RangedMeasurement_t> ranges;
-    std::vector <Measurement_t> defaultValues;
-    ErrorCodes_t ret = er4cl::getProtocolFrequency(frequencyNames, ranges, defaultValues);
-    uint16_t rangesNum =  ranges.size();
-    if (ret == Success && rangeIdx < rangesNum && rangeIdx >= 0) {
-        rangedMeasurement2Output(ranges[rangeIdx], lvRanges[0]);
-        measurement2Output(defaultValues[rangeIdx], lvDefaultValues[0]);
+//ErrorCodes_t getProtocolFrequency(
+//        LVRangedMeasurement_t * lvRanges,
+//        uint16_t rangeIdx,
+//        LVMeasurement_t * lvDefaultValues) {
+//    std::vector <std::string> frequencyNames;
+//    std::vector <RangedMeasurement_t> ranges;
+//    std::vector <Measurement_t> defaultValues;
+//    ErrorCodes_t ret = er4cl::getProtocolFrequency(frequencyNames, ranges, defaultValues);
+//    uint16_t rangesNum =  ranges.size();
+//    if (ret == Success && rangeIdx < rangesNum && rangeIdx >= 0) {
+//        rangedMeasurement2Output(ranges[rangeIdx], lvRanges[0]);
+//        measurement2Output(defaultValues[rangeIdx], lvDefaultValues[0]);
 
-    }
-    return ret;
-}
+//    }
+//    return ret;
+//}
 
-ErrorCodes_t getProtocolAdimensionalNum(
-        uint16_t &rangesNum) {
-    std::vector <std::string> adimensionalNames;
-    std::vector <RangedMeasurement_t> ranges;
-    std::vector <Measurement_t> defaultValues;
-    ErrorCodes_t ret = er4cl::getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
-    rangesNum =  ranges.size();
-    return ret;
-}
+//ErrorCodes_t getProtocolAdimensionalNum(
+//        uint16_t &rangesNum) {
+//    std::vector <std::string> adimensionalNames;
+//    std::vector <RangedMeasurement_t> ranges;
+//    std::vector <Measurement_t> defaultValues;
+//    ErrorCodes_t ret = er4cl::getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
+//    rangesNum =  ranges.size();
+//    return ret;
+//}
 
-ErrorCodes_t getProtocolAdimensional(
-        LVRangedMeasurement_t * lvRanges,
-        uint16_t rangeIdx,
-        LVMeasurement_t * lvDefaultValues) {
-    std::vector <std::string> adimensionalNames;
-    std::vector <RangedMeasurement_t> ranges;
-    std::vector <Measurement_t> defaultValues;
-    ErrorCodes_t ret = er4cl::getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
-    uint16_t rangesNum =  ranges.size();
-    if (ret == Success && rangeIdx < rangesNum && rangeIdx >= 0) {
-            rangedMeasurement2Output(ranges[rangeIdx], lvRanges[0]);
-            measurement2Output(defaultValues[rangeIdx], lvDefaultValues[0]);
-    }
-    return ret;
-}
+//ErrorCodes_t getProtocolAdimensional(
+//        LVRangedMeasurement_t * lvRanges,
+//        uint16_t rangeIdx,
+//        LVMeasurement_t * lvDefaultValues) {
+//    std::vector <std::string> adimensionalNames;
+//    std::vector <RangedMeasurement_t> ranges;
+//    std::vector <Measurement_t> defaultValues;
+//    ErrorCodes_t ret = er4cl::getProtocolAdimensional(adimensionalNames, ranges, defaultValues);
+//    uint16_t rangesNum =  ranges.size();
+//    if (ret == Success && rangeIdx < rangesNum && rangeIdx >= 0) {
+//            rangedMeasurement2Output(ranges[rangeIdx], lvRanges[0]);
+//            measurement2Output(defaultValues[rangeIdx], lvDefaultValues[0]);
+//    }
+//    return ret;
+//}
 
 ErrorCodes_t getVoltageOffsetControls(
         LVRangedMeasurement_t * lvVoltageRange) {

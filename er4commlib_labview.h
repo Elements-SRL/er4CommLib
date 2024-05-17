@@ -1317,19 +1317,19 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getProtocolVoltageNum(
         ER4CL_ARGOUT unsigned short &protocolVoltageNum);
 
-///*! \brief Get protocol applicable voltage range.
-// *
-// * \param range [out] Range of applicable voltage in protocol.
-// * \param rangeIdx [in] Index of the desired range.
-// * \param defaultValue [out] Default value.
-// * \return Error code.
-// */
-//ER4COMMLIB_NAME_MANGLING
-//ER4COMMLIBSHARED_EXPORT
-//ErrorCodes_t getProtocolVoltage(
-//        ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
-//        ER4CL_ARGIN unsigned short rangeIdx,
-//        ER4CL_ARGOUT LVMeasurement_t * defaultValues);
+/*! \brief Get protocol applicable voltage range.
+ *
+ * \param range [out] Range of applicable voltage in protocol.
+ * \param rangeIdx [in] Index of the desired range.
+ * \param defaultValue [out] Default value.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolVoltageFeature(
+        ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+        ER4CL_ARGOUT LVMeasurement_t * defaultValues,
+        ER4CL_ARGIN unsigned short rangeIdx);
 
 /*! \brief Get the number of protocol applicable time range.
  *
@@ -1356,77 +1356,77 @@ ErrorCodes_t getProtocolTimeFeature(
         ER4CL_ARGOUT LVMeasurement_t * defaultValues,
         ER4CL_ARGIN unsigned short rangeIdx);
 
-///*! \brief Get number of protocol applicable slope range.
-// *
-// * \param rangesNum [out] Ranges of applicable slope in protocols.
-// * \return Error code.
-// */
-//ER4COMMLIB_NAME_MANGLING
-//ER4COMMLIBSHARED_EXPORT
-//ErrorCodes_t getProtocolSlopeNum(
-//        ER4CL_ARGOUT unsigned short &rangesNum);
+/*! \brief Get number of protocol applicable slope range.
+ *
+ * \param rangesNum [out] Ranges of applicable slope in protocols.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolSlopeNum(
+        ER4CL_ARGOUT unsigned short &rangesNum);
 
-///*! \brief Get protocol applicable slope range.
-// *
-// * \param ranges [out] Ranges of applicable slope in protocols.
-// * \param rangeIdx [in] Index of the desired range.
-// * \param defaultValues [out] Default values.
-// * \return Error code.
-// */
-//ER4COMMLIB_NAME_MANGLING
-//ER4COMMLIBSHARED_EXPORT
-//ErrorCodes_t getProtocolSlope(
-//        ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
-//        ER4CL_ARGIN unsigned short rangeIdx,
-//        ER4CL_ARGOUT LVMeasurement_t * defaultValues);
+/*! \brief Get protocol applicable slope range.
+ *
+ * \param ranges [out] Ranges of applicable slope in protocols.
+ * \param rangeIdx [in] Index of the desired range.
+ * \param defaultValues [out] Default values.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolSlopeFeature(
+        ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+        ER4CL_ARGOUT LVMeasurement_t * defaultValues,
+        ER4CL_ARGIN unsigned short rangeIdx);
 
-///*! \brief Get number of protocol applicable frequency range.
-// *
-// * \param rangesNum [out] Ranges of applicable frequency in protocols.
-// * \return Error code.
-// */
-//ER4COMMLIB_NAME_MANGLING
-//ER4COMMLIBSHARED_EXPORT
-//ErrorCodes_t getProtocolFrequencyNum(
-//        ER4CL_ARGOUT unsigned short &rangesNum);
+/*! \brief Get number of protocol applicable frequency range.
+ *
+ * \param rangesNum [out] Ranges of applicable frequency in protocols.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolFrequencyNum(
+        ER4CL_ARGOUT unsigned short &rangesNum);
 
-///*! \brief Get protocol applicable frequency range.
-// *
-// * \param ranges [out] Ranges of applicable frequency in protocols.
-// * \param rangeIdx [in] Index of the desired range.
-// * \param defaultValues [out] Default values.
-// * \return Error code.
-// */
-//ER4COMMLIB_NAME_MANGLING
-//ER4COMMLIBSHARED_EXPORT
-//ErrorCodes_t getProtocolFrequency(
-//        ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
-//        ER4CL_ARGIN unsigned short rangeIdx,
-//        ER4CL_ARGOUT LVMeasurement_t * defaultValues);
+/*! \brief Get protocol applicable frequency range.
+ *
+ * \param ranges [out] Ranges of applicable frequency in protocols.
+ * \param rangeIdx [in] Index of the desired range.
+ * \param defaultValues [out] Default values.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolFrequencyFeature(
+        ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+        ER4CL_ARGOUT LVMeasurement_t * defaultValues,
+        ER4CL_ARGIN unsigned short rangeIdx);
 
-///*! \brief Get number of protocol applicable adimensional range.
-// *
-// * \param rangesNum [out] Ranges of applicable adimensional in protocols.
-// * \return Error code.
-// */
-//ER4COMMLIB_NAME_MANGLING
-//ER4COMMLIBSHARED_EXPORT
-//ErrorCodes_t getProtocolAdimensionalNum(
-//        ER4CL_ARGOUT unsigned short &rangesNum);
+/*! \brief Get number of protocol applicable adimensional range.
+ *
+ * \param rangesNum [out] Ranges of applicable adimensional in protocols.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolAdimensionalNum(
+        ER4CL_ARGOUT unsigned short &rangesNum);
 
-///*! \brief Get protocol applicable adimensional range.
-// *
-// * \param ranges [out] Ranges of applicable adimensional in protocols.
-// * \param rangeIdx [in] Index of the desired range.
-// * \param defaultValues [out] Default values.
-// * \return Error code.
-// */
-//ER4COMMLIB_NAME_MANGLING
-//ER4COMMLIBSHARED_EXPORT
-//ErrorCodes_t getProtocolAdimensional(
-//        ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
-//        ER4CL_ARGIN unsigned short rangeIdx,
-//        ER4CL_ARGOUT LVMeasurement_t * defaultValues);
+/*! \brief Get protocol applicable adimensional range.
+ *
+ * \param ranges [out] Ranges of applicable adimensional in protocols.
+ * \param rangeIdx [in] Index of the desired range.
+ * \param defaultValues [out] Default values.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getProtocolAdimensionalFeature(
+        ER4CL_ARGOUT LVRangedMeasurement_t * ranges,
+        ER4CL_ARGOUT LVMeasurement_t * defaultValues,
+        ER4CL_ARGIN unsigned short rangeIdx);
 
 /*! \brief Availability of single channels voltage offset controls.
  *

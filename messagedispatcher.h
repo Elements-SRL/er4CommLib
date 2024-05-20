@@ -222,7 +222,7 @@ public:
 
     ErrorCodes_t getVoltageRanges(std::vector <RangedMeasurement_t> &voltageRanges, uint16_t &defaultOption, std::vector <std::string> &extensions);
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
-    ErrorCodes_t getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption);
+    virtual ErrorCodes_t getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption);
     ErrorCodes_t getVoltageReferenceRange(RangedMeasurement_t &range);
 
     ErrorCodes_t getSamplingRates(std::vector <Measurement_t> &samplingRates, uint16_t &defaultOption);

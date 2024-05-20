@@ -1007,6 +1007,13 @@ ErrorCodes_t MessageDispatcher_e16HC_V03::setGpRange(uint16_t gpRangeIdx, uint16
     return MessageDispatcher::setGpRange(gpRangeIdx, channelIdx, applyFlag);
 }
 
+ErrorCodes_t MessageDispatcher_e16HC_V03::getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) {
+    ranges.resize(1);
+    ranges[VoltageReferenceRange2V] = voltageReferenceRangesArray[VoltageReferenceRange2V];
+    defaultOption = VoltageReferenceRange2V;
+    return Success;
+}
+
 void MessageDispatcher_e16HC_V03::initializeDevice() {
     this->updateVoltageReferenceOffsetCalibration();
     this->setGpRange(defaultGpRangesIdx[GpChannelVoltageReference], GpChannelVoltageReference, false);
@@ -1312,6 +1319,10 @@ MessageDispatcher_e16HC_V02::~MessageDispatcher_e16HC_V02() {
 
 ErrorCodes_t MessageDispatcher_e16HC_V02::setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag) {
     return MessageDispatcher::setGpRange(gpRangeIdx, channelIdx, applyFlag);
+}
+
+ErrorCodes_t MessageDispatcher_e16HC_V02::getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) {
+    return MessageDispatcher::getVoltageReferenceRanges(ranges, defaultOption);
 }
 
 MessageDispatcher_e16HC_V01::MessageDispatcher_e16HC_V01(string id) :

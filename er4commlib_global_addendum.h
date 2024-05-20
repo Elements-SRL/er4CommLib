@@ -150,9 +150,9 @@ inline UnitPfx_t getPrefixString(std::string text) {
  * \brief Structure used manage physical quantities that define a value with its unit and unit prefix.
  */
 typedef struct Measurement {
-    double value; /*!< Numerical value. */
-    UnitPfx_t prefix; /*!< Unit prefix in the range [femto, Peta]. */
-    std::string unit; /*!< Unit. \note Can be any string, the library is not aware of real units meaning. */
+    double value = 0.0; /*!< Numerical value. */
+    UnitPfx_t prefix = UnitPfxNone; /*!< Unit prefix in the range [femto, Peta]. */
+    std::string unit = ""; /*!< Unit. \note Can be any string, the library is not aware of real units meaning. */
 
     /*! \brief Returns the value without prefix.
      *

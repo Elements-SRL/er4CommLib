@@ -22,7 +22,6 @@ contains(DEFINES, ER4COMMLIB_LABVIEW_WRAPPER) {
     TARGET = er4commlib_labview
     DEFINES += ER4COMMLIB_LIBRARY
     #DEFINES += OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
-    TARGET = er4CommLibLabview
     SOURCES += er4commlib_labview.cpp
     HEADERS += er4commlib_labview.h
     include($$(LABVIEW_TO_C_PATH)/includelabview.pri)

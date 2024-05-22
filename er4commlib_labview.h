@@ -828,8 +828,8 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t readAllData(
         ER4CL_ARGIN unsigned int dataToRead,
         ER4CL_ARGOUT unsigned int &dataRead,
-        ER4CL_ARGOUT short * buffer,
-        ER4CL_ARGOUT short * unfilteredBuffer);
+        ER4CL_ARGOUT short buffer[],
+        ER4CL_ARGOUT short unfilteredBuffer[]);
 
 /*! \brief Converts an integer number to the corresponding voltage value.
  * The converted voltage's unit depends on the device configuration.

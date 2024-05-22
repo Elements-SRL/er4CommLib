@@ -511,8 +511,8 @@ ErrorCodes_t readData(
 ErrorCodes_t readAllData(
         unsigned int dataToRead,
         unsigned int &dataRead,
-        int16_t * lvBuffer,
-        int16_t * lvUnfilteredBuffer) {
+        int16_t lvBuffer[],
+        int16_t lvUnfilteredBuffer[]) {
     uint16_t * buffer = (uint16_t *)lvBuffer;
     uint16_t * unfilteredBuffer = (uint16_t *)lvUnfilteredBuffer;
     return er4cl::readAllData(dataToRead, dataRead, buffer, unfilteredBuffer);

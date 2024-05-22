@@ -142,7 +142,7 @@ ErrorCodes_t connect(
         std::vector <std::string> deviceIds) {
 
     if (deviceIds.empty()) {
-        return ErrorUnknown; /*! \todo FCON sostituire */
+        return ErrorDeviceTypeNotRecognized;
     }
 
     if (!msgDisps.empty()) {

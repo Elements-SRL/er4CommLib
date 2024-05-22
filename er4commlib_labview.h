@@ -329,7 +329,7 @@ ErrorCodes_t resetWasherError(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setWasherPresetSpeeds(
-        ER4CL_ARGIN char * speedValues);
+        ER4CL_ARGIN signed char * speedValues);
 
 /*! \brief Start the Orbit washer at a given preset speed.
  *
@@ -1110,7 +1110,7 @@ ErrorCodes_t getNthRealSamplingRate(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getRealSamplingRate(
-        ER4CL_ARGOUT LVMeasurement_t &samplingRate);
+        ER4CL_ARGOUT LVMeasurement_t *samplingRate);
 
 /*! \brief Get the oversampling ratios available for the device.
  *
@@ -1163,6 +1163,8 @@ ErrorCodes_t getVoltageStimulusLpfs(
  * \param filterOptionsNum [out] Number of available options for the voltage reference low pass filter.
  * \return Error code.
  */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageReferenceLpfsNum(
         ER4CL_ARGOUT unsigned short &filterOptionsNum);
 
@@ -1436,7 +1438,7 @@ ErrorCodes_t getProtocolAdimensionalFeature(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageOffsetControls(
-        ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange);
+        ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange);
 
 /*! \brief Get insertion pulse controls definition.
  *
@@ -1447,8 +1449,8 @@ ErrorCodes_t getVoltageOffsetControls(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getInsertionPulseControls(
-        ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &durationRange);
+        ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *durationRange);
 
 /*! \brief Get reference pulse controls definition.
  *
@@ -1471,8 +1473,8 @@ ErrorCodes_t hasReferencePulseControls(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getReferencePulseControls(
-        ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &durationRange);
+        ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *durationRange);
 
 /*! \brief Get reference train pulse controls definition.
  *
@@ -1497,9 +1499,9 @@ ErrorCodes_t hasReferencePulseTrainControls(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getReferencePulseTrainControls(
-        ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &durationRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &periodRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *durationRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *periodRange,
         ER4CL_ARGOUT unsigned short &pulsesNumber);
 
 /*! \brief Get the raw data filter applicable cut off frequency range.
@@ -1511,8 +1513,8 @@ ErrorCodes_t getReferencePulseTrainControls(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getRawDataFilterCutoffFrequency(
-        ER4CL_ARGOUT LVRangedMeasurement_t &range,
-        ER4CL_ARGOUT LVMeasurement_t &defaultValue);
+        ER4CL_ARGOUT LVRangedMeasurement_t *range,
+        ER4CL_ARGOUT LVMeasurement_t *defaultValue);
 
 /*! \brief Get the number of LEDs for the device.
  *
@@ -1544,8 +1546,8 @@ ErrorCodes_t getLedsColors(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getFastReferencePulseProtocolWave1Range(
-        ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &timeRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *timeRange,
         ER4CL_ARGOUT unsigned short &nPulse);
 
 /*! \brief Get the parameters ranges for waveform 2 in the reference pulse protocol.
@@ -1559,9 +1561,9 @@ ErrorCodes_t getFastReferencePulseProtocolWave1Range(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getFastReferencePulseProtocolWave2Range(
-        ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &timeRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &durationRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *timeRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *durationRange,
         ER4CL_ARGOUT unsigned short &nPulse);
 
 /*! \brief Get the parameters ranges for waveform 2 in the reference train pulse protocol.
@@ -1577,26 +1579,16 @@ ErrorCodes_t getFastReferencePulseProtocolWave2Range(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
-        ER4CL_ARGOUT LVRangedMeasurement_t &voltageRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &timeRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &durationRange,
-        ER4CL_ARGOUT LVRangedMeasurement_t &periodRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *voltageRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *timeRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *durationRange,
+        ER4CL_ARGOUT LVRangedMeasurement_t *periodRange,
         ER4CL_ARGOUT unsigned short &pulsesPerTrain,
         ER4CL_ARGOUT unsigned short &nTrains);
 
 /*************************\
  *  Calibration methods  *
 \*************************/
-
-/*! \brief Get calibration eeprom size in bytes.
- *
- * \param size [out] Size of the calibration eeprom in bytes.
- * \return Error code.
- */
-ER4COMMLIB_NAME_MANGLING
-ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t getCalibrationEepromSize(
-        ER4CL_ARGOUT unsigned int &size);
 
 /*! \brief Get the available custom controls of type flag (active/inactive).
  *
@@ -1658,7 +1650,7 @@ ErrorCodes_t hasWasherControls(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getWasherSpeedRange(
-        ER4CL_ARGOUT LVRangedMeasurement_t &range);
+        ER4CL_ARGOUT LVRangedMeasurement_t *range);
 
 /*! \brief Get Orbit washer's status.
  *
@@ -1680,7 +1672,7 @@ ErrorCodes_t getWasherStatus(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getWasherPresetSpeeds(
-        ER4CL_ARGOUT char * speedValue);
+        ER4CL_ARGOUT signed char * speedValue);
 
 /*! \brief Tell if the device implements CFast compensation.
  *
@@ -1699,7 +1691,7 @@ ErrorCodes_t hasCFastCompensation(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCFastCapacitanceControl(
-        ER4CL_ARGOUT LVCompensationControl_t &control);
+        ER4CL_ARGOUT LVCompensationControl_t *control);
 
 /*! \brief Check if the TTL pulse train feature is implemented for the current device.
  *

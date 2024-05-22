@@ -894,7 +894,7 @@ ErrorCodes_t readData(
     unsigned int bufferOutIdx;
     unsigned int bufferIdx;
     unsigned int dataToCopy;
-    double sdPidControl= 0.0;
+    double sdPidControl = 0.0;
     double sdKfGain = 0.0;
     unsigned int discardThreshold = 0;
     for (auto md : msgDisps) {

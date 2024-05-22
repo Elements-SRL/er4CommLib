@@ -785,7 +785,7 @@ ErrorCodes_t getDeviceInfo(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getQueueStatus(
-        ER4CL_ARGOUT QueueStatus_t & status);
+        ER4CL_ARGOUT QueueStatus_t &status);
 
 /*! \brief Reads data packets from the device into a buffer.
  * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.
@@ -806,7 +806,7 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t readData(
         ER4CL_ARGIN unsigned int dataToRead,
         ER4CL_ARGOUT unsigned int &dataRead,
-        ER4CL_ARGOUT short * buffer);
+        ER4CL_ARGOUT short buffer[]);
 
 /*! \brief As readData, but returns also a buffer for unfiltered data.
  * The returned buffer contains \a dataRead valid data packets of with one sample for each channel.

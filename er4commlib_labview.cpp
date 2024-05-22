@@ -503,7 +503,7 @@ ErrorCodes_t convertGpValue(
 ErrorCodes_t readData(
         unsigned int dataToRead,
         unsigned int &dataRead,
-        int16_t * lvBuffer) {
+        int16_t lvBuffer[]) {
     uint16_t * buffer = (uint16_t *)lvBuffer;
     return er4cl::readData(dataToRead, dataRead, buffer);
 }

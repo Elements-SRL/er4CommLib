@@ -1818,7 +1818,9 @@ ErrorCodes_t MessageDispatcher::getDataPackets(uint16_t * &data, unsigned int pa
         packetsNumber = maxOutputPacketsNum;
     }
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
     data = outputDataArray;
+#endif
 
     unsigned int channelIdx;
 #ifdef OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
@@ -1861,8 +1863,10 @@ ErrorCodes_t MessageDispatcher::getAllDataPackets(uint16_t * &data, uint16_t * &
         packetsNumber = maxOutputPacketsNum;
     }
 
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
     data = outputDataArray;
     unfilteredData = outputUnfilteredDataArray;
+#endif
 
     unsigned int channelIdx;
 #ifdef OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS

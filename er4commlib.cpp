@@ -779,7 +779,6 @@ ErrorCodes_t getDeviceInfo(
         ftdiEepromId = FtdiEepromIdDemo;
     }
 
-    /*! ftdiEeprom is deleted by the messageDispatcher if one is created successfully */
     FtdiEeprom * ftdiEeprom = nullptr;
     switch (ftdiEepromId) {
     case FtdiEepromId56:
@@ -797,6 +796,7 @@ ErrorCodes_t getDeviceInfo(
         deviceVersion = deviceTuple.version;
         deviceSubversion = deviceTuple.subversion;
         firmwareVersion = deviceTuple.fwVersion;
+        delete ftdiEeprom;
 
     } else {
         ret = ErrorEepromNotRecognized;

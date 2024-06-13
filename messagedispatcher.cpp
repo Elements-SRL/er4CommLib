@@ -585,7 +585,7 @@ ErrorCodes_t MessageDispatcher::convertCurrentValue(uint16_t uintValue, uint16_t
 }
 
 ErrorCodes_t MessageDispatcher::convertGpValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue) {
-    fltValue = ((double)((int16_t)uintValue))*gpResolutions[channelIdx]+gpOffsets[channelIdx];
+    fltValue = ((double)uintValue)*gpResolutions[channelIdx]+gpOffsets[channelIdx];
 
     return Success;
 }

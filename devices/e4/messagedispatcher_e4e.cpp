@@ -1134,7 +1134,7 @@ MessageDispatcher_e4e_trigger_V01::MessageDispatcher_e4e_trigger_V01(string di) 
     gpRangesArray.resize(gpChannelsNum);
     gpRangesArray[GpChannelTrigger].resize(TriggerRangesNum);
     gpRangesArray[GpChannelTrigger][TriggerRange3_3V].min = 0.0;
-    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].max = voltageReferenceRangesArray[TriggerRange3_3V].max;
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].max = 3.3;
     gpRangesArray[GpChannelTrigger][TriggerRange3_3V].step = gpRangesArray[GpChannelTrigger][TriggerRange3_3V].max/UINT16_MAX;
     gpRangesArray[GpChannelTrigger][TriggerRange3_3V].prefix = UnitPfxNone;
     gpRangesArray[GpChannelTrigger][TriggerRange3_3V].unit = "V";
@@ -1742,6 +1742,14 @@ MessageDispatcher_e4e_trigger_V01::MessageDispatcher_e4e_trigger_V01(string di) 
     boolConfig.bitsNum = 1;
     voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+
+    /*! Gp range */
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    gpRangeCoders.resize(1);
+    gpRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
+    gpRangeCoders[0]->addMapItem(0); /*!< No controls  -> 0b0 */
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;

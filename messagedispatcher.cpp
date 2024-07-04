@@ -1336,23 +1336,16 @@ ErrorCodes_t MessageDispatcher::overrideReferencePulse(bool flag, bool applyFlag
     }
 }
 
-
 ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag) {
-    ErrorCodes_t ret;
-
-    if ((cutoffFrequency.value > 0.0) || (cutoffFrequency < samplingRate*0.5)) {
-        rawDataFilterCutoffFrequency = cutoffFrequency;
-        rawDataFilterLowPassFlag = lowPassFlag;
-        rawDataFilterActiveFlag = activeFlag;
-        this->computeFilterCoefficients();
-
-        ret = Success;
-
-    } else {
-        ret = ErrorValueOutOfRange;
+    if ((cutoffFrequency.value <= 0.0) || (cutoffFrequency >= samplingRate*0.5)) {
+        return ErrorValueOutOfRange;
     }
+    rawDataFilterCutoffFrequency = cutoffFrequency;
+    rawDataFilterLowPassFlag = lowPassFlag;
+    rawDataFilterActiveFlag = activeFlag;
+    this->computeFilterCoefficients();
 
-    return ret;
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFlag) {

@@ -17,6 +17,7 @@
 #include "messagedispatcher_el06b.h"
 #include "messagedispatcher_el06c.h"
 #include "messagedispatcher_el06d_el06e.h"
+#include "messagedispatcher_el06f.h"
 #include "messagedispatcher_fake_enpr.h"
 #include "messagedispatcher_fake_enpr_hc.h"
 #include "messagedispatcher_fake_e16n.h"
@@ -75,6 +76,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                                         //    6,  6,129 : testboard EL06c
     {DeviceVersionDlp, DeviceSubversionEL06d, 129, TestboardEL06dEL06e},                                    //    6,  7,129 : testboard EL06d
     {DeviceVersionDlp, DeviceSubversionEL06e, 129, TestboardEL06dEL06e},                                    //    6,  8,129 : testboard EL06e
+    {DeviceVersionDlp, DeviceSubversionEL06f, 129, TestboardEL06f},                                         //    6,  9,129 : testboard EL06f
     {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},                              //  254, 14,  1 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 129, DeviceE2HCExtAdc},                            //  254, 14,129 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},                              //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
@@ -369,6 +371,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case TestboardEL06dEL06e:
         messageDispatcher = new MessageDispatcher_EL06d_EL06e(deviceId);
+        break;
+
+    case TestboardEL06f:
+        messageDispatcher = new MessageDispatcher_EL06f(deviceId);
         break;
 
     case DeviceE2HCExtAdc:
@@ -1546,6 +1552,20 @@ ErrorCodes_t MessageDispatcher::setCustomFlag(uint16_t idx, bool flag, bool appl
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::setCustomOption(uint16_t idx, uint16_t value, bool applyFlag) {
+    if (idx >= customOptionsNum) {
+        return ErrorValueOutOfRange;
+    }
+    if (value >= customOptionsDescriptions[idx].size()) {
+        return ErrorValueOutOfRange;
+    }
+    customOptionsCoders[idx]->encode(value, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::setCustomDouble(uint16_t idx, double value, bool applyFlag) {
     if (idx >= customDoublesNum) {
         return ErrorValueOutOfRange;
@@ -2415,11 +2435,18 @@ ErrorCodes_t MessageDispatcher::getCustomFlags(vector <string> &customFlags, vec
     if (customFlagsNum == 0) {
         return ErrorFeatureNotImplemented;
     }
-    customFlags.resize(customFlagsNum);
-    for (unsigned int idx = 0; idx < customFlagsNum; idx++) {
-        customFlags[idx] = customFlagsNames[idx];
-    }
+    customFlags = customFlagsNames;
     customFlagsDefault = this->customFlagsDefault;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getCustomOptions(std::vector <std::string> &customOptions, std::vector <std::vector <std::string>> &customOptionsDescriptions, std::vector <uint16_t> &customOptionsDefault) {
+    if (customOptionsNum == 0) {
+        return ErrorFeatureNotImplemented;
+    }
+    customOptions = customOptionsNames;
+    customOptionsDescriptions = this->customOptionsDescriptions;
+    customOptionsDefault = this->customOptionsDefault;
     return Success;
 }
 
@@ -2427,12 +2454,8 @@ ErrorCodes_t MessageDispatcher::getCustomDoubles(vector <string> &customDoubles,
     if (customDoublesNum == 0) {
         return ErrorFeatureNotImplemented;
     }
-    customDoubles.resize(customDoublesNum);
-    customDoublesRanges.resize(customDoublesNum);
-    for (unsigned int idx = 0; idx < customDoublesNum; idx++) {
-        customDoubles[idx] = customDoublesNames[idx];
-        customDoublesRanges[idx] = this->customDoublesRanges[idx];
-    }
+    customDoubles = customDoublesNames;
+    customDoublesRanges = this->customDoublesRanges;
     customDoublesDefault = this->customDoublesDefault;
     return Success;
 }

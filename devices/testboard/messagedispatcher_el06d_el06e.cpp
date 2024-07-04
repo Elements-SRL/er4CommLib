@@ -77,24 +77,20 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);
-    samplingRatesArray[SamplingRate100kHz].value = 100.0/2.0;
-    samplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate100kHz].unit = "Hz";
-    defaultSamplingRateIdx = SamplingRate100kHz;
+    samplingRatesArray[SamplingRate50kHz].value = 50.0;
+    samplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate50kHz].unit = "Hz";
+    defaultSamplingRateIdx = SamplingRate50kHz;
 
     realSamplingRatesArray.resize(samplingRatesNum);
-    realSamplingRatesArray[SamplingRate100kHz].value = 100.0e3/(8.0*128.0)/2.0; /*!< 48.8kHz */
-    realSamplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate100kHz].unit = "Hz";
-
-
+    realSamplingRatesArray[SamplingRate50kHz].value = 50.0e3/(8.0*128.0); /*!< 48.8kHz */
+    realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
 
     integrationStepArray.resize(samplingRatesNum);
-    integrationStepArray[SamplingRate100kHz].value = 10.24*2.0;
-    integrationStepArray[SamplingRate100kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate100kHz].unit = "s";
-
-
+    integrationStepArray[SamplingRate50kHz].value = 20.48;
+    integrationStepArray[SamplingRate50kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate50kHz].unit = "s";
 
     /*! Overampling ratios */
     oversamplingImplemented = false;

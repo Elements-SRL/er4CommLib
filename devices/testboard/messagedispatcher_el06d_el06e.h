@@ -35,6 +35,11 @@ protected:
         VoltageReferenceRangesNum
     };
 
+    enum SamplingRates {
+        SamplingRate50kHz,
+        SamplingRatesNum
+    };
+
     enum OveramplingRatios {
         OversamplingRatioX1,
         OversamplingRatiosNum
@@ -108,12 +113,6 @@ protected:
     InfoStruct_t infoStruct;
 
     const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
-
-private:
-    enum SamplingRates {
-        SamplingRate100kHz,
-        SamplingRatesNum
-    };
 };
 
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER

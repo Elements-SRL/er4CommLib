@@ -116,6 +116,7 @@ typedef enum {
     TestboardEL06b,             /*!< testboard chip EL06b */
     TestboardEL06c,             /*!< testboard chip EL06c */
     TestboardEL06dEL06e,        /*!< testboard chip EL06d and EL06e */
+    TestboardEL06f,             /*!< testboard chip EL06f */
     DeviceE2HCExtAdc,           /*!< e2HC prototype (external ADC). */
     DeviceE2HCIntAdc,           /*!< e2HC prototype (internal ADC). */
     DeviceENPRFairyLight_V01,   /*!< eNPR prototype for Fairy Light project with DAC ext control and only ULN mode. */

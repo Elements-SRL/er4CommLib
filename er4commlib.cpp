@@ -406,6 +406,12 @@ ErrorCodes_t setCustomFlag(
     MASS_CALL3(setCustomFlag, idx, flag, true)
 }
 
+ErrorCodes_t setCustomOption(
+        uint16_t idx,
+        uint16_t value) {
+    MASS_CALL3(setCustomOption, idx, value, true)
+}
+
 ErrorCodes_t setCustomDouble(
         uint16_t idx,
         double value) {
@@ -1412,6 +1418,13 @@ ErrorCodes_t getCustomFlags(
         std::vector <std::string> &customFlags,
         std::vector <bool> &customFlagsDefault) {
     CALL_FIRST2(getCustomFlags, customFlags, customFlagsDefault)
+}
+
+ErrorCodes_t getCustomOptions(
+        std::vector <std::string> &customOptions,
+        std::vector <std::vector <std::string>> &customOptionsDescriptions,
+        std::vector <uint16_t> &customOptionsDefault) {
+    CALL_FIRST3(getCustomOptions, customOptions, customOptionsDescriptions,customOptionsDefault)
 }
 
 ErrorCodes_t getCustomDoubles(

@@ -311,6 +311,17 @@ ErrorCodes_t setCustomFlag(
         ER4CL_ARGIN uint16_t idx,
         ER4CL_ARGIN bool flag);
 
+/*! \brief Set a custom multivalued option.
+ *
+ * \param idx [in] Index of the option to be set.
+ * \param value [in] Value for the option.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setCustomOption(
+        ER4CL_ARGIN uint16_t idx,
+        ER4CL_ARGIN uint16_t value);
+
 /*! \brief Set a custom double control.
  *
  * \param idx [in] Index of the custom control to set.
@@ -1440,6 +1451,19 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getCustomFlags(
         ER4CL_ARGOUT std::vector <std::string> &customFlags,
         ER4CL_ARGOUT std::vector <bool> &customFlagsDefault);
+
+/*! \brief Get the specifications of the custom controls of type enumerator, i.e. options from a list.
+ *
+ * \param customOptions [out] Names of the controls.
+ * \param customOptionsDescriptions [out] Names of the options for each control.
+ * \param customOptionsDefault [out] Deafault options.
+ * \return Success if the device implements any custom enumerator control.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getCustomOptions(
+        ER4CL_ARGOUT std::vector <std::string> &customOptions,
+        ER4CL_ARGOUT std::vector <std::vector <std::string>> &customOptionsDescriptions,
+        ER4CL_ARGOUT std::vector <uint16_t> &customOptionsDefault);
 
 /*! \brief Get the available custom controls of type double (floating point values).
  *

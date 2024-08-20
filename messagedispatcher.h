@@ -728,7 +728,7 @@ protected:
     /*! Filter */
     bool rawDataFilterLowPassFlag = true;
     bool rawDataFilterActiveFlag = false;
-    Measurement_t rawDataFilterCutoffFrequency = {30.0, UnitPfxKilo, "Hz"};
+    Measurement_t rawDataFilterCutoffFrequency = {100.0, UnitPfxNone, "Hz"};
     double iirNum[IIR_ORD+1];
     double iirDen[IIR_ORD+1];
 

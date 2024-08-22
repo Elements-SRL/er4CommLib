@@ -7,6 +7,7 @@
 #include "messagedispatcher_enpr.h"
 #include "messagedispatcher_enpr_hc.h"
 #include "messagedispatcher_e2hc.h"
+#include "messagedispatcher_e2uln_v01.h"
 #include "messagedispatcher_e4n.h"
 #include "messagedispatcher_e4e.h"
 #include "messagedispatcher_e16fastpulses.h"
@@ -90,6 +91,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionENPRNanopipette, 129, DeviceENPRNanopipette_V01},              //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
     {DeviceVersionPrototype, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                  //  254, 21,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionPrototype, DeviceSubversionE4TtlPulseTrain, 129, DeviceE4TtlPulseTrain_V01},              //  254, 22,129 : e4 customized with ttl pulse train
+    {DeviceVersionPrototype, DeviceSubversionE2Uln, 129, DeviceE2Uln_V01},                                  //  254, 24,129 : e4 that returns 2 current channels measured in ULN mode
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeENPR}
 };
 
@@ -419,6 +421,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE4TtlPulseTrain_V01:
         messageDispatcher = new MessageDispatcher_e4e_trigger_V01(deviceId);
+        break;
+
+    case DeviceE2Uln_V01:
+        messageDispatcher = new MessageDispatcher_e2uln_V01(deviceId);
         break;
 
     case DeviceFakeENPR:

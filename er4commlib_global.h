@@ -128,6 +128,7 @@ typedef enum {
     DeviceENPRNanopipette_V01,  /*!< eNPR prototype with 2 channels with independent current ranges and PWM control. */
     DeviceE1ULN_V01,            /*!< e1ULN prototype with eNPR PCB. */
     DeviceE4TtlPulseTrain_V01,  /*!< e4 customized with ttl pulse train. */
+    DeviceE2Uln_V01,            /*!< e4 that returns 2 current channels measured in ULN mode */
     DeviceFakeENPR,             /*!< Fake eNPR. */
     DeviceFakeENPRHC,           /*!< Fake eNPR-HC. */
     DeviceFakeE16n,             /*!< Fake e16 Orbit TC. */

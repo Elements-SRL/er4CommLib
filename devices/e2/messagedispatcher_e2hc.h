@@ -10,7 +10,6 @@ namespace er4CommLib {
 class MessageDispatcher_e2HC_V00 : public MessageDispatcher {
 public:
     MessageDispatcher_e2HC_V00(std::string di);
-    virtual ~MessageDispatcher_e2HC_V00();
 
 protected:
     typedef struct {
@@ -26,6 +25,12 @@ protected:
     enum VoltageRanges {
         VoltageRange500mV,
         VoltageRangesNum
+    };
+
+    enum SamplingRates {
+        SamplingRate62_5kHz,
+        SamplingRate250kHz,
+        SamplingRatesNum
     };
 
     enum OveramplingRatios {
@@ -102,25 +107,32 @@ protected:
 
     const double stimulusVoltageLimit = 0.5; /*! max voltage set for stimuli [V] */
     const double stimulusVoltageReference = 1.1; /*! voltage reference for stimuli [V] */
-
-private:
-    enum SamplingRates {
-        SamplingRate62_5kHz,
-        SamplingRate250kHz,
-        SamplingRatesNum
-    };
 };
 
 class MessageDispatcher_e2HC_V01 : public MessageDispatcher_e2HC_V00 {
 public:
     MessageDispatcher_e2HC_V01(std::string di);
-    virtual ~MessageDispatcher_e2HC_V01();
 
-private:
+protected:
     enum SamplingRates {
         SamplingRate50kHz,
         SamplingRate25kHz,
         SamplingRate12_5kHz,
+        SamplingRatesNum
+    };
+};
+
+class MessageDispatcher_e2HC_V02 : public MessageDispatcher_e2HC_V00 {
+public:
+    MessageDispatcher_e2HC_V02(std::string di);
+
+protected:
+    enum SamplingRates {
+        SamplingRate12_5kHz,
+        SamplingRate25kHz,
+        SamplingRate50kHz,
+        SamplingRate100kHz,
+        SamplingRate200kHz,
         SamplingRatesNum
     };
 };

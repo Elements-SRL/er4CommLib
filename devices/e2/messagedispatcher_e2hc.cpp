@@ -781,10 +781,6 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e2HC_V00::~MessageDispatcher_e2HC_V00() {
-
-}
-
 void MessageDispatcher_e2HC_V00::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
@@ -1050,6 +1046,78 @@ MessageDispatcher_e2HC_V01::MessageDispatcher_e2HC_V01(string di) :
     samplingRateCoder->addMapItem(17); /*!< 12.5kHz      -> 0b10001 */
 }
 
-MessageDispatcher_e2HC_V01::~MessageDispatcher_e2HC_V01() {
+MessageDispatcher_e2HC_V02::MessageDispatcher_e2HC_V02(string di) :
+    MessageDispatcher_e2HC_V00(di) {
 
+    /*! Sampling rates */
+    samplingRatesNum = SamplingRatesNum;
+    samplingRatesArray.resize(samplingRatesNum);
+    samplingRatesArray[SamplingRate12_5kHz].value = 12.5;
+    samplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate25kHz].value = 25.0;
+    samplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate25kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate50kHz].value = 50.0;
+    samplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate50kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate100kHz].value = 100.0;
+    samplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate100kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate200kHz].value = 200.0;
+    samplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate200kHz].unit = "Hz";
+    defaultSamplingRateIdx = SamplingRate25kHz;
+
+    realSamplingRatesArray.resize(samplingRatesNum);
+    realSamplingRatesArray[SamplingRate12_5kHz].value = 50.0e3/(8.0*512.0); /*!< 12.2kHz */
+    realSamplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate25kHz].value = 50.0e3/(8.0*256.0); /*!< 24.4kHz */
+    realSamplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate25kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate50kHz].value = 50.0e3/(8.0*128.0); /*!< 48.8kHz */
+    realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate100kHz].value = 50.0e3/(8.0*64.0); /*!< 48.8kHz */
+    realSamplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate100kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate200kHz].value = 50.0e3/(8.0*32.0); /*!< 48.8kHz */
+    realSamplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate200kHz].unit = "Hz";
+
+    integrationStepArray.resize(samplingRatesNum);
+    integrationStepArray[SamplingRate12_5kHz].value = 81.92;
+    integrationStepArray[SamplingRate12_5kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate12_5kHz].unit = "s";
+    integrationStepArray[SamplingRate25kHz].value = 40.96;
+    integrationStepArray[SamplingRate25kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate25kHz].unit = "s";
+    integrationStepArray[SamplingRate50kHz].value = 20.48;
+    integrationStepArray[SamplingRate50kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate50kHz].unit = "s";
+    integrationStepArray[SamplingRate100kHz].value = 10.24;
+    integrationStepArray[SamplingRate100kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate100kHz].unit = "s";
+    integrationStepArray[SamplingRate200kHz].value = 5.12;
+    integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate200kHz].unit = "s";
+
+    /**********\
+     * Coders *
+    \**********/
+
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+
+    /*! Sampling rate */
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 6;
+    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
+    samplingRateCoder->addMapItem(1); /*!< 12.5kHz      -> 0b000001 */
+    samplingRateCoder->addMapItem(9);  /*!< 25kHz       -> 0b001001 */
+    samplingRateCoder->addMapItem(17);  /*!< 50kHz      -> 0b010001 */
+    samplingRateCoder->addMapItem(24);  /*!< 100kHz     -> 0b011000 */
+    samplingRateCoder->addMapItem(32);  /*!< 200kHz     -> 0b100000 */
 }

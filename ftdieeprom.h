@@ -66,7 +66,7 @@ typedef enum {
     DeviceSubversionEL06c = 6,
     DeviceSubversionEL06d = 7,
     DeviceSubversionEL06e = 8,
-    DeviceSubversionEL06f = 9,
+    DeviceSubversionEL06f = 12,
 
     /*! Subversions used for ver = FD */
     DeviceSubversionDemo = 1,

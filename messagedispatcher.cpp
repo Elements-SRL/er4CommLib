@@ -71,17 +71,19 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16HCREMI8, 5, DeviceE16HC_V02},                                     //    3, 10,  5 : e16HC No DAC readout
     {DeviceVersionE16, DeviceSubversionE16HC, 6, DeviceE16HC_V02},                                          //    3, 11,  6 : e16HC No DAC readout
     {DeviceVersionE16, DeviceSubversionE16HC, 7, DeviceE16HC_V03},                                          //    3, 11,  7 : e16HC
-    {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   11,  1,130 : e2HC
+    {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   11,  1,130 : e2HC SR up to 50kHz
+    {DeviceVersionE2, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                           //   11,  1,131 : e2HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                                  //    6,  3,  4 : debug dlp
     {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                                         //    6,  5,129 : testboard EL06b
     {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                                         //    6,  6,129 : testboard EL06c
     {DeviceVersionDlp, DeviceSubversionEL06d, 129, TestboardEL06dEL06e},                                    //    6,  7,129 : testboard EL06d
     {DeviceVersionDlp, DeviceSubversionEL06e, 129, TestboardEL06dEL06e},                                    //    6,  8,129 : testboard EL06e
-    {DeviceVersionDlp, DeviceSubversionEL06f, 129, TestboardEL06f},                                         //    6,  9,129 : testboard EL06f
+    {DeviceVersionDlp, DeviceSubversionEL06f, 129, TestboardEL06f},                                         //    6, 12,129 : testboard EL06f
     {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},                              //  254, 14,  1 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 129, DeviceE2HCExtAdc},                            //  254, 14,129 : e2HC with external ADC
-    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc},                              //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
-    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc},                            //  254, 15,129 : e2HC with internal (delta-sigma) ADC
+    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc_V01},                          //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
+    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc_V01},                        //  254, 15,129 : e2HC with internal (delta-sigma) ADC up to 50kHz sampling rate
+    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 131, DeviceE2HCIntAdc_V02},                        //  254, 15,131 : e2HC with internal (delta-sigma) ADC
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight_V01},                //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
     {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},                //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
     {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 129, DeviceENPR2Channels_V01},                  //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
@@ -359,6 +361,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
         break;
 
+    case DeviceE2HC_V02:
+        messageDispatcher = new MessageDispatcher_e2HC_V02(deviceId);
+        break;
+
     case DeviceDlp:
         messageDispatcher = new MessageDispatcher_dlp(deviceId);
         break;
@@ -383,8 +389,12 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_e2HC_V00(deviceId);
         break;
 
-    case DeviceE2HCIntAdc:
+    case DeviceE2HCIntAdc_V01:
         messageDispatcher = new MessageDispatcher_e2HC_V01(deviceId);
+        break;
+
+    case DeviceE2HCIntAdc_V02:
+        messageDispatcher = new MessageDispatcher_e2HC_V02(deviceId);
         break;
 
     case DeviceENPRFairyLight_V01:

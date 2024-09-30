@@ -111,14 +111,16 @@ typedef enum {
     DeviceE16FastPulses_V02,    /*!< e16 Orbit customized for fast pulse trains. */
     DeviceE16FastPulsesEDR3,    /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
     DeviceE16n,                 /*!< e16 Orbit TC. */
-    DeviceE2HC_V01,             /*!< e2HC. */
+    DeviceE2HC_V01,             /*!< e2HC. SR up to 50kHz */
+    DeviceE2HC_V02,             /*!< e2HC. */
     DeviceDlp,                  /*!< debug dlp. */
     TestboardEL06b,             /*!< testboard chip EL06b */
     TestboardEL06c,             /*!< testboard chip EL06c */
     TestboardEL06dEL06e,        /*!< testboard chip EL06d and EL06e */
     TestboardEL06f,             /*!< testboard chip EL06f */
     DeviceE2HCExtAdc,           /*!< e2HC prototype (external ADC). */
-    DeviceE2HCIntAdc,           /*!< e2HC prototype (internal ADC). */
+    DeviceE2HCIntAdc_V01,       /*!< e2HC prototype (internal ADC) up to 50kHz sampling rate. */
+    DeviceE2HCIntAdc_V02,       /*!< e2HC prototype (internal ADC). */
     DeviceENPRFairyLight_V01,   /*!< eNPR prototype for Fairy Light project with DAC ext control and only ULN mode. */
     DeviceENPRFairyLight_V02,   /*!< eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes. */
     DeviceENPR2Channels_V01,    /*!< eNPR prototype with 2 channels and sinusoidal waveforms. */
@@ -161,7 +163,7 @@ typedef enum UnitPfx {
  */
 typedef struct QueueStatus {
     unsigned int availableDataPackets = 0; /*!< Number of data packets available for read.
-                                            *   Each data packets consists of 1 sample per channel.
+                                            *   Each data packet consists of 1 sample per channel.
                                             *   Successful calls to readData reduce this number. */
     bool bufferOverflowFlag = false; /*!< This flag is true if the internal buffer has been filled and old data has been overwritten.
                                       *   This flag is reset after a call to getQueueStatus or to purgeData. */

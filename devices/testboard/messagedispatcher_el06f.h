@@ -10,7 +10,6 @@ namespace er4CommLib {
 class MessageDispatcher_EL06f : public MessageDispatcher_EL06d_EL06e {
 public:
     MessageDispatcher_EL06f(std::string di);
-    virtual ~MessageDispatcher_EL06f();
 
     enum SamplingRates {
         SamplingRate5kHz,

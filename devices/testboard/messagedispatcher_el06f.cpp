@@ -98,20 +98,16 @@ MessageDispatcher_EL06f::MessageDispatcher_EL06f(string id) :
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(0); /*!< 5kHz    -> 0b10000 */
-    samplingRateCoder->addMapItem(0); /*!< 10kHz   -> 0b10001 */
-    samplingRateCoder->addMapItem(0); /*!< 20kHz   -> 0b10010 */
-    samplingRateCoder->addMapItem(0); /*!< 40kHz   -> 0b10011 */
-    samplingRateCoder->addMapItem(0); /*!< 80kHz   -> 0b00100 */
-    samplingRateCoder->addMapItem(0); /*!< 160kHz  -> 0b00101 */
+    samplingRateCoder->addMapItem(16); /*!< 5kHz    -> 0b10000 */
+    samplingRateCoder->addMapItem(17); /*!< 10kHz   -> 0b10001 */
+    samplingRateCoder->addMapItem(18); /*!< 20kHz   -> 0b10010 */
+    samplingRateCoder->addMapItem(19); /*!< 40kHz   -> 0b10011 */
+    samplingRateCoder->addMapItem(4); /*!< 80kHz    -> 0b00100 */
+    samplingRateCoder->addMapItem(5); /*!< 160kHz   -> 0b00101 */
 
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 5;
     boolConfig.bitsNum = 2;
     customOptionsCoders.resize(customOptionsNum);
     customOptionsCoders[CustomOptionClockDivider] = new BoolArrayCoder(boolConfig);
-}
-
-MessageDispatcher_EL06f::~MessageDispatcher_EL06f() {
-
 }

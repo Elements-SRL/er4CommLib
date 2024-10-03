@@ -4,7 +4,7 @@
 namespace er4CommLib {
 #endif
 
-CalibrationEeprom::CalibrationEeprom(uint32 channel) :
+CalibrationEeprom::CalibrationEeprom(uint32_t channel) :
     channelIdx(channel) {
 
     config.ClockRate = 3000000; /*! 3MHz */
@@ -13,39 +13,33 @@ CalibrationEeprom::CalibrationEeprom(uint32 channel) :
     config.Pin = 0x00002323;
 }
 
-CalibrationEeprom::~CalibrationEeprom() {
-
-}
-
 ErrorCodes_t CalibrationEeprom::openConnection() {
-    if (!connectionOpened) {
-        connectionOpened = true;
-        FT_STATUS status;
-        Init_libMPSSE();
-
-        status = SPI_OpenChannel(channelIdx, &handle);
-        if (status != FT_OK) {
-            connectionOpened = false;
-            return ErrorEepromConnectionFailed;
-        }
-
-        status = SPI_InitChannel(handle, &config);
-        if (status != FT_OK) {
-            connectionOpened = false;
-            return ErrorEepromConnectionFailed;
-        }
-
-        status = this->enableFPGA(false);
-        if (status != FT_OK) {
-            connectionOpened = false;
-            return ErrorEepromConnectionFailed;
-        }
-
-        return Success;
-
-    } else {
+    if (connectionOpened) {
         return ErrorEepromAlreadyConnected;
     }
+    connectionOpened = true;
+    FT_STATUS status;
+    Init_libMPSSE();
+
+    status = SPI_OpenChannel(channelIdx, &handle);
+    if (status != FT_OK) {
+        connectionOpened = false;
+        return ErrorEepromConnectionFailed;
+    }
+
+    status = SPI_InitChannel(handle, &config);
+    if (status != FT_OK) {
+        connectionOpened = false;
+        return ErrorEepromConnectionFailed;
+    }
+
+    status = this->enableFPGA(false);
+    if (status != FT_OK) {
+        connectionOpened = false;
+        return ErrorEepromConnectionFailed;
+    }
+
+    return Success;
 }
 
 ErrorCodes_t CalibrationEeprom::closeConnection() {
@@ -98,10 +92,10 @@ ErrorCodes_t CalibrationEeprom::enableWrite() {
 
     FT_STATUS status;
 
-    uint32 bytesWritten = 0;
+    DWORD bytesWritten[1] = {0};
     int bytesToWrite = 0;
     writeBuffer[bytesToWrite++] = CEE_WRITE_ENABLE_CMD;
-    status = SPI_Write(handle, writeBuffer, bytesToWrite, &bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+    status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;
     }
@@ -127,17 +121,17 @@ ErrorCodes_t CalibrationEeprom::writeBytes(unsigned char * values, unsigned int 
         return ret;
     }
 
-    uint32 bytesWritten = 0;
+    DWORD bytesWritten[1] = {0};
     int bytesToWrite = 0;
     writeBuffer[bytesToWrite++] = CEE_PROGRAM_CMD;
     writeBuffer[bytesToWrite++] = (unsigned char)((addr & 0xFF00) >> 8);
     writeBuffer[bytesToWrite++] = (unsigned char)(addr & 0x00FF);
-    status = SPI_Write(handle, writeBuffer, bytesToWrite, &bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
+    status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;
     }
 
-    status = SPI_Write(handle, values, size, &bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+    status = SPI_Write(handle, values, size, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;
     }
@@ -149,7 +143,7 @@ ErrorCodes_t CalibrationEeprom::readBytes(unsigned char * values, unsigned int a
         return ErrorEepromNotConnected;
     }
 
-    ErrorCodes_t ret;
+    ErrorCodes_t ret = Success;
     bool start;
     bool end;
     for (unsigned int idx = 0; idx < size; idx++) {
@@ -172,25 +166,25 @@ ErrorCodes_t CalibrationEeprom::readByte(unsigned char * value, unsigned int add
     }
 
     FT_STATUS status;
-    uint32 bytesWritten = 0;
-    uint32 bytesRead = 0;
+    DWORD bytesWritten[1] = {0};
+    DWORD bytesRead[1] = {0};
 
     if (start) {
         int bytesToWrite = 0;
         writeBuffer[bytesToWrite++] = CEE_READ_CMD;
         writeBuffer[bytesToWrite++] = (unsigned char)((addr & 0xFF00) >> 8);
         writeBuffer[bytesToWrite++] = (unsigned char)(addr & 0x00FF);
-        status = SPI_Write(handle, writeBuffer, bytesToWrite, &bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
+        status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
         if (status != FT_OK) {
             return ErrorEepromWriteFailed;
         }
     }
 
     if (end) {
-        status = SPI_Read(handle, value, 1, &bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+        status = SPI_Read(handle, value, 1, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
 
     } else {
-        status = SPI_Read(handle, value, 1, &bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES);
+        status = SPI_Read(handle, value, 1, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES);
     }
     if (status != FT_OK) {
         return ErrorEepromReadFailed;
@@ -219,17 +213,17 @@ ErrorCodes_t CalibrationEeprom::getStatus(unsigned char &eepromStatus) {
 
     int bytesToWrite = 0;
     int bytesToRead = 0;
-    uint32 bytesWritten = 0;
-    uint32 bytesRead = 0;
+    DWORD bytesWritten[1] = {0};
+    DWORD bytesRead[1] = {0};
 
     writeBuffer[bytesToWrite++] = CEE_GET_STATUS_CMD;
-    FT_STATUS status = SPI_Write(handle, writeBuffer, bytesToWrite, &bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
+    FT_STATUS status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;
     }
 
     bytesToRead = 1;
-    status = SPI_Read(handle, readBuffer, bytesToRead, &bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+    status = SPI_Read(handle, readBuffer, bytesToRead, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;
     }

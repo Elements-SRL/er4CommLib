@@ -142,6 +142,9 @@ public:
 
     ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
     virtual ErrorCodes_t getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) override;
+
+protected:
+    void initializeDevice() override;
 };
 
 class MessageDispatcher_e16HC_V01 : public MessageDispatcher_e16HC_V02 {

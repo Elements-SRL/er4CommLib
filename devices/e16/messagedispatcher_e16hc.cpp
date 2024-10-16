@@ -1325,6 +1325,17 @@ ErrorCodes_t MessageDispatcher_e16HC_V02::getVoltageReferenceRanges(std::vector 
     return MessageDispatcher::getVoltageReferenceRanges(ranges, defaultOption);
 }
 
+void MessageDispatcher_e16HC_V02::initializeDevice() {
+    this->updateVoltageReferenceOffsetCalibration();
+    this->setSamplingRate(defaultSamplingRateIdx, false);
+
+    this->selectStimulusChannel(currentChannelsNum, true);
+    this->digitalOffsetCompensation(currentChannelsNum, false);
+    this->switchChannelOn(currentChannelsNum, true, false);
+
+    MessageDispatcher::initializeDevice();
+}
+
 MessageDispatcher_e16HC_V01::MessageDispatcher_e16HC_V01(string id) :
     MessageDispatcher_e16HC_V02(id) {
 

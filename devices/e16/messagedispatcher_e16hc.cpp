@@ -996,10 +996,6 @@ MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e16HC_V03::~MessageDispatcher_e16HC_V03() {
-
-}
-
 ErrorCodes_t MessageDispatcher_e16HC_V03::setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag) {
     if (channelIdx == 0) { /*! Channel 0 contains the voltage reference range */
         MessageDispatcher::setVoltageReferenceRange(gpRangeIdx, false);

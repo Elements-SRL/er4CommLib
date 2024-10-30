@@ -10,7 +10,6 @@ namespace er4CommLib {
 class MessageDispatcher_e16HC_V03 : public MessageDispatcher {
 public:
     MessageDispatcher_e16HC_V03(std::string id);
-    virtual ~MessageDispatcher_e16HC_V03();
 
     virtual ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
     virtual ErrorCodes_t getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) override;

@@ -66,6 +66,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                                              //    3,  5,135 : e16 Orbit TC
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                                              //    3,  5,136 : e16 Orbit TC
     {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                                           //    3,  8, 11 : e16e (Legacy version for EDR3)
+    {DeviceVersionE16, DeviceSubversionE16eArtix7PCBV01, 129, DeviceE16eArtix7PCBV01},                      //    3, 12,129 : e16e Artix7 PCB V01
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16HCREMI8, 4, DeviceE16HC_V01},                                     //    3, 10,  4 : e16HC No voltage amplifier
     {DeviceVersionE16, DeviceSubversionE16HCREMI8, 5, DeviceE16HC_V02},                                     //    3, 10,  5 : e16HC No DAC readout
@@ -323,6 +324,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE16eEDR3:
         messageDispatcher = new MessageDispatcher_e16e_LegacyEdr3_V00(deviceId);
+        break;
+
+    case DeviceE16eArtix7PCBV01:
+        messageDispatcher = new MessageDispatcher_e16e_Artix7_PCBV01_V01(deviceId);
         break;
 
     case DeviceE16FastPulses_V01:
@@ -1359,7 +1364,7 @@ ErrorCodes_t MessageDispatcher::overrideReferencePulse(bool flag, bool applyFlag
 }
 
 ErrorCodes_t MessageDispatcher::setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag) {
-    if ((cutoffFrequency.value <= 0.0) || (cutoffFrequency >= samplingRate*0.5)) {
+    if (activeFlag && ((cutoffFrequency.value <= 0.0) || (cutoffFrequency >= samplingRate*0.5))) {
         return ErrorValueOutOfRange;
     }
     rawDataFilterCutoffFrequency = cutoffFrequency;

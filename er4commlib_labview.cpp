@@ -432,6 +432,10 @@ ErrorCodes_t setCFastCapacitance(
     return er4cl::setCFastCapacitance(value);
 }
 
+ErrorCodes_t enableTtlPulseTrain(bool flag) {
+    return er4cl::enableTtlPulseTrain(flag);
+}
+
 ErrorCodes_t setTtlPulseTrain(
         LVMeasurement_t pulseDurationIn,
         LVMeasurement_t pulseDelayIn,

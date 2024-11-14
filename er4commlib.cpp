@@ -724,6 +724,10 @@ ErrorCodes_t setCFastCapacitance(
     return ret;
 }
 
+ErrorCodes_t enableTtlPulseTrain(bool flag) {
+    MASS_CALL1(enableTtlPulseTrain, flag)
+}
+
 ErrorCodes_t setTtlPulseTrain(Measurement_t pulseDuration, Measurement_t pulseDelay, Measurement_t period, unsigned int numberOfPulses) {
     MASS_CALL4(setTtlPulseTrain, pulseDuration, pulseDelay, period, numberOfPulses)
 }

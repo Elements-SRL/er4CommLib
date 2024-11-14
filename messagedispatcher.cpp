@@ -1715,6 +1715,21 @@ ErrorCodes_t MessageDispatcher::setCFastCapacitance(Measurement_t capacitance) {
     return ret;
 }
 
+ErrorCodes_t MessageDispatcher::enableTtlPulseTrain(bool flag) {
+    if (!ttlPulseTrainImplementedFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    if (flag) {
+        ttlPulseTrainPulsesNumberCoder->encode(numberOfTtlPulses, txStatus);
+
+    } else {
+        ttlPulseTrainPulsesNumberCoder->encode(0, txStatus);
+    }
+
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::setTtlPulseTrain(Measurement_t pulseDuration, Measurement_t pulseDelay, Measurement_t period, unsigned int numberOfPulses) {
     if (!ttlPulseTrainImplementedFlag) {
         return ErrorFeatureNotImplemented;
@@ -1724,6 +1739,7 @@ ErrorCodes_t MessageDispatcher::setTtlPulseTrain(Measurement_t pulseDuration, Me
     ttlPulseTrainDurationCoder->encode(pulseDuration.getNoPrefixValue(), txStatus);
     ttlPulseTrainPeriodCoder->encode(period.getNoPrefixValue(), txStatus);
     ttlPulseTrainPulsesNumberCoder->encode(numberOfPulses, txStatus);
+    numberOfTtlPulses = numberOfPulses;
 
     return Success;
 }

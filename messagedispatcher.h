@@ -193,6 +193,7 @@ public:
     ErrorCodes_t setCFastCompensationOptions(uint16_t optionIdx);
     ErrorCodes_t setCFastCapacitance(Measurement_t capacitance);
 
+    ErrorCodes_t enableTtlPulseTrain(bool flag);
     ErrorCodes_t setTtlPulseTrain(Measurement_t pulseDuration, Measurement_t pulseDelay, Measurement_t period, unsigned int numberOfPulses);
     ErrorCodes_t startTtlPulseTrain();
 
@@ -508,6 +509,7 @@ protected:
     std::vector <Measurement_t> selectedProtocolAdimensional;
 
     bool ttlPulseTrainImplementedFlag = false;
+    uint32_t numberOfTtlPulses = 0;
     DoubleCoder * ttlPulseTrainDelayCoder = nullptr;
     DoubleCoder * ttlPulseTrainDurationCoder = nullptr;
     DoubleCoder * ttlPulseTrainPeriodCoder = nullptr;

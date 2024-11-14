@@ -706,6 +706,17 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setCFastCapacitance(
         ER4CL_ARGIN LVMeasurement_t value);
 
+/*! \brief ENable or disables the TTL pulse train.
+ *
+ * \param flag [in] true: enable the TTL pulse train; false: disable it.
+ *
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t enableTtlPulseTrain(
+        ER4CL_ARGIN bool flag);
+
 /*! \brief Configures the TTL pulse train parameters.
  *
  * \param pulseDuration [in] Duration of the TTL pulses.

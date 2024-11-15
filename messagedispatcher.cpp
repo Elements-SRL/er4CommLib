@@ -66,6 +66,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16n, 135, DeviceE16n},                                              //    3,  5,135 : e16 Orbit TC
     {DeviceVersionE16, DeviceSubversionE16n, 136, DeviceE16n},                                              //    3,  5,136 : e16 Orbit TC
     {DeviceVersionE16, DeviceSubversionE16e, 11, DeviceE16eEDR3},                                           //    3,  8, 11 : e16e (Legacy version for EDR3)
+    {DeviceVersionE16, DeviceSubversionE16e1L, 12, DeviceE16eEDR3},                                         //    3, 13, 12 : e16e (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16eArtix7PCBV01, 129, DeviceE16eArtix7PCBV01},                      //    3, 12,129 : e16e Artix7 PCB V01
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16HCREMI8, 4, DeviceE16HC_V01},                                     //    3, 10,  4 : e16HC No voltage amplifier
@@ -94,6 +95,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionENPRNanopipette, 129, DeviceENPRNanopipette_V01},              //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
     {DeviceVersionPrototype, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                  //  254, 21,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionPrototype, DeviceSubversionE4TtlPulseTrain, 129, DeviceE4TtlPulseTrain_V01},              //  254, 22,129 : e4 customized with ttl pulse train
+    {DeviceVersionPrototype, DeviceSubversionE4TtlPulseTrain, 130, DeviceE4TtlPulseTrain_V01},              //  254, 22,130 : e4 customized with ttl pulse train
     {DeviceVersionPrototype, DeviceSubversionE2Uln, 129, DeviceE2Uln_V01},                                  //  254, 24,129 : e4 that returns 2 current channels measured in ULN mode
     {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeENPR}
 };

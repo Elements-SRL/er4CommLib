@@ -3535,8 +3535,10 @@ double MessageDispatcher::applyFilter(uint16_t channelIdx, double x) {
 }
 
 void MessageDispatcher::manageVoltageReference() {
-    voltageReference.convertValue(voltageRange.prefix);
-    voltageReferenceOffset = (int16_t)(voltageReference.value/voltageResolution);
+    if (addVoltageReferenceToReadout) {
+        voltageReference.convertValue(voltageRange.prefix);
+        voltageReferenceOffset = (int16_t)(voltageReference.value/voltageResolution);
+    }
 }
 
 MessageDispatcherLegacyEdr3::MessageDispatcherLegacyEdr3(string deviceId) :

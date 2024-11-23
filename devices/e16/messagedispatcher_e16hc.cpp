@@ -70,7 +70,7 @@ MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
 
     /*! Voltage reference ranges */
     dacExtControllableFlag = true;
-    invertedDacExtFlag = true;
+    invertedDacExtFlag = false;
 
     voltageReferenceRangesNum = VoltageReferenceRangesNum;
     voltageReferenceRangesArray.resize(voltageReferenceRangesNum);
@@ -220,6 +220,7 @@ MessageDispatcher_e16HC_V03::MessageDispatcher_e16HC_V03(string id) :
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    addVoltageReferenceToReadout = false;
 
     resetCalibrationFlag = true;
 
@@ -1267,6 +1268,8 @@ MessageDispatcher_e16HC_V02::MessageDispatcher_e16HC_V02(string id) :
     readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
+    addVoltageReferenceToReadout = true;
+    invertedDacExtFlag = true;
 
     gpRangesNum.clear();
     gpRangesArray.clear();

@@ -624,7 +624,8 @@ protected:
     std::vector <DoubleOffsetBinaryCoder *> dacExtCoders;
     Measurement_t dacExtDefault = {0.0, UnitPfxNone, "V"};
     Measurement_t voltageReference = {0.0, UnitPfxNone, "V"};
-    int16_t voltageReferenceOffset = 0; /*! Value added to returned voltage data to accoutn for the voltage applied on the reference */
+    int16_t voltageReferenceOffset = 0; /*! Value added to returned voltage data to account for the voltage applied on the reference */
+    bool addVoltageReferenceToReadout = true;
 
     /*! Device specific parameters */
 

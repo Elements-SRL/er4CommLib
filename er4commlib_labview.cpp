@@ -620,7 +620,7 @@ ErrorCodes_t getGpRange(
 }
 
 ErrorCodes_t getVoltageRangesNum(
-        uint16 &voltageRangesNum) {
+        uint16_t &voltageRangesNum) {
     std::vector <RangedMeasurement_t> voltageRanges;
     uint16_t defaultOptions;
     std::vector <std::string> extensions;

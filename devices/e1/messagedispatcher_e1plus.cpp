@@ -169,6 +169,13 @@ MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00::MessageDispatcher_e1Plus_El03f_Le
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
 
+    dacExtDeviceFlag = true;
+    dacExtDeviceRange.step = 0.0625;
+    dacExtDeviceRange.min = dacExtDeviceRange.step*768.0;
+    dacExtDeviceRange.max = dacExtDeviceRange.min+dacExtDeviceRange.step*64000.0;
+    dacExtDeviceRange.prefix = UnitPfxMilli;
+    dacExtDeviceRange.unit = "V";
+
     /*! Front end denoiser */
     ferdImplementedFlag = true;
     maxFerdSize = 512;
@@ -1074,6 +1081,19 @@ void MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00::setFerdParameters() {
     ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
 
     MessageDispatcher::setFerdParameters();
+}
+
+ErrorCodes_t MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00::setDacExtDeviceVoltage(Measurement_t voltage) {
+    this->selectVoltageProtocol(ProtocolConstant);
+    Measurement_t Vcm = {2048.0, UnitPfxMilli, "V"};
+    this->setProtocolVoltage(ProtocolVHold, Vcm-voltage);
+    std::string message;
+    if (!(this->checkProtocolValidity(message))) {
+        return ErrorValueOutOfRange;
+    }
+    this->applyVoltageProtocol();
+
+    return Success;
 }
 
 MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00::MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00(string id) :

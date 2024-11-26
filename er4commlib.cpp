@@ -400,6 +400,11 @@ ErrorCodes_t applyDacExt(
     MASS_CALL1(applyDacExt, voltage)
 }
 
+ErrorCodes_t setDacExtDeviceVoltage(
+        Measurement_t voltage) {
+    MASS_CALL1(setDacExtDeviceVoltage, voltage)
+}
+
 ErrorCodes_t setCustomFlag(
         uint16_t idx,
         bool flag) {
@@ -1141,6 +1146,11 @@ ErrorCodes_t getVoltageReferenceRanges(
         std::vector <RangedMeasurement_t> &ranges,
         uint16_t &defaultOption) {
     CALL_FIRST2(getVoltageReferenceRanges, ranges, defaultOption)
+}
+
+ErrorCodes_t isDacExtDevice(
+        ) {
+    CALL_FIRST0(isDacExtDevice)
 }
 
 ErrorCodes_t getVoltageReferenceRange(

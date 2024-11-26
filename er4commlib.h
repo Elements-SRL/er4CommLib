@@ -291,13 +291,22 @@ ErrorCodes_t setRawDataFilter(
         ER4CL_ARGIN bool lowPassFlag,
         ER4CL_ARGIN bool activeFlag);
 
-/*! \brief Apply voltage on the external DAC.
+/*! \brief Apply voltage on the external DAC referred to Vcm.
  *
- * \param value [in] Voltage applied on the external DAC.
+ * \param voltage [in] Voltage applied on the external DAC with respect to Vcm.
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t applyDacExt(
+        ER4CL_ARGIN Measurement_t voltage);
+
+/*! \brief Apply voltage on the external DAC using the absolute value of the DAC (only for internal use).
+ *
+ * \param voltage [in] Voltage applied on the external DAC with respect to GND.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setDacExtDeviceVoltage(
         ER4CL_ARGIN Measurement_t voltage);
 
 /*! \brief Set a custom flag control.
@@ -982,6 +991,14 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageReferenceRanges(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &ranges,
         ER4CL_ARGOUT uint16_t &defaultOption);
+
+/*! \brief Success if the device can be used as a DAC EXT device (only for internal use).
+ *
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t isDacExtDevice(
+        ER4CL_ARGVOID);
 
 /*! \brief Get the voltage range currently applied for the reference.
  *

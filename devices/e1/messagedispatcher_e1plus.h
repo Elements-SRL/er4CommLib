@@ -12,6 +12,8 @@ public:
     MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(std::string id);
     virtual ~MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00();
 
+    virtual ErrorCodes_t setDacExtDeviceVoltage(Measurement_t voltage) override;
+
 protected:
     typedef struct {
         uint8_t unused;

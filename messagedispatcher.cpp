@@ -1401,6 +1401,10 @@ ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFla
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::setDacExtDeviceVoltage(Measurement_t) {
+    return ErrorFeatureNotImplemented;
+}
+
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
     if (idx < fastPulseW1num) {
         voltage.convertValue(fastPulseW1VoltageRange.prefix);
@@ -2039,6 +2043,14 @@ ErrorCodes_t MessageDispatcher::getVoltageReferenceRange(RangedMeasurement_t &ra
     }
 
     range = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::isDacExtDevice() {
+    if (!dacExtDeviceFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+
     return Success;
 }
 

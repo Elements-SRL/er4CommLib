@@ -39,6 +39,17 @@
 #endif
 #endif
 
+#else
+// Linux
+#if defined(ER4COMMLIB_STATIC)
+#  define ER4COMMLIBSHARED_EXPORT
+#else
+#if defined(ER4COMMLIB_LIBRARY)
+#  define ER4COMMLIBSHARED_EXPORT __attribute__((visibility("default")))
+#else
+#  define ER4COMMLIBSHARED_EXPORT __attribute__((visibility("default")))
+#endif
+#endif
 #endif
 
 /**************************\

@@ -1,10 +1,15 @@
 #ifndef CALIBRATIONEEPROM_H
 #define CALIBRATIONEEPROM_H
 
+#ifdef _WIN32
 #include <windows.h>
-
 #include "ftd2xx_win.h"
-#include "libMPSSE_spi.h"
+#else
+#include "WinTypes.h"
+#include "ftd2xx.h"
+#endif
+
+#include "libmpsse_spi.h"
 #include "er4commlib_errorcodes.h"
 #include "stdint.h"
 

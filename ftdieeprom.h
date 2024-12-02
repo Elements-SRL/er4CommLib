@@ -10,6 +10,9 @@
 #elif __APPLE__ /*! __APPLE__ isolates macOS X systems */
 /*! libftdi must be properly set in system folders (/usr/local/lib ... ecc) */
 #include "ftd2xx.h"
+#else
+//linux
+#include "ftd2xx.h"
 #endif
 
 #include "er4commlib.h"

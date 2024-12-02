@@ -93,9 +93,12 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include "ftd2xx_win.h"
+#else
+#include "WinTypes.h"
+#include "ftd2xx.h"
 #endif
 
-#include "ftd2xx_win.h"
 
 using namespace er4CommLib;
 

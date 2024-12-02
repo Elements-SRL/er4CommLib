@@ -89,13 +89,13 @@ typedef enum {
     DeviceSubversionUndefined = 0xFF
 } DeviceSubversion_t ;
 
-typedef struct {
+typedef struct Device_Tuple {
     DeviceVersion_t version = DeviceVersionUndefined;
     DeviceSubversion_t subversion = DeviceSubversionUndefined;
     uint32_t fwVersion = 0;
 } DeviceTuple_t;
 
-typedef enum {
+typedef enum DateIndices {
     DateDayIdx = 0,
     DateMonthIdx = 1,
     DateYearIdx = 2,

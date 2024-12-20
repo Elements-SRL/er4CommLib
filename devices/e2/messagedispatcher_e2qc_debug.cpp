@@ -1,9 +1,9 @@
-#include "messagedispatcher_e2hc.h"
+#include "messagedispatcher_e2qc_debug.h"
 
 using namespace std;
 using namespace er4CommLib;
 
-MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
+MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -20,7 +20,7 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     packetsPerFrame = 16;
 
     voltageChannelsNum = 1;
-    currentChannelsNum = 2;
+    currentChannelsNum = 4;
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
     readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
@@ -40,56 +40,122 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     independentCurrentRangesFlag = true;
     currentRangesNum = CurrentRangesNum;
     currentRangesArray.resize(currentRangesNum);
-    currentRangesArray[CurrentRange200nA].min = -200.0;
-    currentRangesArray[CurrentRange200nA].max = 200.0;
-    currentRangesArray[CurrentRange200nA].step = currentRangesArray[CurrentRange200nA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange200nA].prefix = UnitPfxNano;
-    currentRangesArray[CurrentRange200nA].unit = "A";
-    currentRangesArray[CurrentRange4uA].min = -4.0;
-    currentRangesArray[CurrentRange4uA].max = 4.0;
-    currentRangesArray[CurrentRange4uA].step = currentRangesArray[CurrentRange4uA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange4uA].prefix = UnitPfxMicro;
-    currentRangesArray[CurrentRange4uA].unit = "A";
+    currentRangesArray[CurrentRange1nA].min = -1.0;
+    currentRangesArray[CurrentRange1nA].max = 1.0;
+    currentRangesArray[CurrentRange1nA].step = currentRangesArray[CurrentRange1nA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange1nA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange1nA].unit = "A";
+    currentRangesArray[CurrentRange10nA].min = -10.0;
+    currentRangesArray[CurrentRange10nA].max = 10.0;
+    currentRangesArray[CurrentRange10nA].step = currentRangesArray[CurrentRange10nA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange10nA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange10nA].unit = "A";
+    currentRangesArray[CurrentRange100nA].min = -100.0;
+    currentRangesArray[CurrentRange100nA].max = 100.0;
+    currentRangesArray[CurrentRange100nA].step = currentRangesArray[CurrentRange100nA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange100nA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange100nA].unit = "A";
     defaultCurrentRangesIdx.resize(currentChannelsNum);
-    defaultCurrentRangesIdx[0] = CurrentRange200nA;
-    defaultCurrentRangesIdx[1] = CurrentRange4uA;
+    defaultCurrentRangesIdx[0] = CurrentRange10nA;
+    defaultCurrentRangesIdx[1] = CurrentRange1nA;
+    defaultCurrentRangesIdx[2] = CurrentRange10nA;
+    defaultCurrentRangesIdx[3] = CurrentRange1nA;
 
     /*! Voltage ranges */
     voltageRangesNum = VoltageRangesNum;
     voltageRangesArray.resize(voltageRangesNum);
-    voltageRangesArray[VoltageRange500mV].min = -500.0;
-    voltageRangesArray[VoltageRange500mV].max = 500.0;
-    voltageRangesArray[VoltageRange500mV].step = voltageRangesArray[VoltageRange500mV].max/(SHORT_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
+    voltageRangesArray[VoltageRange500mV].min = -511.0;
+    voltageRangesArray[VoltageRange500mV].max = 511.0;
+    voltageRangesArray[VoltageRange500mV].step = 0.125;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
 
+    /*! Voltage reference ranges */
+    addVoltageReferenceToReadout = true;
+    dacExtControllableFlag = true;
+    invertedDacExtFlag = true;
+
+    voltageReferenceRangesNum = VoltageReferenceRangesNum;
+    voltageReferenceRangesArray.resize(voltageReferenceRangesNum);
+    voltageReferenceRangesArray[VoltageReferenceRange2V].min = -1250.0;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].max = 1250.0;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].step = 0.0625;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].prefix = UnitPfxMilli;
+    voltageReferenceRangesArray[VoltageReferenceRange2V].unit = "V";
+    defaultVoltageReferenceRangeIdx = VoltageReferenceRange2V;
+
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);
-    samplingRatesArray[SamplingRate62_5kHz].value = 62.5;
-    samplingRatesArray[SamplingRate62_5kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate62_5kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate250kHz].value = 250.0;
-    samplingRatesArray[SamplingRate250kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate250kHz].unit = "Hz";
-    defaultSamplingRateIdx = SamplingRate250kHz;
+    samplingRatesArray[SamplingRate1_25kHz].value = 1.25;
+    samplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate5kHz].value = 5.0;
+    samplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate5kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate10kHz].value = 10.0;
+    samplingRatesArray[SamplingRate10kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate10kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate20kHz].value = 20.0;
+    samplingRatesArray[SamplingRate20kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate20kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate50kHz].value = 50.0;
+    samplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate50kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate100kHz].value = 100.0;
+    samplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate100kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate200kHz].value = 200.0;
+    samplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate200kHz].unit = "Hz";
+    defaultSamplingRateIdx = SamplingRate1_25kHz;
 
     realSamplingRatesArray.resize(samplingRatesNum);
-    realSamplingRatesArray[SamplingRate62_5kHz].value = 62.5;
-    realSamplingRatesArray[SamplingRate62_5kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate62_5kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate250kHz].value = 250.0;
-    realSamplingRatesArray[SamplingRate250kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate250kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate1_25kHz].value = 1.25e3/1024.0;
+    realSamplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate5kHz].value = 1.25e3/256.0;
+    realSamplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate5kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate10kHz].value = 1.25e3/128.0;
+    realSamplingRatesArray[SamplingRate10kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate10kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate20kHz].value = 1.25e3/64.0;
+    realSamplingRatesArray[SamplingRate20kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate20kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate50kHz].value = 50.0;
+    realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate100kHz].value = 100.0;
+    realSamplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate100kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate200kHz].value = 200.0;
+    realSamplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate200kHz].unit = "Hz";
 
     integrationStepArray.resize(samplingRatesNum);
-    integrationStepArray[SamplingRate62_5kHz].value = 16.0;
-    integrationStepArray[SamplingRate62_5kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate62_5kHz].unit = "s";
-    integrationStepArray[SamplingRate250kHz].value = 4.0;
-    integrationStepArray[SamplingRate250kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate250kHz].unit = "s";
+    integrationStepArray[SamplingRate1_25kHz].value = 1024.0/1.25;
+    integrationStepArray[SamplingRate1_25kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate1_25kHz].unit = "s";
+    integrationStepArray[SamplingRate5kHz].value = 256.0/1.25;
+    integrationStepArray[SamplingRate5kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate5kHz].unit = "s";
+    integrationStepArray[SamplingRate10kHz].value = 128.0/1.25;
+    integrationStepArray[SamplingRate10kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate10kHz].unit = "s";
+    integrationStepArray[SamplingRate20kHz].value = 64.0/1.25;
+    integrationStepArray[SamplingRate20kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate20kHz].unit = "s";
+    integrationStepArray[SamplingRate50kHz].value = 20.0;
+    integrationStepArray[SamplingRate50kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate50kHz].unit = "s";
+    integrationStepArray[SamplingRate100kHz].value = 10.0;
+    integrationStepArray[SamplingRate100kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate100kHz].unit = "s";
+    integrationStepArray[SamplingRate200kHz].value = 5.0;
+    integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate200kHz].unit = "s";
 
     /*! Overampling ratios */
     oversamplingImplemented = false;
@@ -101,17 +167,25 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].value = 1.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].prefix = UnitPfxKilo;
+    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].unit = "Hz";
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].value = 20.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].prefix = UnitPfxKilo;
+    voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].unit = "Hz";
 
-    dacExtFilterAvailable = false;
+    dacExtFilterAvailable = true;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
     voltageReferenceLpfOptions.resize(voltageReferenceLpfOptionsNum);
-
-    /*! Front end denoiser */
-    ferdImplementedFlag = false;
-    maxFerdSize = 1;
+    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].value = 3.0;
+    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].prefix = UnitPfxNone;
+    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].unit = "Hz";
+    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
+    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
+    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
 
     /*! Default values */
     selectedVoltageRangeIdx = defaultVoltageRangeIdx;
@@ -130,6 +204,46 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     samplingRate = baseSamplingRate;
     integrationStep = integrationStepArray[selectedSamplingRateIdx];
 
+    customOptionsNum = CustomOptionsNum;
+    customOptionsNames.resize(customOptionsNum);
+    customOptionsNames[CustomOptionClockDividerAC] = "Clock Divider AC";
+    customOptionsDescriptions.resize(customOptionsNum);
+    customOptionsDescriptions[CustomOptionClockDividerAC].resize(4);
+    customOptionsDescriptions[CustomOptionClockDividerAC][0] = "AC ck/1";
+    customOptionsDescriptions[CustomOptionClockDividerAC][1] = "AC ck/2";
+    customOptionsDescriptions[CustomOptionClockDividerAC][2] = "AC ck/4";
+    customOptionsDescriptions[CustomOptionClockDividerAC][3] = "AC ck/8";
+    customOptionsDefault.resize(customOptionsNum);
+    customOptionsDefault[CustomOptionClockDividerAC] = 0;
+    customOptionsNames[CustomOptionClockDividerDC] = "Clock Divider DC";
+    customOptionsDescriptions.resize(customOptionsNum);
+    customOptionsDescriptions[CustomOptionClockDividerDC].resize(4);
+    customOptionsDescriptions[CustomOptionClockDividerDC][0] = "DC ck/1";
+    customOptionsDescriptions[CustomOptionClockDividerDC][1] = "DC ck/1";
+    customOptionsDescriptions[CustomOptionClockDividerDC][2] = "DC ck/1";
+    customOptionsDescriptions[CustomOptionClockDividerDC][3] = "DC ck/1";
+    customOptionsDefault.resize(customOptionsNum);
+    customOptionsDefault[CustomOptionClockDividerDC] = 0;
+
+    customDoublesNum = 2;
+    customDoublesNames.resize(customDoublesNum);
+    customDoublesRanges.resize(customDoublesNum);
+    customDoublesDefault.resize(customDoublesNum);
+    customDoublesNames[0] = "DAC 2 Core 1";
+    customDoublesRanges[0].min = -64.0;
+    customDoublesRanges[0].max = 63.0;
+    customDoublesRanges[0].step = 1.0;
+    customDoublesRanges[0].prefix = UnitPfxMilli;
+    customDoublesRanges[0].unit = "V";
+    customDoublesNames[1] = "DAC 2 Core 2";
+    customDoublesRanges[1].min = -64.0;
+    customDoublesRanges[1].max = 63.0;
+    customDoublesRanges[1].step = 1.0;
+    customDoublesRanges[1].prefix = UnitPfxMilli;
+    customDoublesRanges[1].unit = "V";
+    customDoublesDefault[0] = 0.0;
+    customDoublesDefault[1] = 0.0;
+
     /*************\
      * Protocols *
     \*************/
@@ -138,7 +252,7 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     protocolVoltageRangesArray.resize(ProtocolVoltageRangesNum);
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].min = -500.0;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].max = 500.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.125;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
 
@@ -268,17 +382,17 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     protocolVoltageNames[ProtocolVInit] = "Vinit";
 
     protocolVoltageRanges.resize(ProtocolVoltagesNum);
-    protocolVoltageRanges[ProtocolVHold].step = 0.25;
+    protocolVoltageRanges[ProtocolVHold].step = 1.0;
     protocolVoltageRanges[ProtocolVHold].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVHold].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVHold].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVHold].unit = "V";
-    protocolVoltageRanges[ProtocolVPulse].step = 0.25;
+    protocolVoltageRanges[ProtocolVPulse].step = 1.0;
     protocolVoltageRanges[ProtocolVPulse].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVPulse].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVPulse].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPulse].unit = "V";
-    protocolVoltageRanges[ProtocolVStep].step = 0.25;
+    protocolVoltageRanges[ProtocolVStep].step = 1.0;
     protocolVoltageRanges[ProtocolVStep].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVStep].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVStep].prefix = UnitPfxMilli;
@@ -288,12 +402,12 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     protocolVoltageRanges[ProtocolVPk].max = 4.0*protocolVoltageRanges[ProtocolVPk].step;
     protocolVoltageRanges[ProtocolVPk].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPk].unit = "V";
-    protocolVoltageRanges[ProtocolVFinal].step = 0.25;
+    protocolVoltageRanges[ProtocolVFinal].step = 1.0;
     protocolVoltageRanges[ProtocolVFinal].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVFinal].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVFinal].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVFinal].unit = "V";
-    protocolVoltageRanges[ProtocolVInit].step = 0.25;
+    protocolVoltageRanges[ProtocolVInit].step = 1.0;
     protocolVoltageRanges[ProtocolVInit].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVInit].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVInit].prefix = UnitPfxMilli;
@@ -412,7 +526,7 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
 
     voltageOffsetControlImplemented = true;
     selectedVoltageOffset.resize(currentChannelsNum);
-    voltageOffsetRange.step = 0.25;
+    voltageOffsetRange.step = 1.0;
     voltageOffsetRange.min = -500.0;
     voltageOffsetRange.max = 500.0;
     voltageOffsetRange.prefix = UnitPfxMilli;
@@ -424,7 +538,7 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     }
 
     insertionPulseImplemented = true;
-    insertionPulseVoltageRange.step = 0.25;
+    insertionPulseVoltageRange.step = 1.0;
     insertionPulseVoltageRange.min = -500.0;
     insertionPulseVoltageRange.max = 500.0;
     insertionPulseVoltageRange.prefix = UnitPfxMilli;
@@ -442,19 +556,19 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     edhFormat =
             "EDH Version: 2.0\n"
             "\n"
-            "Elements e2HC\n"
-            "Channels: 2\n"
+            "Elements eNPR QC01a\n"
+            "Channels: 4\n"
             "\n"
             "Data header file\n"
             "\n"
             "Amplifier Setup\n"
             "Range: %currentRange%\n" // 200 pA
-            "Sampling frequency (SR): %samplingRate%\n" // 62.5 kHz
+            "Sampling frequency (SR): %samplingRate%\n" // 1.25 kHz
             "Final Bandwidth: SR/2 (no filter)\n"
             "\n"
             "Acquisition start time: %dateHour%\n" // 04/11/2020 11:28:55.130
             "\n"
-            "Active channels: %activeChannels%\n"; // 2
+            "Active channels: %activeChannels%\n"; // 2 3 4
 
     /****************************\
      * Device specific controls *
@@ -478,7 +592,7 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     selectStimulusChannelFlag = true;
     singleChannelSSCFlag = true;
 
-    boolConfig.initialByte = 6;
+    boolConfig.initialByte = 5;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 2;
     selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
@@ -493,8 +607,8 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     singleChannelDOCFlag = true;
     selectableDOCAutostopFlag = false;
 
-    boolConfig.initialByte = 3;
-    boolConfig.initialBit = 5;
+    boolConfig.initialByte = 10;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 2;
     digitalOffsetCompensationCoder = new BoolArrayCoder(boolConfig);
 
@@ -503,55 +617,33 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
         digitalOffsetCompensationStates[currentIdx] = false;
     }
 
-    boolConfig.initialByte = 6;
-    boolConfig.initialBit = 4;
+    boolConfig.initialByte = 9;
+    boolConfig.initialBit = 6;
     boolConfig.bitsNum = 1;
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
-    /*! Zap */
-    zappableDeviceFlag = false;
-    singleChannelZapFlag = false;
-
-//    boolConfig.initialByte = 3;
-//    boolConfig.initialBit = 0;
-//    boolConfig.bitsNum = 4;
-//    zapCoder = new BoolArrayCoder(boolConfig);
-
-//    zapStates.resize(currentChannelsNum);
-//    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-//        zapStates[currentIdx] = false;
-//    }
-
-    /*! Channel off */
-    channelOnFlag = true;
-    singleChannelOnFlag = true;
-
-    boolConfig.initialByte = 5;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 2;
-    channelOnCoder = new BoolArrayCoder(boolConfig);
-
-    channelOnStates.resize(currentChannelsNum);
-    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-        channelOnStates[currentIdx] = false;
-    }
-
     /*! Current range */
-    currentRangeCoders.resize(currentChannelsNum);
+    currentRangeCoders.resize(4);
 
-    boolConfig.initialByte = 1;
+    boolConfig.initialByte = 2;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 1;
-    currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(1); /*!< 200nA  -> 0b1 */
-    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 4uA    -> 0b0 */
+    currentRangeCoders[0] = new BoolArrayCoder(boolConfig);
 
-    boolConfig.initialByte = 1;
-    boolConfig.initialBit = 2;
+    boolConfig.initialByte = 4;
+    boolConfig.initialBit = 3;
+    boolConfig.bitsNum = 3;
+    currentRangeCoders[1] = new BoolOneHotCoder(boolConfig);
+
+    boolConfig.initialByte = 6;
+    boolConfig.initialBit = 1;
     boolConfig.bitsNum = 1;
-    currentRangeCoders[1] = new BoolRandomArrayCoder(boolConfig);
-    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[1])->addMapItem(1); /*!< 200nA  -> 0b1 */
-    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[1])->addMapItem(0); /*!< 4uA    -> 0b0 */
+    currentRangeCoders[2] = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 8;
+    boolConfig.initialBit = 3;
+    boolConfig.bitsNum = 3;
+    currentRangeCoders[3] = new BoolOneHotCoder(boolConfig);
 
     /*! Voltage range */
     boolConfig.initialByte = 0;
@@ -561,48 +653,75 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
 
     /*! Sampling rate */
-    boolConfig.initialByte = 2;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 5;
+    boolConfig.initialByte = 9;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 4;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(17); /*!< 62.5kHz      -> 0b10001 */
-    samplingRateCoder->addMapItem(8);  /*!< 250kHz       -> 0b01000 */
+    samplingRateCoder->addMapItem(0); /*!< 1.25kHz  -> 0b0000 */
+    samplingRateCoder->addMapItem(1); /*!< 5kHz     -> 0b0001 */
+    samplingRateCoder->addMapItem(2); /*!< 10kHz    -> 0b0010 */
+    samplingRateCoder->addMapItem(3); /*!< 20kHz    -> 0b0011 */
+    samplingRateCoder->addMapItem(8); /*!< 50kHz    -> 0b1000 */
+    samplingRateCoder->addMapItem(9); /*!< 100kHz   -> 0b1001 */
+    samplingRateCoder->addMapItem(10); /*!< 200kHz  -> 0b1010 */
+
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 2;
+    customOptionsCoders.resize(customOptionsNum);
+    customOptionsCoders[CustomOptionClockDividerAC] = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 3;
+    boolConfig.bitsNum = 2;
+    customOptionsCoders[CustomOptionClockDividerDC] = new BoolArrayCoder(boolConfig);
+
+    customDoublesCoders.resize(customDoublesNum);
+    doubleConfig.initialByte = 3;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 7;
+    doubleConfig.minValue = -64.0;
+    doubleConfig.maxValue = 63.0;
+    doubleConfig.resolution = 1.0;
+    customDoublesCoders[0] = new DoubleOffsetBinaryCoder(doubleConfig);
+    doubleConfig.initialByte = 7;
+    customDoublesCoders[1] = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*! Protocol selection */
-    boolConfig.initialByte = 4;
+    boolConfig.initialByte = 10;
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 4;
     protocolsSelectCoder = new BoolArrayCoder(boolConfig);
 
     /*! Protocol start */
-    boolConfig.initialByte = 4;
+    boolConfig.initialByte = 10;
     boolConfig.initialBit = 6;
     boolConfig.bitsNum = 1;
     protocolStartCoder = new BoolArrayCoder(boolConfig);
 
     /*! Protocol voltages */
     protocolVoltageCoders.resize(ProtocolVoltagesNum);
-    doubleConfig.initialByte = 7;
+    doubleConfig.initialByte = 15;
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 14;
+    doubleConfig.bitsNum = 13;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-    protocolVoltageCoders[ProtocolVHold] = new DoubleSignAbsCoder(doubleConfig);
+    protocolVoltageCoders[ProtocolVHold] = new DoubleTwosCompCoder(doubleConfig);
     doubleConfig.initialByte = 17;
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 14;
+    doubleConfig.bitsNum = 13;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVPulse].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVPulse].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVPulse].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVPulse].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-    protocolVoltageCoders[ProtocolVPulse] = new DoubleSignAbsCoder(doubleConfig);
+    protocolVoltageCoders[ProtocolVPulse] = new DoubleTwosCompCoder(doubleConfig);
     doubleConfig.initialByte = 21;
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 14;
+    doubleConfig.bitsNum = 13;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVStep].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVStep].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVStep].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-    protocolVoltageCoders[ProtocolVStep] = new DoubleSignAbsCoder(doubleConfig);
+    protocolVoltageCoders[ProtocolVStep] = new DoubleTwosCompCoder(doubleConfig);
     doubleConfig.initialByte = 41;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 2;
@@ -612,18 +731,18 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     protocolVoltageCoders[ProtocolVPk] = new DoubleSignAbsCoder(doubleConfig);
     doubleConfig.initialByte = 47;
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 14;
+    doubleConfig.bitsNum = 13;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVFinal].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVFinal].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVFinal].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVFinal].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-    protocolVoltageCoders[ProtocolVFinal] = new DoubleSignAbsCoder(doubleConfig);
+    protocolVoltageCoders[ProtocolVFinal] = new DoubleTwosCompCoder(doubleConfig);
     doubleConfig.initialByte = 49;
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 14;
+    doubleConfig.bitsNum = 13;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVInit].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVInit].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVInit].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVInit].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-    protocolVoltageCoders[ProtocolVInit] = new DoubleSignAbsCoder(doubleConfig);
+    protocolVoltageCoders[ProtocolVInit] = new DoubleTwosCompCoder(doubleConfig);
 
     /*! Protocol times */
     protocolTimeCoders.resize(ProtocolTimesNum);
@@ -680,33 +799,67 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     doubleConfig.maxValue = protocolAdimensionalRanges[ProtocolNR].max;
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
-    boolConfig.initialByte = 1;
+    /*! Internal DAC filter */
+    boolConfig.initialByte = 4;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 2;
+    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
+    dacIntFilterCoder->addMapItem(0); /*!< 1kHz   -> 0b00 */
+    dacIntFilterCoder->addMapItem(1); /*!< 10kHz  -> 0b01 */
+    dacIntFilterCoder->addMapItem(2); /*!< 20kHz  -> 0b10 */
+
+    boolConfig.initialByte = 9;
     boolConfig.initialBit = 5;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 10kHz     -> 0b1 */
-    /*! DON'T USE  0b0: the filter must be active because the DAC is a 3rd order DS and this filter accounts for the 4th order filtering */
+    dacExtFilterCoder = new BoolRandomArrayCoder(boolConfig);
+    dacExtFilterCoder->addMapItem(0); /*!< 3Hz    -> 0b0 */
+    dacExtFilterCoder->addMapItem(1); /*!< 180kHz -> 0b1 */
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 14;
+    doubleConfig.bitsNum = 13;
+    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        doubleConfig.initialByte = 9+2*channelIdx;
-        voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
+        doubleConfig.initialByte = 11+2*channelIdx;
+        voltageOffsetCoders[channelIdx] = new DoubleTwosCompCoder(doubleConfig);
     }
+
+    /*! Voltage reference range */
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
+    voltageReferenceRangeCoder->addMapItem(0); /*!< No controls -> 0b0 */
+
+    /*! Voltage DAC Ext */
+    doubleConfig.initialByte = 2;
+    doubleConfig.initialBit = 4;
+    doubleConfig.bitsNum = 1;
+    // doubleConfig.initialByte = 51;
+    // doubleConfig.initialBit = 0;
+    // doubleConfig.bitsNum = 16;
+    dacExtCoders.resize(voltageReferenceRangesNum);
+
+    double vcm_mV = 1650.0;
+    double maxDacExtVoltage = 4096.0;
+
+    unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
+    doubleConfig.resolution = voltageReferenceRangesArray[voltageReferenceIdx].step;
+    doubleConfig.minValue = -vcm_mV;
+    doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
+    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*! Insertion pulse */
     doubleConfig.initialByte = 19;
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 14;
+    doubleConfig.bitsNum = 13;
+    doubleConfig.resolution = insertionPulseVoltageRange.step;
     doubleConfig.minValue = insertionPulseVoltageRange.min;
     doubleConfig.maxValue = insertionPulseVoltageRange.max;
-    doubleConfig.resolution = insertionPulseVoltageRange.max/(INT14_MAX+1)*stimulusVoltageReference/stimulusVoltageLimit;
-    insertionPulseVoltageCoder = new DoubleSignAbsCoder(doubleConfig);
+    insertionPulseVoltageCoder = new DoubleTwosCompCoder(doubleConfig);
     doubleConfig.initialByte = 31;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 14;
@@ -714,8 +867,8 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     doubleConfig.minValue = insertionPulseDurationRange.min;
     doubleConfig.maxValue = insertionPulseDurationRange.max;
     insertionPulseDurationCoder = new DoubleTwosCompCoder(doubleConfig);
-    boolConfig.initialByte = 5;
-    boolConfig.initialBit = 5;
+    boolConfig.initialByte = 9;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
 
@@ -729,21 +882,21 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
 
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
-    txStatus[txStatusIdx++] = 0x3A; // CFG0
-    txStatus[txStatusIdx++] = 0x01; // CFG1
-    txStatus[txStatusIdx++] = 0x05; // CFG2
-    txStatus[txStatusIdx++] = 0x00; // CFG3
-    txStatus[txStatusIdx++] = 0x03; // CFG4
-    txStatus[txStatusIdx++] = 0x03; // CFG5
-    txStatus[txStatusIdx++] = 0x00; // Vhold
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x60; // CFG0
+    txStatus[txStatusIdx++] = 0x4A; // CFG1
+    txStatus[txStatusIdx++] = 0x40; // CFG2
+    txStatus[txStatusIdx++] = 0x48; // CFG3
+    txStatus[txStatusIdx++] = 0x63; // CFG4
+    txStatus[txStatusIdx++] = 0x4A; // CFG5
+    txStatus[txStatusIdx++] = 0x40; // CFG6
+    txStatus[txStatusIdx++] = 0x48; // CFG7
+    txStatus[txStatusIdx++] = 0x20; // CFG8
+    txStatus[txStatusIdx++] = 0x00; // CFG9
     txStatus[txStatusIdx++] = 0x00; // VOfs1
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs2
     txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; // free
-    txStatus[txStatusIdx++] = 0x00;
-    txStatus[txStatusIdx++] = 0x00; // free
+    txStatus[txStatusIdx++] = 0x00; // Vhold
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VPulse
     txStatus[txStatusIdx++] = 0x00;
@@ -781,7 +934,7 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     txStatus[txStatusIdx++] = 0x00;
 }
 
-void MessageDispatcher_e2HC_V00::initializeDevice() {
+void MessageDispatcher_e2qc_debug::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->selectStimulusChannel(currentChannelsNum, true);
@@ -791,7 +944,7 @@ void MessageDispatcher_e2HC_V00::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_e2HC_V00::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e2qc_debug::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -988,136 +1141,4 @@ bool MessageDispatcher_e2HC_V00::checkProtocolValidity(string &message) {
         break;
     }
     return validFlag;
-}
-
-MessageDispatcher_e2HC_V01::MessageDispatcher_e2HC_V01(string di) :
-    MessageDispatcher_e2HC_V00(di) {
-
-    /*! Sampling rates */
-    samplingRatesNum = SamplingRatesNum;
-    samplingRatesArray.resize(samplingRatesNum);
-    samplingRatesArray[SamplingRate50kHz].value = 50.0;
-    samplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate50kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate25kHz].value = 25.0;
-    samplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate25kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate12_5kHz].value = 12.5;
-    samplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
-    defaultSamplingRateIdx = SamplingRate25kHz;
-
-    realSamplingRatesArray.resize(samplingRatesNum);
-    realSamplingRatesArray[SamplingRate50kHz].value = 50.0e3/(8.0*128.0); /*!< 48.8kHz */
-    realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate25kHz].value = 50.0e3/(8.0*256.0); /*!< 24.4kHz */
-    realSamplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate25kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate12_5kHz].value = 50.0e3/(8.0*512.0); /*!< 12.2kHz */
-    realSamplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
-
-    integrationStepArray.resize(samplingRatesNum);
-    integrationStepArray[SamplingRate50kHz].value = 20.48;
-    integrationStepArray[SamplingRate50kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate50kHz].unit = "s";
-    integrationStepArray[SamplingRate25kHz].value = 40.96;
-    integrationStepArray[SamplingRate25kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate25kHz].unit = "s";
-    integrationStepArray[SamplingRate12_5kHz].value = 81.92;
-    integrationStepArray[SamplingRate12_5kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate12_5kHz].unit = "s";
-
-    /**********\
-     * Coders *
-    \**********/
-
-    /*! Input controls */
-    BoolCoder::CoderConfig_t boolConfig;
-
-    /*! Sampling rate */
-    boolConfig.initialByte = 2;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 5;
-    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(1);  /*!< 50kHz        -> 0b00001 */
-    samplingRateCoder->addMapItem(9);  /*!< 25kHz        -> 0b01001 */
-    samplingRateCoder->addMapItem(17); /*!< 12.5kHz      -> 0b10001 */
-}
-
-MessageDispatcher_e2HC_V02::MessageDispatcher_e2HC_V02(string di) :
-    MessageDispatcher_e2HC_V00(di) {
-
-    /*! Sampling rates */
-    samplingRatesNum = SamplingRatesNum;
-    samplingRatesArray.resize(samplingRatesNum);
-    samplingRatesArray[SamplingRate12_5kHz].value = 12.5;
-    samplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate25kHz].value = 25.0;
-    samplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate25kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate50kHz].value = 50.0;
-    samplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate50kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate100kHz].value = 100.0;
-    samplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate100kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate200kHz].value = 200.0;
-    samplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate200kHz].unit = "Hz";
-    defaultSamplingRateIdx = SamplingRate25kHz;
-
-    realSamplingRatesArray.resize(samplingRatesNum);
-    realSamplingRatesArray[SamplingRate12_5kHz].value = 50.0e3/(8.0*512.0); /*!< 12.2kHz */
-    realSamplingRatesArray[SamplingRate12_5kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate12_5kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate25kHz].value = 50.0e3/(8.0*256.0); /*!< 24.4kHz */
-    realSamplingRatesArray[SamplingRate25kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate25kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate50kHz].value = 50.0e3/(8.0*128.0); /*!< 48.8kHz */
-    realSamplingRatesArray[SamplingRate50kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate50kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate100kHz].value = 50.0e3/(8.0*64.0); /*!< 48.8kHz */
-    realSamplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate100kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate200kHz].value = 50.0e3/(8.0*32.0); /*!< 48.8kHz */
-    realSamplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate200kHz].unit = "Hz";
-
-    integrationStepArray.resize(samplingRatesNum);
-    integrationStepArray[SamplingRate12_5kHz].value = 81.92;
-    integrationStepArray[SamplingRate12_5kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate12_5kHz].unit = "s";
-    integrationStepArray[SamplingRate25kHz].value = 40.96;
-    integrationStepArray[SamplingRate25kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate25kHz].unit = "s";
-    integrationStepArray[SamplingRate50kHz].value = 20.48;
-    integrationStepArray[SamplingRate50kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate50kHz].unit = "s";
-    integrationStepArray[SamplingRate100kHz].value = 10.24;
-    integrationStepArray[SamplingRate100kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate100kHz].unit = "s";
-    integrationStepArray[SamplingRate200kHz].value = 5.12;
-    integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate200kHz].unit = "s";
-
-    /**********\
-     * Coders *
-    \**********/
-
-    /*! Input controls */
-    BoolCoder::CoderConfig_t boolConfig;
-
-    /*! Sampling rate */
-    boolConfig.initialByte = 2;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 6;
-    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(1); /*!< 12.5kHz      -> 0b000001 */
-    samplingRateCoder->addMapItem(9);  /*!< 25kHz       -> 0b001001 */
-    samplingRateCoder->addMapItem(17);  /*!< 50kHz      -> 0b010001 */
-    samplingRateCoder->addMapItem(24);  /*!< 100kHz     -> 0b011000 */
-    samplingRateCoder->addMapItem(32);  /*!< 200kHz     -> 0b100000 */
 }

@@ -10,7 +10,6 @@ namespace er4CommLib {
 class MessageDispatcher_eNPR : public MessageDispatcher {
 public:
     MessageDispatcher_eNPR(std::string di);
-    virtual ~MessageDispatcher_eNPR();
 
 protected:
     typedef struct {
@@ -125,7 +124,6 @@ private:
 class MessageDispatcher_eNPR_2Channels_V01 : public MessageDispatcher_eNPR {
 public:
     MessageDispatcher_eNPR_2Channels_V01(std::string di);
-    virtual ~MessageDispatcher_eNPR_2Channels_V01();
 
 protected:
     void initializeDevice() override;
@@ -177,13 +175,11 @@ private:
 class MessageDispatcher_eNPR_2Channels_V02 : public MessageDispatcher_eNPR_2Channels_V01 {
 public:
     MessageDispatcher_eNPR_2Channels_V02(std::string di);
-    virtual ~MessageDispatcher_eNPR_2Channels_V02();
 };
 
 class MessageDispatcher_eNPR_2Channels_V03 : public MessageDispatcher_eNPR_2Channels_V02 {
 public:
     MessageDispatcher_eNPR_2Channels_V03(std::string di);
-    virtual ~MessageDispatcher_eNPR_2Channels_V03();
 
 protected:
     bool checkProtocolValidity(std::string &message) override;
@@ -228,7 +224,6 @@ private:
 class MessageDispatcher_eNPR_FL_V02 : public MessageDispatcher_eNPR {
 public:
     MessageDispatcher_eNPR_FL_V02(std::string di);
-    virtual ~MessageDispatcher_eNPR_FL_V02();
 
 protected:
     enum Protocols {
@@ -252,7 +247,6 @@ protected:
 class MessageDispatcher_eNPR_FL_V01 : public MessageDispatcher_eNPR {
 public:
     MessageDispatcher_eNPR_FL_V01(std::string di);
-    virtual ~MessageDispatcher_eNPR_FL_V01();
 
 protected:
     enum Protocols {
@@ -292,7 +286,6 @@ private:
 class MessageDispatcher_eNPR_LegacyEdr3_V04 : public MessageDispatcherLegacyEdr3 {
 public:
     MessageDispatcher_eNPR_LegacyEdr3_V04(std::string id);
-    virtual ~MessageDispatcher_eNPR_LegacyEdr3_V04();
 
 protected:
     typedef struct {
@@ -406,7 +399,6 @@ protected:
 class MessageDispatcher_eNPR_LegacyEdr3_V03 : public MessageDispatcherLegacyEdr3 {
 public:
     MessageDispatcher_eNPR_LegacyEdr3_V03(std::string id);
-    virtual ~MessageDispatcher_eNPR_LegacyEdr3_V03();
 
 protected:
     typedef struct {

@@ -5,7 +5,7 @@
 
 #ifdef _WIN32 /*! _WIN32 isolates both 32 and 64 bit windows systems, _WIN64 isolates only 64 */
 #include <windows.h>
-#include "ftd2xx_win.h"
+#include "ftd2xx.h"
 
 #elif __APPLE__ /*! __APPLE__ isolates macOS X systems */
 /*! libftdi must be properly set in system folders (/usr/local/lib ... ecc) */
@@ -44,6 +44,7 @@ typedef enum {
     DeviceSubversionE16HC = 11,
     DeviceSubversionE16eArtix7PCBV01 = 12,
     DeviceSubversionE16e1L = 13,
+    DeviceSubversionE16HCEL06f = 14,
 
     /*! Subversions used for ver = 04 */
     DeviceSubversionE4n = 3,
@@ -52,6 +53,7 @@ typedef enum {
     /*! Subversions used for ver = 08 */
     DeviceSubversionENPR = 2,
     DeviceSubversionENPRHC = 8,
+    DeviceSubversionE2QcDebug = 10,
 
     /*! Subversions used for ver = 09 */
     DeviceSubversionE1bEL03C = 2,

@@ -684,10 +684,10 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
-    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 200pA    -> 0b000 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2); /*!< 2nA      -> 0b010 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3); /*!< 20nA     -> 0b011 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 0;
@@ -2217,10 +2217,10 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
     boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
-    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 200pA    -> 0b000 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2); /*!< 2nA      -> 0b010 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3); /*!< 20nA     -> 0b011 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 0;
@@ -3779,10 +3779,10 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
     boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
-    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 200pA    -> 0b000 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2); /*!< 2nA      -> 0b010 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3); /*!< 20nA     -> 0b011 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 0;

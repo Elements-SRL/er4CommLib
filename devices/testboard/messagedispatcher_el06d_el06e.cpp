@@ -545,8 +545,8 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 1;
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(1); /*!< 200nA  -> 0b1 */
-    currentRangeCoders[0]->addMapItem(0); /*!< 4uA    -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(1); /*!< 200nA  -> 0b1 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 4uA    -> 0b0 */
 
     /*! Voltage range */
     boolConfig.initialByte = 0;

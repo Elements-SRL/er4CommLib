@@ -108,12 +108,14 @@ typedef enum {
     DeviceE16ETHEDR3,           /*!< e16ETH (LegacyVersion for EDR3). */
     DeviceE16HC_V01,            /*!< e16HC (no voltage amplifier). */
     DeviceE16HC_V02,            /*!< e16HC (no DAC readout). */
-    DeviceE16HC_V03,            /*!< e16HC. */
+    DeviceE16HC_V03,            /*!< e16HC with EL06de. */
+    DeviceE16HC_V04,            /*!< e16HC with EL06f. */
     DeviceENPREDR3_V03,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPREDR3_V04,         /*!< eNPR (Legacy version for EDR3). */
     DeviceENPR,                 /*!< eNPR. */
     DeviceENPRHC_V01,           /*!< eNPR-HC. */
     DeviceENPRHC_V02,           /*!< eNPR-HC with 200ksps option. */
+    DeviceE2QcDebug,            /*!< eNPR debug device for chip QC01a */
     DeviceE4nEDR3_V04,          /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
     DeviceE4nEDR3_V05,          /*!< e4 Orbit mini (Legacy version for EDR3). */
     DeviceE4eEDR3_V05,          /*!< e4 Elements (Legacy version for EDR3). */

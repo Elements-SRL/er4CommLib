@@ -70,6 +70,7 @@ SOURCES += \
     devices/eNPR/messagedispatcher_enpr_hc.cpp \
     devices/e2/messagedispatcher_e2hc.cpp \
     devices/e2/messagedispatcher_e2uln_v01.cpp \
+    devices/e2/messagedispatcher_e2qc_debug.cpp \
     devices/e4/messagedispatcher_e4n.cpp \
     devices/e4/messagedispatcher_e4e.cpp \
     devices/e16/messagedispatcher_e16e.cpp \
@@ -105,6 +106,7 @@ HEADERS += \
     devices/eNPR/messagedispatcher_enpr_hc.h \
     devices/e2/messagedispatcher_e2hc.h \
     devices/e2/messagedispatcher_e2uln_v01.h \
+    devices/e2/messagedispatcher_e2qc_debug.h \
     devices/e4/messagedispatcher_e4n.h \
     devices/e4/messagedispatcher_e4e.h \
     devices/e16/messagedispatcher_e16e.h \
@@ -150,3 +152,4 @@ macx: INCLUDEPATH += /usr/local/include
 macx: DEPENDPATH += /usr/local/include
 
 include($$(FTD2XX_PATH)includeftd2xx.pri)
+include($$(LIBMPSSE_PATH)includelibmpsse.pri)

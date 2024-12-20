@@ -574,9 +574,9 @@ MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00::MessageDispatcher_e1Hc_El03f_Legacy
     boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(2); /*!< 2uA      -> 0b010 */
-    currentRangeCoders[0]->addMapItem(3); /*!< 20uA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200uA    -> 0b111 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2); /*!< 2uA      -> 0b010 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3); /*!< 20uA     -> 0b011 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(7); /*!< 200uA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 0;

@@ -8,6 +8,7 @@
 #include "messagedispatcher_enpr_hc.h"
 #include "messagedispatcher_e2hc.h"
 #include "messagedispatcher_e2uln_v01.h"
+#include "messagedispatcher_e2qc_debug.h"
 #include "messagedispatcher_e4n.h"
 #include "messagedispatcher_e4e.h"
 #include "messagedispatcher_e16fastpulses.h"
@@ -53,6 +54,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                                             //    8,  2,129 : eNPR
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC_V01},                                     //    8,  8,129 : eNPR-HC
     {DeviceVersionENPR, DeviceSubversionENPRHC, 130, DeviceENPRHC_V02},                                     //    8,  8,130 : eNPR-HC with 200ksps option
+    {DeviceVersionENPR, DeviceSubversionE2QcDebug, 129, DeviceE2QcDebug},                                   //    8, 10,129 : eNPR debug device for chip QC01a
     {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nEDR3_V04},                                          //    4,  3, 10 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nEDR3_V04},                                          //    4,  3, 11 : e4 Orbit mini with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 15, DeviceE4nEDR3_V05},                                          //    4,  3, 15 : e4 Orbit mini (Legacy version for EDR3)
@@ -72,7 +74,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16HCREMI8, 4, DeviceE16HC_V01},                                     //    3, 10,  4 : e16HC No voltage amplifier
     {DeviceVersionE16, DeviceSubversionE16HCREMI8, 5, DeviceE16HC_V02},                                     //    3, 10,  5 : e16HC No DAC readout
     {DeviceVersionE16, DeviceSubversionE16HC, 6, DeviceE16HC_V02},                                          //    3, 11,  6 : e16HC No DAC readout
-    {DeviceVersionE16, DeviceSubversionE16HC, 7, DeviceE16HC_V03},                                          //    3, 11,  7 : e16HC
+    {DeviceVersionE16, DeviceSubversionE16HC, 7, DeviceE16HC_V03},                                          //    3, 11,  7 : e16HC with EL06de
+    {DeviceVersionE16, DeviceSubversionE16HCEL06f, 129, DeviceE16HC_V04},                                   //    3, 14,129 : e16HC with EL06f
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   11,  1,130 : e2HC SR up to 50kHz
     {DeviceVersionE2, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                           //   11,  1,131 : e2HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                                  //    6,  3,  4 : debug dlp
@@ -105,11 +108,6 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
  *                                 MessageDispatcher                                        *
  *                                                                                          *
 \********************************************************************************************/
-
-/*! Private functions prototypes */
-uint32_t getDeviceIndex(std::string serial);
-string getDeviceSerial(uint32_t index, bool excludeLetter = true);
-bool getDeviceCount(DWORD &numDevs);
 
 /*****************\
  *  Ctor / Dtor  *
@@ -304,6 +302,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_eNPR_HC_V02(deviceId);
         break;
 
+    case DeviceE2QcDebug:
+        messageDispatcher = new MessageDispatcher_e2qc_debug(deviceId);
+        break;
+
     case DeviceE4nEDR3_V04:
         messageDispatcher = new MessageDispatcher_e4n_El03c_LegacyEdr3_V04(deviceId);
         break;
@@ -362,6 +364,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE16HC_V03:
         messageDispatcher = new MessageDispatcher_e16HC_V03(deviceId);
+        break;
+
+    case DeviceE16HC_V04:
+        messageDispatcher = new MessageDispatcher_e16HC_V04(deviceId);
         break;
 
     case DeviceE2HC_V01:
@@ -2851,6 +2857,24 @@ ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel
         return ErrorDeviceConnectionFailed;
     }
 
+    if (syncFtdiFlag) {
+        ftRet = FT_SetBitMode(* handle, 0x00, 0x00);
+        if (ftRet != FT_OK) {
+            printf("FT_SetBitMode FAILED\n");
+            FT_Close(* handle);
+            return ErrorFtdiConfigurationFailed;
+        }
+
+        Sleep(10);
+
+        ftRet = FT_SetBitMode(* handle, 0x00, 0x40);
+        if (ftRet != FT_OK) {
+            printf("FT_SetBitMode FAILED\n");
+            FT_Close(* handle);
+            return ErrorFtdiConfigurationFailed;
+        }
+    }
+
     /*! Sets latency */
     ftRet = FT_SetLatencyTimer(* handle, 2); /*!< ms */
     if (ftRet != FT_OK) {
@@ -2859,10 +2883,25 @@ ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel
     }
 
     /*! Sets transfers size to */
-    ftRet = FT_SetUSBParameters(* handle, 4096, 4096);
-    if (ftRet != FT_OK) {
-        FT_Close(* handle);
-        return ErrorFtdiConfigurationFailed;
+    if (syncFtdiFlag) {
+        ftRet = FT_SetUSBParameters(* handle, 0x10000, 0x10000);
+        if (ftRet != FT_OK) {
+            FT_Close(* handle);
+            return ErrorFtdiConfigurationFailed;
+        }
+
+        ftRet = FT_SetFlowControl(* handle, FT_FLOW_RTS_CTS, 0, 0);
+        if (ftRet != FT_OK) {
+            FT_Close(* handle);
+            return ErrorFtdiConfigurationFailed;
+        }
+    }
+    else {
+        ftRet = FT_SetUSBParameters(* handle, 4096, 4096);
+        if (ftRet != FT_OK) {
+            FT_Close(* handle);
+            return ErrorFtdiConfigurationFailed;
+        }
     }
 
     /*! Purges buffers */
@@ -3338,6 +3377,56 @@ void MessageDispatcher::sendCommandsToDevice() {
     }
 }
 
+uint32_t MessageDispatcher::getDeviceIndex(std::string serial) {
+    /*! Gets number of devices */
+    DWORD numDevs;
+    bool devCountOk = getDeviceCount(numDevs);
+    if (!devCountOk) {
+        return 0;
+
+    } else if (numDevs == 0) {
+        return 0;
+    }
+
+    for (uint32_t index = 0; index < numDevs; index++) {
+        std::string deviceId = getDeviceSerial(index, false);
+        if (deviceId == serial) {
+            return index;
+        }
+    }
+    return 0;
+}
+
+std::string MessageDispatcher::getDeviceSerial(uint32_t index, bool excludeLetter) {
+    char buffer[64];
+    std::string serial;
+    FT_STATUS FT_Result = FT_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
+    if (FT_Result == FT_OK) {
+        serial = buffer;
+        if (excludeLetter) {
+            return serial.substr(0, serial.size()-1); /*!< Removes channel character */
+
+        } else {
+            return serial;
+        }
+
+    } else {
+        return "";
+    }
+}
+
+bool MessageDispatcher::getDeviceCount(DWORD &numDevs) {
+    /*! Get the number of connected devices */
+    numDevs = 0;
+    FT_STATUS FT_Result = FT_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
+    if (FT_Result == FT_OK) {
+        return true;
+
+    } else {
+        return false;
+    }
+}
+
 void MessageDispatcher::storeDataFrames(unsigned int framesNum) {
     uint16_t value;
     uint16_t unfilteredValue;
@@ -3641,56 +3730,5 @@ void MessageDispatcherLegacyEdr3::storeDataFrames(unsigned int framesNum) {
         outputBufferAvailablePackets = ER4CL_OUTPUT_BUFFER_SIZE; /*!< Saturates available packets */
         outputBufferReadOffset = outputBufferWriteOffset; /*! Move read offset just on top of the write offset so that it can read up to 1 position before after a full buffer read */
         outputBufferOverflowFlag = true;
-    }
-}
-
-/*! Private functions */
-uint32_t getDeviceIndex(std::string serial) {
-    /*! Gets number of devices */
-    DWORD numDevs;
-    bool devCountOk = getDeviceCount(numDevs);
-    if (!devCountOk) {
-        return 0;
-
-    } else if (numDevs == 0) {
-        return 0;
-    }
-
-    for (uint32_t index = 0; index < numDevs; index++) {
-        std::string deviceId = getDeviceSerial(index, false);
-        if (deviceId == serial) {
-            return index;
-        }
-    }
-    return 0;
-}
-
-string getDeviceSerial(uint32_t index, bool excludeLetter) {
-    char buffer[64];
-    string serial;
-    FT_STATUS FT_Result = FT_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
-    if (FT_Result == FT_OK) {
-        serial = buffer;
-        if (excludeLetter) {
-            return serial.substr(0, serial.size()-1); /*!< Removes channel character */
-
-        } else {
-            return serial;
-        }
-
-    } else {
-        return "";
-    }
-}
-
-bool getDeviceCount(DWORD &numDevs) {
-    /*! Get the number of connected devices */
-    numDevs = 0;
-    FT_STATUS FT_Result = FT_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
-    if (FT_Result == FT_OK) {
-        return true;
-
-    } else {
-        return false;
     }
 }

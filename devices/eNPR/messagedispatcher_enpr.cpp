@@ -605,10 +605,10 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
-    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 200pA    -> 0b000 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2); /*!< 2nA      -> 0b010 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3); /*!< 20nA     -> 0b011 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 1;
@@ -848,10 +848,6 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     txStatus[txStatusIdx++] = 0x00; // VInit
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-}
-
-MessageDispatcher_eNPR::~MessageDispatcher_eNPR() {
-
 }
 
 void MessageDispatcher_eNPR::initializeDevice() {
@@ -1703,10 +1699,6 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_eNPR_2Channels_V01::~MessageDispatcher_eNPR_2Channels_V01() {
-
-}
-
 void MessageDispatcher_eNPR_2Channels_V01::initializeDevice() {
     this->updateVoltageReferenceOffsetCalibration();
     this->setSamplingRate(defaultSamplingRateIdx, false);
@@ -1983,23 +1975,19 @@ MessageDispatcher_eNPR_2Channels_V02::MessageDispatcher_eNPR_2Channels_V02(strin
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 3;
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
-    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 200pA    -> 0b000 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2); /*!< 2nA      -> 0b010 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3); /*!< 20nA     -> 0b011 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     boolConfig.initialByte = 6;
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 3;
     currentRangeCoders[1] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[1]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[1]->addMapItem(4); /*!< 2nA      -> 0b010 */
-    currentRangeCoders[1]->addMapItem(6); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[1]->addMapItem(14); /*!< 200nA    -> 0b111 */
-}
-
-MessageDispatcher_eNPR_2Channels_V02::~MessageDispatcher_eNPR_2Channels_V02() {
-
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[1])->addMapItem(0); /*!< 200pA    -> 0b000 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[1])->addMapItem(4); /*!< 2nA      -> 0b010 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[1])->addMapItem(6); /*!< 20nA     -> 0b011 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[1])->addMapItem(14); /*!< 200nA    -> 0b111 */
 }
 
 MessageDispatcher_eNPR_2Channels_V03::MessageDispatcher_eNPR_2Channels_V03(string di) :
@@ -2387,10 +2375,6 @@ MessageDispatcher_eNPR_2Channels_V03::MessageDispatcher_eNPR_2Channels_V03(strin
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_eNPR_2Channels_V03::~MessageDispatcher_eNPR_2Channels_V03() {
-
-}
-
 bool MessageDispatcher_eNPR_2Channels_V03::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
@@ -2669,10 +2653,6 @@ MessageDispatcher_eNPR_FL_V02::MessageDispatcher_eNPR_FL_V02(string di) :
     txStatus[48] = 0x00;
 }
 
-MessageDispatcher_eNPR_FL_V02::~MessageDispatcher_eNPR_FL_V02() {
-
-}
-
 MessageDispatcher_eNPR_FL_V01::MessageDispatcher_eNPR_FL_V01(string di) :
     MessageDispatcher_eNPR(di) {
 
@@ -2823,10 +2803,6 @@ MessageDispatcher_eNPR_FL_V01::MessageDispatcher_eNPR_FL_V01(string di) :
     txStatus[49] = 0x00; // Vdacext
     txStatus[50] = 0x00;
     txStatus[51] = 0x00;
-}
-
-MessageDispatcher_eNPR_FL_V01::~MessageDispatcher_eNPR_FL_V01() {
-
 }
 
 MessageDispatcher_eNPR_LegacyEdr3_V04::MessageDispatcher_eNPR_LegacyEdr3_V04(string di) :
@@ -3432,10 +3408,10 @@ MessageDispatcher_eNPR_LegacyEdr3_V04::MessageDispatcher_eNPR_LegacyEdr3_V04(str
     boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
-    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 200pA    -> 0b000 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2); /*!< 2nA      -> 0b010 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3); /*!< 20nA     -> 0b011 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 1;
@@ -3675,10 +3651,6 @@ MessageDispatcher_eNPR_LegacyEdr3_V04::MessageDispatcher_eNPR_LegacyEdr3_V04(str
     txStatus[txStatusIdx++] = 0x00; // VInit
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-}
-
-MessageDispatcher_eNPR_LegacyEdr3_V04::~MessageDispatcher_eNPR_LegacyEdr3_V04() {
-
 }
 
 void MessageDispatcher_eNPR_LegacyEdr3_V04::initializeDevice() {
@@ -4556,10 +4528,10 @@ MessageDispatcher_eNPR_LegacyEdr3_V03::MessageDispatcher_eNPR_LegacyEdr3_V03(str
     boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    currentRangeCoders[0]->addMapItem(0); /*!< 200pA    -> 0b000 */
-    currentRangeCoders[0]->addMapItem(2); /*!< 2nA      -> 0b010 */
-    currentRangeCoders[0]->addMapItem(3); /*!< 20nA     -> 0b011 */
-    currentRangeCoders[0]->addMapItem(7); /*!< 200nA    -> 0b111 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 200pA    -> 0b000 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2); /*!< 2nA      -> 0b010 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3); /*!< 20nA     -> 0b011 */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(7); /*!< 200nA    -> 0b111 */
 
     /*! Voltage range */
     boolConfig.initialByte = 1;
@@ -4800,10 +4772,6 @@ MessageDispatcher_eNPR_LegacyEdr3_V03::MessageDispatcher_eNPR_LegacyEdr3_V03(str
     txStatus[txStatusIdx++] = 0x00; // VMin
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
-}
-
-MessageDispatcher_eNPR_LegacyEdr3_V03::~MessageDispatcher_eNPR_LegacyEdr3_V03() {
-
 }
 
 void MessageDispatcher_eNPR_LegacyEdr3_V03::initializeDevice() {

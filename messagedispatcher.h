@@ -91,6 +91,7 @@ public:
         Paused,
         Disconnected,
     } ConnectionStatus_t;
+
     /*****************\
      *  Ctor / Dtor  *
     \*****************/
@@ -108,6 +109,11 @@ public:
     virtual ErrorCodes_t pauseConnection(ConnectionStatus_t pauseFlag);
     void readDataFromDevice();
     void sendCommandsToDevice();
+
+    /*! Private functions */
+    static uint32_t getDeviceIndex(std::string serial);
+    static std::string getDeviceSerial(uint32_t index, bool excludeLetter = true);
+    static bool getDeviceCount(DWORD &numDevs);
 
     /****************\
      *  Tx methods  *
@@ -386,7 +392,7 @@ protected:
     std::vector <uint16_t> selectedCurrentRangesIdx;
     std::vector <RangedMeasurement_t> currentRangesArray;
     std::vector <uint16_t> defaultCurrentRangesIdx;
-    std::vector <BoolRandomArrayCoder *> currentRangeCoders;
+    std::vector <BoolCoder *> currentRangeCoders;
 
     uint32_t voltageRangesNum;
     uint16_t selectedVoltageRangeIdx = 0;
@@ -394,7 +400,6 @@ protected:
     std::vector <std::string> voltageRangesExtensions;
     uint16_t defaultVoltageRangeIdx = 0;
     BoolRandomArrayCoder * voltageRangeCoder;
-
 
     uint32_t voltageReferenceRangesNum = 0;
     uint16_t selectedVoltageReferenceRangeIdx = 0;
@@ -659,6 +664,7 @@ protected:
     FtdiEeprom * ftdiEeprom = nullptr;
     FT_HANDLE * ftdiRxHandle = nullptr;
     FT_HANDLE * ftdiTxHandle = nullptr;
+    bool syncFtdiFlag = false;
 
     bool connected = false;
     ConnectionStatus_t connectionStatus = ConnectionStatus_t::Disconnected;

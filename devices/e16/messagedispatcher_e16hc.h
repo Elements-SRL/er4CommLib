@@ -7,6 +7,149 @@
 namespace er4CommLib {
 #endif
 
+class MessageDispatcher_e16HC_V04 : public MessageDispatcher {
+public:
+    MessageDispatcher_e16HC_V04(std::string id);
+
+    virtual ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
+    virtual ErrorCodes_t getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) override;
+
+protected:
+    typedef struct {
+        int16_t offset[16];
+    } InfoStruct_t;
+
+    enum CurrentRanges {
+        CurrentRange200nA,
+        CurrentRange4uA,
+        CurrentRangesNum
+    };
+
+    enum VoltageRanges {
+        VoltageRange500mV,
+        VoltageRangesNum
+    };
+
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRange15V,
+        VoltageReferenceRangesNum
+    };
+
+    enum GpChannels {
+        GpChannelVoltageReference,
+        GpChannelVofs1,
+        GpChannelVofs2,
+        GpChannelVofs3,
+        GpChannelVofs4,
+        GpChannelVofs5,
+        GpChannelVofs6,
+        GpChannelVofs7,
+        GpChannelVofs8,
+        GpChannelVofs9,
+        GpChannelVofs10,
+        GpChannelVofs11,
+        GpChannelVofs12,
+        GpChannelVofs13,
+        GpChannelVofs14,
+        GpChannelVofs15,
+        GpChannelVofs16,
+        GpChannelsNum
+    };
+
+    enum SamplingRates {
+        SamplingRate1_25kHz,
+        SamplingRate5kHz,
+        SamplingRate10kHz,
+        SamplingRate20kHz,
+        SamplingRate50kHz,
+        SamplingRate100kHz,
+        SamplingRate200kHz,
+        SamplingRatesNum
+    };
+    enum OveramplingRatios {
+        OversamplingRatioX1,
+        OversamplingRatiosNum
+    };
+
+    enum VoltageStimulusLpfs {
+        VoltageStimulusLpfsNum = 0
+    };
+
+    enum VoltageReferenceLpfs {
+        VoltageReferenceLpf3Hz,
+        VoltageReferenceLpf180kHz,
+        VoltageReferenceLpfsNum
+    };
+
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange500mV,
+        ProtocolVoltageRangesNum
+    };
+
+    enum ProtocolTimeRanges {
+        ProtocolTimeRange2_10ms,
+        ProtocolTimeRange0to2_28,
+        ProtocolTimeRange1to2_28,
+        ProtocolTimeRange1orMore,
+        ProtocolTimeRangeSigned2_27,
+        ProtocolTimeRange1to2_25,
+        ProtocolTimeRangesNum
+    };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+
+    enum ProtocolVoltages {
+        ProtocolVHold,
+        ProtocolVPulse,
+        ProtocolVStep,
+        ProtocolVPk,
+        ProtocolVFinal,
+        ProtocolVInit,
+        ProtocolVoltagesNum
+    };
+
+    enum ProtocolTimes {
+        ProtocolTHold,
+        ProtocolTPulse,
+        ProtocolTStep,
+        ProtocolTRamp,
+        ProtocolTPe,
+        ProtocolTimesNum
+    };
+
+    enum ProtocolAdimensionals {
+        ProtocolN,
+        ProtocolNR,
+        ProtocolAdimensionalsNum
+    };
+
+    enum Leds {
+        LedGreen,
+        LedsNum
+    };
+
+    void initializeDevice() override;
+    bool checkProtocolValidity(std::string &message) override;
+    ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) override;
+    void updateVoltageReferenceOffsetCalibration();
+
+    /*! Device specific controls */
+    InfoStruct_t infoStruct;
+
+    Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
+};
+
 class MessageDispatcher_e16HC_V03 : public MessageDispatcher {
 public:
     MessageDispatcher_e16HC_V03(std::string id);

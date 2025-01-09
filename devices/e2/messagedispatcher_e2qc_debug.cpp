@@ -30,7 +30,7 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
-    txDataBytes = 51;
+    txDataBytes = 54;
 
     /**********************\
      * Available settings *
@@ -382,17 +382,17 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     protocolVoltageNames[ProtocolVInit] = "Vinit";
 
     protocolVoltageRanges.resize(ProtocolVoltagesNum);
-    protocolVoltageRanges[ProtocolVHold].step = 1.0;
+    protocolVoltageRanges[ProtocolVHold].step = voltageRangesArray[VoltageRange500mV].step;
     protocolVoltageRanges[ProtocolVHold].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVHold].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVHold].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVHold].unit = "V";
-    protocolVoltageRanges[ProtocolVPulse].step = 1.0;
+    protocolVoltageRanges[ProtocolVPulse].step = voltageRangesArray[VoltageRange500mV].step;
     protocolVoltageRanges[ProtocolVPulse].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVPulse].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVPulse].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPulse].unit = "V";
-    protocolVoltageRanges[ProtocolVStep].step = 1.0;
+    protocolVoltageRanges[ProtocolVStep].step = voltageRangesArray[VoltageRange500mV].step;
     protocolVoltageRanges[ProtocolVStep].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVStep].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVStep].prefix = UnitPfxMilli;
@@ -402,12 +402,12 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     protocolVoltageRanges[ProtocolVPk].max = 4.0*protocolVoltageRanges[ProtocolVPk].step;
     protocolVoltageRanges[ProtocolVPk].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPk].unit = "V";
-    protocolVoltageRanges[ProtocolVFinal].step = 1.0;
+    protocolVoltageRanges[ProtocolVFinal].step = voltageRangesArray[VoltageRange500mV].step;
     protocolVoltageRanges[ProtocolVFinal].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVFinal].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVFinal].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVFinal].unit = "V";
-    protocolVoltageRanges[ProtocolVInit].step = 1.0;
+    protocolVoltageRanges[ProtocolVInit].step = voltageRangesArray[VoltageRange500mV].step;
     protocolVoltageRanges[ProtocolVInit].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVInit].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVInit].prefix = UnitPfxMilli;
@@ -626,9 +626,12 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     currentRangeCoders.resize(4);
 
     boolConfig.initialByte = 2;
-    boolConfig.initialBit = 1;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    currentRangeCoders[0] = new BoolArrayCoder(boolConfig);
+    currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*! Unused */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*! 10nA */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(1); /*! 100nA */
 
     boolConfig.initialByte = 4;
     boolConfig.initialBit = 3;
@@ -636,9 +639,12 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     currentRangeCoders[1] = new BoolOneHotCoder(boolConfig);
 
     boolConfig.initialByte = 6;
-    boolConfig.initialBit = 1;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    currentRangeCoders[2] = new BoolArrayCoder(boolConfig);
+    currentRangeCoders[2] = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[2])->addMapItem(0); /*! Unused */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[2])->addMapItem(0); /*! 10nA */
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[2])->addMapItem(1); /*! 100nA */
 
     boolConfig.initialByte = 8;
     boolConfig.initialBit = 3;
@@ -835,12 +841,9 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     voltageReferenceRangeCoder->addMapItem(0); /*!< No controls -> 0b0 */
 
     /*! Voltage DAC Ext */
-    doubleConfig.initialByte = 2;
-    doubleConfig.initialBit = 4;
-    doubleConfig.bitsNum = 1;
-    // doubleConfig.initialByte = 51;
-    // doubleConfig.initialBit = 0;
-    // doubleConfig.bitsNum = 16;
+    doubleConfig.initialByte = 51;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 16;
     dacExtCoders.resize(voltageReferenceRangesNum);
 
     double vcm_mV = 1650.0;
@@ -885,11 +888,11 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     txStatus[txStatusIdx++] = 0x60; // CFG0
     txStatus[txStatusIdx++] = 0x4A; // CFG1
     txStatus[txStatusIdx++] = 0x40; // CFG2
-    txStatus[txStatusIdx++] = 0x48; // CFG3
+    txStatus[txStatusIdx++] = 0x09; // CFG3
     txStatus[txStatusIdx++] = 0x63; // CFG4
     txStatus[txStatusIdx++] = 0x4A; // CFG5
     txStatus[txStatusIdx++] = 0x40; // CFG6
-    txStatus[txStatusIdx++] = 0x48; // CFG7
+    txStatus[txStatusIdx++] = 0x08; // CFG7
     txStatus[txStatusIdx++] = 0x20; // CFG8
     txStatus[txStatusIdx++] = 0x00; // CFG9
     txStatus[txStatusIdx++] = 0x00; // VOfs1
@@ -931,6 +934,9 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     txStatus[txStatusIdx++] = 0x00; // Vfinal
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VInit
+    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x00; // VDACext
+    txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00;
 }
 

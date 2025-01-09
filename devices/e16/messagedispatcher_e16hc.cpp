@@ -11,7 +11,7 @@ MessageDispatcher_e16HC_V04::MessageDispatcher_e16HC_V04(string id) :
      * Communication format *
     \************************/
 
-    // syncFtdiFlag = true;
+    syncFtdiFlag = true;
     ftdiEepromId = FtdiEepromId56;
     rxChannel = 'A';
     txChannel = 'A';

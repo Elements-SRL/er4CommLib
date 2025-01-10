@@ -96,61 +96,62 @@ namespace er4CommLib {
  * \brief Enumerates the device types that can be handled by er4CommLib.
  */
 typedef enum {
-    DeviceE1bEL03cEDR3,         /*!< e1b ELo3c chip (Legacy version for EDR3). */
-    DeviceE1PlusEL03cEDR3,      /*!< e1+ EL03f chip (Legacy version for EDR3). */
-    DeviceE1LightEL03cEDR3,     /*!< e1Light EL03f chip (Legacy version for EDR3). */
-    DeviceE1HcEL03cEDR3,        /*!< e1HC EL03f chip (Legacy version for EDR3) */
-    DeviceE1PlusEL03fEDR3,      /*!< e1+ EL03f chip (Legacy version for EDR3). */
-    DeviceE1LightEL03fEDR3,     /*!< e1Light EL03f chip (Legacy version for EDR3). */
-    DeviceE1HcEL03fEDR3,        /*!< e1HC EL03f chip (Legacy version for EDR3) */
-    DeviceE16eEDR3,             /*!< e16e (Legacy version for EDR3). */
-    DeviceE16eArtix7PCBV01,     /*!< e16e Artix7 PCB V01. */
-    DeviceE16ETHEDR3,           /*!< e16ETH (LegacyVersion for EDR3). */
-    DeviceE16HC_V01,            /*!< e16HC (no voltage amplifier). */
-    DeviceE16HC_V02,            /*!< e16HC (no DAC readout). */
-    DeviceE16HC_V03,            /*!< e16HC with EL06de. */
-    DeviceE16HC_V04,            /*!< e16HC with EL06f. */
-    DeviceENPREDR3_V03,         /*!< eNPR (Legacy version for EDR3). */
-    DeviceENPREDR3_V04,         /*!< eNPR (Legacy version for EDR3). */
-    DeviceENPR,                 /*!< eNPR. */
-    DeviceENPRHC_V01,           /*!< eNPR-HC. */
-    DeviceENPRHC_V02,           /*!< eNPR-HC with 200ksps option. */
-    DeviceE2QcDebug,            /*!< eNPR debug device for chip QC01a */
-    DeviceE4nEDR3_V04,          /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
-    DeviceE4nEDR3_V05,          /*!< e4 Orbit mini (Legacy version for EDR3). */
-    DeviceE4eEDR3_V05,          /*!< e4 Elements (Legacy version for EDR3). */
-    DeviceE4n_V01,              /*!< e4 Orbit mini. */
-    DeviceE4e_V01,              /*!< e4 Elements version. */
-    DeviceE16FastPulses_V01,    /*!< e16 Orbit customized for fast pulses. */
-    DeviceE16FastPulses_V02,    /*!< e16 Orbit customized for fast pulse trains. */
-    DeviceE16FastPulsesEDR3,    /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
-    DeviceE16n,                 /*!< e16 Orbit TC. */
-    DeviceE2HC_V01,             /*!< e2HC. SR up to 50kHz */
-    DeviceE2HC_V02,             /*!< e2HC. */
-    DeviceDlp,                  /*!< debug dlp. */
-    TestboardEL06b,             /*!< testboard chip EL06b */
-    TestboardEL06c,             /*!< testboard chip EL06c */
-    TestboardEL06dEL06e,        /*!< testboard chip EL06d and EL06e */
-    TestboardEL06f,             /*!< testboard chip EL06f */
-    DeviceE1E4nBased,           /*!< e4n with only one channel */
-    DeviceE2HCExtAdc,           /*!< e2HC prototype (external ADC). */
-    DeviceE2HCIntAdc_V01,       /*!< e2HC prototype (internal ADC) up to 50kHz sampling rate. */
-    DeviceE2HCIntAdc_V02,       /*!< e2HC prototype (internal ADC). */
-    DeviceENPRFairyLight_V01,   /*!< eNPR prototype for Fairy Light project with DAC ext control and only ULN mode. */
-    DeviceENPRFairyLight_V02,   /*!< eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes. */
-    DeviceENPR2Channels_V01,    /*!< eNPR prototype with 2 channels and sinusoidal waveforms. */
-    DeviceENPR2Channels_V02,    /*!< eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms. */
-    DeviceOrbitMiniSine_V01,    /*!< Orbit mini prototype with additional sinusoidal waveforms. */
-    DeviceE16nSine_V01,         /*!< e16 Orbit TC with additional sinusoidal waveforms. */
-    DeviceENPRNanopipette_V01,  /*!< eNPR prototype with 2 channels with independent current ranges and PWM control. */
-    DeviceE1ULN_V01,            /*!< e1ULN prototype with eNPR PCB. */
-    DeviceE4TtlPulseTrain_V01,  /*!< e4 customized with ttl pulse train. */
-    DeviceE2Uln_V01,            /*!< e4 that returns 2 current channels measured in ULN mode */
-    DeviceFakeENPR,             /*!< Fake eNPR. */
-    DeviceFakeENPRHC,           /*!< Fake eNPR-HC. */
-    DeviceFakeE16n,             /*!< Fake e16 Orbit TC. */
-    DeviceFakeE16FastPulses,    /*!< Fake e16 Orbit customized for fast pulses. */
-    DeviceUnknown,              /*!< Invalid item used only for initiliazation purposes. */
+    DeviceE1bEL03cEDR3,             /*!< e1b ELo3c chip (Legacy version for EDR3). */
+    DeviceE1PlusEL03cEDR3,          /*!< e1+ EL03f chip (Legacy version for EDR3). */
+    DeviceE1LightEL03cEDR3,         /*!< e1Light EL03f chip (Legacy version for EDR3). */
+    DeviceE1HcEL03cEDR3,            /*!< e1HC EL03f chip (Legacy version for EDR3) */
+    DeviceE1PlusEL03fEDR3,          /*!< e1+ EL03f chip (Legacy version for EDR3). */
+    DeviceE1LightEL03fEDR3,         /*!< e1Light EL03f chip (Legacy version for EDR3). */
+    DeviceE1HcEL03fEDR3,            /*!< e1HC EL03f chip (Legacy version for EDR3) */
+    DeviceE16eEDR3,                 /*!< e16e (Legacy version for EDR3). */
+    DeviceE16eArtix7PCBV01,         /*!< e16e Artix7 PCB V01. */
+    DeviceE16ETHEDR3,               /*!< e16ETH (LegacyVersion for EDR3). */
+    DeviceE16HC_PCB_V00_V01,        /*!< e16HC (no voltage amplifier). */
+    DeviceE16HC_PCB_V00_V02,        /*!< e16HC (no DAC readout). */
+    DeviceE16HC_PCB_V00_V03,        /*!< e16HC (no DAC readout), with 16 voltage offset channels. */
+    DeviceE16HC_PCB_V01_V01,        /*!< e16HC with EL06de. */
+    DeviceE16HC_PCB_V01_EL06f_V01,  /*!< e16HC with EL06f. */
+    DeviceENPREDR3_V03,             /*!< eNPR (Legacy version for EDR3). */
+    DeviceENPREDR3_V04,             /*!< eNPR (Legacy version for EDR3). */
+    DeviceENPR,                     /*!< eNPR. */
+    DeviceENPRHC_V01,               /*!< eNPR-HC. */
+    DeviceENPRHC_V02,               /*!< eNPR-HC with 200ksps option. */
+    DeviceE2QcDebug,                /*!< eNPR debug device for chip QC01a */
+    DeviceE4nEDR3_V04,              /*!< e4 Orbit mini with old ramp protocols (Legacy version for EDR3). */
+    DeviceE4nEDR3_V05,              /*!< e4 Orbit mini (Legacy version for EDR3). */
+    DeviceE4eEDR3_V05,              /*!< e4 Elements (Legacy version for EDR3). */
+    DeviceE4n_V01,                  /*!< e4 Orbit mini. */
+    DeviceE4e_V01,                  /*!< e4 Elements version. */
+    DeviceE16FastPulses_V01,        /*!< e16 Orbit customized for fast pulses. */
+    DeviceE16FastPulses_V02,        /*!< e16 Orbit customized for fast pulse trains. */
+    DeviceE16FastPulsesEDR3,        /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
+    DeviceE16n,                     /*!< e16 Orbit TC. */
+    DeviceE2HC_V01,                 /*!< e2HC. SR up to 50kHz */
+    DeviceE2HC_V02,                 /*!< e2HC. */
+    DeviceDlp,                      /*!< debug dlp. */
+    TestboardEL06b,                 /*!< testboard chip EL06b */
+    TestboardEL06c,                 /*!< testboard chip EL06c */
+    TestboardEL06dEL06e,            /*!< testboard chip EL06d and EL06e */
+    TestboardEL06f,                 /*!< testboard chip EL06f */
+    DeviceE1E4nBased,               /*!< e4n with only one channel */
+    DeviceE2HCExtAdc,               /*!< e2HC prototype (external ADC). */
+    DeviceE2HCIntAdc_V01,           /*!< e2HC prototype (internal ADC) up to 50kHz sampling rate. */
+    DeviceE2HCIntAdc_V02,           /*!< e2HC prototype (internal ADC). */
+    DeviceENPRFairyLight_V01,       /*!< eNPR prototype for Fairy Light project with DAC ext control and only ULN mode. */
+    DeviceENPRFairyLight_V02,       /*!< eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes. */
+    DeviceENPR2Channels_V01,        /*!< eNPR prototype with 2 channels and sinusoidal waveforms. */
+    DeviceENPR2Channels_V02,        /*!< eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms. */
+    DeviceOrbitMiniSine_V01,        /*!< Orbit mini prototype with additional sinusoidal waveforms. */
+    DeviceE16nSine_V01,             /*!< e16 Orbit TC with additional sinusoidal waveforms. */
+    DeviceENPRNanopipette_V01,      /*!< eNPR prototype with 2 channels with independent current ranges and PWM control. */
+    DeviceE1ULN_V01,                /*!< e1ULN prototype with eNPR PCB. */
+    DeviceE4TtlPulseTrain_V01,      /*!< e4 customized with ttl pulse train. */
+    DeviceE2Uln_V01,                /*!< e4 that returns 2 current channels measured in ULN mode */
+    DeviceFakeENPR,                 /*!< Fake eNPR. */
+    DeviceFakeENPRHC,               /*!< Fake eNPR-HC. */
+    DeviceFakeE16n,                 /*!< Fake e16 Orbit TC. */
+    DeviceFakeE16FastPulses,        /*!< Fake e16 Orbit customized for fast pulses. */
+    DeviceUnknown,                  /*!< Invalid item used only for initiliazation purposes. */
     DevicesNum
 } DeviceTypes_t;
 

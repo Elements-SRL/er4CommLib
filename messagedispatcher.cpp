@@ -72,11 +72,12 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16e1L, 12, DeviceE16eEDR3},                                         //    3, 13, 12 : e16e (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16eArtix7PCBV01, 129, DeviceE16eArtix7PCBV01},                      //    3, 12,129 : e16e Artix7 PCB V01
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16HCREMI8, 4, DeviceE16HC_V01},                                     //    3, 10,  4 : e16HC No voltage amplifier
-    {DeviceVersionE16, DeviceSubversionE16HCREMI8, 5, DeviceE16HC_V02},                                     //    3, 10,  5 : e16HC No DAC readout
-    {DeviceVersionE16, DeviceSubversionE16HC, 6, DeviceE16HC_V02},                                          //    3, 11,  6 : e16HC No DAC readout
-    {DeviceVersionE16, DeviceSubversionE16HC, 7, DeviceE16HC_V03},                                          //    3, 11,  7 : e16HC with EL06de
-    {DeviceVersionE16, DeviceSubversionE16HCEL06f, 129, DeviceE16HC_V04},                                   //    3, 14,129 : e16HC with EL06f
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 4, DeviceE16HC_PCB_V00_V01},                           //    3, 10,  4 : e16HC No voltage amplifier
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 5, DeviceE16HC_PCB_V00_V02},                           //    3, 10,  5 : e16HC No DAC readout
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 5, DeviceE16HC_PCB_V00_V03},                           //    3, 10,134 : e16HC No DAC readout, with 16 voltage offset channels
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01, 6, DeviceE16HC_PCB_V00_V02},                           //    3, 11,  6 : e16HC No DAC readout
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01, 7, DeviceE16HC_PCB_V01_V01},                           //    3, 11,  7 : e16HC with EL06de
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01_EL06f, 129, DeviceE16HC_PCB_V01_EL06f_V01},             //    3, 14,129 : e16HC with EL06f
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   11,  1,130 : e2HC SR up to 50kHz
     {DeviceVersionE2, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                           //   11,  1,131 : e2HC
     {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                                  //    6,  3,  4 : debug dlp
@@ -356,20 +357,24 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_e16ETH_LegacyEdr3_V01(deviceId);
         break;
 
-    case DeviceE16HC_V01:
-        messageDispatcher = new MessageDispatcher_e16HC_V01(deviceId);
+    case DeviceE16HC_PCB_V00_V01:
+        messageDispatcher = new MessageDispatcher_e16HC_PCBV00_V01(deviceId);
         break;
 
-    case DeviceE16HC_V02:
-        messageDispatcher = new MessageDispatcher_e16HC_V02(deviceId);
+    case DeviceE16HC_PCB_V00_V02:
+        messageDispatcher = new MessageDispatcher_e16HC_PCBV00_V02(deviceId);
         break;
 
-    case DeviceE16HC_V03:
-        messageDispatcher = new MessageDispatcher_e16HC_V03(deviceId);
+    case DeviceE16HC_PCB_V00_V03:
+        messageDispatcher = new MessageDispatcher_e16HC_PCBV00_V03(deviceId);
         break;
 
-    case DeviceE16HC_V04:
-        messageDispatcher = new MessageDispatcher_e16HC_V04(deviceId);
+    case DeviceE16HC_PCB_V01_V01:
+        messageDispatcher = new MessageDispatcher_e16HC_PCBV01_V01(deviceId);
+        break;
+
+    case DeviceE16HC_PCB_V01_EL06f_V01:
+        messageDispatcher = new MessageDispatcher_e16HC_PCBV01_EL06f_V01(deviceId);
         break;
 
     case DeviceE2HC_V01:

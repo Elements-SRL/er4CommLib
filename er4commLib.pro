@@ -11,6 +11,7 @@ CONFIG(release, debug|release) {
     TARGET = er4commlib
 }
 
+DEFINES += DEBUG_PRINT
 TEMPLATE = lib
 CONFIG += c++17
 

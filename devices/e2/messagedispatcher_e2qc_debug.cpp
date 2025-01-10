@@ -91,6 +91,9 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     samplingRatesArray[SamplingRate1_25kHz].value = 1.25;
     samplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate2_5kHz].value = 2.5;
+    samplingRatesArray[SamplingRate2_5kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate2_5kHz].unit = "Hz";
     samplingRatesArray[SamplingRate5kHz].value = 5.0;
     samplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate5kHz].unit = "Hz";
@@ -115,6 +118,9 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     realSamplingRatesArray[SamplingRate1_25kHz].value = 1.25e3/1024.0;
     realSamplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate2_5kHz].value = 1.25e3/512.0;
+    realSamplingRatesArray[SamplingRate2_5kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate2_5kHz].unit = "Hz";
     realSamplingRatesArray[SamplingRate5kHz].value = 1.25e3/256.0;
     realSamplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate5kHz].unit = "Hz";
@@ -138,6 +144,9 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     integrationStepArray[SamplingRate1_25kHz].value = 1024.0/1.25;
     integrationStepArray[SamplingRate1_25kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate1_25kHz].unit = "s";
+    integrationStepArray[SamplingRate2_5kHz].value = 512.0/1.25;
+    integrationStepArray[SamplingRate2_5kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate2_5kHz].unit = "s";
     integrationStepArray[SamplingRate5kHz].value = 256.0/1.25;
     integrationStepArray[SamplingRate5kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate5kHz].unit = "s";
@@ -219,9 +228,9 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     customOptionsDescriptions.resize(customOptionsNum);
     customOptionsDescriptions[CustomOptionClockDividerDC].resize(4);
     customOptionsDescriptions[CustomOptionClockDividerDC][0] = "DC ck/1";
-    customOptionsDescriptions[CustomOptionClockDividerDC][1] = "DC ck/1";
-    customOptionsDescriptions[CustomOptionClockDividerDC][2] = "DC ck/1";
-    customOptionsDescriptions[CustomOptionClockDividerDC][3] = "DC ck/1";
+    customOptionsDescriptions[CustomOptionClockDividerDC][1] = "DC ck/2";
+    customOptionsDescriptions[CustomOptionClockDividerDC][2] = "DC ck/4";
+    customOptionsDescriptions[CustomOptionClockDividerDC][3] = "DC ck/8";
     customOptionsDefault.resize(customOptionsNum);
     customOptionsDefault[CustomOptionClockDividerDC] = 0;
 
@@ -664,9 +673,10 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     boolConfig.bitsNum = 4;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
     samplingRateCoder->addMapItem(0); /*!< 1.25kHz  -> 0b0000 */
-    samplingRateCoder->addMapItem(1); /*!< 5kHz     -> 0b0001 */
-    samplingRateCoder->addMapItem(2); /*!< 10kHz    -> 0b0010 */
-    samplingRateCoder->addMapItem(3); /*!< 20kHz    -> 0b0011 */
+    samplingRateCoder->addMapItem(1); /*!< 2.5kHz   -> 0b0001 */
+    samplingRateCoder->addMapItem(2); /*!< 5kHz     -> 0b0010 */
+    samplingRateCoder->addMapItem(3); /*!< 10kHz    -> 0b0011 */
+    samplingRateCoder->addMapItem(4); /*!< 20kHz    -> 0b0100 */
     samplingRateCoder->addMapItem(8); /*!< 50kHz    -> 0b1000 */
     samplingRateCoder->addMapItem(9); /*!< 100kHz   -> 0b1001 */
     samplingRateCoder->addMapItem(10); /*!< 200kHz  -> 0b1010 */
@@ -806,7 +816,7 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
     /*! Internal DAC filter */
-    boolConfig.initialByte = 4;
+    boolConfig.initialByte = 8;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 2;
     dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
@@ -886,11 +896,11 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
     txStatus[txStatusIdx++] = 0x60; // CFG0
-    txStatus[txStatusIdx++] = 0x4A; // CFG1
+    txStatus[txStatusIdx++] = 0x0A; // CFG1
     txStatus[txStatusIdx++] = 0x40; // CFG2
     txStatus[txStatusIdx++] = 0x09; // CFG3
     txStatus[txStatusIdx++] = 0x63; // CFG4
-    txStatus[txStatusIdx++] = 0x4A; // CFG5
+    txStatus[txStatusIdx++] = 0x0A; // CFG5
     txStatus[txStatusIdx++] = 0x40; // CFG6
     txStatus[txStatusIdx++] = 0x08; // CFG7
     txStatus[txStatusIdx++] = 0x20; // CFG8

@@ -225,14 +225,19 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     customOptionsDefault.resize(customOptionsNum);
     customOptionsDefault[CustomOptionClockDividerAC] = 0;
     customOptionsNames[CustomOptionClockDividerDC] = "Clock Divider DC";
-    customOptionsDescriptions.resize(customOptionsNum);
     customOptionsDescriptions[CustomOptionClockDividerDC].resize(4);
     customOptionsDescriptions[CustomOptionClockDividerDC][0] = "DC ck/1";
     customOptionsDescriptions[CustomOptionClockDividerDC][1] = "DC ck/2";
     customOptionsDescriptions[CustomOptionClockDividerDC][2] = "DC ck/4";
     customOptionsDescriptions[CustomOptionClockDividerDC][3] = "DC ck/8";
-    customOptionsDefault.resize(customOptionsNum);
     customOptionsDefault[CustomOptionClockDividerDC] = 0;
+    customOptionsNames[CustomOptionRangeDivider] = "Range Divider";
+    customOptionsDescriptions[CustomOptionRangeDivider].resize(4);
+    customOptionsDescriptions[CustomOptionRangeDivider][0] = "range/1";
+    customOptionsDescriptions[CustomOptionRangeDivider][1] = "range/4";
+    customOptionsDescriptions[CustomOptionRangeDivider][2] = "range/16";
+    customOptionsDescriptions[CustomOptionRangeDivider][3] = "range/64";
+    customOptionsDefault[CustomOptionRangeDivider] = 0;
 
     customDoublesNum = 2;
     customDoublesNames.resize(customDoublesNum);
@@ -691,6 +696,11 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 2;
     customOptionsCoders[CustomOptionClockDividerDC] = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 2;
+    customOptionsCoders[CustomOptionRangeDivider] = new BoolArrayCoder(boolConfig);
 
     customDoublesCoders.resize(customDoublesNum);
     doubleConfig.initialByte = 3;

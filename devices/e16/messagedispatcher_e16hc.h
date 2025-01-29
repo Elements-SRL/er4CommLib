@@ -281,9 +281,6 @@ class MessageDispatcher_e16HC_PCBV00_V03 : public MessageDispatcher {
 public:
     MessageDispatcher_e16HC_PCBV00_V03(std::string id);
 
-    virtual ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
-    virtual ErrorCodes_t getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) override;
-
 protected:
     typedef struct {
         int16_t offset[16];

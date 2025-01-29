@@ -118,6 +118,7 @@ protected:
     enum CustomOptions {
         CustomOptionClockDividerAC,
         CustomOptionClockDividerDC,
+        CustomOptionRangeDivider,
         CustomOptionsNum
     };
 

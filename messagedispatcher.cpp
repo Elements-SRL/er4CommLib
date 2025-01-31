@@ -2959,6 +2959,8 @@ void MessageDispatcher::initializeDevice() {
     for (unsigned int adimensionalIdx = 0; adimensionalIdx < protocolAdimensionalsNum; adimensionalIdx++) {
         this->setProtocolAdimensional(adimensionalIdx, protocolAdimensionalDefault[adimensionalIdx], false);
     }
+
+    this->applyDacExt({0.0, UnitPfxNone, "V"}, false);
 }
 
 void MessageDispatcher::initializeLsbNoise(bool nullValues) {

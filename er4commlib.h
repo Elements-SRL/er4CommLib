@@ -886,10 +886,12 @@ ErrorCodes_t convertGpValue(
  * This command is useful to get rid of data acquired during the device configuration (e.g. during setting of sampling rate or digital offset compensation).
  * Calling this method if no device is connected will return an error code.
  *
+ * \param purgeAlsoChannel [in] false to purge only the data accumulated by the commlib, true to purge also the USB channel.
  * \return #EdlErrorCode_t Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t purgeData(ER4CL_ARGVOID);
+ErrorCodes_t purgeData(
+    ER4CL_ARGIN bool purgeAlsoChannel = false);
 
 /*! \brief Get the number of channels for the device.
  *

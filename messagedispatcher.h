@@ -218,7 +218,7 @@ public:
     ErrorCodes_t getQueueStatus(QueueStatus_t &status);
     ErrorCodes_t getDataPackets(uint16_t * &data, unsigned int packetsNumber, unsigned int &packetsRead);
     ErrorCodes_t getAllDataPackets(uint16_t * &data, uint16_t * &unfilteredData, unsigned int packetsNumber, unsigned int &packetsRead);
-    ErrorCodes_t purgeData();
+    ErrorCodes_t purgeData(bool purgeAlsoChannel = false);
 
     ErrorCodes_t getChannelsNumber(uint32_t &voltageChannelsNumber, uint32_t &currentChannelsNumber, uint32_t &gpChannelsNumber);
 

@@ -1071,8 +1071,8 @@ ErrorCodes_t readAllData(
     return ret;
 }
 
-ErrorCodes_t purgeData() {
-    MASS_CALL0(purgeData)
+ErrorCodes_t purgeData(bool purgeAlsoChannel) {
+    MASS_CALL1(purgeData, purgeAlsoChannel)
 }
 
 ErrorCodes_t getChannelsNumber(

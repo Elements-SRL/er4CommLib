@@ -1976,7 +1976,7 @@ ErrorCodes_t MessageDispatcher::getAllDataPackets(uint16_t * &data, uint16_t * &
     return ret;
 }
 
-ErrorCodes_t MessageDispatcher::purgeData() {
+ErrorCodes_t MessageDispatcher::purgeData(bool purgeAlsoChannel) {
     unique_lock <mutex> readDataMtxLock(readDataMtx);
     /*! Performs a fake read of all available data samples. */
     outputBufferReadOffset = outputBufferWriteOffset;
@@ -1985,7 +1985,9 @@ ErrorCodes_t MessageDispatcher::purgeData() {
     bufferDataLossFlag = false;
     bufferSaturationFlag = false;
     unique_lock <mutex> connectionMutexLock(connectionMutex);
-    FT_Purge(ftdiRxHandle, FT_PURGE_RX);
+    if (purgeAlsoChannel) {
+        FT_Purge(ftdiRxHandle, FT_PURGE_RX);
+    }
     return Success;
 }
 

@@ -172,9 +172,9 @@ MessageDispatcher_e16e_Artix7_PCBV01_V01::MessageDispatcher_e16e_Artix7_PCBV01_V
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
-    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].value = 1.0;
-    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].prefix = UnitPfxKilo;
-    voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].unit = "Hz";
+    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].value = 100.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].prefix = UnitPfxNone;
+    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].unit = "Hz";
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";

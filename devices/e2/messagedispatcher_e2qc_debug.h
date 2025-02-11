@@ -129,6 +129,11 @@ protected:
     InfoStruct_t infoStruct;
 };
 
+class MessageDispatcher_e2qc_debug_interval_vcm : public MessageDispatcher_e2qc_debug {
+public:
+    MessageDispatcher_e2qc_debug_interval_vcm(std::string di);
+};
+
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER
 };
 #endif

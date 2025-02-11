@@ -639,7 +639,7 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     /*! Current range */
     currentRangeCoders.resize(4);
 
-    boolConfig.initialByte = 2;
+    boolConfig.initialByte = 3;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
@@ -647,7 +647,7 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*! 10nA */
     static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(1); /*! 100nA */
 
-    boolConfig.initialByte = 4;
+    boolConfig.initialByte = 5;
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 3;
     currentRangeCoders[1] = new BoolOneHotCoder(boolConfig);
@@ -673,27 +673,27 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
 
     /*! Sampling rate */
-    boolConfig.initialByte = 9;
-    boolConfig.initialBit = 1;
-    boolConfig.bitsNum = 4;
-    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(0); /*!< 1.25kHz  -> 0b0000 */
-    samplingRateCoder->addMapItem(1); /*!< 2.5kHz   -> 0b0001 */
-    samplingRateCoder->addMapItem(2); /*!< 5kHz     -> 0b0010 */
-    samplingRateCoder->addMapItem(3); /*!< 10kHz    -> 0b0011 */
-    samplingRateCoder->addMapItem(4); /*!< 20kHz    -> 0b0100 */
-    samplingRateCoder->addMapItem(8); /*!< 50kHz    -> 0b1000 */
-    samplingRateCoder->addMapItem(9); /*!< 100kHz   -> 0b1001 */
-    samplingRateCoder->addMapItem(10); /*!< 200kHz  -> 0b1010 */
-
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 6;
+    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
+    samplingRateCoder->addMapItem(0x30); /*!< 1.25kHz  -> BW 20kHz */
+    samplingRateCoder->addMapItem(0x31); /*!< 2.5kHz   -> BW 20kHz */
+    samplingRateCoder->addMapItem(0x32); /*!< 5kHz     -> BW 20kHz */
+    samplingRateCoder->addMapItem(0x33); /*!< 10kHz    -> BW 20kHz */
+    samplingRateCoder->addMapItem(0x34); /*!< 20kHz    -> BW 20kHz */
+    samplingRateCoder->addMapItem(0x08); /*!< 50kHz    -> BW 100kHz */
+    samplingRateCoder->addMapItem(0x09); /*!< 100kHz   -> BW 100kHz */
+    samplingRateCoder->addMapItem(0x0a); /*!< 200kHz   -> BW 100kHz */
+
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 0;
     boolConfig.bitsNum = 2;
     customOptionsCoders.resize(customOptionsNum);
     customOptionsCoders[CustomOptionClockDividerAC] = new BoolArrayCoder(boolConfig);
 
-    boolConfig.initialByte = 1;
-    boolConfig.initialBit = 3;
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 2;
     boolConfig.bitsNum = 2;
     customOptionsCoders[CustomOptionClockDividerDC] = new BoolArrayCoder(boolConfig);
 
@@ -703,7 +703,7 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     customOptionsCoders[CustomOptionRangeDivider] = new BoolArrayCoder(boolConfig);
 
     customDoublesCoders.resize(customDoublesNum);
-    doubleConfig.initialByte = 3;
+    doubleConfig.initialByte = 4;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 7;
     doubleConfig.minValue = -64.0;
@@ -826,8 +826,8 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
     /*! Internal DAC filter */
-    boolConfig.initialByte = 8;
-    boolConfig.initialBit = 1;
+    boolConfig.initialByte = 9;
+    boolConfig.initialBit = 3;
     boolConfig.bitsNum = 2;
     dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
     dacIntFilterCoder->addMapItem(0); /*!< 1kHz   -> 0b00 */
@@ -906,14 +906,14 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
     txStatus[txStatusIdx++] = 0x60; // CFG0
-    txStatus[txStatusIdx++] = 0x0A; // CFG1
-    txStatus[txStatusIdx++] = 0x40; // CFG2
-    txStatus[txStatusIdx++] = 0x09; // CFG3
-    txStatus[txStatusIdx++] = 0x63; // CFG4
-    txStatus[txStatusIdx++] = 0x0A; // CFG5
+    txStatus[txStatusIdx++] = 0x00; // CFG1
+    txStatus[txStatusIdx++] = 0x1A; // CFG2
+    txStatus[txStatusIdx++] = 0x40; // CFG3
+    txStatus[txStatusIdx++] = 0x08; // CFG4
+    txStatus[txStatusIdx++] = 0x1A; // CFG5
     txStatus[txStatusIdx++] = 0x40; // CFG6
     txStatus[txStatusIdx++] = 0x08; // CFG7
-    txStatus[txStatusIdx++] = 0x20; // CFG8
+    txStatus[txStatusIdx++] = 0x26; // CFG8
     txStatus[txStatusIdx++] = 0x00; // CFG9
     txStatus[txStatusIdx++] = 0x00; // VOfs1
     txStatus[txStatusIdx++] = 0x00;
@@ -1167,4 +1167,10 @@ bool MessageDispatcher_e2qc_debug::checkProtocolValidity(string &message) {
         break;
     }
     return validFlag;
+}
+
+MessageDispatcher_e2qc_debug_interval_vcm::MessageDispatcher_e2qc_debug_interval_vcm(string di) :
+    MessageDispatcher_e2qc_debug(di) {
+
+    txStatus[5] = 0x09; // CFG4 activate internal vcm for channel 1
 }

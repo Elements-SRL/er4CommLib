@@ -774,8 +774,6 @@ protected:
     std::thread rxThread;
     std::thread txThread;
 
-    mutable std::mutex connectionMutex;
-
     std::condition_variable rxMsgBufferNotEmpty;
     std::condition_variable rxMsgBufferNotFull;
 

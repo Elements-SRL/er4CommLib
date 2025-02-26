@@ -1,5 +1,7 @@
 #include "messagedispatcher.h"
 
+#include "connectionmutex.h"
+
 #include "messagedispatcher_e1plus.h"
 #include "messagedispatcher_e1light.h"
 #include "messagedispatcher_e1hc.h"

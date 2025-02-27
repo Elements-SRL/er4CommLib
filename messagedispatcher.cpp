@@ -2950,6 +2950,9 @@ ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel
 }
 
 void MessageDispatcher::initializeDevice() {
+    this->setVoltageStimulusLpf(0, false);
+    this->setVoltageReferenceLpf(0, false);
+
     this->selectVoltageProtocol(defaultProtocol);
 
     for (unsigned int voltageIdx = 0; voltageIdx < protocolVoltagesNum; voltageIdx++) {

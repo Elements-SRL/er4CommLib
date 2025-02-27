@@ -16,8 +16,13 @@ TEMPLATE = lib
 CONFIG += c++17
 
 # DEFINES += ER4COMMLIB_LABVIEW_WRAPPER
-#DEFINES += ER4COMMLIB_PYTHON_WRAPPER
-#DEFINES += ER4COMMLIB_LIBRARY
+# DEFINES += ER4COMMLIB_DLL
+
+contains(DEFINES, ER4COMMLIB_DLL) {
+    # build dynamically
+    TARGET = er4commlibDLL
+    DEFINES += ER4COMMLIB_LIBRARY
+}
 
 contains(DEFINES, ER4COMMLIB_LABVIEW_WRAPPER) {
     # create .dll
@@ -27,19 +32,6 @@ contains(DEFINES, ER4COMMLIB_LABVIEW_WRAPPER) {
     SOURCES += er4commlib_labview.cpp
     HEADERS += er4commlib_labview.h
     include($$(LABVIEW_TO_C_PATH)/includelabview.pri)
-}
-
-contains(DEFINES, ER4COMMLIB_PYTHON_WRAPPER) {
-    # create .dll
-    TARGET = er4CommLib_python
-    DEFINES += ER4COMMLIB_LIBRARY
-    #DEFINES += OUTPUT_DATA_ONLY_FOR_ACTIVE_CHANNELS
-    CONFIG -= app_bundle
-
-    SOURCES += er4commlib_python.cpp
-    LIBS += -L"$$(LOCAL_PYTHON_3_10_7)\libs" -lpython310
-    INCLUDEPATH += $$(LOCAL_PYBIND_11)\include \
-            "$$(LOCAL_PYTHON_3_10_7)\include"
 }
 
 ! contains(DEFINES, ER4COMMLIB_LIBRARY) {

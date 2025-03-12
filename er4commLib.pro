@@ -68,6 +68,7 @@ SOURCES += \
     devices/e2/messagedispatcher_e2qc_debug.cpp \
     devices/e4/messagedispatcher_e4n.cpp \
     devices/e4/messagedispatcher_e4e.cpp \
+    devices/e4/messagedispatcher_e4qc01a.cpp \
     devices/e16/messagedispatcher_e16e.cpp \
     devices/e16/messagedispatcher_e16n.cpp \
     devices/e16/messagedispatcher_e16fastpulses.cpp \
@@ -106,6 +107,7 @@ HEADERS += \
     devices/e2/messagedispatcher_e2qc_debug.h \
     devices/e4/messagedispatcher_e4n.h \
     devices/e4/messagedispatcher_e4e.h \
+    devices/e4/messagedispatcher_e4qc01a.h \
     devices/e16/messagedispatcher_e16e.h \
     devices/e16/messagedispatcher_e16n.h \
     devices/e16/messagedispatcher_e16fastpulses.h \

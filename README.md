@@ -18,4 +18,4 @@ This version has been modified with respect to the library distributed by FTDI, 
 # BUILD
 Open the project er4commLib.pro with Qt creator and click build
 ## Prebuilt
-The prebuilt library is available on Elements website [elements-ic.com/emcr/#api](https://elements-ic.com/edr4/#api)
+The prebuilt library is available on Elements website [elements-ic.com/edr4/#api](https://elements-ic.com/edr4/#api)

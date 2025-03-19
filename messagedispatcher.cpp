@@ -2899,7 +2899,7 @@ ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel
             return ErrorFtdiConfigurationFailed;
         }
 
-        Sleep(10);
+        this_thread::sleep_for(chrono::milliseconds(10));
 
         ftRet = FT_SetBitMode(* handle, 0x00, 0x40);
         if (ftRet != FT_OK) {

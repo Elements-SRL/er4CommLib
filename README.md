@@ -7,6 +7,7 @@ Currently supported platforms:
 ## Toolchain
 Download Qt Creator with the Qt libraries 6.7.3 or newer and the compatibility with MSVC 2022 [Qt Community](https://www.qt.io/download-dev)
 Download and install Visual Studio 2022 [Visual Studio Community](https://visualstudio.microsoft.com/it/vs/community/)
+Note: the Qt Libraries are not used. Qt Creator is used just to compile on different platforms seamlessly.
 ## Drivers
 Install EDR4 to make sure all the needed drivers are correctly installed [elements-ic.com/downloads/](https://elements-ic.com/downloads/)
 ## Dependencies
@@ -22,6 +23,7 @@ This version has been modified with respect to the library distributed by FTDI, 
 # Linux Arm
 ## Toolchain
 Download Qt Creator with the Qt libraries 6.7.3 or newer [Qt Community](https://www.qt.io/download-dev)
+Note: the Qt Libraries are not used. Qt Creator is used just to compile on different platforms seamlessly.
 ## Drivers
 The D2XX drivers used by the commlib are available at the following link: [D2XX Drivers](https://ftdichip.com/drivers/d2xx-drivers/)
 Choose the compatible library for your arm version and follow the instructions on the website.
@@ -41,7 +43,7 @@ Extract it anywhere on the PC and save the location with the environment variabl
 
 ### libmpsse
 Download the archive from the following link: [libmpsse static](https://www.dropbox.com/scl/fi/3ng6cgsl177lr5pywrjzc/libMPSSE.zip?rlkey=g8jzv2lqe6ija5wcn28le9nc8&st=xhmt95sw&dl=0).
-Extract it anywhere on the PC and save the location with the environment variable LIBMPSSE_PATH. LIBMPSSE_PATH will look something like ```/user/ftd2xx/```
+Extract it anywhere on the PC and save the location with the environment variable LIBMPSSE_PATH. LIBMPSSE_PATH will look something like ```/user/libmpsse/```
 This version has been modified with respect to the library distributed by FTDI, since it loads the ftd2xx library statically, so the ftd2xx.so file is not needed anymore
 
 
@@ -49,9 +51,6 @@ This version has been modified with respect to the library distributed by FTDI, 
 # BUILD
 Open the project er4commLib.pro with Qt creator and click build
 ## Prebuilt
-### Windows
-The prebuilt library is available on Elements website [elements-ic.com/edr4/#api](https://elements-ic.com/edr4/#api)
-### Linux Arm
-The prebuilt library is available at the following link [elements-ic.com/edr4/#api](https://www.dropbox.com/scl/fi/vjm6y3hyal640p8gkanny/er4commLib.zip?rlkey=9qqkix7ifosbcf4y4a71nz78p&st=4ijbzgjb&dl=0)
+Prebuilt versions of the library are available on Elements website [elements-ic.com/edr4/#api](https://elements-ic.com/edr4/#api)
 
 

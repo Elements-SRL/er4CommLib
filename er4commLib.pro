@@ -20,7 +20,14 @@ CONFIG += c++17
 
 contains(DEFINES, ER4COMMLIB_DLL) {
     # build dynamically
-    TARGET = er4commlibDLL
+    CONFIG(debug, debug|release) {
+        TARGET = er4commlibDLLd
+    }
+
+    CONFIG(release, debug|release) {
+        TARGET = er4commlibDLL
+    }
+
     DEFINES += ER4COMMLIB_LIBRARY
 }
 

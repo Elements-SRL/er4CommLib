@@ -81,6 +81,9 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     samplingRatesArray[SamplingRate1_25kHz].value = 1.25;
     samplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate2_5kHz].value = 2.5;
+    samplingRatesArray[SamplingRate2_5kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate2_5kHz].unit = "Hz";
     samplingRatesArray[SamplingRate5kHz].value = 5.0;
     samplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate5kHz].unit = "Hz";
@@ -105,6 +108,9 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     realSamplingRatesArray[SamplingRate1_25kHz].value = 1.25e3/1024.0;
     realSamplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate2_5kHz].value = 1.25e3/512.0;
+    realSamplingRatesArray[SamplingRate2_5kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate2_5kHz].unit = "Hz";
     realSamplingRatesArray[SamplingRate5kHz].value = 1.25e3/256.0;
     realSamplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate5kHz].unit = "Hz";
@@ -128,6 +134,9 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     integrationStepArray[SamplingRate1_25kHz].value = 1024.0/1.25;
     integrationStepArray[SamplingRate1_25kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate1_25kHz].unit = "s";
+    integrationStepArray[SamplingRate2_5kHz].value = 512.0/1.25;
+    integrationStepArray[SamplingRate2_5kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate2_5kHz].unit = "s";
     integrationStepArray[SamplingRate5kHz].value = 256.0/1.25;
     integrationStepArray[SamplingRate5kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate5kHz].unit = "s";
@@ -330,17 +339,17 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     protocolVoltageNames[ProtocolVInit] = "Vinit";
 
     protocolVoltageRanges.resize(ProtocolVoltagesNum);
-    protocolVoltageRanges[ProtocolVHold].step = 1.0;
+    protocolVoltageRanges[ProtocolVHold].step = 0.125;
     protocolVoltageRanges[ProtocolVHold].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVHold].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVHold].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVHold].unit = "V";
-    protocolVoltageRanges[ProtocolVPulse].step = 1.0;
+    protocolVoltageRanges[ProtocolVPulse].step = 0.125;
     protocolVoltageRanges[ProtocolVPulse].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVPulse].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVPulse].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPulse].unit = "V";
-    protocolVoltageRanges[ProtocolVStep].step = 1.0;
+    protocolVoltageRanges[ProtocolVStep].step = 0.125;
     protocolVoltageRanges[ProtocolVStep].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVStep].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVStep].prefix = UnitPfxMilli;
@@ -350,12 +359,12 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     protocolVoltageRanges[ProtocolVPk].max = 4.0*protocolVoltageRanges[ProtocolVPk].step;
     protocolVoltageRanges[ProtocolVPk].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPk].unit = "V";
-    protocolVoltageRanges[ProtocolVFinal].step = 1.0;
+    protocolVoltageRanges[ProtocolVFinal].step = 0.125;
     protocolVoltageRanges[ProtocolVFinal].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVFinal].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVFinal].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVFinal].unit = "V";
-    protocolVoltageRanges[ProtocolVInit].step = 1.0;
+    protocolVoltageRanges[ProtocolVInit].step = 0.125;
     protocolVoltageRanges[ProtocolVInit].min = voltageRangesArray[VoltageRange500mV].min;
     protocolVoltageRanges[ProtocolVInit].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVInit].prefix = UnitPfxMilli;
@@ -474,7 +483,7 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
 
     voltageOffsetControlImplemented = true;
     selectedVoltageOffset.resize(currentChannelsNum);
-    voltageOffsetRange.step = 1.0;
+    voltageOffsetRange.step = 0.125;
     voltageOffsetRange.min = -500.0;
     voltageOffsetRange.max = 500.0;
     voltageOffsetRange.prefix = UnitPfxMilli;
@@ -617,7 +626,7 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
 
     /*! Sampling rate */
-    boolConfig.initialByte = 0;
+    boolConfig.initialByte = 1;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
@@ -792,7 +801,7 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     customFlagsDefault[0] = false;
 
     customFlagsCoders.resize(customFlagsNum);
-    boolConfig.initialByte = 0;
+    boolConfig.initialByte = 1;
     boolConfig.initialBit = 6;
     boolConfig.bitsNum = 1;
     customFlagsCoders[0] = new BoolArrayCoder(boolConfig);
@@ -808,7 +817,7 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     txStatus[txStatusIdx++] = 0x20; // CFG0
     txStatus[txStatusIdx++] = 0x08; // CFG1
     txStatus[txStatusIdx++] = 0x60; // CFG2
-    txStatus[txStatusIdx++] = 0x00; // CFG3
+    txStatus[txStatusIdx++] = 0x01; // CFG3
     txStatus[txStatusIdx++] = 0x78; // CFG4
     txStatus[txStatusIdx++] = 0x40; // CFG5
     txStatus[txStatusIdx++] = 0x40; // CFG6

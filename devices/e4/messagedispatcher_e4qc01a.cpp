@@ -807,7 +807,7 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     txStatus[txStatusIdx++] = txSyncWord; // HDR
     txStatus[txStatusIdx++] = 0x20; // CFG0
     txStatus[txStatusIdx++] = 0x08; // CFG1
-    txStatus[txStatusIdx++] = 0x20 // CFG2 potrebbere essere 60, dipende da che valore deve avere extvc
+    txStatus[txStatusIdx++] = 0x60; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
     txStatus[txStatusIdx++] = 0x78; // CFG4
     txStatus[txStatusIdx++] = 0x40; // CFG5

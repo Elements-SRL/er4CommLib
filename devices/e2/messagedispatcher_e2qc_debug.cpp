@@ -176,6 +176,9 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
+    voltageStimulusLpfOptions[VoltageStimulusLpf0Hz].value = 0.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf0Hz].prefix = UnitPfxNone;
+    voltageStimulusLpfOptions[VoltageStimulusLpf0Hz].unit = "Hz";
     voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].value = 1.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].unit = "Hz";
@@ -830,9 +833,10 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 2;
     dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(0); /*!< 1kHz   -> 0b00 */
-    dacIntFilterCoder->addMapItem(1); /*!< 10kHz  -> 0b01 */
-    dacIntFilterCoder->addMapItem(2); /*!< 20kHz  -> 0b10 */
+    dacIntFilterCoder->addMapItem(3); /*!< disabled -> 0b11 */
+    dacIntFilterCoder->addMapItem(0); /*!< 1kHz     -> 0b00 */
+    dacIntFilterCoder->addMapItem(1); /*!< 10kHz    -> 0b01 */
+    dacIntFilterCoder->addMapItem(2); /*!< 20kHz    -> 0b10 */
 
     boolConfig.initialByte = 9;
     boolConfig.initialBit = 5;
@@ -1172,5 +1176,6 @@ bool MessageDispatcher_e2qc_debug::checkProtocolValidity(string &message) {
 MessageDispatcher_e2qc_debug_interval_vcm::MessageDispatcher_e2qc_debug_interval_vcm(string di) :
     MessageDispatcher_e2qc_debug(di) {
 
-    txStatus[5] = 0x09; // CFG4 activate internal vcm for channel 1
+    txStatus[5] = 0x08; // CFG4
+    txStatus[9] = 0x3E; // CFG8
 }

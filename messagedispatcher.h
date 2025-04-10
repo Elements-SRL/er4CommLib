@@ -183,6 +183,8 @@ public:
     ErrorCodes_t setFastReferencePulseProtocolWave2Period(unsigned int idx, Measurement_t time, bool applyFlag = false);
     ErrorCodes_t setFastReferencePulseProtocolWave2PulseNumber(unsigned int idx, uint16_t pulsesNumber, bool applyFlag = false);
 
+    ErrorCodes_t setVcmOnChannel(unsigned int chIdx, bool flag, bool applyFlag);
+
     /*! Device specific controls */
 
     ErrorCodes_t setCustomFlag(uint16_t idx, bool flag, bool applyFlag);
@@ -635,6 +637,10 @@ protected:
     Measurement_t voltageReference = {0.0, UnitPfxNone, "V"};
     int16_t voltageReferenceOffset = 0; /*! Value added to returned voltage data to account for the voltage applied on the reference */
     bool addVoltageReferenceToReadout = true;
+
+    bool vcmAbleFlag = false;
+    std::vector <BoolArrayCoder *> vcIntCoders;
+    std::vector <BoolArrayCoder *> vcmForceCoders;
 
     /*! Device specific parameters */
 

@@ -309,6 +309,17 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t setDacExtDeviceVoltage(
         ER4CL_ARGIN Measurement_t voltage);
 
+/*! \brief Apply constant Vcm on a channel.
+ *
+ * \param chIdx [in] Channel to apply Vcm on.
+ * \param flag [in] true: Vcm set on channel; false: DAC voltage applied on channel.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setVcmOnChannel(
+    ER4CL_ARGIN unsigned int chIdx,
+    ER4CL_ARGIN bool flag);
+
 /*! \brief Set a custom flag control.
  *
  * \param idx [in] Index of the custom control to set.

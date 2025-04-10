@@ -408,6 +408,12 @@ ErrorCodes_t setDacExtDeviceVoltage(
     MASS_CALL1(setDacExtDeviceVoltage, voltage)
 }
 
+ErrorCodes_t setVcmOnChannel(
+    uint32_t chIdx,
+    bool flag) {
+    MASS_CALL3(setVcmOnChannel, chIdx, flag, true)
+}
+
 ErrorCodes_t setCustomFlag(
         uint16_t idx,
         bool flag) {

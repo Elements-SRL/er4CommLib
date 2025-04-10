@@ -3,7 +3,7 @@
 using namespace std;
 using namespace er4CommLib;
 
-MessageDispatcher_e1ULN_V01::MessageDispatcher_e1ULN_V01(std::string di) :
+MessageDispatcher_e1ULN_V02::MessageDispatcher_e1ULN_V02(std::string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -771,6 +771,23 @@ MessageDispatcher_e1ULN_V01::MessageDispatcher_e1ULN_V01(std::string di) :
     boolConfig.bitsNum = 1;
     insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
 
+    vcmAbleFlag = true;
+    vcmForceCoders.resize(currentChannelsNum);
+    boolConfig.initialByte = 3;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1; /*! \todo FCON da verificare se sono inverite le vcm force per i due canali */
+    vcmForceCoders[0] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialBit = 1;
+    vcmForceCoders[1] = new BoolArrayCoder(boolConfig);
+
+    vcIntCoders.resize(currentChannelsNum);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 1; /*! \todo FCON da verificare se funziona il nuovo fw */
+    vcIntCoders[0] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialBit = 5;
+    vcIntCoders[1] = new BoolArrayCoder(boolConfig);
+
     /*! Device specific controls */
 
     /*******************\
@@ -781,11 +798,11 @@ MessageDispatcher_e1ULN_V01::MessageDispatcher_e1ULN_V01(std::string di) :
 
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
-    txStatus[txStatusIdx++] = 0x60; // CFG0
+    txStatus[txStatusIdx++] = 0x40; // CFG0
     txStatus[txStatusIdx++] = 0x03; // CFG1
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
-    txStatus[txStatusIdx++] = 0x00; // COMP0
+    txStatus[txStatusIdx++] = 0x30; // COMP0
     txStatus[txStatusIdx++] = 0x40; // COMP1
     txStatus[txStatusIdx++] = 0x00; // Vhold
     txStatus[txStatusIdx++] = 0x00;
@@ -831,11 +848,11 @@ MessageDispatcher_e1ULN_V01::MessageDispatcher_e1ULN_V01(std::string di) :
     txStatus[txStatusIdx++] = 0x00;
 }
 
-MessageDispatcher_e1ULN_V01::~MessageDispatcher_e1ULN_V01() {
+MessageDispatcher_e1ULN_V02::~MessageDispatcher_e1ULN_V02() {
 
 }
 
-void MessageDispatcher_e1ULN_V01::initializeDevice() {
+void MessageDispatcher_e1ULN_V02::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->digitalOffsetCompensation(currentChannelsNum, false);
@@ -843,7 +860,7 @@ void MessageDispatcher_e1ULN_V01::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_e1ULN_V01::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e1ULN_V02::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     string voltageLimit;
@@ -1048,7 +1065,7 @@ bool MessageDispatcher_e1ULN_V01::checkProtocolValidity(string &message) {
     return validFlag;
 }
 
-void MessageDispatcher_e1ULN_V01::setFerdParameters() {
+void MessageDispatcher_e1ULN_V02::setFerdParameters() {
     unsigned int rangeCoeff;
     /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
     if (selectedCurrentRangesIdx[0] < CurrentRange200nA) {
@@ -1081,4 +1098,15 @@ void MessageDispatcher_e1ULN_V01::setFerdParameters() {
     ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
 
     MessageDispatcher::setFerdParameters();
+}
+
+MessageDispatcher_e1ULN_V01::MessageDispatcher_e1ULN_V01(std::string di) :
+    MessageDispatcher_e1ULN_V02(di) {
+
+    vcmAbleFlag = false;
+    vcmForceCoders.clear();
+    vcIntCoders.clear();
+
+    txStatus[1] = 0x60; // CFG0
+    txStatus[5] = 0x00; // COMP0
 }

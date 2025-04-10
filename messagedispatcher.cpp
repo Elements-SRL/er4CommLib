@@ -53,6 +53,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},                               //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 2, DeviceE1PlusEL03fEDR3},                               //    9,  8,  2 : e1+ EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1HcEL03F, 1, DeviceE1HcEL03fEDR3},                                   //    9,  9,  1 : e1HC EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                         //    9, 10,129 : e1ULN prototype with eNPR PCB
+    {DeviceVersionE1, DeviceSubversionE1ULN, 130, DeviceE1ULN_V02},                                         //    9, 10,130 : e1ULN prototype with eNPR PCB with controllable Vcm force
     {DeviceVersionENPR, DeviceSubversionENPR, 4, DeviceENPREDR3_V03},                                       //    8,  2,  4 : eNPR (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 8, DeviceENPREDR3_V04},                                       //    8,  2,  8 : eNPR (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                                             //    8,  2,129 : eNPR
@@ -112,7 +114,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},              //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionE16nSineWave, 129, DeviceE16nSine_V01},                        //  254, 19,129 : e16 Orbit TC prototype with additional sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionENPRNanopipette, 129, DeviceENPRNanopipette_V01},              //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
-    {DeviceVersionPrototype, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                  //  254, 21,129 : e1ULN prototype with eNPR PCB
+    {DeviceVersionPrototype, DeviceSubversionProtoE1ULN, 129, DeviceE1ULN_V01},                             //  254, 21,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionPrototype, DeviceSubversionE4TtlPulseTrain, 129, DeviceE4TtlPulseTrain_V01},              //  254, 22,129 : e4 customized with ttl pulse train
     {DeviceVersionPrototype, DeviceSubversionE4TtlPulseTrain, 130, DeviceE4TtlPulseTrain_V01},              //  254, 22,130 : e4 customized with ttl pulse train
     {DeviceVersionPrototype, DeviceSubversionE2Uln, 129, DeviceE2Uln_V01},                                  //  254, 24,129 : e4 that returns 2 current channels measured in ULN mode
@@ -472,6 +474,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE1ULN_V01:
         messageDispatcher = new MessageDispatcher_e1ULN_V01(deviceId);
+        break;
+
+    case DeviceE1ULN_V02:
+        messageDispatcher = new MessageDispatcher_e1ULN_V02(deviceId);
         break;
 
     case DeviceE4TtlPulseTrain_V01:
@@ -1604,6 +1610,23 @@ ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave2PulseNumber(un
     } else {
         return ErrorValueOutOfRange;
     }
+}
+
+ErrorCodes_t MessageDispatcher::setVcmOnChannel(unsigned int chIdx, bool flag, bool applyFlag) {
+    if (!vcmAbleFlag) {
+        return ErrorFeatureNotImplemented;
+    }
+    if (chIdx >= currentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+    vcmForceCoders[chIdx]->encode(flag ? 1 : 0, txStatus);
+    vcIntCoders[chIdx]->encode(flag ? 0 : 1, txStatus);
+
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setCustomFlag(uint16_t idx, bool flag, bool applyFlag) {

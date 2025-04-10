@@ -531,6 +531,8 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
      * Device specific controls *
     \****************************/
 
+    nanionTemperatureControllerFlag = true;
+
     /**********\
      * Coders *
     \**********/
@@ -869,6 +871,12 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VInit
     txStatus[txStatusIdx++] = 0x00;
+}
+
+ErrorCodes_t MessageDispatcher_e4qc01a_V01::getTemperatureControllerRange(int &minTemperature, int &maxTemperature) {
+    minTemperature = minControllerTemperature;
+    maxTemperature = maxControllerTemperature;
+    return Success;
 }
 
 void MessageDispatcher_e4qc01a_V01::initializeDevice() {

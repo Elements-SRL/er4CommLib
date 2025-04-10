@@ -11,6 +11,8 @@ class MessageDispatcher_e4qc01a_V01 : public MessageDispatcher {
 public:
     MessageDispatcher_e4qc01a_V01(std::string di);
 
+    ErrorCodes_t getTemperatureControllerRange(int &minTemperature, int &maxTemperature) override;
+
 protected:
     typedef struct {
         int16_t offset[4];
@@ -112,6 +114,10 @@ protected:
     void initializeDevice() override;
     bool checkProtocolValidity(std::string &message) override;
     ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) override;
+
+    /*! Device specific controls */
+    int minControllerTemperature = -10;
+    int maxControllerTemperature = 60;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;

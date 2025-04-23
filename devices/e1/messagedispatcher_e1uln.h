@@ -7,10 +7,10 @@
 namespace er4CommLib {
 #endif
 
-class MessageDispatcher_e1ULN_V02 : public MessageDispatcher {
+class MessageDispatcher_e1ULN_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e1ULN_V02(std::string di);
-    virtual ~MessageDispatcher_e1ULN_V02();
+    MessageDispatcher_e1ULN_V01(std::string di);
+    virtual ~MessageDispatcher_e1ULN_V01();
 
 protected:
     typedef struct {
@@ -115,12 +115,6 @@ protected:
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
-};
-
-class MessageDispatcher_e1ULN_V01 : public MessageDispatcher_e1ULN_V02 {
-public:
-    MessageDispatcher_e1ULN_V01(std::string di);
-    virtual ~MessageDispatcher_e1ULN_V01();
 };
 
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER

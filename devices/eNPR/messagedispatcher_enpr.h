@@ -121,9 +121,9 @@ private:
     };
 };
 
-class MessageDispatcher_eNPR_2Channels_V01 : public MessageDispatcher_eNPR {
+class MessageDispatcher_eNPR_2Channels_V01_vcm : public MessageDispatcher_eNPR {
 public:
-    MessageDispatcher_eNPR_2Channels_V01(std::string di);
+    MessageDispatcher_eNPR_2Channels_V01_vcm(std::string di);
 
 protected:
     void initializeDevice() override;
@@ -170,6 +170,11 @@ private:
     };
 
     Measurement_t voltageReferenceOffsetCalibration = {0.0, UnitPfxNone, "V"};
+};
+
+class MessageDispatcher_eNPR_2Channels_V01 : public MessageDispatcher_eNPR_2Channels_V01_vcm {
+public:
+    MessageDispatcher_eNPR_2Channels_V01(std::string di);
 };
 
 class MessageDispatcher_eNPR_2Channels_V02 : public MessageDispatcher_eNPR_2Channels_V01 {

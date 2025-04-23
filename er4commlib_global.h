@@ -143,11 +143,11 @@ typedef enum {
     DeviceENPRFairyLight_V02,       /*!< eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes. */
     DeviceENPR2Channels_V01,        /*!< eNPR prototype with 2 channels and sinusoidal waveforms. */
     DeviceENPR2Channels_V02,        /*!< eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms. */
+    DeviceENPR2Channels_V01_vcm,    /*!< eNPR prototype with 2 channels and sinusoidal waveforms with controllable vcm. */
     DeviceOrbitMiniSine_V01,        /*!< Orbit mini prototype with additional sinusoidal waveforms. */
     DeviceE16nSine_V01,             /*!< e16 Orbit TC with additional sinusoidal waveforms. */
     DeviceENPRNanopipette_V01,      /*!< eNPR prototype with 2 channels with independent current ranges and PWM control. */
-    DeviceE1ULN_V01,                /*!< e1ULN prototype with eNPR PCB. */
-    DeviceE1ULN_V02,                /*!< e1ULN prototype with eNPR PCB with controllable vcm force. */
+    DeviceE1ULN_V01,                /*!< e1ULN with eNPR PCB. */
     DeviceE4TtlPulseTrain_V01,      /*!< e4 customized with ttl pulse train. */
     DeviceE2Uln_V01,                /*!< e4 that returns 2 current channels measured in ULN mode */
     DeviceFakeENPR,                 /*!< Fake eNPR. */

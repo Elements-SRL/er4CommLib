@@ -1102,7 +1102,7 @@ void MessageDispatcher_eNPR::setFerdParameters() {
     MessageDispatcher::setFerdParameters();
 }
 
-MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(string di) :
+MessageDispatcher_eNPR_2Channels_V01_vcm::MessageDispatcher_eNPR_2Channels_V01_vcm(string di) :
     MessageDispatcher_eNPR(di) {
 
     /************************\
@@ -1616,6 +1616,23 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
     dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
 
+    vcmAbleFlag = true;
+    vcmForceCoders.resize(currentChannelsNum);
+    boolConfig.initialByte = 3;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 1;
+    vcmForceCoders[0] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialBit = 0;
+    vcmForceCoders[1] = new BoolArrayCoder(boolConfig);
+
+    vcIntCoders.resize(currentChannelsNum);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 1;
+    vcIntCoders[0] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialBit = 5;
+    vcIntCoders[1] = new BoolArrayCoder(boolConfig);
+
     /*! Device specific controls */
 
     customFlagsNum = 1;
@@ -1638,11 +1655,11 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
 
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
-    txStatus[txStatusIdx++] = 0x20; // CFG0
+    txStatus[txStatusIdx++] = 0x00; // CFG0
     txStatus[txStatusIdx++] = 0x03; // CFG1
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
-    txStatus[txStatusIdx++] = 0x00; // COMP0
+    txStatus[txStatusIdx++] = 0x30; // COMP0
     txStatus[txStatusIdx++] = 0x40; // COMP1
     txStatus[txStatusIdx++] = 0x00; // Vhold
     txStatus[txStatusIdx++] = 0x00;
@@ -1699,7 +1716,7 @@ MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(strin
     txStatus[txStatusIdx++] = 0x00;
 }
 
-void MessageDispatcher_eNPR_2Channels_V01::initializeDevice() {
+void MessageDispatcher_eNPR_2Channels_V01_vcm::initializeDevice() {
     this->updateVoltageReferenceOffsetCalibration();
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
@@ -1710,7 +1727,7 @@ void MessageDispatcher_eNPR_2Channels_V01::initializeDevice() {
 }
 
 
-bool MessageDispatcher_eNPR_2Channels_V01::checkProtocolValidity(string &message) {
+bool MessageDispatcher_eNPR_2Channels_V01_vcm::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     string voltageLimit = "500";
@@ -1929,7 +1946,7 @@ bool MessageDispatcher_eNPR_2Channels_V01::checkProtocolValidity(string &message
     return validFlag;
 }
 
-void MessageDispatcher_eNPR_2Channels_V01::updateVoltageReferenceOffsetCalibration() {
+void MessageDispatcher_eNPR_2Channels_V01_vcm::updateVoltageReferenceOffsetCalibration() {
     /*! Voltage DAC Ext */
     /*! \todo FCON serve davvero ricreare i coder? */
     DoubleCoder::CoderConfig_t doubleConfig;
@@ -1950,6 +1967,17 @@ void MessageDispatcher_eNPR_2Channels_V01::updateVoltageReferenceOffsetCalibrati
     doubleConfig.minValue = -vcm_mV;
     doubleConfig.maxValue = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
     dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
+}
+
+MessageDispatcher_eNPR_2Channels_V01::MessageDispatcher_eNPR_2Channels_V01(std::string di) :
+    MessageDispatcher_eNPR_2Channels_V01_vcm(di) {
+
+    vcmAbleFlag = false;
+    vcmForceCoders.clear();
+    vcIntCoders.clear();
+
+    txStatus[1] = 0x20; // CFG0
+    txStatus[5] = 0x00; // COMP0
 }
 
 MessageDispatcher_eNPR_2Channels_V02::MessageDispatcher_eNPR_2Channels_V02(string di) :

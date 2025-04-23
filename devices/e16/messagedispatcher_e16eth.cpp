@@ -24,7 +24,7 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     currentChannelsNum = 16;
     totalChannelsNum = voltageChannelsNum+currentChannelsNum;
 
-    readFrameLength =FTD_RX_SYNC_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
+    readFrameLength = FTD_RX_SYNC_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
 
     infoStructSize = sizeof(InfoStruct_t);
     infoStructPtr = (uint8_t *)&infoStruct;
@@ -474,9 +474,9 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     voltageOffsetControlImplemented = true;
     selectedVoltageOffset.resize(currentChannelsNum);
     voltageOffsetRange.step = 1.0;
-    voltageOffsetRange.min = -15.0;
-    voltageOffsetRange.max = 15.0;
-    voltageOffsetRange.prefix = UnitPfxNone;
+    voltageOffsetRange.min = -15.0e3;
+    voltageOffsetRange.max = 15.0e3;
+    voltageOffsetRange.prefix = UnitPfxMilli;
     voltageOffsetRange.unit = "V";
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
         selectedVoltageOffset[channelIdx].value = 0.0;
@@ -751,9 +751,9 @@ MessageDispatcher_e16ETH_LegacyEdr3_V01::MessageDispatcher_e16ETH_LegacyEdr3_V01
     voltageOffsetCoders.resize(currentChannelsNum);
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 16;
-    doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
-    doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
-    doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
+    doubleConfig.minValue = voltageOffsetRange.min;
+    doubleConfig.maxValue = voltageOffsetRange.max;
+    doubleConfig.resolution = voltageOffsetRange.max/32767;
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
         doubleConfig.initialByte = 18+3*channelIdx;
         voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);

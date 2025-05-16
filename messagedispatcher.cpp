@@ -70,6 +70,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4n, 129, DeviceE4n_V01},                                             //    4,  3,129 : e4 Orbit mini
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e_V01},                                             //    4,  8,129 : e4 Elements version
     {DeviceVersionE4, DeviceSubversionE4nQc01a, 129, DeviceE4nQC01a_V01},                                   //    4,  9,129 : e4 Orbit mini with QC01a
+    {DeviceVersionE4, DeviceSubversionE4nQc01a, 130, DeviceE4nQC01a_V02},                                   //    4,  9,130 : e4 Orbit mini with QC01a and only 5nA range
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses_V01},                        //    3,  4,129 : e16 Orbit customized for fast pulses
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 130, DeviceE16FastPulses_V02},                        //    3,  4,130 : e16 Orbit customized for fast pulse trains
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 131, DeviceE16FastPulses_V02},                        //    3,  4,131 : e16 Orbit customized for fast pulse trains
@@ -350,6 +351,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE4nQC01a_V01:
         messageDispatcher = new MessageDispatcher_e4qc01a_V01(deviceId);
+        break;
+
+    case DeviceE4nQC01a_V02:
+        messageDispatcher = new MessageDispatcher_e4qc01a_V02(deviceId);
         break;
 
     case DeviceE16eEDR3:

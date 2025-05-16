@@ -123,6 +123,17 @@ protected:
     InfoStruct_t infoStruct;
 };
 
+class MessageDispatcher_e4qc01a_V02 : public MessageDispatcher_e4qc01a_V01 {
+public:
+    MessageDispatcher_e4qc01a_V02(std::string di);
+
+protected:
+    enum CurrentRanges {
+        CurrentRange5nA,
+        CurrentRangesNum
+    };
+};
+
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER
 };
 #endif

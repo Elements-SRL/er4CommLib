@@ -124,6 +124,7 @@ typedef enum {
     DeviceE4n_V01,                  /*!< e4 Orbit mini. */
     DeviceE4e_V01,                  /*!< e4 Elements version. */
     DeviceE4nQC01a_V01,             /*!< e4 Orbit mini with QC01a. */
+    DeviceE4nQC01a_V02,             /*!< e4 Orbit mini with QC01a and only 5nA range. */
     DeviceE16FastPulses_V01,        /*!< e16 Orbit customized for fast pulses. */
     DeviceE16FastPulses_V02,        /*!< e16 Orbit customized for fast pulse trains. */
     DeviceE16FastPulsesEDR3,        /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */

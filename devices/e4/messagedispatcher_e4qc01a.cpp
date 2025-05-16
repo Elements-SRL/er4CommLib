@@ -1094,3 +1094,48 @@ ErrorCodes_t MessageDispatcher_e4qc01a_V01::updateVoltageOffsetCompensations(vec
     }
     return Success;
 }
+
+MessageDispatcher_e4qc01a_V02::MessageDispatcher_e4qc01a_V02(std::string di) :
+    MessageDispatcher_e4qc01a_V01(di) {
+
+    /*! Current ranges */
+    independentCurrentRangesFlag = false;
+    currentRangesNum = CurrentRangesNum;
+    currentRangesArray.resize(currentRangesNum);
+    currentRangesArray[CurrentRange5nA].min = -5.0;
+    currentRangesArray[CurrentRange5nA].max = 5.0;
+    currentRangesArray[CurrentRange5nA].step = currentRangesArray[CurrentRange5nA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange5nA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange5nA].unit = "A";
+    defaultCurrentRangesIdx.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        defaultCurrentRangesIdx[channelIdx] = CurrentRange5nA;
+    }
+
+    /*! Default values */
+    selectedCurrentRangesIdx = defaultCurrentRangesIdx;
+
+    currentRanges.resize(currentChannelsNum);
+    currentResolutions.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
+        currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
+    }
+
+    /**********\
+     * Coders *
+    \**********/
+
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+
+    /*! Current range */
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 3;
+    currentRangeCoders.resize(1);
+    currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2); /*!< 5nA   -> 0b010 */
+
+    txStatus[2] = 0x0A; // CFG1
+}

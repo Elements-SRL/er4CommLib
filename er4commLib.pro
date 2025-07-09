@@ -57,9 +57,6 @@ VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 SOURCES += \
     connectionmutex.cpp \
     er4commlib.cpp \
-    ftdieeprom.cpp \
-    ftdieeprom56.cpp \
-    ftdieepromdemo.cpp \
     calibrationeeprom.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
@@ -96,9 +93,6 @@ HEADERS += \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
     er4commlib_global_addendum.h \
-    ftdieeprom.h \
-    ftdieeprom56.h \
-    ftdieepromdemo.h \
     calibrationeeprom.h \
     messagedispatcher.h \
     commandcoder.h \
@@ -158,4 +152,5 @@ macx: INCLUDEPATH += /usr/local/include
 macx: DEPENDPATH += /usr/local/include
 
 include($$(FTD2XX_PATH)includeftd2xx.pri)
+include($$(FTDI_UTILS_PATH)includeftdiutils.pri)
 include($$(LIBMPSSE_PATH)includelibmpsse.pri)

@@ -16,4 +16,5 @@ else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$(ER4COMMLIB_PATH)lib
 
 # has to be called after
 include($$(FTD2XX_PATH)includeftd2xx.pri)
+include($$(FTDI_UTILS_PATH)includeftdiutils.pri)
 include($$(LIBMPSSE_PATH)includelibmpsse.pri)

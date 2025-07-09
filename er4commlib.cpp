@@ -165,13 +165,15 @@ ErrorCodes_t connect(
                   deviceSubversion,
                   firmwareVersion);
 
-    for (auto&& deviceId : deviceIds) {
-        getDeviceInfo(deviceId,
-                      deviceVersionCheck,
-                      deviceSubversionCheck,
-                      firmwareVersionCheck);
-        if (deviceVersion != deviceVersionCheck || deviceSubversion != deviceSubversionCheck || firmwareVersion != firmwareVersionCheck) {
-            return ErrorConnectingDifferentDevices;
+    if (deviceIds.size() > 1) {
+        for (auto&& deviceId : deviceIds) {
+            getDeviceInfo(deviceId,
+                          deviceVersionCheck,
+                          deviceSubversionCheck,
+                          firmwareVersionCheck);
+            if (deviceVersion != deviceVersionCheck || deviceSubversion != deviceSubversionCheck || firmwareVersion != firmwareVersionCheck) {
+                return ErrorConnectingDifferentDevices;
+            }
         }
     }
 
@@ -799,7 +801,7 @@ ErrorCodes_t getDeviceInfo(
     /*! Initializes eeprom */
     /*! \todo FCON questa info dovrà essere appresa dal device detector e condivisa qui dal metodo connect */
     FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
-    if (deviceId == "ePatch Demo") {
+    if (deviceId == "eNPR Demo") {
         ftdiEepromId = FtdiEepromIdDemo;
     }
 

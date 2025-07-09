@@ -95,31 +95,32 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16HC_PCBV02_EL06f, 129, DeviceE16HC_PCB_V01_EL06f_V01},             //    3, 15,129 : e16HC with EL06f
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   11,  1,130 : e2HC SR up to 50kHz
     {DeviceVersionE2, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                           //   11,  1,131 : e2HC
-    {DeviceVersionDlp, DeviceSubversionDlp, 4, DeviceDlp},                                                  //    6,  3,  4 : debug dlp
-    {DeviceVersionDlp, DeviceSubversionEL06b, 129, TestboardEL06b},                                         //    6,  5,129 : testboard EL06b
-    {DeviceVersionDlp, DeviceSubversionEL06c, 129, TestboardEL06c},                                         //    6,  6,129 : testboard EL06c
-    {DeviceVersionDlp, DeviceSubversionEL06d, 129, TestboardEL06dEL06e},                                    //    6,  7,129 : testboard EL06d
-    {DeviceVersionDlp, DeviceSubversionEL06e, 129, TestboardEL06dEL06e},                                    //    6,  8,129 : testboard EL06e
-    {DeviceVersionDlp, DeviceSubversionEL06f, 129, TestboardEL06f},                                         //    6, 12,129 : testboard EL06f
-    {DeviceVersionPrototype, DeviceSubversionE1E4nBased, 10, DeviceE1E4nBased},                             //  254,  1, 10 : e4n with only one channel
-    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 1, DeviceE2HCExtAdc},                              //  254, 14,  1 : e2HC with external ADC
-    {DeviceVersionPrototype, DeviceSubversionE2HCExtAdc, 129, DeviceE2HCExtAdc},                            //  254, 14,129 : e2HC with external ADC
-    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 1, DeviceE2HCIntAdc_V01},                          //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
-    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 129, DeviceE2HCIntAdc_V01},                        //  254, 15,129 : e2HC with internal (delta-sigma) ADC up to 50kHz sampling rate
-    {DeviceVersionPrototype, DeviceSubversionE2HCIntAdc, 131, DeviceE2HCIntAdc_V02},                        //  254, 15,131 : e2HC with internal (delta-sigma) ADC
-    {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 129, DeviceENPRFairyLight_V01},                //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
-    {DeviceVersionPrototype, DeviceSubversionENPRFairyLight, 130, DeviceENPRFairyLight_V02},                //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
-    {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 129, DeviceENPR2Channels_V01},                  //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
-    {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 130, DeviceENPR2Channels_V02},                  //  254, 17,130 : eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms
-    {DeviceVersionPrototype, DeviceSubversionENPR2Channels, 131, DeviceENPR2Channels_V01_vcm},              //  254, 17,131 : eNPR prototype with 2 channels and sinusoidal waveforms with controllable Vcm force
-    {DeviceVersionPrototype, DeviceSubversionOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},              //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
-    {DeviceVersionPrototype, DeviceSubversionE16nSineWave, 129, DeviceE16nSine_V01},                        //  254, 19,129 : e16 Orbit TC prototype with additional sinusoidal waveforms
-    {DeviceVersionPrototype, DeviceSubversionENPRNanopipette, 129, DeviceENPRNanopipette_V01},              //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
-    {DeviceVersionPrototype, DeviceSubversionProtoE1ULN, 129, DeviceE1ULN_V01},                             //  254, 21,129 : e1ULN prototype with eNPR PCB
-    {DeviceVersionPrototype, DeviceSubversionE4TtlPulseTrain, 129, DeviceE4TtlPulseTrain_V01},              //  254, 22,129 : e4 customized with ttl pulse train
-    {DeviceVersionPrototype, DeviceSubversionE4TtlPulseTrain, 130, DeviceE4TtlPulseTrain_V01},              //  254, 22,130 : e4 customized with ttl pulse train
-    {DeviceVersionPrototype, DeviceSubversionE2Uln, 129, DeviceE2Uln_V01},                                  //  254, 24,129 : e4 that returns 2 current channels measured in ULN mode
-    {DeviceVersionDemo, DeviceSubversionDemo, 129, DeviceFakeENPR}
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardDlp, 4, DeviceDlp},                                                  //    6,  3,  4 : debug dlp
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06b, 129, TestboardEL06b},                                         //    6,  5,129 : testboard EL06b
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06c, 129, TestboardEL06c},                                         //    6,  6,129 : testboard EL06c
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06d, 129, TestboardEL06dEL06e},                                    //    6,  7,129 : testboard EL06d
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06e, 129, TestboardEL06dEL06e},                                    //    6,  8,129 : testboard EL06e
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06f, 129, TestboardEL06f},                                         //    6, 12,129 : testboard EL06f
+    {DeviceVersionPrototype, DeviceSubversionProtoE1E4nBased, 10, DeviceE1E4nBased},                             //  254,  1, 10 : e4n with only one channel
+    {DeviceVersionPrototype, DeviceSubversionProtoE2HCExtAdc, 1, DeviceE2HCExtAdc},                              //  254, 14,  1 : e2HC with external ADC
+    {DeviceVersionPrototype, DeviceSubversionProtoE2HCExtAdc, 129, DeviceE2HCExtAdc},                            //  254, 14,129 : e2HC with external ADC
+    {DeviceVersionPrototype, DeviceSubversionProtoE2HCIntAdc, 1, DeviceE2HCIntAdc_V01},                          //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
+    {DeviceVersionPrototype, DeviceSubversionProtoE2HCIntAdc, 129, DeviceE2HCIntAdc_V01},                        //  254, 15,129 : e2HC with internal (delta-sigma) ADC up to 50kHz sampling rate
+    {DeviceVersionPrototype, DeviceSubversionProtoE2HCIntAdc, 131, DeviceE2HCIntAdc_V02},                        //  254, 15,131 : e2HC with internal (delta-sigma) ADC
+    {DeviceVersionPrototype, DeviceSubversionProtoENPRFairyLight, 129, DeviceENPRFairyLight_V01},                //  254, 16,129 : eNPR prototype for Fairy Light project with DAC ext control and only ULN mode.
+    {DeviceVersionPrototype, DeviceSubversionProtoENPRFairyLight, 130, DeviceENPRFairyLight_V02},                //  254, 16,130 : eNPR prototype for Fairy Light project without DAC ext control and both ULN and LN modes
+    {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 129, DeviceENPR2Channels_V01},                  //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 130, DeviceENPR2Channels_V02},                  //  254, 17,130 : eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 131, DeviceENPR2Channels_V01_vcm},              //  254, 17,131 : eNPR prototype with 2 channels and sinusoidal waveforms with controllable Vcm force
+    {DeviceVersionPrototype, DeviceSubversionProtoOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},              //  254, 18,129 : Orbit mini prototype with additional sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionProtoE16nSineWave, 129, DeviceE16nSine_V01},                        //  254, 19,129 : e16 Orbit TC prototype with additional sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionProtoENPRNanopipette, 129, DeviceENPRNanopipette_V01},              //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
+    {DeviceVersionPrototype, DeviceSubversionProtoProtoE1ULN, 129, DeviceE1ULN_V01},                             //  254, 21,129 : e1ULN prototype with eNPR PCB
+    {DeviceVersionPrototype, DeviceSubversionProtoE4TtlPulseTrain, 129, DeviceE4TtlPulseTrain_V01},              //  254, 22,129 : e4 customized with ttl pulse train
+    {DeviceVersionPrototype, DeviceSubversionProtoE4TtlPulseTrain, 130, DeviceE4TtlPulseTrain_V01},              //  254, 22,130 : e4 customized with ttl pulse train
+    {DeviceVersionPrototype, DeviceSubversionProtoProtoE1ULNSplitted, 129, DeviceE1ULN_V01},                     //  254, 23,129 : e1ULN prototype with splitted PCB
+    {DeviceVersionPrototype, DeviceSubversionProtoE2Uln, 129, DeviceE2Uln_V01},                                  //  254, 24,129 : e4 that returns 2 current channels measured in ULN mode
+    {DeviceVersionDemo, DeviceSubversionEnprDemo, 129, DeviceFakeENPR}
 };
 
 /********************************************************************************************\

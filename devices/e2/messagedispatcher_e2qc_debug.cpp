@@ -1176,6 +1176,6 @@ bool MessageDispatcher_e2qc_debug::checkProtocolValidity(string &message) {
 MessageDispatcher_e2qc_debug_interval_vcm::MessageDispatcher_e2qc_debug_interval_vcm(string di) :
     MessageDispatcher_e2qc_debug(di) {
 
-    txStatus[5] = 0x08; // CFG4
-    txStatus[9] = 0x3E; // CFG8
+    txStatus[5] = 0x09; // CFG4
+    txStatus[8] = 0x09; // CFG7
 }

@@ -746,9 +746,7 @@ MessageDispatcher_e4e_V01::MessageDispatcher_e4e_V01(string di) :
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz  -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
@@ -1880,9 +1878,7 @@ MessageDispatcher_e4e_trigger_V01::MessageDispatcher_e4e_trigger_V01(string di) 
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz  -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
@@ -3012,9 +3008,7 @@ MessageDispatcher_e4e_El03c_LegacyEdr3_V05::MessageDispatcher_e4e_El03c_LegacyEd
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz  -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);

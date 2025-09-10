@@ -125,10 +125,11 @@ typedef enum {
     DeviceE4e_V01,                  /*!< e4 Elements version. */
     DeviceE4nQC01a_V01,             /*!< e4 Orbit mini with QC01a. */
     DeviceE4nQC01a_V02,             /*!< e4 Orbit mini with QC01a and only 5nA range. */
-    DeviceE16FastPulses_V01,        /*!< e16 Orbit customized for fast pulses. */
-    DeviceE16FastPulses_V02,        /*!< e16 Orbit customized for fast pulse trains. */
-    DeviceE16FastPulsesEDR3,        /*!< e16 Orbit customized for fast pulses (Legacy version for EDR3). */
-    DeviceE16n,                     /*!< e16 Orbit TC. */
+    DeviceE16FastPulses_V01,        /*!< e16n customized for fast pulses. */
+    DeviceE16FastPulses_V02,        /*!< e16n customized for fast pulse trains. */
+    DeviceE16FastPulsesEDR3,        /*!< e16n customized for fast pulses (Legacy version for EDR3). */
+    DeviceE16n,                     /*!< e16n TC. */
+    DeviceE16nEL08a,                /*!< e16n TC with EL08a. */
     DeviceE2HC_V01,                 /*!< e2HC. SR up to 50kHz */
     DeviceE2HC_V02,                 /*!< e2HC. */
     DeviceDlp,                      /*!< debug dlp. */

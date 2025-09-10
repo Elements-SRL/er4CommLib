@@ -736,9 +736,7 @@ MessageDispatcher_e1ULN_V01::MessageDispatcher_e1ULN_V01(std::string di) :
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! External DAC filter */
     boolConfig.initialByte = 6;

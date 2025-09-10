@@ -833,10 +833,10 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 2;
     dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(3); /*!< disabled -> 0b11 */
-    dacIntFilterCoder->addMapItem(0); /*!< 1kHz     -> 0b00 */
-    dacIntFilterCoder->addMapItem(1); /*!< 10kHz    -> 0b01 */
-    dacIntFilterCoder->addMapItem(2); /*!< 20kHz    -> 0b10 */
+    static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(3); /*!< disabled -> 0b11 */
+    static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(0); /*!< 1kHz     -> 0b00 */
+    static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(1); /*!< 10kHz    -> 0b01 */
+    static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(2); /*!< 20kHz    -> 0b10 */
 
     boolConfig.initialByte = 9;
     boolConfig.initialBit = 5;

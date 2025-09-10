@@ -755,9 +755,7 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! External DAC filter */
     boolConfig.initialByte = 6;
@@ -3586,9 +3584,7 @@ MessageDispatcher_eNPR_LegacyEdr3_V04::MessageDispatcher_eNPR_LegacyEdr3_V04(str
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! External DAC filter */
     boolConfig.initialByte = 6;
@@ -4709,9 +4705,7 @@ MessageDispatcher_eNPR_LegacyEdr3_V03::MessageDispatcher_eNPR_LegacyEdr3_V03(str
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! External DAC filter */
     boolConfig.initialByte = 6;

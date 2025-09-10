@@ -765,9 +765,7 @@ MessageDispatcher_e1_e4nBased_V01::MessageDispatcher_e1_e4nBased_V01(string id) 
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz  -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);

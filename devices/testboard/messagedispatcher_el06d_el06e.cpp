@@ -699,8 +699,7 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 5;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 10kHz     -> 0b1 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
     /*! DON'T USE  0b0: the filter must be active because the DAC is a 3rd order DS and this filter accounts for the 4th order filtering */
 
     /*! Voltage offsets */

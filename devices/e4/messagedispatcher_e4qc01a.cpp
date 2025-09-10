@@ -757,10 +757,7 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     boolConfig.initialByte = 11;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 2;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(0); /*!< 1kHz   -> 0b00 */
-    dacIntFilterCoder->addMapItem(1); /*!< 10kHz  -> 0b01 */
-    dacIntFilterCoder->addMapItem(2); /*!< 20kHz  -> 0b10 */
+    dacIntFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);

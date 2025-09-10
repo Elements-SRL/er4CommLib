@@ -75,6 +75,7 @@ SOURCES += \
     devices/e4/messagedispatcher_e4qc01a.cpp \
     devices/e16/messagedispatcher_e16e.cpp \
     devices/e16/messagedispatcher_e16n.cpp \
+    devices/e16/messagedispatcher_e16n_el08a.cpp \
     devices/e16/messagedispatcher_e16fastpulses.cpp \
     devices/e16/messagedispatcher_e16hc.cpp \
     devices/e16/messagedispatcher_e16eth.cpp \
@@ -111,6 +112,7 @@ HEADERS += \
     devices/e4/messagedispatcher_e4qc01a.h \
     devices/e16/messagedispatcher_e16e.h \
     devices/e16/messagedispatcher_e16n.h \
+    devices/e16/messagedispatcher_e16n_el08a.h \
     devices/e16/messagedispatcher_e16fastpulses.h \
     devices/e16/messagedispatcher_e16hc.h \
     devices/e16/messagedispatcher_e16eth.h \

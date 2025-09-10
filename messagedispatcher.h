@@ -616,7 +616,7 @@ protected:
     uint16_t voltageStimulusLpfOptionsNum = 0;
     uint16_t voltageStimulusLpfDefaultOption = 0;
     int16_t voltageStimulusLpfRange = -1;
-    BoolRandomArrayCoder * dacIntFilterCoder;
+    BoolCoder * dacIntFilterCoder;
     bool dacExtFilterAvailable = false;
     std::vector <Measurement_t> voltageReferenceLpfOptions;
     uint16_t voltageReferenceLpfOptionsNum = 0;

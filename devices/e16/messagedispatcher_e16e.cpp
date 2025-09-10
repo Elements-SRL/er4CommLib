@@ -770,9 +770,7 @@ MessageDispatcher_e16e_Artix7_PCBV01_V01::MessageDispatcher_e16e_Artix7_PCBV01_V
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz  -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 2;
@@ -1921,9 +1919,7 @@ MessageDispatcher_e16e_LegacyEdr3_V00::MessageDispatcher_e16e_LegacyEdr3_V00(str
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacIntFilterCoder->addMapItem(1); /*!< 1kHz  -> 0b1 */
-    dacIntFilterCoder->addMapItem(0); /*!< 10kHz  -> 0b0 */
+    dacIntFilterCoder = new BoolNegatedArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);

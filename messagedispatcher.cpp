@@ -25,6 +25,7 @@
 #include "messagedispatcher_el06c.h"
 #include "messagedispatcher_el06d_el06e.h"
 #include "messagedispatcher_el06f.h"
+#include "messagedispatcher_el09a_tb.h"
 #include "messagedispatcher_fake_enpr.h"
 #include "messagedispatcher_fake_enpr_hc.h"
 #include "messagedispatcher_fake_e16n.h"
@@ -105,6 +106,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06d, 129, TestboardEL06dEL06e},                     //    6,  7,129 : testboard EL06d
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06e, 129, TestboardEL06dEL06e},                     //    6,  8,129 : testboard EL06e
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06f, 129, TestboardEL06f},                          //    6, 12,129 : testboard EL06f
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL09a_PCBV01, 1, TestboardEL09a},                     //    6, 16,  1 : testboard EL09a
     {DeviceVersionPrototype, DeviceSubversionProtoE1E4nBased, 10, DeviceE1E4nBased},                        //  254,  1, 10 : e4n with only one channel
     {DeviceVersionPrototype, DeviceSubversionProtoE2HCExtAdc, 1, DeviceE2HCExtAdc},                         //  254, 14,  1 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionProtoE2HCExtAdc, 129, DeviceE2HCExtAdc},                       //  254, 14,129 : e2HC with external ADC
@@ -440,6 +442,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case TestboardEL06f:
         messageDispatcher = new MessageDispatcher_EL06f(deviceId);
+        break;
+
+    case TestboardEL09a:
+        messageDispatcher = new MessageDispatcher_EL09a_TB(deviceId);
         break;
 
     case DeviceE1E4nBased:

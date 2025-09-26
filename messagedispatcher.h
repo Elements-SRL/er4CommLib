@@ -307,6 +307,7 @@ public:
     ErrorCodes_t hasTtlPulseTrain();
 
     virtual ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets);
+    virtual ErrorCodes_t updateTemperatureReading(std::vector <Measurement_t> &temperature);
 
 protected:
     typedef enum {

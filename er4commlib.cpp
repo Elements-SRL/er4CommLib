@@ -1533,6 +1533,11 @@ ErrorCodes_t getVoltageOffsetCompensations(
     return ret;
 }
 
+ErrorCodes_t getTemperatureReading(
+    std::vector <Measurement_t> &temperature) {
+    CALL_FIRST1(updateTemperatureReading, temperature)
+}
+
 } // namespace er4CommLib
 
 void allocateSampleDiscardVariables() {

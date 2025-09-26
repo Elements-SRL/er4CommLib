@@ -2667,6 +2667,10 @@ ErrorCodes_t MessageDispatcher::updateVoltageOffsetCompensations(vector <Measure
     return ErrorFeatureNotImplemented;
 }
 
+ErrorCodes_t MessageDispatcher::updateTemperatureReading(std::vector <Measurement_t> &) {
+    return ErrorFeatureNotImplemented;
+}
+
 /*********************\
  *  Private methods  *
 \*********************/

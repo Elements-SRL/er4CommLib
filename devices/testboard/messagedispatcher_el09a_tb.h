@@ -12,6 +12,8 @@ public:
     MessageDispatcher_EL09a_TB(std::string di);
     virtual ~MessageDispatcher_EL09a_TB();
 
+    ErrorCodes_t updateTemperatureReading(std::vector <Measurement_t> &temperatures) override;
+
 protected:
     typedef struct {
         uint16_t temperature;
@@ -137,6 +139,13 @@ protected:
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;
+
+    const double temperatureGain = -6.0e-3; // V/°C
+    const double temperatureLevels = 1024.0;
+    const double temperatureVoltageRange = 1.225; // V
+    const double maxTemperature = 150.0; // °C
+    const double minTemperature = maxTemperature+temperatureVoltageRange/temperatureGain;
+    const double temperatureResolution = (minTemperature-maxTemperature)/temperatureLevels;
 };
 
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER

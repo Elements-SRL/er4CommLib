@@ -820,7 +820,7 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
 
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
-    txStatus[txStatusIdx++] = 0x06; // CFG0
+    txStatus[txStatusIdx++] = 0x46; // CFG0
     txStatus[txStatusIdx++] = 0x30; // CFG1
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
@@ -892,6 +892,12 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
 
 MessageDispatcher_EL09a_TB::~MessageDispatcher_EL09a_TB() {
 
+}
+
+ErrorCodes_t MessageDispatcher_EL09a_TB::updateTemperatureReading(vector <Measurement_t> &temperatures) {
+    temperatures.resize(1);
+    temperatures[0] = {minTemperature+temperatureResolution*(double)(infoStruct.temperature), UnitPfxNone, "°C"};
+    return Success;
 }
 
 void MessageDispatcher_EL09a_TB::initializeDevice() {

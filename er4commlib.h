@@ -1616,6 +1616,15 @@ ErrorCodes_t hasTtlPulseTrain(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageOffsetCompensations(
         ER4CL_ARGOUT std::vector <Measurement_t> &offsets);
+
+/*! \brief Get the measured temperature.
+ *
+ * \param temperature [out] Temperature measured on the device.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+    ErrorCodes_t getTemperatureReading(
+        ER4CL_ARGOUT std::vector <Measurement_t> &temperature);
 }
 
 #endif // ER4COMMLIB_H

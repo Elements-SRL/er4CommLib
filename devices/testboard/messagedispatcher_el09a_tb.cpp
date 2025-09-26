@@ -801,8 +801,8 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
     customDoublesRanges[CustomDoubleRShuntCorr].min = -8.0;
     customDoublesRanges[CustomDoubleRShuntCorr].max = 7.0;
     customDoublesRanges[CustomDoubleRShuntCorr].step = 1.0;
-    customDoublesRanges[CustomDoubleRShuntCorr].prefix = UnitPfxNano;
-    customDoublesRanges[CustomDoubleRShuntCorr].unit = "S";
+    customDoublesRanges[CustomDoubleRShuntCorr].prefix = UnitPfxNone;
+    customDoublesRanges[CustomDoubleRShuntCorr].unit = "";
     customDoublesRanges[CustomDoubleOffset].step = 20.0/1024.0;
     customDoublesRanges[CustomDoubleOffset].min = -10.0;
     customDoublesRanges[CustomDoubleOffset].max = customDoublesRanges[CustomDoubleOffset].min+customDoublesRanges[CustomDoubleOffset].step*1024.0;
@@ -885,7 +885,7 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
     txStatus[txStatusIdx++] = 0x00; // Ch_sel
     txStatus[txStatusIdx++] = 0x00; // Zap
     txStatus[txStatusIdx++] = 0x00; // digital offset compensation
-    txStatus[txStatusIdx++] = 0x00; // Corr
+    txStatus[txStatusIdx++] = 0x08; // Corr
     txStatus[txStatusIdx++] = 0x00; // offset
     txStatus[txStatusIdx++] = 0x00;
 }

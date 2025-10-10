@@ -11,6 +11,7 @@
 
 #include "er4commlib_errorcodes.h"
 #include "er4commlib_global.h"
+#include "er4commlib_global_addendum.h"
 #include "ftdieeprom.h"
 #include "ftdieeprom56.h"
 #include "ftdieepromdemo.h"

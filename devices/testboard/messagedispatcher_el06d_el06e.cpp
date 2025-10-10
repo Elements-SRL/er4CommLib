@@ -1,7 +1,9 @@
 #include "messagedispatcher_el06d_el06e.h"
 
 using namespace std;
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
 using namespace er4CommLib;
+#endif
 
 MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     MessageDispatcher(id) {

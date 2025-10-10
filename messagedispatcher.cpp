@@ -43,7 +43,9 @@
 #endif
 
 using namespace std;
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
 using namespace er4CommLib;
+#endif
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                                     //    9,  2,  4 : e1b EL03c chip (Legacy version for EDR3)

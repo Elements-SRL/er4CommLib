@@ -4,7 +4,9 @@
 #include "messagedispatcher_enpr_hc.h"
 
 using namespace std;
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
 using namespace er4CommLib;
+#endif
 
 /********************************************************************************************\
  *                                                                                          *

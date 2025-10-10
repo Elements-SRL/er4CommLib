@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "messagedispatcher.h"
+#include "er4commlib.h"
 
 #ifdef _WIN32
 #include <windows.h>

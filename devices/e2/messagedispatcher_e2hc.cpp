@@ -1,7 +1,9 @@
 #include "messagedispatcher_e2hc.h"
 
 using namespace std;
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
 using namespace er4CommLib;
+#endif
 
 MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     MessageDispatcher(di) {

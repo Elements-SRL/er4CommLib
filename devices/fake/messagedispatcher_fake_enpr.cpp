@@ -1,7 +1,9 @@
 #include "messagedispatcher_fake_enpr.h"
 
 using namespace std;
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
 using namespace er4CommLib;
+#endif
 
 MessageDispatcher_fake_eNPR::MessageDispatcher_fake_eNPR(string di) :
     MessageDispatcher_eNPR(di) {

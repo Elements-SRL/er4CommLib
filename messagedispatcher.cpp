@@ -1,6 +1,6 @@
 #include "messagedispatcher.h"
 
-#include "connectionmutex.h"
+#include "ftdiconnectionmutex.h"
 
 #include "messagedispatcher_e1plus.h"
 #include "messagedispatcher_e1light.h"
@@ -567,6 +567,7 @@ ErrorCodes_t MessageDispatcher::disconnectDevice() {
         this->deinit();
 
         if (connectionStatus == ConnectionStatus_t::Connected) {
+            unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
             FT_STATUS ftRet;
             ftRet = FT_Close(* ftdiRxHandle);
             if (ftRet != FT_OK) {
@@ -618,7 +619,8 @@ ErrorCodes_t MessageDispatcher::pauseConnection(MessageDispatcher::ConnectionSta
     ErrorCodes_t ret = Success;
     switch (newConnectionStatus) {
     case MessageDispatcher::ConnectionStatus_t::Calibrating:
-    case MessageDispatcher::ConnectionStatus_t::Paused:
+    case MessageDispatcher::ConnectionStatus_t::Paused: {
+        unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
         FT_STATUS ftRet;
         ftRet = FT_Close(* ftdiRxHandle);
         if (ftRet != FT_OK) {
@@ -633,6 +635,7 @@ ErrorCodes_t MessageDispatcher::pauseConnection(MessageDispatcher::ConnectionSta
             }
         }
         break;
+    }
     case MessageDispatcher::ConnectionStatus_t::Connected:
         /*! Initialize the ftdi Rx handle */
         ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
@@ -2045,8 +2048,8 @@ ErrorCodes_t MessageDispatcher::purgeData(bool purgeAlsoChannel) {
     outputBufferOverflowFlag = false;
     bufferDataLossFlag = false;
     bufferSaturationFlag = false;
-    unique_lock <mutex> connectionMutexLock(connectionMutex);
     if (purgeAlsoChannel) {
+        unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
         FT_Purge(ftdiRxHandle, FT_PURGE_RX);
     }
     return Success;
@@ -2491,8 +2494,6 @@ ErrorCodes_t MessageDispatcher::getCalibrationEepromSize(uint32_t &size) {
 ErrorCodes_t MessageDispatcher::writeCalibrationEeprom(std::vector <uint32_t> value, std::vector <uint32_t> address, std::vector <uint32_t> size) {
     ErrorCodes_t ret;
     if (calEeprom != nullptr) {
-        std::unique_lock <std::mutex> connectionMutexLock(connectionMutex);
-
         ret = this->pauseConnection(ConnectionStatus_t::Calibrating);
         calEeprom->openConnection();
 
@@ -2509,16 +2510,14 @@ ErrorCodes_t MessageDispatcher::writeCalibrationEeprom(std::vector <uint32_t> va
         calEeprom->closeConnection();
         this->pauseConnection(ConnectionStatus_t::Connected);
 
-        connectionMutexLock.unlock();
-
         /*! Make a chip reset to force resynchronization of chip states. This is important when the FPGA has just been reset */
         deviceResetCoder->encode(1, txStatus);
         this->stackOutgoingMessage(txStatus);
         this_thread::sleep_for(chrono::milliseconds(100));
         deviceResetCoder->encode(0, txStatus);
         this->stackOutgoingMessage(txStatus);
-
-    } else {
+    }
+    else {
         ret = ErrorEepromNotConnected;
     }
 
@@ -2528,8 +2527,6 @@ ErrorCodes_t MessageDispatcher::writeCalibrationEeprom(std::vector <uint32_t> va
 ErrorCodes_t MessageDispatcher::readCalibrationEeprom(std::vector <uint32_t> &value, std::vector <uint32_t> address, std::vector <uint32_t> size) {
     ErrorCodes_t ret;
     if (calEeprom != nullptr) {
-        std::unique_lock <std::mutex> connectionMutexLock(connectionMutex);
-
         ret = this->pauseConnection(ConnectionStatus_t::Calibrating);
         calEeprom->openConnection();
 
@@ -2551,16 +2548,14 @@ ErrorCodes_t MessageDispatcher::readCalibrationEeprom(std::vector <uint32_t> &va
         calEeprom->closeConnection();
         this->pauseConnection(ConnectionStatus_t::Connected);
 
-        connectionMutexLock.unlock();
-
         /*! Make a chip reset to force resynchronization of chip states. This is important when the FPGA has just been reset */
         deviceResetCoder->encode(1, txStatus);
         this->stackOutgoingMessage(txStatus);
         this_thread::sleep_for(chrono::milliseconds(100));
         deviceResetCoder->encode(0, txStatus);
         this->stackOutgoingMessage(txStatus);
-
-    } else {
+    }
+    else {
         ret = ErrorEepromNotConnected;
     }
 
@@ -2930,6 +2925,7 @@ ErrorCodes_t MessageDispatcher::deinit() {
 }
 
 ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel) {
+    unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
     FT_STATUS ftRet;
 
     string communicationSerialNumber = deviceId+channel;
@@ -3147,7 +3143,7 @@ void MessageDispatcher::readDataFromDevice() {
     long long int acc = 0;
 #endif
 
-    unique_lock <mutex> connectionMutexLock (connectionMutex);
+    unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
     connectionMutexLock.unlock();
 
     bool skipReading = false;
@@ -3386,7 +3382,7 @@ void MessageDispatcher::sendCommandsToDevice() {
     bool notSentTxData;
 
     unique_lock <mutex> txMutexLock (txMutex);
-    unique_lock <mutex> connectionMutexLock (connectionMutex);
+    unique_lock <mutex> connectionMutexLock (ftdiConnectionMutex);
     txMutexLock.unlock();
     connectionMutexLock.unlock();
 
@@ -3488,17 +3484,19 @@ uint32_t MessageDispatcher::getDeviceIndex(std::string serial) {
 std::string MessageDispatcher::getDeviceSerial(uint32_t index, bool excludeLetter) {
     char buffer[64];
     std::string serial;
+    unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
     FT_STATUS FT_Result = FT_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
+    connectionMutexLock.unlock();
     if (FT_Result == FT_OK) {
         serial = buffer;
         if (excludeLetter) {
             return serial.substr(0, serial.size()-1); /*!< Removes channel character */
-
-        } else {
+        }
+        else {
             return serial;
         }
-
-    } else {
+    }
+    else {
         return "";
     }
 }
@@ -3506,11 +3504,12 @@ std::string MessageDispatcher::getDeviceSerial(uint32_t index, bool excludeLette
 bool MessageDispatcher::getDeviceCount(DWORD &numDevs) {
     /*! Get the number of connected devices */
     numDevs = 0;
+    unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
     FT_STATUS FT_Result = FT_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
     if (FT_Result == FT_OK) {
         return true;
-
-    } else {
+    }
+    else {
         return false;
     }
 }

@@ -1,5 +1,9 @@
 #include "calibrationeeprom.h"
 
+#include <mutex>
+
+#include "ftdiconnectionmutex.h"
+
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER
 namespace er4CommLib {
 #endif
@@ -19,6 +23,7 @@ ErrorCodes_t CalibrationEeprom::openConnection() {
     }
     connectionOpened = true;
     FT_STATUS status;
+    std::unique_lock <std::mutex> connectionMutexLock(ftdiConnectionMutex);
     Init_libMPSSE();
 
     status = SPI_OpenChannel(channelIdx, &handle);
@@ -32,6 +37,7 @@ ErrorCodes_t CalibrationEeprom::openConnection() {
         connectionOpened = false;
         return ErrorEepromConnectionFailed;
     }
+    connectionMutexLock.unlock();
 
     status = this->enableFPGA(false);
     if (status != FT_OK) {
@@ -53,6 +59,7 @@ ErrorCodes_t CalibrationEeprom::closeConnection() {
         return ErrorEepromDisconnectionFailed;
     }
 
+    std::unique_lock <std::mutex> connectionMutexLock(ftdiConnectionMutex);
     status = SPI_CloseChannel(handle);
     if (status != FT_OK) {
         return ErrorEepromDisconnectionFailed;
@@ -70,17 +77,18 @@ ErrorCodes_t CalibrationEeprom::enableFPGA(bool flag) {
     }
 
     FT_STATUS status;
+    std::unique_lock <std::mutex> connectionMutexLock(ftdiConnectionMutex);
     if (flag) {
         status = FT_WriteGPIO(handle, CEE_XCBUS_DIR, CEE_SPI_PROG_DISABLE | CEE_FPGA_RESET_DISABLE);
-
-    } else {
+    }
+    else {
         status = FT_WriteGPIO(handle, CEE_XCBUS_DIR, CEE_SPI_PROG_ENABLE | CEE_FPGA_RESET_ENABLE);
     }
 
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;
-
-    } else {
+    }
+    else {
         return Success;
     }
 }
@@ -95,6 +103,7 @@ ErrorCodes_t CalibrationEeprom::enableWrite() {
     DWORD bytesWritten[1] = {0};
     int bytesToWrite = 0;
     writeBuffer[bytesToWrite++] = CEE_WRITE_ENABLE_CMD;
+    std::unique_lock <std::mutex> connectionMutexLock(ftdiConnectionMutex);
     status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;
@@ -126,12 +135,14 @@ ErrorCodes_t CalibrationEeprom::writeBytes(unsigned char * values, unsigned int 
     writeBuffer[bytesToWrite++] = CEE_PROGRAM_CMD;
     writeBuffer[bytesToWrite++] = (unsigned char)((addr & 0xFF00) >> 8);
     writeBuffer[bytesToWrite++] = (unsigned char)(addr & 0x00FF);
+    std::unique_lock <std::mutex> connectionMutexLock(ftdiConnectionMutex);
     status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;
     }
 
     status = SPI_Write(handle, values, size, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
+    connectionMutexLock.unlock();
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;
     }
@@ -174,24 +185,24 @@ ErrorCodes_t CalibrationEeprom::readByte(unsigned char * value, unsigned int add
         writeBuffer[bytesToWrite++] = CEE_READ_CMD;
         writeBuffer[bytesToWrite++] = (unsigned char)((addr & 0xFF00) >> 8);
         writeBuffer[bytesToWrite++] = (unsigned char)(addr & 0x00FF);
+        std::unique_lock <std::mutex> connectionMutexLock(ftdiConnectionMutex);
         status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
         if (status != FT_OK) {
             return ErrorEepromWriteFailed;
         }
     }
 
+    std::unique_lock <std::mutex> connectionMutexLock(ftdiConnectionMutex);
     if (end) {
         status = SPI_Read(handle, value, 1, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_DISABLE);
-
-    } else {
+    }
+    else {
         status = SPI_Read(handle, value, 1, bytesRead, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES);
     }
     if (status != FT_OK) {
         return ErrorEepromReadFailed;
-
-    } else {
-        return Success;
     }
+    return Success;
 }
 
 ErrorCodes_t CalibrationEeprom::pollWriteDone() {
@@ -217,6 +228,7 @@ ErrorCodes_t CalibrationEeprom::getStatus(unsigned char &eepromStatus) {
     DWORD bytesRead[1] = {0};
 
     writeBuffer[bytesToWrite++] = CEE_GET_STATUS_CMD;
+    std::unique_lock <std::mutex> connectionMutexLock(ftdiConnectionMutex);
     FT_STATUS status = SPI_Write(handle, writeBuffer, bytesToWrite, bytesWritten, SPI_TRANSFER_OPTIONS_SIZE_IN_BYTES | SPI_TRANSFER_OPTIONS_CHIPSELECT_ENABLE);
     if (status != FT_OK) {
         return ErrorEepromWriteFailed;

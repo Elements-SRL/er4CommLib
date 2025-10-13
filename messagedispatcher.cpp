@@ -3133,7 +3133,7 @@ void MessageDispatcher::readDataFromDevice() {
     unsigned int okFrames; /*! Number of frames correctly identified within 2 syncwords that can be analyzed */
     int availableBytes; /*! Number of bytes available for analysis */
 
-    unique_lock <mutex> readDataMtxLock (readDataMtx);
+    unique_lock <mutex> readDataMtxLock(readDataMtx);
     readDataMtxLock.unlock();
 
 #ifdef DEBUG_RAW_BIT_RATE_PRINT

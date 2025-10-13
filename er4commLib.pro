@@ -16,7 +16,7 @@ TEMPLATE = lib
 CONFIG += c++17
 
 # DEFINES += ER4COMMLIB_LABVIEW_WRAPPER
-# DEFINES += ER4COMMLIB_DLL
+DEFINES += ER4COMMLIB_DLL
 
 contains(DEFINES, ER4COMMLIB_DLL) {
     # build dynamically
@@ -153,6 +153,5 @@ DEPENDPATH += ./ \
 macx: INCLUDEPATH += /usr/local/include
 macx: DEPENDPATH += /usr/local/include
 
-include($$(FTD2XX_PATH)includeftd2xx.pri)
 include($$(FTDI_UTILS_PATH)includeftdiutils.pri)
 include($$(LIBMPSSE_PATH)includelibmpsse.pri)

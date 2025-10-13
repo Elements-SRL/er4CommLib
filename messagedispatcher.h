@@ -11,6 +11,7 @@
 
 #include "er4commlib_errorcodes.h"
 #include "er4commlib_global.h"
+#include "er4commlib_global_addendum.h"
 #include "ftdieeprom.h"
 #include "ftdieeprom56.h"
 #include "ftdieepromdemo.h"
@@ -307,6 +308,7 @@ public:
     ErrorCodes_t hasTtlPulseTrain();
 
     virtual ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets);
+    virtual ErrorCodes_t updateTemperatureReading(std::vector <Measurement_t> &temperature);
 
 protected:
     typedef enum {

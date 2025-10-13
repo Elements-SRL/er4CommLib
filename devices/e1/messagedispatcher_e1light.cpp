@@ -1,7 +1,9 @@
 #include "messagedispatcher_e1light.h"
 
 using namespace std;
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
 using namespace er4CommLib;
+#endif
 
 MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_LegacyEdr3_V01(string id) :
     MessageDispatcherLegacyEdr3(id){

@@ -644,14 +644,14 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     boolConfig.initialBit = 6;
     boolConfig.bitsNum = 8;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(0); /*!<  1.25kHz 5kHz BW   CK/8 -> 0b00000011 */
-    samplingRateCoder->addMapItem(0); /*!<  2.5kHz  5kHz BW   CK/4 -> 0b00010010 */
-    samplingRateCoder->addMapItem(1); /*!<  5kHz    5kHz BW   CK/4 -> 0b00100010 */
-    samplingRateCoder->addMapItem(2); /*!<  10kHz   10kHz BW  CK/4 -> 0b00110110 */
-    samplingRateCoder->addMapItem(3); /*!<  20kHz   20kHz BW  CK/4 -> 0b01001010 */
-    samplingRateCoder->addMapItem(8); /*!<  50kHz   100kHz BW CK/2 -> 0b01011101 */
-    samplingRateCoder->addMapItem(9); /*!<  100kHz  100kHz BW CK/2 -> 0b01101101 */
-    samplingRateCoder->addMapItem(10); /*!< 200kHz  100kHz BW CK/1 -> 0b01111110 */
+    samplingRateCoder->addMapItem(3);   /*!<  1.25kHz 5kHz BW   CK/8 -> 0b00000011 */
+    samplingRateCoder->addMapItem(18);  /*!<  2.5kHz  5kHz BW   CK/4 -> 0b00010010 */
+    samplingRateCoder->addMapItem(34);  /*!<  5kHz    5kHz BW   CK/4 -> 0b00100010 */
+    samplingRateCoder->addMapItem(54);  /*!<  10kHz   10kHz BW  CK/4 -> 0b00110110 */
+    samplingRateCoder->addMapItem(74);  /*!<  20kHz   20kHz BW  CK/4 -> 0b01001010 */
+    samplingRateCoder->addMapItem(93);  /*!<  50kHz   100kHz BW CK/2 -> 0b01011101 */
+    samplingRateCoder->addMapItem(109); /*!<  100kHz  100kHz BW CK/2 -> 0b01101101 */
+    samplingRateCoder->addMapItem(126); /*!<  200kHz  100kHz BW CK/1 -> 0b01111110 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 9;

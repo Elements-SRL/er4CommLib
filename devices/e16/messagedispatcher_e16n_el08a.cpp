@@ -651,7 +651,7 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     samplingRateCoder->addMapItem(74);  /*!<  20kHz   20kHz BW  CK/4 -> 0b01001010 */
     samplingRateCoder->addMapItem(93);  /*!<  50kHz   100kHz BW CK/2 -> 0b01011101 */
     samplingRateCoder->addMapItem(109); /*!<  100kHz  100kHz BW CK/2 -> 0b01101101 */
-    samplingRateCoder->addMapItem(126); /*!<  200kHz  100kHz BW CK/1 -> 0b01111110 */
+    samplingRateCoder->addMapItem(124); /*!<  200kHz  100kHz BW CK/1 -> 0b01111100 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 9;

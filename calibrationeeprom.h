@@ -3,13 +3,11 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#include "ftd2xx.h"
 #else
 #include "WinTypes.h"
-#include "ftd2xx.h"
 #endif
 
-#include "libmpsse_spi.h"
+#include "ftd2xxwrapper.h"
 #include "er4commlib_errorcodes.h"
 #include "stdint.h"
 

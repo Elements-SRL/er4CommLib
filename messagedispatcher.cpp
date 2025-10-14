@@ -1,7 +1,5 @@
 #include "messagedispatcher.h"
 
-#include "ftdiconnectionmutex.h"
-
 #include "messagedispatcher_e1plus.h"
 #include "messagedispatcher_e1light.h"
 #include "messagedispatcher_e1hc.h"
@@ -567,16 +565,15 @@ ErrorCodes_t MessageDispatcher::disconnectDevice() {
         this->deinit();
 
         if (connectionStatus == ConnectionStatus_t::Connected) {
-            unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
             FT_STATUS ftRet;
-            ftRet = FT_Close(* ftdiRxHandle);
+            ftRet = Ftd2xxWrapper::FTW_Close(* ftdiRxHandle);
             if (ftRet != FT_OK) {
                 return ErrorDeviceDisconnectionFailed;
             }
 
             if (rxChannel != txChannel) {
                 FT_STATUS ftRet;
-                ftRet = FT_Close(* ftdiTxHandle);
+                ftRet = Ftd2xxWrapper::FTW_Close(* ftdiTxHandle);
                 if (ftRet != FT_OK) {
                     return ErrorDeviceDisconnectionFailed;
                 }
@@ -620,16 +617,15 @@ ErrorCodes_t MessageDispatcher::pauseConnection(MessageDispatcher::ConnectionSta
     switch (newConnectionStatus) {
     case MessageDispatcher::ConnectionStatus_t::Calibrating:
     case MessageDispatcher::ConnectionStatus_t::Paused: {
-        unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
         FT_STATUS ftRet;
-        ftRet = FT_Close(* ftdiRxHandle);
+        ftRet = Ftd2xxWrapper::FTW_Close(* ftdiRxHandle);
         if (ftRet != FT_OK) {
             return ErrorDeviceDisconnectionFailed;
         }
 
         if (rxChannel != txChannel) {
             FT_STATUS ftRet;
-            ftRet = FT_Close(* ftdiTxHandle);
+            ftRet = Ftd2xxWrapper::FTW_Close(* ftdiTxHandle);
             if (ftRet != FT_OK) {
                 return ErrorDeviceDisconnectionFailed;
             }
@@ -2049,8 +2045,7 @@ ErrorCodes_t MessageDispatcher::purgeData(bool purgeAlsoChannel) {
     bufferDataLossFlag = false;
     bufferSaturationFlag = false;
     if (purgeAlsoChannel) {
-        unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
-        FT_Purge(ftdiRxHandle, FT_PURGE_RX);
+        Ftd2xxWrapper::FTW_Purge(ftdiRxHandle, FT_PURGE_RX);
     }
     return Success;
 }
@@ -2925,74 +2920,73 @@ ErrorCodes_t MessageDispatcher::deinit() {
 }
 
 ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel) {
-    unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
     FT_STATUS ftRet;
 
     string communicationSerialNumber = deviceId+channel;
 
     /*! Opens the device */
-    ftRet = FT_OpenEx((PVOID)communicationSerialNumber.c_str(), FT_OPEN_BY_SERIAL_NUMBER, handle);
+    ftRet = Ftd2xxWrapper::FTW_OpenEx((PVOID)communicationSerialNumber.c_str(), FT_OPEN_BY_SERIAL_NUMBER, handle);
     if (ftRet != FT_OK) {
         return ErrorDeviceConnectionFailed;
     }
 
     if (syncFtdiFlag) {
-        ftRet = FT_SetBitMode(* handle, 0x00, 0x00);
+        ftRet = Ftd2xxWrapper::FTW_SetBitMode(* handle, 0x00, 0x00);
         if (ftRet != FT_OK) {
             printf("FT_SetBitMode FAILED\n");
-            FT_Close(* handle);
+            Ftd2xxWrapper::FTW_Close(* handle);
             return ErrorFtdiConfigurationFailed;
         }
 
         this_thread::sleep_for(chrono::milliseconds(10));
 
-        ftRet = FT_SetBitMode(* handle, 0x00, 0x40);
+        ftRet = Ftd2xxWrapper::FTW_SetBitMode(* handle, 0x00, 0x40);
         if (ftRet != FT_OK) {
             printf("FT_SetBitMode FAILED\n");
-            FT_Close(* handle);
+            Ftd2xxWrapper::FTW_Close(* handle);
             return ErrorFtdiConfigurationFailed;
         }
     }
 
     /*! Sets latency */
-    ftRet = FT_SetLatencyTimer(* handle, 2); /*!< ms */
+    ftRet = Ftd2xxWrapper::FTW_SetLatencyTimer(* handle, 2); /*!< ms */
     if (ftRet != FT_OK) {
-        FT_Close(* handle);
+        Ftd2xxWrapper::FTW_Close(* handle);
         return ErrorFtdiConfigurationFailed;
     }
 
     /*! Sets transfers size to */
     if (syncFtdiFlag) {
-        ftRet = FT_SetUSBParameters(* handle, 0x10000, 0x10000);
+        ftRet = Ftd2xxWrapper::FTW_SetUSBParameters(* handle, 0x10000, 0x10000);
         if (ftRet != FT_OK) {
-            FT_Close(* handle);
+            Ftd2xxWrapper::FTW_Close(* handle);
             return ErrorFtdiConfigurationFailed;
         }
 
-        ftRet = FT_SetFlowControl(* handle, FT_FLOW_RTS_CTS, 0, 0);
+        ftRet = Ftd2xxWrapper::FTW_SetFlowControl(* handle, FT_FLOW_RTS_CTS, 0, 0);
         if (ftRet != FT_OK) {
-            FT_Close(* handle);
+            Ftd2xxWrapper::FTW_Close(* handle);
             return ErrorFtdiConfigurationFailed;
         }
     }
     else {
-        ftRet = FT_SetUSBParameters(* handle, 4096, 4096);
+        ftRet = Ftd2xxWrapper::FTW_SetUSBParameters(* handle, 4096, 4096);
         if (ftRet != FT_OK) {
-            FT_Close(* handle);
+            Ftd2xxWrapper::FTW_Close(* handle);
             return ErrorFtdiConfigurationFailed;
         }
     }
 
     /*! Purges buffers */
-    ftRet = FT_Purge(* handle, FT_PURGE_RX | FT_PURGE_TX);
+    ftRet = Ftd2xxWrapper::FTW_Purge(* handle, FT_PURGE_RX | FT_PURGE_TX);
     if (ftRet != FT_OK) {
-        FT_Close(* handle);
+        Ftd2xxWrapper::FTW_Close(* handle);
         return ErrorFtdiConfigurationFailed;
     }
 
     if (channel == rxChannel) {
         if (ftRet != FT_OK) {
-            FT_Close(* handle);
+            Ftd2xxWrapper::FTW_Close(* handle);
             return ErrorFtdiConfigurationFailed;
         }
     }
@@ -3143,9 +3137,6 @@ void MessageDispatcher::readDataFromDevice() {
     long long int acc = 0;
 #endif
 
-    unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
-    connectionMutexLock.unlock();
-
     bool skipReading = false;
     while (!stopConnectionFlag) {
         switch (connectionStatus) {
@@ -3171,10 +3162,8 @@ void MessageDispatcher::readDataFromDevice() {
         \******************/
 
         /*! Read queue status to check the number of available bytes */
-        connectionMutexLock.lock();
-        result = FT_GetQueueStatus(* ftdiRxHandle, &ftdiQueuedBytes);
+        result = Ftd2xxWrapper::FTW_GetQueueStatus(* ftdiRxHandle, &ftdiQueuedBytes);
         if (result != FT_OK) {
-            connectionMutexLock.unlock();
             deviceCommunicationErrorFlag = true;
             this->pauseConnection(ConnectionStatus_t::Connected);
             this_thread::sleep_for(chrono::milliseconds(100));
@@ -3187,7 +3176,6 @@ void MessageDispatcher::readDataFromDevice() {
         /*! If there are not enough frames wait for a minimum frame number,
          *  the ftdi driver will wait for that to decrease overhead */
         if (availableFrames < minReadFrameNumber) {
-            connectionMutexLock.unlock();
             this_thread::sleep_for(chrono::microseconds(fewFramesSleep));
             continue;
         }
@@ -3200,13 +3188,12 @@ void MessageDispatcher::readDataFromDevice() {
         /*! Reads the data */
         bytesToEnd = FTD_RX_BUFFER_SIZE-bufferWriteOffset;
         if (ftdiQueuedBytes > bytesToEnd) {
-            result = FT_Read(* ftdiRxHandle, readDataBuffer+bufferWriteOffset, bytesToEnd, &readResult);
-            result |= FT_Read(* ftdiRxHandle, readDataBuffer, ftdiQueuedBytes-bytesToEnd, &readResult);
+            result = Ftd2xxWrapper::FTW_Read(* ftdiRxHandle, readDataBuffer+bufferWriteOffset, bytesToEnd, &readResult);
+            result |= Ftd2xxWrapper::FTW_Read(* ftdiRxHandle, readDataBuffer, ftdiQueuedBytes-bytesToEnd, &readResult);
 
         } else {
-            result = FT_Read(* ftdiRxHandle, readDataBuffer+bufferWriteOffset, ftdiQueuedBytes, &readResult);
+            result = Ftd2xxWrapper::FTW_Read(* ftdiRxHandle, readDataBuffer+bufferWriteOffset, ftdiQueuedBytes, &readResult);
         }
-        connectionMutexLock.unlock();
 
         if (result != FT_OK) {
             continue; /*! \todo FCON Notify to user? */
@@ -3382,9 +3369,7 @@ void MessageDispatcher::sendCommandsToDevice() {
     bool notSentTxData;
 
     unique_lock <mutex> txMutexLock (txMutex);
-    unique_lock <mutex> connectionMutexLock (ftdiConnectionMutex);
     txMutexLock.unlock();
-    connectionMutexLock.unlock();
 
     while (!stopConnectionFlag) {
 
@@ -3419,9 +3404,7 @@ void MessageDispatcher::sendCommandsToDevice() {
         notSentTxData = true;
         bytesToWrite = (DWORD)txDataBytes;
         while (notSentTxData && (writeTries++ < FTD_MAX_WRITE_TRIES)) { /*! \todo FCON prevedere un modo per notificare ad alto livello e all'utente */
-            connectionMutexLock.lock();
-            ftRet = FT_Write(* ftdiTxHandle, txRawBuffer, bytesToWrite, &ftdiWrittenBytes);
-            connectionMutexLock.unlock();
+            ftRet = Ftd2xxWrapper::FTW_Write(* ftdiTxHandle, txRawBuffer, bytesToWrite, &ftdiWrittenBytes);
 
             if (ftRet != FT_OK) {
                 continue;
@@ -3444,9 +3427,7 @@ void MessageDispatcher::sendCommandsToDevice() {
             /*! If less bytes than need are sent purge the buffer and retry */
             if (ftdiWrittenBytes < bytesToWrite) {
                 /*! Cleans TX buffer */
-                connectionMutexLock.lock();
-                FT_Purge(* ftdiTxHandle, FT_PURGE_TX);
-                connectionMutexLock.unlock();
+                Ftd2xxWrapper::FTW_Purge(* ftdiTxHandle, FT_PURGE_TX);
 
             } else {
                 notSentTxData = false;
@@ -3484,9 +3465,7 @@ uint32_t MessageDispatcher::getDeviceIndex(std::string serial) {
 std::string MessageDispatcher::getDeviceSerial(uint32_t index, bool excludeLetter) {
     char buffer[64];
     std::string serial;
-    unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
-    FT_STATUS FT_Result = FT_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
-    connectionMutexLock.unlock();
+    FT_STATUS FT_Result = Ftd2xxWrapper::FTW_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
     if (FT_Result == FT_OK) {
         serial = buffer;
         if (excludeLetter) {
@@ -3504,8 +3483,7 @@ std::string MessageDispatcher::getDeviceSerial(uint32_t index, bool excludeLette
 bool MessageDispatcher::getDeviceCount(DWORD &numDevs) {
     /*! Get the number of connected devices */
     numDevs = 0;
-    unique_lock <mutex> connectionMutexLock(ftdiConnectionMutex);
-    FT_STATUS FT_Result = FT_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
+    FT_STATUS FT_Result = Ftd2xxWrapper::FTW_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
     if (FT_Result == FT_OK) {
         return true;
     }

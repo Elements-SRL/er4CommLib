@@ -13,7 +13,7 @@ CONFIG(release, debug|release) {
 
 # DEFINES += DEBUG_PRINT
 TEMPLATE = lib
-CONFIG += c++17
+CONFIG += c++20
 
 # DEFINES += ER4COMMLIB_LABVIEW_WRAPPER
 # DEFINES += ER4COMMLIB_DLL
@@ -154,4 +154,3 @@ macx: INCLUDEPATH += /usr/local/include
 macx: DEPENDPATH += /usr/local/include
 
 include($$(FTDI_UTILS_PATH)includeftdiutils.pri)
-include($$(LIBMPSSE_PATH)includelibmpsse.pri)

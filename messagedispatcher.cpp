@@ -209,11 +209,11 @@ ErrorCodes_t MessageDispatcher::detectDevices(
         vector <string> &deviceIds) {
     /*! Gets number of devices */
     DWORD numDevs;
-    bool devCountOk = getDeviceCount(numDevs);
+    bool devCountOk = Ftd2xxWrapper::getDeviceCount(numDevs);
     if (!devCountOk) {
         return ErrorListDeviceFailed;
-
-    } else if (numDevs < 2) {
+    }
+    else if (numDevs < 2) {
         /*! Each device has 2 channels */
         deviceIds.clear();
         return ErrorNoDeviceFound;
@@ -226,19 +226,19 @@ ErrorCodes_t MessageDispatcher::detectDevices(
 
     /*! Lists all serial numbers */
     for (uint32_t i = 0; i < numDevs; i++) {
-        deviceName = getDeviceSerial(i);
+        deviceName = Ftd2xxWrapper::getDeviceSerial(i, true);
         if (find(deviceIdsTemp.begin(), deviceIdsTemp.end(), deviceName) == deviceIdsTemp.end()) {
             /*! Devices with an open channel are detected wrongly and their name is an empty string */
             if (deviceName.size() > 0) {
                 /*! If this device has been found for the first time put it in the temporary list */
-                deviceIdsTemp.push_back(getDeviceSerial(i));
+                deviceIdsTemp.push_back(Ftd2xxWrapper::getDeviceSerial(i, true));
             }
-
-        } else {
+        }
+        else {
             /*! Devices with an open channel are detected wrongly and their name is an empty string */
             if (deviceName.size() > 0) {
                 /*! If this device has been already been found both channels A and B are detected, so add it in the output list */
-                deviceIds.push_back(getDeviceSerial(i));
+                deviceIds.push_back(Ftd2xxWrapper::getDeviceSerial(i, true));
             }
         }
     }
@@ -2833,7 +2833,7 @@ ErrorCodes_t MessageDispatcher::init() {
 
     std::string spiChannelStr = deviceId+spiChannel;
 
-    calEeprom = new CalibrationEeprom(getDeviceIndex(spiChannelStr));
+    calEeprom = new CalibrationEeprom(Ftd2xxWrapper::getDeviceIndex(spiChannelStr));
 
     this->computeMinimumPacketNumber();
 
@@ -3439,56 +3439,6 @@ void MessageDispatcher::sendCommandsToDevice() {
         txMsgBufferReadLength--;
         txMsgBufferNotFull.notify_all();
         txMutexLock.unlock();
-    }
-}
-
-uint32_t MessageDispatcher::getDeviceIndex(std::string serial) {
-    /*! Gets number of devices */
-    DWORD numDevs;
-    bool devCountOk = getDeviceCount(numDevs);
-    if (!devCountOk) {
-        return 0;
-
-    } else if (numDevs == 0) {
-        return 0;
-    }
-
-    for (uint32_t index = 0; index < numDevs; index++) {
-        std::string deviceId = getDeviceSerial(index, false);
-        if (deviceId == serial) {
-            return index;
-        }
-    }
-    return 0;
-}
-
-std::string MessageDispatcher::getDeviceSerial(uint32_t index, bool excludeLetter) {
-    char buffer[64];
-    std::string serial;
-    FT_STATUS FT_Result = Ftd2xxWrapper::FTW_ListDevices((PVOID)index, buffer, FT_LIST_BY_INDEX);
-    if (FT_Result == FT_OK) {
-        serial = buffer;
-        if (excludeLetter) {
-            return serial.substr(0, serial.size()-1); /*!< Removes channel character */
-        }
-        else {
-            return serial;
-        }
-    }
-    else {
-        return "";
-    }
-}
-
-bool MessageDispatcher::getDeviceCount(DWORD &numDevs) {
-    /*! Get the number of connected devices */
-    numDevs = 0;
-    FT_STATUS FT_Result = Ftd2xxWrapper::FTW_ListDevices(&numDevs, nullptr, FT_LIST_NUMBER_ONLY);
-    if (FT_Result == FT_OK) {
-        return true;
-    }
-    else {
-        return false;
     }
 }
 

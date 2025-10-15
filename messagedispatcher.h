@@ -111,11 +111,6 @@ public:
     void readDataFromDevice();
     void sendCommandsToDevice();
 
-    /*! Private functions */
-    static uint32_t getDeviceIndex(std::string serial);
-    static std::string getDeviceSerial(uint32_t index, bool excludeLetter = true);
-    static bool getDeviceCount(DWORD &numDevs);
-
     /****************\
      *  Tx methods  *
     \****************/

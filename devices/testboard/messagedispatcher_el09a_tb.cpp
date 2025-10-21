@@ -549,6 +549,51 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
     customFlagsDefault.resize(customFlagsNum);
     customFlagsDefault[CustomFlagDac0Cap] = true;
 
+    customOptionsNum = CustomOptionsNum;
+    customOptionsNames.resize(customOptionsNum);
+    customOptionsNames[CustomOptionDacWriteSelection] = "Dac write selection";
+    customOptionsNames[CustomOptionDacApplySelection] = "Dac apply selection";
+    customOptionsNames[CustomOptionClockDivider] = "Clock Divider";
+    customOptionsDescriptions.resize(customOptionsNum);
+    customOptionsDescriptions[CustomOptionDacWriteSelection].resize(4);
+    customOptionsDescriptions[CustomOptionDacWriteSelection][0] = "DAC1";
+    customOptionsDescriptions[CustomOptionDacWriteSelection][1] = "DAC2";
+    customOptionsDescriptions[CustomOptionDacWriteSelection][2] = "DAC3";
+    customOptionsDescriptions[CustomOptionDacWriteSelection][3] = "all";
+    customOptionsDescriptions[CustomOptionDacApplySelection].resize(4);
+    customOptionsDescriptions[CustomOptionDacApplySelection][0] = "DAC1";
+    customOptionsDescriptions[CustomOptionDacApplySelection][1] = "DAC2";
+    customOptionsDescriptions[CustomOptionDacApplySelection][2] = "DAC3";
+    customOptionsDescriptions[CustomOptionDacApplySelection][3] = "none";
+    customOptionsDescriptions[CustomOptionClockDivider].resize(4);
+    customOptionsDescriptions[CustomOptionClockDivider][0] = "ck/1";
+    customOptionsDescriptions[CustomOptionClockDivider][1] = "ck/2";
+    customOptionsDescriptions[CustomOptionClockDivider][2] = "ck/4";
+    customOptionsDescriptions[CustomOptionClockDivider][3] = "ck/8";
+    customOptionsDefault.resize(customOptionsNum);
+    customOptionsDefault[CustomOptionDacWriteSelection] = 0;
+    customOptionsDefault[CustomOptionDacApplySelection] = 0;
+    customOptionsDefault[CustomOptionClockDivider] = 3;
+
+    customDoublesNum = CustomDoublesNum;
+    customDoublesNames.resize(customDoublesNum);
+    customDoublesNames[CustomDoubleRShuntCorr] = "R Shunt Corr";
+    customDoublesNames[CustomDoubleOffset] = "DAC 10mV";
+    customDoublesRanges.resize(customDoublesNum);
+    customDoublesRanges[CustomDoubleRShuntCorr].min = -8.0;
+    customDoublesRanges[CustomDoubleRShuntCorr].max = 7.0;
+    customDoublesRanges[CustomDoubleRShuntCorr].step = 1.0;
+    customDoublesRanges[CustomDoubleRShuntCorr].prefix = UnitPfxNone;
+    customDoublesRanges[CustomDoubleRShuntCorr].unit = "";
+    customDoublesRanges[CustomDoubleOffset].step = 20.0/1024.0;
+    customDoublesRanges[CustomDoubleOffset].min = -10.0;
+    customDoublesRanges[CustomDoubleOffset].max = customDoublesRanges[CustomDoubleOffset].min+customDoublesRanges[CustomDoubleOffset].step*1024.0;
+    customDoublesRanges[CustomDoubleOffset].prefix = UnitPfxMilli;
+    customDoublesRanges[CustomDoubleOffset].unit = "V";
+    customDoublesDefault.resize(customDoublesNum);
+    customDoublesDefault[CustomDoubleRShuntCorr] = 0.0;
+    customDoublesDefault[CustomDoubleOffset] = 0.0;
+
     /**********\
      * Coders *
     \**********/
@@ -768,54 +813,45 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
     /*! Device specific controls */
     customFlagsCoders.resize(customFlagsNum);
     boolConfig.initialByte = 0;
-    boolConfig.initialBit = 2;
+    boolConfig.initialBit = 1;
     boolConfig.bitsNum = 1;
-    customFlagsCoders[0] = new BoolArrayCoder(boolConfig);
+    customFlagsCoders[CustomFlagDac0Cap] = new BoolArrayCoder(boolConfig);
 
-    customOptionsNum = CustomOptionsNum;
-    customOptionsNames.resize(customOptionsNum);
-    customOptionsNames[CustomOptionDacWriteSelection] = "Dac write selection";
-    customOptionsNames[CustomOptionDacApplySelection] = "Dac apply selection";
-    customOptionsNames[CustomOptionClockDivider] = "Clock Divider";
-    customOptionsDescriptions.resize(customOptionsNum);
-    customOptionsDescriptions[CustomOptionDacWriteSelection].resize(4);
-    customOptionsDescriptions[CustomOptionDacWriteSelection][0] = "DAC1";
-    customOptionsDescriptions[CustomOptionDacWriteSelection][1] = "DAC2";
-    customOptionsDescriptions[CustomOptionDacWriteSelection][2] = "DAC3";
-    customOptionsDescriptions[CustomOptionDacWriteSelection][3] = "all";
-    customOptionsDescriptions[CustomOptionDacApplySelection].resize(4);
-    customOptionsDescriptions[CustomOptionDacApplySelection][0] = "DAC1";
-    customOptionsDescriptions[CustomOptionDacApplySelection][1] = "DAC2";
-    customOptionsDescriptions[CustomOptionDacApplySelection][2] = "DAC3";
-    customOptionsDescriptions[CustomOptionDacApplySelection][3] = "none";
-    customOptionsDescriptions[CustomOptionClockDivider].resize(4);
-    customOptionsDescriptions[CustomOptionClockDivider][0] = "ck/1";
-    customOptionsDescriptions[CustomOptionClockDivider][1] = "ck/2";
-    customOptionsDescriptions[CustomOptionClockDivider][2] = "ck/4";
-    customOptionsDescriptions[CustomOptionClockDivider][3] = "ck/8";
-    customOptionsDefault.resize(customOptionsNum);
-    customOptionsDefault[CustomOptionDacWriteSelection] = 0;
-    customOptionsDefault[CustomOptionDacApplySelection] = 0;
-    customOptionsDefault[CustomOptionClockDivider] = 3;
+    customOptionsCoders.resize(customOptionsNum);
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 3;
+    customOptionsCoders[CustomOptionDacWriteSelection] = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (customOptionsCoders[CustomOptionDacWriteSelection])->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (customOptionsCoders[CustomOptionDacWriteSelection])->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (customOptionsCoders[CustomOptionDacWriteSelection])->addMapItem(4);
+    static_cast <BoolRandomArrayCoder *> (customOptionsCoders[CustomOptionDacWriteSelection])->addMapItem(7);
 
-    customDoublesNum = CustomDoublesNum;
-    customDoublesNames.resize(customDoublesNum);
-    customDoublesNames[CustomDoubleRShuntCorr] = "R Shunt Corr";
-    customDoublesNames[CustomDoubleOffset] = "DAC 10mV";
-    customDoublesRanges.resize(customDoublesNum);
-    customDoublesRanges[CustomDoubleRShuntCorr].min = -8.0;
-    customDoublesRanges[CustomDoubleRShuntCorr].max = 7.0;
-    customDoublesRanges[CustomDoubleRShuntCorr].step = 1.0;
-    customDoublesRanges[CustomDoubleRShuntCorr].prefix = UnitPfxNone;
-    customDoublesRanges[CustomDoubleRShuntCorr].unit = "";
-    customDoublesRanges[CustomDoubleOffset].step = 20.0/1024.0;
-    customDoublesRanges[CustomDoubleOffset].min = -10.0;
-    customDoublesRanges[CustomDoubleOffset].max = customDoublesRanges[CustomDoubleOffset].min+customDoublesRanges[CustomDoubleOffset].step*1024.0;
-    customDoublesRanges[CustomDoubleOffset].prefix = UnitPfxMilli;
-    customDoublesRanges[CustomDoubleOffset].unit = "V";
-    customDoublesDefault.resize(customDoublesNum);
-    customDoublesDefault[CustomDoubleRShuntCorr] = 0.0;
-    customDoublesDefault[CustomDoubleOffset] = 0.0;
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 2;
+    customOptionsCoders[CustomOptionDacApplySelection] = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 2;
+    customOptionsCoders[CustomOptionClockDivider] = new BoolArrayCoder(boolConfig);
+
+    customDoublesCoders.resize(customDoublesNum);
+    doubleConfig.initialByte = 66;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 4;
+    doubleConfig.minValue = customDoublesRanges[CustomDoubleRShuntCorr].min;
+    doubleConfig.maxValue = customDoublesRanges[CustomDoubleRShuntCorr].max;
+    doubleConfig.resolution = customDoublesRanges[CustomDoubleRShuntCorr].step;
+    customDoublesCoders[CustomDoubleRShuntCorr] = new DoubleOffsetBinaryCoder(doubleConfig);
+    doubleConfig.initialByte = 67;
+    doubleConfig.initialBit = 0;
+    doubleConfig.bitsNum = 10;
+    doubleConfig.minValue = customDoublesRanges[CustomDoubleOffset].min;
+    doubleConfig.maxValue = customDoublesRanges[CustomDoubleOffset].max;
+    doubleConfig.resolution = customDoublesRanges[CustomDoubleOffset].step;
+    customDoublesCoders[CustomDoubleOffset] = new DoubleOffsetBinaryCoder(doubleConfig);
 
     /*******************\
      * Default status  *

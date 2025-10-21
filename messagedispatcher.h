@@ -581,13 +581,13 @@ protected:
     uint16_t customFlagsNum = 0;
     std::vector <std::string> customFlagsNames;
     std::vector <bool> customFlagsDefault;
-    std::vector <BoolArrayCoder *> customFlagsCoders;
+    std::vector <BoolCoder *> customFlagsCoders;
 
     uint16_t customOptionsNum = 0;
     std::vector <std::string> customOptionsNames;
     std::vector <std::vector <std::string>> customOptionsDescriptions;
     std::vector <uint16_t> customOptionsDefault;
-    std::vector <BoolArrayCoder *> customOptionsCoders;
+    std::vector <BoolCoder *> customOptionsCoders;
 
     uint16_t customDoublesNum = 0;
     std::vector <std::string> customDoublesNames;

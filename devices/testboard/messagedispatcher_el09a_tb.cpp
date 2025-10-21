@@ -543,7 +543,11 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
      * Device specific controls *
     \****************************/
 
-
+    customFlagsNum = CustomFlagsNum;
+    customFlagsNames.resize(customFlagsNum);
+    customFlagsNames[CustomFlagDac0Cap] = "DAC 1 ext cap";
+    customFlagsDefault.resize(customFlagsNum);
+    customFlagsDefault[CustomFlagDac0Cap] = true;
 
     /**********\
      * Coders *
@@ -762,12 +766,11 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
     insertionPulseApplyCoder = new BoolArrayCoder(boolConfig);
 
     /*! Device specific controls */
-
-    customFlagsNum = CustomFlagsNum;
-    customFlagsNames.resize(customFlagsNum);
-    customFlagsNames[CustomFlagDac0Cap] = "DAC 1 ext cap";
-    customFlagsDefault.resize(customFlagsNum);
-    customFlagsDefault[CustomFlagDac0Cap] = true;
+    customFlagsCoders.resize(customFlagsNum);
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[0] = new BoolArrayCoder(boolConfig);
 
     customOptionsNum = CustomOptionsNum;
     customOptionsNames.resize(customOptionsNum);

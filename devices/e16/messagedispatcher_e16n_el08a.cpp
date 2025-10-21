@@ -630,7 +630,11 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 3;
     currentRangeCoders.resize(1);
-    currentRangeCoders[0] = new BoolArrayCoder(boolConfig);
+    currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3);
 
     /*! Voltage range */
     boolConfig.initialByte = 0;

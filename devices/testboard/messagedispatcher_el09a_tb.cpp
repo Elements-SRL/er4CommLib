@@ -92,7 +92,7 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
     voltageRangesArray.resize(voltageRangesNum);
     voltageRangesArray[VoltageRange500mV].min = -511.0;
     voltageRangesArray[VoltageRange500mV].max = 511.0;
-    voltageRangesArray[VoltageRange500mV].step = 0.0625;
+    voltageRangesArray[VoltageRange500mV].step = 1.0;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
@@ -230,7 +230,7 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
     protocolVoltageRangesArray.resize(ProtocolVoltageRangesNum);
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].min = -500.0;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].max = 500.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 1.0;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
 

@@ -87,7 +87,7 @@ public:
 
     DoubleCoder(CoderConfig_t config);
 
-    virtual void encode(double value, std::vector <uint8_t> &encodingBytes) = 0;
+    virtual double encode(double value, std::vector <uint8_t> &encodingBytes) = 0;
 
 protected:
     double clip(double value);
@@ -103,21 +103,21 @@ class DoubleTwosCompCoder : public DoubleCoder {
 public:
     DoubleTwosCompCoder(CoderConfig_t config);
 
-    void encode(double value, std::vector <uint8_t> &encodingBytes) override;
+    double encode(double value, std::vector <uint8_t> &encodingBytes) override;
 };
 
 class DoubleOffsetBinaryCoder : public DoubleCoder {
 public:
     DoubleOffsetBinaryCoder(CoderConfig_t config);
 
-    void encode(double value, std::vector <uint8_t> &encodingBytes) override;
+    double encode(double value, std::vector <uint8_t> &encodingBytes) override;
 };
 
 class DoubleSignAbsCoder : public DoubleCoder {
 public:
     DoubleSignAbsCoder(CoderConfig_t config);
 
-    void encode(double value, std::vector <uint8_t> &encodingBytes) override;
+    double encode(double value, std::vector <uint8_t> &encodingBytes) override;
 };
 
 #endif // COMMANDCODER_H

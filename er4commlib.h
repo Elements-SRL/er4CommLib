@@ -232,6 +232,21 @@ ErrorCodes_t checkVoltageOffset(
         ER4CL_ARGIN Measurement_t voltage,
         ER4CL_ARGIN std::string &message);
 
+/*! \brief Set a channel voltage offset.
+ *
+ * \param channelIdx [in] Index of the channel.
+ * \param initialVoltage [in] Value of the ramp intial voltage.
+ * \param finalVoltage [in] Value of the ramp final voltage.
+ * \param duration [in] Value of the ramp duration.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setVoltageRampOffset(
+    ER4CL_ARGIN unsigned int channelIdx,
+    ER4CL_ARGIN Measurement_t initialVoltage,
+    ER4CL_ARGIN Measurement_t finalVoltage,
+    ER4CL_ARGIN Measurement_t duration);
+
 /*! \brief Apply the insertion pulse if available.
  *
  * \param voltage [in] Voltage of the insertion pulse to be applied.
@@ -1297,6 +1312,17 @@ ErrorCodes_t getProtocolAdimensional(
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageOffsetControls(
         ER4CL_ARGOUT RangedMeasurement_t &voltageRange);
+
+/*! \brief Availability of single channels voltage ramp controls.
+ *
+ * \param voltageRanges [out] Ranges of applicable ramp voltages.
+ * \param durationRange [out] Range of applicable ramp duration.
+ * \return Success if the voltage offsets of single channels can be controlled.
+ */
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageRampOffsetControls(
+        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &voltageRanges,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange);
 
 /*! \brief Get insertion pulse controls definition.
  *

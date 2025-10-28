@@ -367,6 +367,31 @@ ErrorCodes_t checkVoltageOffset(
     return ret;
 }
 
+ErrorCodes_t setVoltageRampOffset(
+    unsigned int channelIdx,
+    Measurement_t initialVoltage,
+    Measurement_t finalVoltage,
+    Measurement_t duration) {
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    if (channelIdx > totalCurrentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+
+    ErrorCodes_t ret = Success;
+    if (channelIdx == totalCurrentChannelsNum) {
+        for (auto md : msgDisps) {
+            ret = md->setVoltageRampOffset(currentChannelsNum, initialVoltage, finalVoltage, duration);
+        }
+
+    } else {
+        ret = msgDisps[channelIdx/currentChannelsNum]->setVoltageRampOffset(channelIdx % currentChannelsNum, initialVoltage, finalVoltage, duration);
+    }
+    return ret;
+}
+
 ErrorCodes_t applyInsertionPulse(
         Measurement_t voltage,
         Measurement_t duration) {
@@ -1314,6 +1339,12 @@ ErrorCodes_t getProtocolAdimensional(
 ErrorCodes_t getVoltageOffsetControls(
         RangedMeasurement_t &voltageRange) {
     CALL_FIRST1(getVoltageOffsetControls, voltageRange)
+}
+
+ErrorCodes_t getVoltageRampOffsetControls(
+    std::vector <RangedMeasurement_t> &voltageRanges,
+    RangedMeasurement_t &durationRange) {
+    CALL_FIRST2(getVoltageRampOffsetControls, voltageRanges, durationRange);
 }
 
 ErrorCodes_t getInsertionPulseControls(

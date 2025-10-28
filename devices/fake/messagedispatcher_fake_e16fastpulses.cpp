@@ -5,6 +5,8 @@
 #include <cmath>
 #include <sstream>
 
+#include "utils.h"
+
 /*****************\
  *  Ctor / Dtor  *
 \*****************/
@@ -167,19 +169,19 @@ void MessageDispatcher_fake_e16FastPulses::sendCommandsToGenerator() {
 
         bytesToWrite = (DWORD)txDataBytes;
 
-#ifdef DEBUG_PRINT
-            fprintf(fid, "\n%d %d\n", txDataBytes, bytesToWrite);
-            fflush(fid);
+        if (debugLevelEnabled(DebugLevelTx)) {
+            fprintf(txFid, "\n%d %d\n", txDataBytes, bytesToWrite);
+            fflush(txFid);
 
             for (int i = 0; i < txDataBytes; i++) {
-                fprintf(fid, "%03d:%02x ", i, txRawBuffer[i]);
+                fprintf(txFid, "%03d:%02x ", i, txRawBuffer[i]);
                 if (i % 16 == 15) {
-                    fprintf(fid, "\n");
+                    fprintf(txFid, "\n");
                 }
             }
-            fprintf(fid, "\n");
-            fflush(fid);
-#endif
+            fprintf(txFid, "\n");
+            fflush(txFid);
+        }
 
         txMutexLock.lock();
         txMsgBufferReadLength--;

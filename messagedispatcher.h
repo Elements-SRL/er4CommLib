@@ -18,10 +18,6 @@
 #include "commandcoder.h"
 #include "calibrationeeprom.h"
 
-#ifdef DEBUG_PRINT
-//#define DEBUG_RAW_BIT_RATE_PRINT
-#endif
-
 #define SHORT_OFFSET_BINARY (static_cast <double> (0x8000))
 #define SHORT_MAX (static_cast <double> (0x7FFF))
 #define SHORT_MIN (-SHORT_MAX-1.0)
@@ -33,6 +29,8 @@
 #define UINT28_MAX (static_cast <double> (0xFFFFFFF))
 #define INT28_MAX (static_cast <double> (0x7FFFFFF))
 #define INT28_MIN (-INT28_MAX-1.0)
+#define LINT32_MAX (static_cast <double> (0x7FFFFFFF))
+#define LINT32_MIN (-LINT32_MAX-1.0)
 
 #define UINT16_POSITIVE_SATURATION 0x7FFE
 #define UINT16_NEGATIVE_SATURATION 0x8000 /*! \todo FCON dovrebbe essere 0x8001 */
@@ -163,6 +161,7 @@ public:
     ErrorCodes_t checkProtocolAdimensional(unsigned int idx, Measurement_t adimensional, std::string &message);
     ErrorCodes_t setVoltageOffset(unsigned int idx, Measurement_t voltage, bool applyFlag = true);
     ErrorCodes_t checkVoltageOffset(unsigned int idx, Measurement_t voltage, std::string &message);
+    ErrorCodes_t setVoltageRampOffset(unsigned int idx, Measurement_t initialVoltage, Measurement_t finalVoltage, Measurement_t duration, bool applyFlag = true);
     ErrorCodes_t applyInsertionPulse(Measurement_t voltage, Measurement_t duration);
     ErrorCodes_t applyReferencePulse(Measurement_t voltage, Measurement_t duration);
     ErrorCodes_t applyReferencePulseTrain(Measurement_t voltage, Measurement_t duration, Measurement_t period, uint16_t number);
@@ -264,6 +263,7 @@ public:
     ErrorCodes_t getProtocolFrequency(std::vector <std::string> &frequencyNames, std::vector <RangedMeasurement_t> &ranges, std::vector <Measurement_t> &defaultValues);
     ErrorCodes_t getProtocolAdimensional(std::vector <std::string> &adimensionalNames, std::vector <RangedMeasurement_t> &ranges, std::vector <Measurement_t> &defaultValues);
     ErrorCodes_t getVoltageOffsetControls(RangedMeasurement_t &voltageRange);
+    ErrorCodes_t getVoltageRampOffsetControls(std::vector <RangedMeasurement_t> &voltageRanges, RangedMeasurement_t &durationRange);
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented);
     ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
@@ -465,6 +465,8 @@ protected:
     std::vector <RangedMeasurement_t> protocolSlopeRangesArray;
     std::vector <RangedMeasurement_t> protocolFrequencyRangesArray;
 
+    RangedMeasurement_t rampTimeRange;
+
     std::vector <std::string> protocolsNames;
     std::vector <std::string> protocolsImages;
     std::vector <std::vector <uint16_t>> protocolsAvailableVoltages;
@@ -577,6 +579,13 @@ protected:
     RangedMeasurement_t fastPulseW2PeriodRange;
     std::vector <BoolArrayCoder *> fastPulseW2NumberCoder;
     std::vector <uint16_t> fastPulseW2PulsesNumbers;
+
+    std::vector <std::vector <DoubleCoder *> > vInitRampOffsetCoders;
+    std::vector <std::vector <DoubleCoder *> > vFinalRampOffsetCoders;
+    std::vector <DoubleCoder *> tRampOffsetCoders;
+    std::vector <std::vector <DoubleCoder *> >  quotRampOffsetCoders;
+    std::vector <std::vector <DoubleCoder *> > remRampOffsetCoders;
+    std::vector <BoolCoder *> activateRampOffsetCoders;
 
     uint16_t customFlagsNum = 0;
     std::vector <std::string> customFlagsNames;
@@ -784,9 +793,7 @@ protected:
     std::condition_variable txMsgBufferNotEmpty;
     std::condition_variable txMsgBufferNotFull;
 
-#ifdef DEBUG_PRINT
-    FILE * fid;
-#endif
+    FILE * txFid = nullptr;
 };
 
 class MessageDispatcherLegacyEdr3 : public MessageDispatcher {

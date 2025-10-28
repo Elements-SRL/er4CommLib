@@ -15,6 +15,7 @@
 #include "messagedispatcher_e4qc01a.h"
 #include "messagedispatcher_e16fastpulses.h"
 #include "messagedispatcher_e16n.h"
+#include "messagedispatcher_e16n_ramps.h"
 #include "messagedispatcher_e16n_el08a.h"
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16hc.h"
@@ -28,9 +29,8 @@
 #include "messagedispatcher_fake_enpr_hc.h"
 #include "messagedispatcher_fake_e16n.h"
 #include "messagedispatcher_fake_e16fastpulses.h"
+#include "utils.h"
 
-#include <iostream>
-#include <sstream>
 #include <ctime>
 #include <thread>
 #include <math.h>
@@ -126,6 +126,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionProtoE4TtlPulseTrain, 130, DeviceE4TtlPulseTrain_V01},         //  254, 22,130 : e4 customized with ttl pulse train
     {DeviceVersionPrototype, DeviceSubversionProtoProtoE1ULNSplitted, 129, DeviceE1ULN_V01},                //  254, 23,129 : e1ULN prototype with splitted PCB
     {DeviceVersionPrototype, DeviceSubversionProtoE2Uln, 129, DeviceE2Uln_V01},                             //  254, 24,129 : e4 that returns 2 current channels measured in ULN mode
+    {DeviceVersionPrototype, DeviceSubversionProtoE16nRamps, 129, DeviceE16nRamps_V01},                     //  254, 27,129 : e16n prototype that can apply ramps on single channels
     {DeviceVersionDemo, DeviceSubversionEnprDemo, 129, DeviceFakeENPR}
 };
 
@@ -506,6 +507,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE2Uln_V01:
         messageDispatcher = new MessageDispatcher_e2uln_V01(deviceId);
+        break;
+
+    case DeviceE16nRamps_V01:
+        messageDispatcher = new MessageDispatcher_e16n_ramps_V01(deviceId);
         break;
 
     case DeviceFakeENPR:
@@ -1335,6 +1340,52 @@ ErrorCodes_t MessageDispatcher::checkVoltageOffset(unsigned int idx, Measurement
     } else {
         return ErrorInvalidProtocolParameters;
     }
+}
+
+ErrorCodes_t MessageDispatcher::setVoltageRampOffset(unsigned int idx, Measurement_t initialVoltage, Measurement_t finalVoltage, Measurement_t duration, bool applyFlag) {
+    if (vInitRampOffsetCoders.empty()) {
+        return ErrorFeatureNotImplemented;
+    }
+    if (idx > currentChannelsNum) {
+        return ErrorValueOutOfRange;
+    }
+    if (idx == currentChannelsNum) {
+        for (idx = 0; idx < currentChannelsNum; idx++) {
+            this->setVoltageRampOffset(idx, initialVoltage, finalVoltage, duration, false);
+        }
+
+        this->stackOutgoingMessage(txStatus);
+        return Success;
+    }
+
+    double q;
+    double r;
+    initialVoltage.convertValue(voltageRangesArray[selectedVoltageRangeIdx].prefix);
+    initialVoltage.value = vInitRampOffsetCoders[selectedVoltageRangeIdx][idx]->encode(initialVoltage.value, txStatus);
+    finalVoltage.convertValue(voltageRangesArray[selectedVoltageRangeIdx].prefix);
+    finalVoltage.value = vFinalRampOffsetCoders[selectedVoltageRangeIdx][idx]->encode(finalVoltage.value, txStatus);
+    /*! \todo FCON qui bisognerebbe salvare i parametri (almeno la tensione finale) in modo che durante un cambio della VcVoltageRange si possa aggiornare il parametro come avviene per gli hold Offset */
+    duration.convertValue(UnitPfxMilli);
+    duration.value = tRampOffsetCoders[idx]->encode(duration.value, txStatus);
+    if (duration.value == 0.0) {
+        q = 0.0;
+        initialVoltage.value = vInitRampOffsetCoders[selectedVoltageRangeIdx][idx]->encode(finalVoltage.value, txStatus);
+    }
+    else {
+        q = (finalVoltage.value-initialVoltage.value)/duration.value;
+        q = quotRampOffsetCoders[selectedVoltageRangeIdx][idx]->encode(q, txStatus);
+    }
+
+    r = (finalVoltage.value-initialVoltage.value)-duration.value*q;
+    remRampOffsetCoders[selectedVoltageRangeIdx][idx]->encode(r, txStatus);
+    activateRampOffsetCoders[idx]->encode(1, txStatus);
+
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    activateRampOffsetCoders[idx]->encode(0, txStatus);
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::applyInsertionPulse(Measurement_t voltage, Measurement_t duration) {
@@ -2344,13 +2395,20 @@ ErrorCodes_t MessageDispatcher::getProtocolAdimensional(vector <string> &adimens
 }
 
 ErrorCodes_t MessageDispatcher::getVoltageOffsetControls(RangedMeasurement_t &voltageRange) {
-    if (voltageOffsetControlImplemented) {
-        voltageRange = voltageOffsetRange;
-        return Success;
-
-    } else {
+    if (!voltageOffsetControlImplemented) {
         return ErrorFeatureNotImplemented;
     }
+    voltageRange = voltageOffsetRange;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getVoltageRampOffsetControls(std::vector <RangedMeasurement_t> &voltageRanges, RangedMeasurement_t &durationRange) {
+    if (vInitRampOffsetCoders.empty()) {
+        return ErrorFeatureNotImplemented;
+    }
+    voltageRanges = voltageRangesArray;
+    durationRange = rampTimeRange;
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange) {
@@ -2806,30 +2864,11 @@ ErrorCodes_t MessageDispatcher::init() {
         return ErrorInitializationFailed;
     }
 
-#ifdef DEBUG_PRINT
-#ifdef _WIN32
-    string path = string(getenv("HOMEDRIVE"))+string(getenv("HOMEPATH"));
-#else
-    string path = string(getenv("HOME"));
-#endif
-    stringstream ss;
-
-    for (size_t i = 0; i < path.length(); ++i) {
-        if (path[i] == '\\') {
-            ss << "\\\\";
-
-        } else {
-            ss << path[i];
+    if (debugLevelEnabled(DebugLevelTx)) {
+        if (txFid == nullptr) {
+            createDebugFile(txFid, "er4CommLib_tx");
         }
     }
-#ifdef _WIN32
-    ss << "\\\\temp.txt";
-#else
-    ss << "/temp.txt";
-#endif
-
-    fid = fopen(ss.str().c_str(), "wb");
-#endif
 
     std::string spiChannelStr = deviceId+spiChannel;
 
@@ -2907,9 +2946,10 @@ ErrorCodes_t MessageDispatcher::deinit() {
         iirY = nullptr;
     }
 
-#ifdef DEBUG_PRINT
-    fclose(fid);
-#endif
+    if (debugLevelEnabled(DebugLevelTx)) {
+        fclose(txFid);
+        txFid = nullptr;
+    }
 
     if (calEeprom != nullptr) {
         delete calEeprom;
@@ -3130,13 +3170,6 @@ void MessageDispatcher::readDataFromDevice() {
     unique_lock <mutex> readDataMtxLock(readDataMtx);
     readDataMtxLock.unlock();
 
-#ifdef DEBUG_RAW_BIT_RATE_PRINT
-    std::chrono::steady_clock::time_point startPrintfTime;
-    std::chrono::steady_clock::time_point currentPrintfTime;
-    startPrintfTime = std::chrono::steady_clock::now();
-    long long int acc = 0;
-#endif
-
     bool skipReading = false;
     while (!stopConnectionFlag) {
         switch (connectionStatus) {
@@ -3202,17 +3235,6 @@ void MessageDispatcher::readDataFromDevice() {
         /******************\
          *  Parsing part  *
         \******************/
-
-#ifdef DEBUG_RAW_BIT_RATE_PRINT
-        currentPrintfTime = std::chrono::steady_clock::now();
-        acc += ftdiQueuedBytes;
-        if ((double)(std::chrono::duration_cast <std::chrono::microseconds> (currentPrintfTime-startPrintfTime).count()) > 1.0e6) {
-            printf("%f byte/s\n", 1.0e6*((double)acc)/(double)(std::chrono::duration_cast <std::chrono::microseconds> (currentPrintfTime-startPrintfTime).count()));
-            fflush(stdout);
-            startPrintfTime = currentPrintfTime;
-            acc = 0;
-        }
-#endif
 
         /*! Extracts a pointer to the buffer */
         bufferWriteOffset = (bufferWriteOffset+ftdiQueuedBytes)&FTD_RX_BUFFER_MASK;
@@ -3410,19 +3432,19 @@ void MessageDispatcher::sendCommandsToDevice() {
                 continue;
             }
 
-#ifdef DEBUG_PRINT
-            fprintf(fid, "\n%d %d %d\n", txDataBytes, bytesToWrite, ftdiWrittenBytes);
-            fflush(fid);
+            if (debugLevelEnabled(DebugLevelTx)) {
+                fprintf(txFid, "\n%d %d %d\n", txDataBytes, bytesToWrite, ftdiWrittenBytes);
+                fflush(txFid);
 
-            for (int i = 0; i < txDataBytes; i++) {
-                fprintf(fid, "%03d:%02x ", i, txRawBuffer[i]);
-                if (i % 16 == 15) {
-                    fprintf(fid, "\n");
+                for (int i = 0; i < txDataBytes; i++) {
+                    fprintf(txFid, "%03d:%02x ", i, txRawBuffer[i]);
+                    if (i % 16 == 15) {
+                        fprintf(txFid, "\n");
+                    }
                 }
+                fprintf(txFid, "\n");
+                fflush(txFid);
             }
-            fprintf(fid, "\n");
-            fflush(fid);
-#endif
 
             /*! If less bytes than need are sent purge the buffer and retry */
             if (ftdiWrittenBytes < bytesToWrite) {

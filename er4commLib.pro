@@ -4,14 +4,12 @@ include(./quietWarnings.pri)
 
 CONFIG(debug, debug|release) {
     TARGET = er4commlibd
-    DEFINES += DEBUG_PRINT
 }
 
 CONFIG(release, debug|release) {
     TARGET = er4commlib
 }
 
-# DEFINES += DEBUG_PRINT
 TEMPLATE = lib
 CONFIG += c++20
 
@@ -74,6 +72,7 @@ SOURCES += \
     devices/e4/messagedispatcher_e4qc01a.cpp \
     devices/e16/messagedispatcher_e16e.cpp \
     devices/e16/messagedispatcher_e16n.cpp \
+    devices/e16/messagedispatcher_e16n_ramps.cpp \
     devices/e16/messagedispatcher_e16n_el08a.cpp \
     devices/e16/messagedispatcher_e16fastpulses.cpp \
     devices/e16/messagedispatcher_e16hc.cpp \
@@ -111,6 +110,7 @@ HEADERS += \
     devices/e4/messagedispatcher_e4qc01a.h \
     devices/e16/messagedispatcher_e16e.h \
     devices/e16/messagedispatcher_e16n.h \
+    devices/e16/messagedispatcher_e16n_ramps.h \
     devices/e16/messagedispatcher_e16n_el08a.h \
     devices/e16/messagedispatcher_e16fastpulses.h \
     devices/e16/messagedispatcher_e16hc.h \
@@ -123,7 +123,8 @@ HEADERS += \
     devices/fake/messagedispatcher_fake_enpr.h \
     devices/fake/messagedispatcher_fake_enpr_hc.h \
     devices/fake/messagedispatcher_fake_e16n.h \
-    devices/fake/messagedispatcher_fake_e16fastpulses.h
+    devices/fake/messagedispatcher_fake_e16fastpulses.h \
+    utils.h
 
 unix {
     target.path = /usr/lib

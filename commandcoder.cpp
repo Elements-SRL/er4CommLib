@@ -108,10 +108,11 @@ DoubleTwosCompCoder::DoubleTwosCompCoder(CoderConfig_t config) :
 
 }
 
-void DoubleTwosCompCoder::encode(double value, std::vector <uint8_t> &encodingBytes) {
+double DoubleTwosCompCoder::encode(double value, std::vector <uint8_t> &encodingBytes) {
     value = this->clip(value);
     int32_t intValue = (int32_t)round(value/resolution);
     this->encodeUint((uint32_t)intValue, encodingBytes);
+    return resolution*(double)intValue;
 }
 
 DoubleOffsetBinaryCoder::DoubleOffsetBinaryCoder(CoderConfig_t config) :
@@ -119,10 +120,11 @@ DoubleOffsetBinaryCoder::DoubleOffsetBinaryCoder(CoderConfig_t config) :
 
 }
 
-void DoubleOffsetBinaryCoder::encode(double value, std::vector <uint8_t> &encodingBytes) {
+double DoubleOffsetBinaryCoder::encode(double value, std::vector <uint8_t> &encodingBytes) {
     value = this->clip(value);
     uint32_t uintValue = (uint32_t)round((value-minValue)/resolution);
     this->encodeUint(uintValue, encodingBytes);
+    return minValue+resolution*(double)uintValue;
 }
 
 DoubleSignAbsCoder::DoubleSignAbsCoder(CoderConfig_t config) :
@@ -130,9 +132,15 @@ DoubleSignAbsCoder::DoubleSignAbsCoder(CoderConfig_t config) :
 
 }
 
-void DoubleSignAbsCoder::encode(double value, std::vector <uint8_t> &encodingBytes) {
+double DoubleSignAbsCoder::encode(double value, std::vector <uint8_t> &encodingBytes) {
     value = this->clip(value);
     uint32_t uintValue = (uint32_t)round(fabs(value)/resolution);
     uintValue += (value < 0.0 ? 1 << (bitsNum-1) : 0);
     this->encodeUint(uintValue, encodingBytes);
+    if (value < 0.0) {
+        return -resolution*(double)uintValue;
+
+    } else {
+        return resolution*(double)uintValue;
+    }
 }

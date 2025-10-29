@@ -2406,7 +2406,7 @@ ErrorCodes_t MessageDispatcher::getVoltageRampOffsetControls(std::vector <Ranged
     if (vInitRampOffsetCoders.empty()) {
         return ErrorFeatureNotImplemented;
     }
-    voltageRanges = voltageRangesArray;
+    voltageRanges = protocolVoltageRanges;
     durationRange = rampTimeRange;
     return Success;
 }

@@ -596,7 +596,7 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
     customDoublesRanges[CustomDoubleRShuntCorr].unit = "";
     customDoublesRanges[CustomDoubleOffset].step = 20.0/1024.0;
     customDoublesRanges[CustomDoubleOffset].min = -10.0;
-    customDoublesRanges[CustomDoubleOffset].max = customDoublesRanges[CustomDoubleOffset].min+customDoublesRanges[CustomDoubleOffset].step*1024.0;
+    customDoublesRanges[CustomDoubleOffset].max = customDoublesRanges[CustomDoubleOffset].min+customDoublesRanges[CustomDoubleOffset].step*1023.0;
     customDoublesRanges[CustomDoubleOffset].prefix = UnitPfxMilli;
     customDoublesRanges[CustomDoubleOffset].unit = "V";
     customDoublesDefault.resize(customDoublesNum);

@@ -140,6 +140,7 @@ public:
     ErrorCodes_t enableFrontEndResetDenoiser(bool on);
 
     ErrorCodes_t resetDevice();
+    ErrorCodes_t resetDeviceAndWaitTrigger();
     ErrorCodes_t holdDeviceReset(bool flag);
     ErrorCodes_t resetDigitalOffsetCompensation();
     ErrorCodes_t resetCalib();
@@ -250,6 +251,7 @@ public:
     ErrorCodes_t hasDigitalOffsetCompensationReset();
 
     ErrorCodes_t hasDigitalOutput();
+    ErrorCodes_t hasDigitalInputSynchronization();
     ErrorCodes_t hasFrontEndResetDenoiser();
 
     ErrorCodes_t getLiquidJunctionControl(CompensationControl_t &control);
@@ -442,13 +444,14 @@ protected:
     BoolArrayCoder * selectStimulusChannelCoder;
     std::vector <bool> selectStimulusChannelStates;
 
-    BoolArrayCoder * deviceResetCoder;
-    BoolArrayCoder * calibResetCoder;
-    BoolArrayCoder * digitalOffsetCompensationCoder;
-    BoolArrayCoder * digitalOffsetCompensationAutostopCoder;
+    BoolArrayCoder * deviceResetCoder = nullptr;
+    BoolArrayCoder * deviceResetOverrideCoder = nullptr;
+    BoolArrayCoder * calibResetCoder = nullptr;
+    BoolArrayCoder * digitalOffsetCompensationCoder = nullptr;
+    BoolArrayCoder * digitalOffsetCompensationAutostopCoder = nullptr;
     std::vector <bool> digitalOffsetCompensationStates;
     bool digitalOffsetCompensationResetFlag = false;
-    BoolArrayCoder * digitalOffsetCompensationResetCoder;
+    BoolArrayCoder * digitalOffsetCompensationResetCoder = nullptr;
 
     BoolArrayCoder * zapCoder;
     std::vector <bool> zapStates;
@@ -612,6 +615,9 @@ protected:
 
     /*! Digital output */
     bool digOutImplementedFlag = false;
+
+    /*! Digital input */
+    bool digInSyncImplementedFlag = false;
 
     /*! Front end denoiser */
     bool ferdImplementedFlag = false;

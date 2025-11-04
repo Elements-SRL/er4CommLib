@@ -154,6 +154,7 @@ typedef enum {
     DeviceE4TtlPulseTrain_V01,      /*!< e4 customized with ttl pulse train. */
     DeviceE2Uln_V01,                /*!< e4 that returns 2 current channels measured in ULN mode */
     DeviceE16nRamps_V01,            /*!< e16n TC that can apply ramps on single channels */
+    DeviceE4nTriggerIn_V01,         /*!< e4n with input trigger */
     DeviceFakeENPR,                 /*!< Fake eNPR. */
     DeviceFakeENPRHC,               /*!< Fake eNPR-HC. */
     DeviceFakeE16n,                 /*!< Fake e16 Orbit TC. */

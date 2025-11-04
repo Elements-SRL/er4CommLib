@@ -11,6 +11,7 @@
 #include "messagedispatcher_e2uln_v01.h"
 #include "messagedispatcher_e2qc_debug.h"
 #include "messagedispatcher_e4n.h"
+#include "messagedispatcher_e4n_inputsync.h"
 #include "messagedispatcher_e4e.h"
 #include "messagedispatcher_e4qc01a.h"
 #include "messagedispatcher_e16fastpulses.h"
@@ -127,6 +128,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionProtoProtoE1ULNSplitted, 129, DeviceE1ULN_V01},                //  254, 23,129 : e1ULN prototype with splitted PCB
     {DeviceVersionPrototype, DeviceSubversionProtoE2Uln, 129, DeviceE2Uln_V01},                             //  254, 24,129 : e4 that returns 2 current channels measured in ULN mode
     {DeviceVersionPrototype, DeviceSubversionProtoE16nRamps, 129, DeviceE16nRamps_V01},                     //  254, 27,129 : e16n prototype that can apply ramps on single channels
+    {DeviceVersionPrototype, DeviceSubversionProtoE4nTriggerIn, 1, DeviceE4nTriggerIn_V01},                 //  254, 28,  1 : e4n with input trigger
     {DeviceVersionDemo, DeviceSubversionEnprDemo, 129, DeviceFakeENPR}
 };
 
@@ -511,6 +513,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE16nRamps_V01:
         messageDispatcher = new MessageDispatcher_e16n_ramps_V01(deviceId);
+        break;
+
+    case DeviceE4nTriggerIn_V01:
+        messageDispatcher = new MessageDispatcher_e4n_InputSync(deviceId);
         break;
 
     case DeviceFakeENPR:
@@ -1070,6 +1076,29 @@ ErrorCodes_t MessageDispatcher::resetDevice() {
     }
     deviceResetCoder->encode(1, txStatus);
     this->stackOutgoingMessage(txStatus);
+
+    deviceResetCoder->encode(0, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    if (deviceResetOverrideCoder != nullptr) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        deviceResetOverrideCoder->encode(1, txStatus);
+        this->stackOutgoingMessage(txStatus);
+        deviceResetOverrideCoder->encode(0, txStatus);
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    this->resetCalib();
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::resetDeviceAndWaitTrigger() {
+    if (deviceResetCoder == nullptr) {
+        return ErrorFeatureNotImplemented;
+    }
+    deviceResetCoder->encode(1, txStatus);
+    this->stackOutgoingMessage(txStatus);
+
     deviceResetCoder->encode(0, txStatus);
     this->stackOutgoingMessage(txStatus);
 
@@ -1082,9 +1111,21 @@ ErrorCodes_t MessageDispatcher::holdDeviceReset(bool flag) {
     if (deviceResetCoder == nullptr) {
         return ErrorFeatureNotImplemented;
     }
-    deviceResetCoder->encode(flag ? 1 : 0, txStatus);
-    this->stackOutgoingMessage(txStatus);
+    if (!flag) {
+        deviceResetCoder->encode(0, txStatus);
+        if (deviceResetOverrideCoder != nullptr) {
+            deviceResetOverrideCoder->encode(1, txStatus);
+        }
+        this->stackOutgoingMessage(txStatus);
 
+        if (deviceResetOverrideCoder != nullptr) {
+            deviceResetOverrideCoder->encode(0, txStatus);
+            this->stackOutgoingMessage(txStatus);
+        }
+    }
+    else {
+        deviceResetCoder->encode(1, txStatus);
+    }
     return Success;
 }
 
@@ -2302,6 +2343,14 @@ ErrorCodes_t MessageDispatcher::hasDigitalOffsetCompensationReset() {
 }
 
 ErrorCodes_t MessageDispatcher::hasDigitalOutput() {
+    ErrorCodes_t ret = ErrorFeatureNotImplemented;
+    if (digOutImplementedFlag) {
+        ret = Success;
+    }
+    return ret;
+}
+
+ErrorCodes_t MessageDispatcher::hasDigitalInputSynchronization() {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
     if (digOutImplementedFlag) {
         ret = Success;

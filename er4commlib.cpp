@@ -697,6 +697,10 @@ ErrorCodes_t resetDevice() {
     MASS_CALL0(resetDevice)
 }
 
+ErrorCodes_t resetDeviceAndWaitTrigger() {
+    MASS_CALL0(resetDeviceAndWaitTrigger);
+}
+
 ErrorCodes_t resetSynchronizationVariables() {
     resetSampleDiscardVariables();
     return Success;
@@ -1274,6 +1278,10 @@ ErrorCodes_t hasDigitalOffsetCompensationReset() {
 
 ErrorCodes_t hasDigitalOutput() {
     CALL_FIRST0(hasDigitalOutput)
+}
+
+ErrorCodes_t hasDigitalInputSynchronization() {
+    CALL_FIRST0(hasDigitalInputSynchronization)
 }
 
 ErrorCodes_t hasFrontEndResetDenoiser() {

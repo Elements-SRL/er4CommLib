@@ -663,6 +663,14 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t resetDevice(
         ER4CL_ARGVOID);
 
+/*! \brief In devices that can take an external trigger this will keep the device in a reset state until the digital trigger is received.
+ *
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+    ErrorCodes_t resetDeviceAndWaitTrigger(
+        ER4CL_ARGVOID);
+
 /*! \brief Reset the variables of the algorithm for data synchronization between distinct devices.
  *
  * \return Error code.
@@ -1182,7 +1190,8 @@ ErrorCodes_t getSwitchedOnChannels(
  * \return Success if the device has offers the possibility to reset the digital offset compensation.
  */
 ER4COMMLIBSHARED_EXPORT
-ErrorCodes_t hasDigitalOffsetCompensationReset();
+ErrorCodes_t hasDigitalOffsetCompensationReset(
+    ER4CL_ARGVOID);
 
 /*! \brief Get the digital output availability.
  *
@@ -1190,6 +1199,14 @@ ErrorCodes_t hasDigitalOffsetCompensationReset();
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasDigitalOutput(
+        ER4CL_ARGVOID);
+
+/*! \brief Get the digital input availability for synchronization.
+ *
+ * \return Return an error code if the feature is not available.
+ */
+ER4COMMLIBSHARED_EXPORT
+    ErrorCodes_t hasDigitalInputSynchronization(
         ER4CL_ARGVOID);
 
 /*! \brief Get the front end reset denoiser feature availability.

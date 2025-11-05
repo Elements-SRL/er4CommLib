@@ -2136,8 +2136,9 @@ ErrorCodes_t MessageDispatcher::purgeData(bool purgeAlsoChannel) {
     outputBufferOverflowFlag = false;
     bufferDataLossFlag = false;
     bufferSaturationFlag = false;
+
     if (purgeAlsoChannel) {
-        Ftd2xxWrapper::FTW_Purge(ftdiRxHandle, FT_PURGE_RX);
+        Ftd2xxWrapper::FTW_Purge(* ftdiRxHandle, FT_PURGE_RX);
     }
     return Success;
 }
@@ -3219,6 +3220,8 @@ void MessageDispatcher::readDataFromDevice() {
     unique_lock <mutex> readDataMtxLock(readDataMtx);
     readDataMtxLock.unlock();
 
+    int minReadFrameNumberTries = 0;
+
     bool skipReading = false;
     while (!stopConnectionFlag) {
         switch (connectionStatus) {
@@ -3257,10 +3260,22 @@ void MessageDispatcher::readDataFromDevice() {
 
         /*! If there are not enough frames wait for a minimum frame number,
          *  the ftdi driver will wait for that to decrease overhead */
-        if (availableFrames < minReadFrameNumber) {
+        if (availableFrames < minReadFrameNumber && minReadFrameNumberTries < 3) {
+            minReadFrameNumberTries++;
             this_thread::sleep_for(chrono::microseconds(fewFramesSleep));
             continue;
         }
+
+        if (minReadFrameNumberTries >= 3) {
+            /*! Not receiving data. Reset the buffer and purge the USB FIFO */
+            minReadFrameNumberTries = 0;
+            bufferReadOffset = bufferWriteOffset;
+            bytesReadFromDriver = 0;
+            Ftd2xxWrapper::FTW_Purge(* ftdiRxHandle, FT_PURGE_RX);
+            exitOnSyncWord = false;
+            continue;
+        }
+        minReadFrameNumberTries = 0;
 
         /*! Cap bytes to read so that we do not try to read more than is available on the internal buffer */
         if (ftdiQueuedBytes+bytesReadFromDriver >= FTD_RX_BUFFER_SIZE) {
@@ -3401,7 +3416,7 @@ void MessageDispatcher::readDataFromDevice() {
                 } else {
                     /*! If there are not enough bytes to check for another syncword... */
 
-                    /*! Lets the next call to this function know this returned on a syn cword found,... */
+                    /*! Lets the next call to this function know this returned on a sync word found,... */
                     exitOnSyncWord = true;
 
                     /*! Sends eventually found frames... */

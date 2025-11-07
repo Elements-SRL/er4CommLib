@@ -441,13 +441,13 @@ protected:
 
     bool resetCalibrationFlag = false;
 
-    BoolArrayCoder * selectStimulusChannelCoder;
+    BoolCoder * selectStimulusChannelCoder;
     std::vector <bool> selectStimulusChannelStates;
 
     BoolArrayCoder * deviceResetCoder = nullptr;
     BoolArrayCoder * deviceResetOverrideCoder = nullptr;
     BoolArrayCoder * calibResetCoder = nullptr;
-    BoolArrayCoder * digitalOffsetCompensationCoder = nullptr;
+    BoolCoder * digitalOffsetCompensationCoder = nullptr;
     BoolArrayCoder * digitalOffsetCompensationAutostopCoder = nullptr;
     std::vector <bool> digitalOffsetCompensationStates;
     bool digitalOffsetCompensationResetFlag = false;

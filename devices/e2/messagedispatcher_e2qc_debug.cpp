@@ -178,9 +178,6 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
-    voltageStimulusLpfOptions[VoltageStimulusLpf0Hz].value = 0.0;
-    voltageStimulusLpfOptions[VoltageStimulusLpf0Hz].prefix = UnitPfxNone;
-    voltageStimulusLpfOptions[VoltageStimulusLpf0Hz].unit = "Hz";
     voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].value = 1.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].unit = "Hz";
@@ -611,10 +608,26 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     selectStimulusChannelFlag = true;
     singleChannelSSCFlag = true;
 
-    boolConfig.initialByte = 5;
-    boolConfig.initialBit = 0;
+    boolConfig.initialByte = 9;
+    boolConfig.initialBit = 1;
     boolConfig.bitsNum = 2;
-    selectStimulusChannelCoder = new BoolArrayCoder(boolConfig);
+    selectStimulusChannelCoder = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(3);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(3);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(3);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (selectStimulusChannelCoder)->addMapItem(3);
 
     selectStimulusChannelStates.resize(currentChannelsNum);
     for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
@@ -629,7 +642,23 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     boolConfig.initialByte = 10;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 2;
-    digitalOffsetCompensationCoder = new BoolArrayCoder(boolConfig);
+    digitalOffsetCompensationCoder = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(3);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(3);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(1);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(3);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (digitalOffsetCompensationCoder)->addMapItem(3);
 
     digitalOffsetCompensationStates.resize(currentChannelsNum);
     for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
@@ -835,7 +864,6 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 2;
     dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(3); /*!< disabled -> 0b11 */
     static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(0); /*!< 1kHz     -> 0b00 */
     static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(1); /*!< 10kHz    -> 0b01 */
     static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(2); /*!< 20kHz    -> 0b10 */

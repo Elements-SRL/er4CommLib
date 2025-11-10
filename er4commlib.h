@@ -668,7 +668,7 @@ ErrorCodes_t resetDevice(
  * \return Error code.
  */
 ER4COMMLIBSHARED_EXPORT
-    ErrorCodes_t resetDeviceAndWaitTrigger(
+ErrorCodes_t resetDeviceAndWaitTrigger(
         ER4CL_ARGVOID);
 
 /*! \brief Reset the variables of the algorithm for data synchronization between distinct devices.
@@ -1206,7 +1206,7 @@ ErrorCodes_t hasDigitalOutput(
  * \return Return an error code if the feature is not available.
  */
 ER4COMMLIBSHARED_EXPORT
-    ErrorCodes_t hasDigitalInputSynchronization(
+ErrorCodes_t hasDigitalInputSynchronization(
         ER4CL_ARGVOID);
 
 /*! \brief Get the front end reset denoiser feature availability.

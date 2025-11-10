@@ -150,12 +150,28 @@ ErrorCodes_t setVoltageOffset(
 }
 
 ErrorCodes_t checkVoltageOffset(
-        unsigned int channelIdx,
-        LVMeasurement_t lvVoltage) {
+    unsigned int channelIdx,
+    LVMeasurement_t lvVoltage) {
+
     Measurement_t voltage;
     input2Measurement(lvVoltage, voltage);
     std::string message;
     return er4cl::checkVoltageOffset(channelIdx, voltage, message);
+}
+
+ErrorCodes_t setVoltageRampOffset(
+    unsigned int channelIdx,
+    LVMeasurement_t lvInitialVoltage,
+    LVMeasurement_t lvFinalVoltage,
+    LVMeasurement_t lvDuration) {
+
+    Measurement_t initialVoltage;
+    Measurement_t finalVoltage;
+    Measurement_t duration;
+    input2Measurement(lvInitialVoltage, initialVoltage);
+    input2Measurement(lvFinalVoltage, finalVoltage);
+    input2Measurement(lvDuration, duration);
+    return er4cl::setVoltageRampOffset(channelIdx, initialVoltage, finalVoltage, duration);
 }
 
 ErrorCodes_t applyInsertionPulse(
@@ -394,6 +410,10 @@ ErrorCodes_t enableFrontEndResetDenoiser(
 
 ErrorCodes_t resetDevice() {
     return er4cl::resetDevice();
+}
+
+ErrorCodes_t resetDeviceAndWaitTrigger() {
+    return er4cl::resetDeviceAndWaitTrigger();
 }
 
 ErrorCodes_t resetSynchronizationVariables() {
@@ -855,6 +875,10 @@ ErrorCodes_t hasDigitalOutput() {
     return er4cl::hasDigitalOutput();
 }
 
+ErrorCodes_t hasDigitalInputSynchronization() {
+    return er4cl::hasDigitalInputSynchronization();
+}
+
 ErrorCodes_t hasFrontEndResetDenoiser() {
     return er4cl::hasFrontEndResetDenoiser();
 }
@@ -1067,6 +1091,24 @@ ErrorCodes_t getVoltageOffsetControls(
     ErrorCodes_t ret = er4cl::getVoltageOffsetControls(voltageRange);
     if (ret == Success) {
         rangedMeasurement2Output(voltageRange, lvVoltageRange[0]);
+    }
+    return ret;
+}
+
+ErrorCodes_t getVoltageRampOffsetControls(
+    LVRangedMeasurement_t * lvVoltageRanges,
+    LVRangedMeasurement_t * lvDurationRange,
+    uint16_t voltageRangeIdx) {
+    std::vector <RangedMeasurement_t> voltageRanges;
+    RangedMeasurement_t durationRange;
+    ErrorCodes_t ret = er4cl::getVoltageRampOffsetControls(voltageRanges, durationRange);
+    uint16_t rangesNum =  voltageRanges.size();
+    if (voltageRangeIdx >= rangesNum) {
+        return ErrorValueOutOfRange;
+    }
+    if (ret == Success) {
+        rangedMeasurement2Output(voltageRanges[voltageRangeIdx], lvVoltageRanges[0]);
+        rangedMeasurement2Output(durationRange, lvDurationRange[0]);
     }
     return ret;
 }

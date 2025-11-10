@@ -214,6 +214,22 @@ ErrorCodes_t checkVoltageOffset(
         ER4CL_ARGIN unsigned int channelIdx,
         ER4CL_ARGIN LVMeasurement_t voltage);
 
+/*! \brief Set a channel voltage offset.
+ *
+ * \param channelIdx [in] Index of the channel.
+ * \param initialVoltage [in] Value of the ramp intial voltage.
+ * \param finalVoltage [in] Value of the ramp final voltage.
+ * \param duration [in] Value of the ramp duration.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+    ErrorCodes_t setVoltageRampOffset(
+        ER4CL_ARGIN unsigned int channelIdx,
+        ER4CL_ARGIN LVMeasurement_t initialVoltage,
+        ER4CL_ARGIN LVMeasurement_t finalVoltage,
+        ER4CL_ARGIN LVMeasurement_t duration);
+
 /*! \brief Apply the insertion pulse if available.
  *
  * \param voltage [in] Voltage of the insertion pulse to be applied.
@@ -634,6 +650,15 @@ ErrorCodes_t enableFrontEndResetDenoiser(
 ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t resetDevice(
+        ER4CL_ARGVOID);
+
+/*! \brief In devices that can take an external trigger this will keep the device in a reset state until the digital trigger is received.
+ *
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t resetDeviceAndWaitTrigger(
         ER4CL_ARGVOID);
 
 /*! \brief Reset the variables of the algorithm for data synchronization between distinct devices.
@@ -1273,6 +1298,15 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t hasDigitalOutput(
         ER4CL_ARGVOID);
 
+/*! \brief Get the digital input availability for synchronization.
+ *
+ * \return Return an error code if the feature is not available.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t hasDigitalInputSynchronization(
+        ER4CL_ARGVOID);
+
 /*! \brief Get the front end reset denoiser feature availability.
  *
  * \return Return an error code if the feature is not available.
@@ -1430,8 +1464,8 @@ ErrorCodes_t getProtocolAdimensionalNum(
 /*! \brief Get protocol applicable adimensional range.
  *
  * \param ranges [out] Ranges of applicable adimensional in protocols.
- * \param rangeIdx [in] Index of the desired range.
  * \param defaultValues [out] Default values.
+ * \param rangeIdx [in] Index of the desired range.
  * \return Error code.
  */
 ER4COMMLIB_NAME_MANGLING
@@ -1450,6 +1484,20 @@ ER4COMMLIB_NAME_MANGLING
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageOffsetControls(
         ER4CL_ARGOUT LVRangedMeasurement_t * voltageRange);
+
+/*! \brief Availability of single channels voltage ramp controls.
+ *
+ * \param voltageRanges [out] Ranges of applicable ramp voltages.
+ * \param durationRange [out] Range of applicable ramp duration.
+ * \param voltageRangeIdx [in] Index of the desired voltage range.
+ * \return Success if the voltage offsets of single channels can be controlled.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t getVoltageRampOffsetControls(
+        ER4CL_ARGOUT LVRangedMeasurement_t * voltageRanges,
+        ER4CL_ARGOUT LVRangedMeasurement_t * durationRange,
+        ER4CL_ARGIN unsigned short voltageRangeIdx);
 
 /*! \brief Get insertion pulse controls definition.
  *

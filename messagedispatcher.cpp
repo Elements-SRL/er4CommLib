@@ -2922,6 +2922,12 @@ ErrorCodes_t MessageDispatcher::init() {
         }
     }
 
+    if (debugLevelEnabled(DebugLevelRxRaw)) {
+        if (rxRawFid == nullptr) {
+            createDebugFile(rxRawFid, "er4CommLib_rxRaw");
+        }
+    }
+
     std::string spiChannelStr = deviceId+spiChannel;
 
     calEeprom = new CalibrationEeprom(Ftd2xxWrapper::getDeviceIndex(spiChannelStr));
@@ -3001,6 +3007,11 @@ ErrorCodes_t MessageDispatcher::deinit() {
     if (debugLevelEnabled(DebugLevelTx)) {
         fclose(txFid);
         txFid = nullptr;
+    }
+
+    if (debugLevelEnabled(DebugLevelRxRaw)) {
+        fclose(rxRawFid);
+        rxRawFid = nullptr;
     }
 
     if (calEeprom != nullptr) {
@@ -3288,14 +3299,18 @@ void MessageDispatcher::readDataFromDevice() {
         bytesToEnd = FTD_RX_BUFFER_SIZE-bufferWriteOffset;
         if (ftdiQueuedBytes > bytesToEnd) {
             result = Ftd2xxWrapper::FTW_Read(* ftdiRxHandle, readDataBuffer+bufferWriteOffset, bytesToEnd, &readResult);
-            result |= Ftd2xxWrapper::FTW_Read(* ftdiRxHandle, readDataBuffer, ftdiQueuedBytes-bytesToEnd, &readResult);
-
-        } else {
+        }
+        else {
             result = Ftd2xxWrapper::FTW_Read(* ftdiRxHandle, readDataBuffer+bufferWriteOffset, ftdiQueuedBytes, &readResult);
         }
 
-        if (result != FT_OK) {
+        if ((result != FT_OK) || (readResult == 0)) {
             continue; /*! \todo FCON Notify to user? */
+        }
+
+        if (debugLevelEnabled(DebugLevelRxRaw)) {
+            fwrite(readDataBuffer+bufferWriteOffset, sizeof(unsigned char), readResult, rxRawFid);
+            fflush(rxRawFid);
         }
 
         /******************\
@@ -3303,10 +3318,10 @@ void MessageDispatcher::readDataFromDevice() {
         \******************/
 
         /*! Extracts a pointer to the buffer */
-        bufferWriteOffset = (bufferWriteOffset+ftdiQueuedBytes)&FTD_RX_BUFFER_MASK;
+        bufferWriteOffset = (bufferWriteOffset+readResult)&FTD_RX_BUFFER_MASK;
 
         /*! Before storing the data to the output buffer wait for a least minStoreFrameNumber frames */
-        bytesReadFromDriver += ftdiQueuedBytes;
+        bytesReadFromDriver += readResult;
         if (bytesReadFromDriver/(unsigned long)readFrameLength < minStoreFrameNumber) {
             continue;
         }

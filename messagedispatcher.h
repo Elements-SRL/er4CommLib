@@ -800,6 +800,7 @@ protected:
     std::condition_variable txMsgBufferNotFull;
 
     FILE * txFid = nullptr;
+    FILE * rxRawFid = nullptr;
 };
 
 class MessageDispatcherLegacyEdr3 : public MessageDispatcher {

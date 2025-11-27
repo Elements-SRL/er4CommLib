@@ -954,7 +954,7 @@ MessageDispatcher_EL09a_TB::~MessageDispatcher_EL09a_TB() {
 
 ErrorCodes_t MessageDispatcher_EL09a_TB::updateTemperatureReading(vector <Measurement_t> &temperatures) {
     temperatures.resize(1);
-    temperatures[0] = {minTemperature+temperatureResolution*(double)(infoStruct.temperature), UnitPfxNone, "°C"};
+    temperatures[0] = {maxTemperature+temperatureResolution*(double)(infoStruct.temperature), UnitPfxNone, "°C"};
     return Success;
 }
 

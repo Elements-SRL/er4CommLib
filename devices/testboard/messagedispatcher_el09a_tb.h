@@ -141,12 +141,10 @@ protected:
     /*! Device specific controls */
     InfoStruct_t infoStruct;
 
-    const double temperatureGain = -6.0e-3; // V/°C
+    const double temperatureResolution = -0.354; // °C/LSB
     const double temperatureLevels = 1024.0;
-    const double temperatureVoltageRange = 1.225; // V
-    const double maxTemperature = 150.0; // °C
-    const double minTemperature = maxTemperature+temperatureVoltageRange/temperatureGain;
-    const double temperatureResolution = (minTemperature-maxTemperature)/temperatureLevels;
+    const double maxTemperature = 303.0; // °C
+    const double minTemperature = maxTemperature+temperatureResolution*(temperatureLevels-1.0); // °C
 };
 
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER

@@ -1,4 +1,5 @@
 #include "commandcoder.h"
+#define ONE_U32 ((uint32_t)1)
 
 CommandCoder::CommandCoder(uint16_t initialByte, uint8_t initialBit, uint8_t bitsNum):
     initialByte(initialByte),
@@ -39,6 +40,10 @@ BoolCoder::BoolCoder(CoderConfig_t config) :
 
 }
 
+BoolCoder::CoderConfig_t BoolCoder::getConfig() const {
+    return config;
+}
+
 BoolArrayCoder::BoolArrayCoder(CoderConfig_t config) :
     BoolCoder(config) {
 
@@ -54,15 +59,13 @@ BoolNegatedArrayCoder::BoolNegatedArrayCoder(CoderConfig_t config) :
 }
 
 void BoolNegatedArrayCoder::encode(uint32_t value, std::vector <uint8_t> &encodingBytes) {
-//    uint32_t mask = ((uint32_t)1 << (config.bitsNum-1))-(uint32_t)1;
-    this->encodeUint((~value)/*&mask*/, encodingBytes);
+    this->encodeUint((~value), encodingBytes);
 }
 
 BoolRandomArrayCoder::BoolRandomArrayCoder(CoderConfig_t config) :
     BoolArrayCoder(config) {
 
-    tos.resize(0);
-    toNum = 0;
+    tos.clear();
 }
 
 void BoolRandomArrayCoder::encode(uint32_t value, std::vector <uint8_t> &encodingBytes) {
@@ -71,11 +74,10 @@ void BoolRandomArrayCoder::encode(uint32_t value, std::vector <uint8_t> &encodin
 
 void BoolRandomArrayCoder::addMapItem(uint32_t to) {
     tos.push_back(to);
-    toNum++;
 }
 
 uint32_t BoolRandomArrayCoder::map(uint32_t from) {
-    if (from >= toNum) {
+    if (from >= tos.size()) {
         from = 0;
     }
     return tos[from];
@@ -88,6 +90,41 @@ BoolOneHotCoder::BoolOneHotCoder(CoderConfig_t config) :
 
 void BoolOneHotCoder::encode(uint32_t value, std::vector <uint8_t> &encodingBytes) {
     this->encodeUint(1 << value, encodingBytes);
+}
+
+EnsembleCoder::EnsembleCoder() :
+    BoolCoder(CoderConfig_t()) {
+
+    tos.clear();
+}
+
+EnsembleCoder::~EnsembleCoder() {
+
+}
+
+void EnsembleCoder::encode(uint32_t value, std::vector <uint8_t> &encodingBytes) {
+    value = this->map(value);
+    for (auto coder : coders) {
+        uint32_t b = (uint32_t)coder->getConfig().bitsNum;
+        uint32_t m = (ONE_U32 << b)-ONE_U32;
+        coder->encode(value & m, encodingBytes);
+        value >>= b;
+    }
+}
+
+void EnsembleCoder::addCoder(BoolCoder * coder) {
+    coders.push_back(coder);
+}
+
+void EnsembleCoder::addMapItem(uint32_t to) {
+    tos.push_back(to);
+}
+
+uint32_t EnsembleCoder::map(uint32_t from) {
+    if (from >= tos.size()) {
+        from = 0;
+    }
+    return tos[from];
 }
 
 DoubleCoder::DoubleCoder(CoderConfig_t config) :

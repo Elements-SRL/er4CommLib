@@ -34,6 +34,7 @@ public:
     BoolCoder(CoderConfig_t config);
 
     virtual void encode(uint32_t value, std::vector <uint8_t> &encodingBytes) = 0;
+    CoderConfig_t getConfig() const;
 
 protected:
     CoderConfig_t config;
@@ -64,7 +65,6 @@ private:
     uint32_t map(uint32_t from);
 
     std::vector <uint32_t> tos;
-    uint32_t toNum;
 };
 
 class BoolOneHotCoder : public BoolCoder {
@@ -72,6 +72,22 @@ public:
     BoolOneHotCoder(CoderConfig_t config);
 
     void encode(uint32_t value, std::vector <uint8_t> &encodingBytes) override;
+};
+
+class EnsembleCoder : public BoolCoder {
+public:
+    EnsembleCoder();
+    virtual ~EnsembleCoder();
+
+    virtual void encode(uint32_t value, std::vector <uint8_t> &encodingBytes) override;
+    void addCoder(BoolCoder * coder);
+    void addMapItem(uint32_t to);
+
+private:
+    uint32_t map(uint32_t from);
+
+    std::vector <BoolCoder *> coders;
+    std::vector <uint32_t> tos;
 };
 
 class DoubleCoder : public CommandCoder {
@@ -119,5 +135,6 @@ public:
 
     double encode(double value, std::vector <uint8_t> &encodingBytes) override;
 };
+
 
 #endif // COMMANDCODER_H

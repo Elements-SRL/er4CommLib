@@ -400,7 +400,7 @@ protected:
     std::vector <RangedMeasurement_t> voltageRangesArray;
     std::vector <std::string> voltageRangesExtensions;
     uint16_t defaultVoltageRangeIdx = 0;
-    BoolRandomArrayCoder * voltageRangeCoder;
+    BoolCoder * voltageRangeCoder;
 
     uint32_t voltageReferenceRangesNum = 0;
     uint16_t selectedVoltageReferenceRangeIdx = 0;
@@ -422,7 +422,7 @@ protected:
     uint16_t defaultSamplingRateIdx = 0;
     std::vector <Measurement_t> realSamplingRatesArray;
     std::vector <Measurement_t> integrationStepArray;
-    BoolRandomArrayCoder * samplingRateCoder;
+    BoolCoder * samplingRateCoder;
 
     bool oversamplingImplemented = false;
     uint32_t oversamplingRatiosNum = 1;
@@ -634,7 +634,7 @@ protected:
     uint16_t voltageReferenceLpfOptionsNum = 0;
     uint16_t voltageReferenceLpfDefaultOption = 0;
     int16_t voltageReferenceLpfRange = -1;
-    BoolRandomArrayCoder * dacExtFilterCoder;
+    BoolCoder * dacExtFilterCoder;
     bool dacExtDeviceFlag = false;
     RangedMeasurement_t dacExtDeviceRange = {-1.0, 1.0, 1.0, UnitPfxNone, "V"};
 

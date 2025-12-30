@@ -2355,7 +2355,7 @@ ErrorCodes_t MessageDispatcher::hasDigitalOutput() {
 
 ErrorCodes_t MessageDispatcher::hasDigitalInputSynchronization() {
     ErrorCodes_t ret = ErrorFeatureNotImplemented;
-    if (digOutImplementedFlag) {
+    if (digInSyncImplementedFlag) {
         ret = Success;
     }
     return ret;

@@ -54,6 +54,7 @@ VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
     devices/e4/messagedispatcher_e4n_inputsync.cpp \
+    devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.cpp \
     er4commlib.cpp \
     calibrationeeprom.cpp \
     messagedispatcher.cpp \
@@ -90,6 +91,7 @@ SOURCES += \
 
 HEADERS += \
     devices/e4/messagedispatcher_e4n_inputsync.h \
+    devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \

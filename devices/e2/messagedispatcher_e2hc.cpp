@@ -559,16 +559,15 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+    voltageRangeCoder = new BoolArrayCoder(boolConfig);
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(17); /*!< 62.5kHz      -> 0b10001 */
-    samplingRateCoder->addMapItem(8);  /*!< 250kHz       -> 0b01000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(17); /*!< 62.5kHz      -> 0b10001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(8);  /*!< 250kHz       -> 0b01000 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 4;
@@ -1042,9 +1041,9 @@ MessageDispatcher_e2HC_V01::MessageDispatcher_e2HC_V01(string di) :
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(1);  /*!< 50kHz        -> 0b00001 */
-    samplingRateCoder->addMapItem(9);  /*!< 25kHz        -> 0b01001 */
-    samplingRateCoder->addMapItem(17); /*!< 12.5kHz      -> 0b10001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(1);  /*!< 50kHz        -> 0b00001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9);  /*!< 25kHz        -> 0b01001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(17); /*!< 12.5kHz      -> 0b10001 */
 }
 
 MessageDispatcher_e2HC_V02::MessageDispatcher_e2HC_V02(string di) :
@@ -1116,9 +1115,9 @@ MessageDispatcher_e2HC_V02::MessageDispatcher_e2HC_V02(string di) :
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 6;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(1); /*!< 12.5kHz      -> 0b000001 */
-    samplingRateCoder->addMapItem(9);  /*!< 25kHz       -> 0b001001 */
-    samplingRateCoder->addMapItem(17);  /*!< 50kHz      -> 0b010001 */
-    samplingRateCoder->addMapItem(24);  /*!< 100kHz     -> 0b011000 */
-    samplingRateCoder->addMapItem(32);  /*!< 200kHz     -> 0b100000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(1); /*!< 12.5kHz      -> 0b000001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9);  /*!< 25kHz       -> 0b001001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(17);  /*!< 50kHz      -> 0b010001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(24);  /*!< 100kHz     -> 0b011000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(32);  /*!< 200kHz     -> 0b100000 */
 }

@@ -626,22 +626,21 @@ MessageDispatcher_e4qc01a_V01::MessageDispatcher_e4qc01a_V01(string di) :
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+    voltageRangeCoder = new BoolArrayCoder(boolConfig);
 
     /*! Sampling rate */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(0x10); /*!< 1.25kHz  -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x11); /*!< 2.5kHz   -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x12); /*!< 5kHz     -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x13); /*!< 10kHz    -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x14); /*!< 20kHz    -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x08); /*!< 50kHz    -> BW 100kHz */
-    samplingRateCoder->addMapItem(0x09); /*!< 100kHz   -> BW 100kHz */
-    samplingRateCoder->addMapItem(0x0a); /*!< 200kHz   -> BW 100kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x10); /*!< 1.25kHz  -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x11); /*!< 2.5kHz   -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x12); /*!< 5kHz     -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x13); /*!< 10kHz    -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x14); /*!< 20kHz    -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x08); /*!< 50kHz    -> BW 100kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x09); /*!< 100kHz   -> BW 100kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x0a); /*!< 200kHz   -> BW 100kHz */
 
     /*! Protocol selection */
     boolConfig.initialByte = 11;

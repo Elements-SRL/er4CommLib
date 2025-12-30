@@ -554,8 +554,7 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+    voltageRangeCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage reference range */
     boolConfig.initialByte = 0;
@@ -583,8 +582,7 @@ MessageDispatcher_EL06b::MessageDispatcher_EL06b(string id) :
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 2;
-    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(0); /*!< 50kHz      -> 0b00 */
+    samplingRateCoder = new BoolArrayCoder(boolConfig);
 
     /*! Protocol selection */
     boolConfig.initialByte = 4;

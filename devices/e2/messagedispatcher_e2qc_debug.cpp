@@ -703,22 +703,21 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+    voltageRangeCoder = new BoolArrayCoder(boolConfig);
 
     /*! Sampling rate */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 6;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(0x30); /*!< 1.25kHz  -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x31); /*!< 2.5kHz   -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x32); /*!< 5kHz     -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x33); /*!< 10kHz    -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x34); /*!< 20kHz    -> BW 20kHz */
-    samplingRateCoder->addMapItem(0x08); /*!< 50kHz    -> BW 100kHz */
-    samplingRateCoder->addMapItem(0x09); /*!< 100kHz   -> BW 100kHz */
-    samplingRateCoder->addMapItem(0x0a); /*!< 200kHz   -> BW 100kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x30); /*!< 1.25kHz  -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x31); /*!< 2.5kHz   -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x32); /*!< 5kHz     -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x33); /*!< 10kHz    -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x34); /*!< 20kHz    -> BW 20kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x08); /*!< 50kHz    -> BW 100kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x09); /*!< 100kHz   -> BW 100kHz */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x0a); /*!< 200kHz   -> BW 100kHz */
 
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 0;
@@ -871,9 +870,7 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     boolConfig.initialByte = 9;
     boolConfig.initialBit = 5;
     boolConfig.bitsNum = 1;
-    dacExtFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacExtFilterCoder->addMapItem(0); /*!< 3Hz    -> 0b0 */
-    dacExtFilterCoder->addMapItem(1); /*!< 180kHz -> 0b1 */
+    dacExtFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);

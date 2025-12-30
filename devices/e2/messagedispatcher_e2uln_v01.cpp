@@ -617,21 +617,20 @@ MessageDispatcher_e2uln_V01::MessageDispatcher_e2uln_V01(string di) :
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+    voltageRangeCoder = new BoolArrayCoder(boolConfig);
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 4;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(0); /*!< 1.25kHz  -> 0b0000 */
-    samplingRateCoder->addMapItem(1); /*!< 5kHz     -> 0b0001 */
-    samplingRateCoder->addMapItem(2); /*!< 10kHz    -> 0b0010 */
-    samplingRateCoder->addMapItem(3); /*!< 20kHz    -> 0b0011 */
-    samplingRateCoder->addMapItem(8); /*!< 50kHz    -> 0b1000 */
-    samplingRateCoder->addMapItem(9); /*!< 100kHz   -> 0b1001 */
-    samplingRateCoder->addMapItem(10); /*!< 200kHz  -> 0b1010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0); /*!< 1.25kHz  -> 0b0000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(1); /*!< 5kHz     -> 0b0001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(2); /*!< 10kHz    -> 0b0010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(3); /*!< 20kHz    -> 0b0011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(8); /*!< 50kHz    -> 0b1000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9); /*!< 100kHz   -> 0b1001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(10); /*!< 200kHz  -> 0b1010 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 4;

@@ -577,20 +577,20 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     boolConfig.initialBit = 6;
     boolConfig.bitsNum = 1;
     voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageRangeCoder->addMapItem(1); /*!< 700mV    -> 0b1 */
-    voltageRangeCoder->addMapItem(0); /*!< 2V       -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (voltageRangeCoder)->addMapItem(1); /*!< 700mV    -> 0b1 */
+    static_cast <BoolRandomArrayCoder *> (voltageRangeCoder)->addMapItem(0); /*!< 2V       -> 0b0 */
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(1);  /*!< 1.5kHz      -> 0b00001 */
-    samplingRateCoder->addMapItem(5);  /*!< 6.25kHz     -> 0b00101 */
-    samplingRateCoder->addMapItem(7);  /*!< 12.5kHz     -> 0b00111 */
-    samplingRateCoder->addMapItem(9);  /*!< 25kHz       -> 0b01001 */
-    samplingRateCoder->addMapItem(11); /*!< 50kHz       -> 0b01011 */
-    samplingRateCoder->addMapItem(12); /*!< 100kHz      -> 0b01100 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(1);  /*!< 1.5kHz      -> 0b00001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(5);  /*!< 6.25kHz     -> 0b00101 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(7);  /*!< 12.5kHz     -> 0b00111 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9);  /*!< 25kHz       -> 0b01001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(11); /*!< 50kHz       -> 0b01011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(12); /*!< 100kHz      -> 0b01100 */
 
     /*! Oversampling ratio */
     boolConfig.initialByte = 4;
@@ -721,9 +721,7 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    dacExtFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacExtFilterCoder->addMapItem(0); /*!< 3Hz    -> 0b0 */
-    dacExtFilterCoder->addMapItem(1); /*!< 180kHz -> 0b1 */
+    dacExtFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
@@ -1066,13 +1064,13 @@ MessageDispatcher_eNPR_HC_V02::MessageDispatcher_eNPR_HC_V02(string di) :
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(1);  /*!< 1.5kHz      -> 0b00001 */
-    samplingRateCoder->addMapItem(5);  /*!< 6.25kHz     -> 0b00101 */
-    samplingRateCoder->addMapItem(7);  /*!< 12.5kHz     -> 0b00111 */
-    samplingRateCoder->addMapItem(9);  /*!< 25kHz       -> 0b01001 */
-    samplingRateCoder->addMapItem(11); /*!< 50kHz       -> 0b01011 */
-    samplingRateCoder->addMapItem(12); /*!< 100kHz      -> 0b01100 */
-    samplingRateCoder->addMapItem(14); /*!< 200kHz      -> 0b01110 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(1);  /*!< 1.5kHz      -> 0b00001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(5);  /*!< 6.25kHz     -> 0b00101 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(7);  /*!< 12.5kHz     -> 0b00111 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9);  /*!< 25kHz       -> 0b01001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(11); /*!< 50kHz       -> 0b01011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(12); /*!< 100kHz      -> 0b01100 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(14); /*!< 200kHz      -> 0b01110 */
 }
 
 MessageDispatcher_eNPR_HC_V02::~MessageDispatcher_eNPR_HC_V02() {

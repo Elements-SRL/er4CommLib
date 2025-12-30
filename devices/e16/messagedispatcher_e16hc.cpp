@@ -702,8 +702,7 @@ MessageDispatcher_e16HC_PCBV01_EL06f_V01::MessageDispatcher_e16HC_PCBV01_EL06f_V
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+    voltageRangeCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage reference range */
     boolConfig.initialByte = 2;
@@ -734,13 +733,13 @@ MessageDispatcher_e16HC_PCBV01_EL06f_V01::MessageDispatcher_e16HC_PCBV01_EL06f_V
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 7;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(16); /*!< 1.25kHz  -> 0b0010000 */
-    samplingRateCoder->addMapItem(18); /*!< 5kHz     -> 0b0010010 */
-    samplingRateCoder->addMapItem(19); /*!< 10kHz    -> 0b0010011 */
-    samplingRateCoder->addMapItem(20); /*!< 20kHz    -> 0b0010100 */
-    samplingRateCoder->addMapItem(8);  /*!< 50kHz    -> 0b0001000 */
-    samplingRateCoder->addMapItem(9);  /*!< 100kHz   -> 0b0001001 */
-    samplingRateCoder->addMapItem(10); /*!< 200kHz   -> 0b0001010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(16); /*!< 1.25kHz  -> 0b0010000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(18); /*!< 5kHz     -> 0b0010010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(19); /*!< 10kHz    -> 0b0010011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(20); /*!< 20kHz    -> 0b0010100 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(8);  /*!< 50kHz    -> 0b0001000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9);  /*!< 100kHz   -> 0b0001001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(10); /*!< 200kHz   -> 0b0001010 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 9;
@@ -857,9 +856,7 @@ MessageDispatcher_e16HC_PCBV01_EL06f_V01::MessageDispatcher_e16HC_PCBV01_EL06f_V
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 1;
-    dacExtFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacExtFilterCoder->addMapItem(0); /*!< 3Hz    -> 0b0 */
-    dacExtFilterCoder->addMapItem(1); /*!< 180kHz -> 0b1 */
+    dacExtFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
@@ -1965,8 +1962,7 @@ MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+    voltageRangeCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage reference range */
     boolConfig.initialByte = 2;
@@ -1990,13 +1986,13 @@ MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(16); /*!< 1.25kHz  -> 0b10000 */
-    samplingRateCoder->addMapItem(17); /*!< 5kHz     -> 0b10001 */
-    samplingRateCoder->addMapItem(18); /*!< 10kHz    -> 0b10010 */
-    samplingRateCoder->addMapItem(19); /*!< 20kHz    -> 0b10011 */
-    samplingRateCoder->addMapItem(8);  /*!< 50kHz    -> 0b01000 */
-    samplingRateCoder->addMapItem(9);  /*!< 100kHz   -> 0b01001 */
-    samplingRateCoder->addMapItem(10); /*!< 200kHz   -> 0b01010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(16); /*!< 1.25kHz  -> 0b10000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(17); /*!< 5kHz     -> 0b10001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(18); /*!< 10kHz    -> 0b10010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(19); /*!< 20kHz    -> 0b10011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(8);  /*!< 50kHz    -> 0b01000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9);  /*!< 100kHz   -> 0b01001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(10); /*!< 200kHz   -> 0b01010 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 9;
@@ -2113,9 +2109,7 @@ MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 1;
-    dacExtFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacExtFilterCoder->addMapItem(0); /*!< 3Hz    -> 0b0 */
-    dacExtFilterCoder->addMapItem(1); /*!< 180kHz -> 0b1 */
+    dacExtFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
@@ -3204,8 +3198,7 @@ MessageDispatcher_e16HC_PCBV00_V03::MessageDispatcher_e16HC_PCBV00_V03(string id
     boolConfig.initialByte = 0;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    voltageRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageRangeCoder->addMapItem(0); /*!< No controls  -> 0b0 */
+    voltageRangeCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage reference range */
     boolConfig.initialByte = 2;
@@ -3236,13 +3229,13 @@ MessageDispatcher_e16HC_PCBV00_V03::MessageDispatcher_e16HC_PCBV00_V03(string id
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 5;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    samplingRateCoder->addMapItem(16); /*!< 1.25kHz  -> 0b10000 */
-    samplingRateCoder->addMapItem(17); /*!< 5kHz     -> 0b10001 */
-    samplingRateCoder->addMapItem(18); /*!< 10kHz    -> 0b10010 */
-    samplingRateCoder->addMapItem(19); /*!< 20kHz    -> 0b10011 */
-    samplingRateCoder->addMapItem(8);  /*!< 50kHz    -> 0b01000 */
-    samplingRateCoder->addMapItem(9);  /*!< 100kHz   -> 0b01001 */
-    samplingRateCoder->addMapItem(10); /*!< 200kHz   -> 0b01010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(16); /*!< 1.25kHz  -> 0b10000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(17); /*!< 5kHz     -> 0b10001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(18); /*!< 10kHz    -> 0b10010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(19); /*!< 20kHz    -> 0b10011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(8);  /*!< 50kHz    -> 0b01000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9);  /*!< 100kHz   -> 0b01001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(10); /*!< 200kHz   -> 0b01010 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 9;
@@ -3359,9 +3352,7 @@ MessageDispatcher_e16HC_PCBV00_V03::MessageDispatcher_e16HC_PCBV00_V03(string id
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 1;
-    dacExtFilterCoder = new BoolRandomArrayCoder(boolConfig);
-    dacExtFilterCoder->addMapItem(0); /*!< 3Hz    -> 0b0 */
-    dacExtFilterCoder->addMapItem(1); /*!< 180kHz -> 0b1 */
+    dacExtFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);

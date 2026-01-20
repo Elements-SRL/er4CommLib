@@ -78,6 +78,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e_V01},                                             //    4,  8,129 : e4 Elements version
     {DeviceVersionE4, DeviceSubversionE4nQc01a, 129, DeviceE4nQC01a_V01},                                   //    4,  9,129 : e4n with QC01a
     {DeviceVersionE4, DeviceSubversionE4nQc01a, 130, DeviceE4nQC01a_V02},                                   //    4,  9,130 : e4n with QC01a and only 5nA range
+    {DeviceVersionE4, DeviceSubversionE4nQc01a_PCBV02, 129, DeviceE4nQC01a_V01},                            //    4, 10,129 : e4n with QC01a
+    {DeviceVersionE4, DeviceSubversionE4nQc01a_PCBV02, 130, DeviceE4nQC01a_V02},                            //    4, 10,130 : e4n with QC01a and only 5nA range
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 129, DeviceE16FastPulses_V01},                        //    3,  4,129 : e16n customized for fast pulses
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 130, DeviceE16FastPulses_V02},                        //    3,  4,130 : e16n customized for fast pulse trains
     {DeviceVersionE16, DeviceSubversionE16FastPulses, 131, DeviceE16FastPulses_V02},                        //    3,  4,131 : e16n customized for fast pulse trains

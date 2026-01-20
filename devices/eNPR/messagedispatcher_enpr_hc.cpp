@@ -895,7 +895,7 @@ bool MessageDispatcher_eNPR_HC_V01::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vhold-Vpulse\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";
 
-        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
+        } else if (!(protocolVoltageRangesArray[selectedVoltageRangeIdx].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
             message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-" + voltageLimit + "," + voltageLimit + "]mV";

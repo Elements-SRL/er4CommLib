@@ -924,10 +924,10 @@ bool MessageDispatcher_e4e_V01::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vhold-Vpulse\nmust be within [-500,500]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
-            message = "Vhold+Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
+            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;
@@ -2095,10 +2095,10 @@ bool MessageDispatcher_e4e_trigger_V01::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vhold-Vpulse\nmust be within [-500,500]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
-            message = "Vhold+Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
+            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;
@@ -3186,10 +3186,10 @@ bool MessageDispatcher_e4e_El03c_LegacyEdr3_V05::checkProtocolValidity(string &m
             validFlag = false;
             message = "Vhold-Vpulse\nmust be within [-500,500]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
-            message = "Vhold+Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
+            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;

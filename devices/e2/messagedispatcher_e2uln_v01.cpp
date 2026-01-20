@@ -929,10 +929,10 @@ bool MessageDispatcher_e2uln_V01::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vhold-Vpulse\nmust be within [-700,700]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange700mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]-
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange700mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
-            message = "Vhold+Vpulse-Vstep(N-1)\nmust be within [-700,700]mV";
+            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-700,700]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;

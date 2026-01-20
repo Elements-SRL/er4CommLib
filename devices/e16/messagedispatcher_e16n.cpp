@@ -2381,7 +2381,7 @@ MessageDispatcher_e16n_sine_V02::MessageDispatcher_e16n_sine_V02(string di) :
 
     /*! Protocol voltages */
     protocolVoltageCoders.resize(ProtocolVoltagesNum);
-    doubleConfig.initialByte = 53;
+    doubleConfig.initialByte = 96;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 11;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVSine].step;

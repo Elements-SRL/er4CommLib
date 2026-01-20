@@ -126,7 +126,9 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 130, DeviceENPR2Channels_V02},             //  254, 17,130 : eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 131, DeviceENPR2Channels_V01_vcm},         //  254, 17,131 : eNPR prototype with 2 channels and sinusoidal waveforms with controllable Vcm force
     {DeviceVersionPrototype, DeviceSubversionProtoOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},         //  254, 18,129 : e16n prototype with additional sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionProtoOrbitMiniSineWave, 130, DeviceOrbitMiniSine_V02},         //  254, 18,129 : e16n prototype with additional protocols that resemble the standard ones with an additive sinusoid
     {DeviceVersionPrototype, DeviceSubversionProtoE16nSineWave, 129, DeviceE16nSine_V01},                   //  254, 19,129 : e16n TC prototype with additional sinusoidal waveforms
+    {DeviceVersionPrototype, DeviceSubversionProtoE16nSineWave, 130, DeviceE16nSine_V02},                   //  254, 19,129 : e16n TC prototype with additional protocols that resemble the standard ones with an additive sinusoid
     {DeviceVersionPrototype, DeviceSubversionProtoENPRNanopipette, 129, DeviceENPRNanopipette_V01},         //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
     {DeviceVersionPrototype, DeviceSubversionProtoProtoE1ULN, 129, DeviceE1ULN_V01},                        //  254, 21,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionPrototype, DeviceSubversionProtoE4TtlPulseTrain, 129, DeviceE4TtlPulseTrain_V01},         //  254, 22,129 : e4 customized with ttl pulse train
@@ -501,8 +503,16 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_e4n_sine_V01(deviceId);
         break;
 
+    case DeviceOrbitMiniSine_V02:
+        messageDispatcher = new MessageDispatcher_e4n_sine_V02(deviceId);
+        break;
+
     case DeviceE16nSine_V01:
         messageDispatcher = new MessageDispatcher_e16n_sine_V01(deviceId);
+        break;
+
+    case DeviceE16nSine_V02:
+        messageDispatcher = new MessageDispatcher_e16n_sine_V02(deviceId);
         break;
 
     case DeviceENPRNanopipette_V01:
@@ -1193,6 +1203,9 @@ ErrorCodes_t MessageDispatcher::sendCommands() {
 }
 
 ErrorCodes_t MessageDispatcher::selectVoltageProtocol(unsigned int idx, bool applyFlag) {
+    if (idx >= protocolsNames.size()) {
+        return ErrorValueOutOfRange;
+    }
     protocolsSelectCoder->encode(idx, txStatus);
     if (applyFlag) {
         this->stackOutgoingMessage(txStatus);
@@ -1210,78 +1223,68 @@ ErrorCodes_t MessageDispatcher::applyVoltageProtocol() {
 }
 
 ErrorCodes_t MessageDispatcher::setProtocolVoltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
-    if (idx < protocolVoltagesNum) {
-        voltage.convertValue(protocolVoltageRanges[idx].prefix);
-        protocolVoltageCoders[idx]->encode(voltage.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
+    if (idx >= protocolVoltagesNum) {
         return ErrorValueOutOfRange;
     }
+    voltage.convertValue(protocolVoltageRanges[idx].prefix);
+    protocolVoltageCoders[idx]->encode(voltage.value, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setProtocolTime(unsigned int idx, Measurement_t time, bool applyFlag) {
-    if (idx < protocolTimesNum) {
-        time.convertValue(protocolTimeRanges[idx].prefix);
-        protocolTimeCoders[idx]->encode(time.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
+    if (idx >= protocolTimesNum) {
         return ErrorValueOutOfRange;
     }
+    time.convertValue(protocolTimeRanges[idx].prefix);
+    protocolTimeCoders[idx]->encode(time.value, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setProtocolSlope(unsigned int idx, Measurement_t slope, bool applyFlag) {
-    if (idx < protocolSlopesNum) {
-        slope.convertValue(protocolSlopeRanges[idx].prefix);
-        protocolSlopeCoders[idx]->encode(slope.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
+    if (idx >= protocolSlopesNum) {
         return ErrorValueOutOfRange;
     }
+    slope.convertValue(protocolSlopeRanges[idx].prefix);
+    protocolSlopeCoders[idx]->encode(slope.value, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setProtocolFrequency(unsigned int idx, Measurement_t frequency, bool applyFlag) {
-    if (idx < protocolFrequenciesNum) {
-        frequency.convertValue(protocolFrequencyRanges[idx].prefix);
-        protocolFrequencyCoders[idx]->encode(frequency.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
+    if (idx >= protocolFrequenciesNum) {
         return ErrorValueOutOfRange;
     }
+    frequency.convertValue(protocolFrequencyRanges[idx].prefix);
+    protocolFrequencyCoders[idx]->encode(frequency.value, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setProtocolAdimensional(unsigned int idx, Measurement_t adimensional, bool applyFlag) {
-    if (idx < protocolAdimensionalsNum) {
-        adimensional.convertValue(protocolAdimensionalRanges[idx].prefix);
-        protocolAdimensionalCoders[idx]->encode(adimensional.value, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
+    if (idx >= protocolAdimensionalsNum) {
         return ErrorValueOutOfRange;
     }
+    adimensional.convertValue(protocolAdimensionalRanges[idx].prefix);
+    protocolAdimensionalCoders[idx]->encode(adimensional.value, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::checkSelectedProtocol(unsigned int idx, string &message) {
@@ -1289,9 +1292,8 @@ ErrorCodes_t MessageDispatcher::checkSelectedProtocol(unsigned int idx, string &
     if (this->checkProtocolValidity(message)) {
         return Success;
 
-    } else {
-        return ErrorInvalidProtocolParameters;
     }
+    return ErrorInvalidProtocolParameters;
 }
 
 ErrorCodes_t MessageDispatcher::checkProtocolVoltage(unsigned int idx, Measurement_t voltage, string &message) {

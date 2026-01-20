@@ -149,7 +149,9 @@ typedef enum {
     DeviceENPR2Channels_V02,        /*!< eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms. */
     DeviceENPR2Channels_V01_vcm,    /*!< eNPR prototype with 2 channels and sinusoidal waveforms with controllable vcm. */
     DeviceOrbitMiniSine_V01,        /*!< Orbit mini prototype with additional sinusoidal waveforms. */
+    DeviceOrbitMiniSine_V02,        /*!< Orbit mini prototype with additional protocols that resemble the standard ones with an additive sinusoid. */
     DeviceE16nSine_V01,             /*!< e16 Orbit TC with additional sinusoidal waveforms. */
+    DeviceE16nSine_V02,             /*!< e16 Orbit TC with additional protocols that resemble the standard ones with an additive sinusoid. */
     DeviceENPRNanopipette_V01,      /*!< eNPR prototype with 2 channels with independent current ranges and PWM control. */
     DeviceE1ULN_V01,                /*!< e1ULN with eNPR PCB. */
     DeviceE4TtlPulseTrain_V01,      /*!< e4 customized with ttl pulse train. */

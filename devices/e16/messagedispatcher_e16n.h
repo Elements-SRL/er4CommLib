@@ -182,6 +182,56 @@ private:
     };
 };
 
+class MessageDispatcher_e16n_sine_V02 : public MessageDispatcher_e16n_V01 {
+public:
+    MessageDispatcher_e16n_sine_V02(std::string di);
+    virtual ~MessageDispatcher_e16n_sine_V02();
+
+protected:
+    bool checkProtocolValidity(std::string &message) override;
+
+private:
+    enum ProtocolFrequencyRanges {
+        ProtocolFrequencyRange35Hz,
+        ProtocolFrequencyRangesNum
+    };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolSinPlusConstant,
+        ProtocolSinPlusTriangular,
+        ProtocolSinPlusSquareWave,
+        ProtocolSinPlusConductance,
+        ProtocolSinPlusVariableAmplitude,
+        ProtocolSinPlusVariableDuration,
+        ProtocolSinPlusRamp,
+        ProtocolSinPlusCyclicVoltammetry,
+        ProtocolsNum
+    };
+
+    enum ProtocolVoltages {
+        ProtocolVHold,
+        ProtocolVPulse,
+        ProtocolVStep,
+        ProtocolVPk,
+        ProtocolVFinal,
+        ProtocolVInit,
+        ProtocolVSine,
+        ProtocolVoltagesNum
+    };
+
+    enum ProtocolFrequencies {
+        ProtocolFrequency,
+        ProtocolFrequenciesNum
+    };
+};
 
 class MessageDispatcher_dlp : public MessageDispatcher_e16n_V01 {
 public:

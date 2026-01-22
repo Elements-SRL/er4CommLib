@@ -126,9 +126,9 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 130, DeviceENPR2Channels_V02},             //  254, 17,130 : eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 131, DeviceENPR2Channels_V01_vcm},         //  254, 17,131 : eNPR prototype with 2 channels and sinusoidal waveforms with controllable Vcm force
     {DeviceVersionPrototype, DeviceSubversionProtoOrbitMiniSineWave, 129, DeviceOrbitMiniSine_V01},         //  254, 18,129 : e16n prototype with additional sinusoidal waveforms
-    {DeviceVersionPrototype, DeviceSubversionProtoOrbitMiniSineWave, 130, DeviceOrbitMiniSine_V02},         //  254, 18,129 : e16n prototype with additional protocols that resemble the standard ones with an additive sinusoid
+    {DeviceVersionPrototype, DeviceSubversionProtoOrbitMiniSineWave, 130, DeviceOrbitMiniSine_V02},         //  254, 18,130 : e16n prototype with additional protocols that resemble the standard ones with an additive sinusoid
     {DeviceVersionPrototype, DeviceSubversionProtoE16nSineWave, 129, DeviceE16nSine_V01},                   //  254, 19,129 : e16n TC prototype with additional sinusoidal waveforms
-    {DeviceVersionPrototype, DeviceSubversionProtoE16nSineWave, 130, DeviceE16nSine_V02},                   //  254, 19,129 : e16n TC prototype with additional protocols that resemble the standard ones with an additive sinusoid
+    {DeviceVersionPrototype, DeviceSubversionProtoE16nSineWave, 130, DeviceE16nSine_V02},                   //  254, 19,130 : e16n TC prototype with additional protocols that resemble the standard ones with an additive sinusoid
     {DeviceVersionPrototype, DeviceSubversionProtoENPRNanopipette, 129, DeviceENPRNanopipette_V01},         //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
     {DeviceVersionPrototype, DeviceSubversionProtoProtoE1ULN, 129, DeviceE1ULN_V01},                        //  254, 21,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionPrototype, DeviceSubversionProtoE4TtlPulseTrain, 129, DeviceE4TtlPulseTrain_V01},         //  254, 22,129 : e4 customized with ttl pulse train

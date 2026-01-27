@@ -53,24 +53,25 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
-    devices/e4/messagedispatcher_e4n_inputsync.cpp \
-    devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.cpp \
     er4commlib.cpp \
     calibrationeeprom.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
     devices/e1/messagedispatcher_e1light.cpp \
+    devices/e1/messagedispatcher_e1light_el03c_pcbv06.cpp \
     devices/e1/messagedispatcher_e1plus.cpp \
     devices/e1/messagedispatcher_e1hc.cpp \
     devices/e1/messagedispatcher_e1uln.cpp \
     devices/e1/messagedispatcher_e1_e4nbased.cpp \
     devices/eNPR/messagedispatcher_enpr.cpp \
     devices/eNPR/messagedispatcher_enpr_hc.cpp \
+    devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.cpp \
     devices/e2/messagedispatcher_e2hc.cpp \
     devices/e2/messagedispatcher_e2uln_v01.cpp \
     devices/e2/messagedispatcher_e2qc_debug.cpp \
     devices/e4/messagedispatcher_e4n.cpp \
     devices/e4/messagedispatcher_e4e.cpp \
+    devices/e4/messagedispatcher_e4n_inputsync.cpp \
     devices/e4/messagedispatcher_e4qc01a.cpp \
     devices/e16/messagedispatcher_e16e.cpp \
     devices/e16/messagedispatcher_e16n.cpp \
@@ -90,8 +91,6 @@ SOURCES += \
     devices/fake/messagedispatcher_fake_e16fastpulses.cpp
 
 HEADERS += \
-    devices/e4/messagedispatcher_e4n_inputsync.h \
-    devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
@@ -100,17 +99,20 @@ HEADERS += \
     messagedispatcher.h \
     commandcoder.h \
     devices/e1/messagedispatcher_e1light.h \
+    devices/e1/messagedispatcher_e1light_el03c_pcbv06.h \
     devices/e1/messagedispatcher_e1plus.h \
     devices/e1/messagedispatcher_e1hc.h \
     devices/e1/messagedispatcher_e1uln.h \
     devices/e1/messagedispatcher_e1_e4nbased.h \
     devices/eNPR/messagedispatcher_enpr.h \
     devices/eNPR/messagedispatcher_enpr_hc.h \
+    devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.h \
     devices/e2/messagedispatcher_e2hc.h \
     devices/e2/messagedispatcher_e2uln_v01.h \
     devices/e2/messagedispatcher_e2qc_debug.h \
     devices/e4/messagedispatcher_e4n.h \
     devices/e4/messagedispatcher_e4e.h \
+    devices/e4/messagedispatcher_e4n_inputsync.h \
     devices/e4/messagedispatcher_e4qc01a.h \
     devices/e16/messagedispatcher_e16e.h \
     devices/e16/messagedispatcher_e16n.h \

@@ -170,7 +170,6 @@ public:
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
-    virtual ErrorCodes_t setDacExtDeviceVoltage(Measurement_t voltage);
     ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
     ErrorCodes_t setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
     ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
@@ -231,7 +230,6 @@ public:
     ErrorCodes_t getVoltageRange(RangedMeasurement_t &voltageRange);
     virtual ErrorCodes_t getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption);
     ErrorCodes_t getVoltageReferenceRange(RangedMeasurement_t &range);
-    ErrorCodes_t isDacExtDevice();
 
     ErrorCodes_t getSamplingRates(std::vector <Measurement_t> &samplingRates, uint16_t &defaultOption);
     ErrorCodes_t getSamplingRate(Measurement_t &samplingRate);
@@ -635,8 +633,6 @@ protected:
     uint16_t voltageReferenceLpfDefaultOption = 0;
     int16_t voltageReferenceLpfRange = -1;
     BoolCoder * dacExtFilterCoder;
-    bool dacExtDeviceFlag = false;
-    RangedMeasurement_t dacExtDeviceRange = {-1.0, 1.0, 1.0, UnitPfxNone, "V"};
 
     uint16_t ledsNum = 0;
     std::vector <BoolArrayCoder *> ledsCoders;

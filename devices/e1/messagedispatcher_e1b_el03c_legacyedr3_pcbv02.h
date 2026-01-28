@@ -1,5 +1,5 @@
-#ifndef MESSAGEDISPATCHER_E1PLUS_H
-#define MESSAGEDISPATCHER_E1PLUS_H
+#ifndef MESSAGEDISPATCHER_E1B_EL_3C_LEGACYEDR3_PCBV_2_H
+#define MESSAGEDISPATCHER_E1B_EL_3C_LEGACYEDR3_PCBV_2_H
 
 #include "messagedispatcher.h"
 
@@ -7,10 +7,10 @@
 namespace er4CommLib {
 #endif
 
-class MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00 : public MessageDispatcherLegacyEdr3 {
+class MessageDispatcher_e1b_El03c_LegacyEdr3_PCBV02_FWV02 : public MessageDispatcherLegacyEdr3 {
 public:
-    MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(std::string id);
-    virtual ~MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00();
+    MessageDispatcher_e1b_El03c_LegacyEdr3_PCBV02_FWV02(std::string id);
+    virtual ~MessageDispatcher_e1b_El03c_LegacyEdr3_PCBV02_FWV02();
 
 protected:
     typedef struct {
@@ -57,18 +57,24 @@ protected:
     };
 
     enum ProtocolVoltageRanges {
+        ProtocolVoltageRange500mV,
+        ProtocolVoltageRange1650mV,
         ProtocolVoltageRange2000mV,
         ProtocolVoltageRangesNum
     };
 
     enum ProtocolTimeRanges {
         ProtocolTimeRange2_10ms,
-        ProtocolTimeRange0to2_28,
-        ProtocolTimeRange1to2_28,
+        ProtocolTimeRange0to2_20,
+        ProtocolTimeRange1to2_20,
         ProtocolTimeRange1orMore,
-        ProtocolTimeRangeSigned2_27,
-        ProtocolTimeRange1to2_25,
+        ProtocolTimeRangeSigned2_20,
         ProtocolTimeRangesNum
+    };
+
+    enum ProtocolSlopeRanges {
+        ProtocolSlopeRange2_10mVms,
+        ProtocolSlopeRangesNum
     };
 
     enum Protocols {
@@ -88,8 +94,8 @@ protected:
         ProtocolVPulse,
         ProtocolVStep,
         ProtocolVPk,
-        ProtocolVFinal,
-        ProtocolVInit,
+        ProtocolVMax,
+        ProtocolVMin,
         ProtocolVoltagesNum
     };
 
@@ -97,9 +103,13 @@ protected:
         ProtocolTHold,
         ProtocolTPulse,
         ProtocolTStep,
-        ProtocolTRamp,
         ProtocolTPe,
         ProtocolTimesNum
+    };
+
+    enum ProtocolSlopes {
+        ProtocolSlope,
+        ProtocolSlopesNum
     };
 
     enum ProtocolAdimensionals {
@@ -120,4 +130,4 @@ protected:
 };
 #endif
 
-#endif // MESSAGEDISPATCHER_E1PLUS_H
+#endif // MESSAGEDISPATCHER_E1B_EL_3C_LEGACYEDR3_PCBV_2_H

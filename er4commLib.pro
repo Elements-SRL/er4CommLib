@@ -57,6 +57,7 @@ SOURCES += \
     calibrationeeprom.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
+    devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.cpp \
     devices/e1/messagedispatcher_e1light.cpp \
     devices/e1/messagedispatcher_e1light_el03c_pcbv06.cpp \
     devices/e1/messagedispatcher_e1plus.cpp \
@@ -98,6 +99,7 @@ HEADERS += \
     calibrationeeprom.h \
     messagedispatcher.h \
     commandcoder.h \
+    devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.h \
     devices/e1/messagedispatcher_e1light.h \
     devices/e1/messagedispatcher_e1light_el03c_pcbv06.h \
     devices/e1/messagedispatcher_e1plus.h \

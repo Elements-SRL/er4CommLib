@@ -1,5 +1,6 @@
 #include "messagedispatcher.h"
 
+#include "messagedispatcher_e1b_el03c_legacyedr3_pcbv02.h"
 #include "messagedispatcher_e1plus.h"
 #include "messagedispatcher_e1light.h"
 #include "messagedispatcher_e1light_el03c_pcbv06.h"
@@ -49,7 +50,8 @@ using namespace er4CommLib;
 #endif
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionE1, DeviceSubversionE1bEL03C, 4, DeviceE1bEL03cEDR3},                                     //    9,  2,  4 : e1b EL03c chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1bEL03C_PCBV02, 2, DeviceE1bEL03c_PCBV02EDR3},                       //    9,  1,  1 : e1b EL03c chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1bEL03C, 6, DeviceE1bEL03cEDR3},                                     //    9,  2,  6 : e1b EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightEL03C, 2, DeviceE1LightEL03cEDR3},                             //    9,  4,  2 : e1Light EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1PlusEL03C, 6, DeviceE1PlusEL03cEDR3},                               //    9,  5,  6 : e1+ EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1HcEL03C, 7, DeviceE1HcEL03cEDR3},                                   //    9,  6,  7 : e1HC EL03c chip (Legacy version for EDR3)
@@ -294,8 +296,12 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
     }
 
     switch (deviceType) {
+    case DeviceE1bEL03c_PCBV02EDR3:
+        messageDispatcher = new MessageDispatcher_e1b_El03c_LegacyEdr3_PCBV02_FWV02(deviceId);
+        break;
+
     case DeviceE1bEL03cEDR3:
-        messageDispatcher = new MessageDispatcher_e1b_El03c_LegacyEdr3_V00(deviceId);
+        messageDispatcher = new MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(deviceId);
         break;
 
     case DeviceE1LightEL03cEDR3:
@@ -303,7 +309,7 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         break;
 
     case DeviceE1PlusEL03cEDR3:
-        messageDispatcher = new MessageDispatcher_e1Plus_El03c_LegacyEdr3_V00(deviceId);
+        messageDispatcher = new MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(deviceId);
         break;
 
     case DeviceE1HcEL03cEDR3:
@@ -1577,10 +1583,6 @@ ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFla
     return Success;
 }
 
-ErrorCodes_t MessageDispatcher::setDacExtDeviceVoltage(Measurement_t) {
-    return ErrorFeatureNotImplemented;
-}
-
 ErrorCodes_t MessageDispatcher::setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag) {
     if (idx < fastPulseW1num) {
         voltage.convertValue(fastPulseW1VoltageRange.prefix);
@@ -2238,14 +2240,6 @@ ErrorCodes_t MessageDispatcher::getVoltageReferenceRange(RangedMeasurement_t &ra
     }
 
     range = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::isDacExtDevice() {
-    if (!dacExtDeviceFlag) {
-        return ErrorFeatureNotImplemented;
-    }
-
     return Success;
 }
 

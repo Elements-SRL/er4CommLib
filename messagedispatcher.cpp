@@ -34,6 +34,7 @@
 #include "messagedispatcher_fake_e16n.h"
 #include "messagedispatcher_fake_e16fastpulses.h"
 #include "utils.h"
+#include "ftd2xxwrapper.h"
 
 #include <ctime>
 #include <thread>
@@ -594,109 +595,24 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 }
 
 ErrorCodes_t MessageDispatcher::disconnectDevice() {
-    if (!connected) {
+    if (!connected || stopConnectionFlag) {
         return ErrorDeviceNotConnected;
     }
+    stopConnectionFlag = true;
 
-    if (!stopConnectionFlag) {
-        stopConnectionFlag = true;
+    this->joinCommunicationThreads();
 
-        if (threadsStarted) {
-            rxThread.join();
-            txThread.join();
-        }
+    this->deinit();
 
-        this->deinit();
+    stopCommunication();
 
-        if (connectionStatus == ConnectionStatus_t::Connected) {
-            FT_STATUS ftRet;
-            ftRet = Ftd2xxWrapper::FTW_Close(* ftdiRxHandle);
-            if (ftRet != FT_OK) {
-                return ErrorDeviceDisconnectionFailed;
-            }
-
-            if (rxChannel != txChannel) {
-                FT_STATUS ftRet;
-                ftRet = Ftd2xxWrapper::FTW_Close(* ftdiTxHandle);
-                if (ftRet != FT_OK) {
-                    return ErrorDeviceDisconnectionFailed;
-                }
-            }
-        }
-
-        if (ftdiEeprom != nullptr) {
-            delete ftdiEeprom;
-            ftdiEeprom = nullptr;
-        }
-
-        if (ftdiRxHandle != nullptr) {
-            delete ftdiRxHandle;
-            ftdiRxHandle = nullptr;
-            if (txChannel == rxChannel) {
-                ftdiTxHandle = nullptr;
-            }
-        }
-
-        if (ftdiTxHandle != nullptr) {
-            delete ftdiTxHandle;
-            ftdiTxHandle = nullptr;
-        }
-
-        connected = false;
-        connectionStatus = ConnectionStatus_t::Disconnected;
-
-        return Success;
-
-    } else {
-        return ErrorDeviceNotConnected;
-    }
-}
-
-ErrorCodes_t MessageDispatcher::pauseConnection(MessageDispatcher::ConnectionStatus_t newConnectionStatus) {
-    if (!connected) {
-        return ErrorDeviceNotConnected;
+    if (ftdiEeprom != nullptr) {
+        delete ftdiEeprom;
+        ftdiEeprom = nullptr;
     }
 
-    ErrorCodes_t ret = Success;
-    switch (newConnectionStatus) {
-    case MessageDispatcher::ConnectionStatus_t::Calibrating:
-    case MessageDispatcher::ConnectionStatus_t::Paused: {
-        FT_STATUS ftRet;
-        ftRet = Ftd2xxWrapper::FTW_Close(* ftdiRxHandle);
-        if (ftRet != FT_OK) {
-            return ErrorDeviceDisconnectionFailed;
-        }
-
-        if (rxChannel != txChannel) {
-            FT_STATUS ftRet;
-            ftRet = Ftd2xxWrapper::FTW_Close(* ftdiTxHandle);
-            if (ftRet != FT_OK) {
-                return ErrorDeviceDisconnectionFailed;
-            }
-        }
-        break;
-    }
-    case MessageDispatcher::ConnectionStatus_t::Connected:
-        /*! Initialize the ftdi Rx handle */
-        ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
-        if (ret != Success) {
-            return ret;
-        }
-        if (rxChannel == txChannel) {
-            ftdiTxHandle = ftdiRxHandle;
-
-        } else {
-            /*! Initialize the ftdi Tx handle */
-            ret = this->initFtdiChannel(ftdiTxHandle, txChannel);
-            if (ret != Success) {
-                return ret;
-            }
-        }
-        deviceCommunicationErrorFlag = false;
-        break;
-    }
-    connectionStatus = newConnectionStatus;
-    return ret;
+    connected = false;
+    return Success;
 }
 
 /****************\
@@ -2036,7 +1952,8 @@ ErrorCodes_t MessageDispatcher::getQueueStatus(QueueStatus_t &status) {
     } else {
         status.currentRangeDecreaseFlag = false;
     }
-    status.communicationErrorFlag = deviceCommunicationErrorFlag;
+    // todo this is not used for now
+    status.communicationErrorFlag = false;
 
     outputBufferOverflowFlag = false;
     bufferDataLossFlag = false;
@@ -2044,10 +1961,7 @@ ErrorCodes_t MessageDispatcher::getQueueStatus(QueueStatus_t &status) {
     bufferIncreaseCurrentRangeFlag = false;
     bufferDecreaseCurrentRangeFlag = false;
 
-    if (deviceCommunicationErrorFlag) {
-        return ErrorDeviceCommunicationFailed;
-
-    } else if (status.availableDataPackets == 0) {
+    if (status.availableDataPackets == 0) {
         return WarningNoDataAvailable;
 
     } else {
@@ -2593,89 +2507,95 @@ ErrorCodes_t MessageDispatcher::getFastReferencePulseTrainProtocolWave2Range(Ran
     }
 }
 
-ErrorCodes_t MessageDispatcher::getCalibrationEepromSize(uint32_t &size) {
-    ErrorCodes_t ret;
-    if (calEeprom != nullptr) {
-        size = calEeprom->getMemorySize();
-        ret = Success;
-
-    } else {
-        size = 0;
-        ret = ErrorEepromNotConnected;
+ErrorCodes_t MessageDispatcher::setCalibrationMode(bool calibModeFlag) {
+    if (calibrationEeprom == nullptr) {
+        return ErrorEepromNotConnected;
     }
+    if (calibrationModeFlag == calibModeFlag) {
+        return Success;
+    }
+    calibrationModeFlag = calibModeFlag;
+    if (calibrationModeFlag) {
+        stopConnectionFlag = true;
+        this->joinCommunicationThreads();
 
-    return ret;
+        this->stopCommunication();
+
+        calibrationEeprom->openConnection(Ftd2xxWrapper::getDeviceIndex(deviceId+spiChannel));
+        fwLoadedFlag = false;
+    }
+    else {
+        calibrationEeprom->closeConnection();
+
+        this->startCommunication();
+        stopConnectionFlag = false;
+        this->createCommunicationThreads();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        this->resetDevice();
+        this->stackOutgoingMessage(txStatus);
+    }
+    return Success;
 }
 
-ErrorCodes_t MessageDispatcher::writeCalibrationEeprom(std::vector <uint32_t> value, std::vector <uint32_t> address, std::vector <uint32_t> size) {
-    ErrorCodes_t ret;
-    if (calEeprom != nullptr) {
-        ret = this->pauseConnection(ConnectionStatus_t::Calibrating);
-        calEeprom->openConnection();
+ErrorCodes_t MessageDispatcher::getCalibrationEepromSize(uint32_t &size) {
+    if (calibrationEeprom == nullptr) {
+        size = 0;
+        return ErrorEepromNotConnected;
+    }
+    size = calibrationEeprom->getMemorySize();
+    return Success;
+}
 
-        unsigned char eepromBuffer[4];
-        for (unsigned int itemIdx = 0; itemIdx < value.size(); itemIdx++) {
+
+ErrorCodes_t MessageDispatcher::writeCalibrationEeprom(std::vector <uint32_t> value, std::vector <uint32_t> address, std::vector <uint32_t> size) {
+    if (calibrationEeprom == nullptr || !calibrationModeFlag) {
+        return ErrorEepromNotConnected;
+    }
+
+    uint32_t prevValue;
+    unsigned char eepromBuffer[4];
+    for (unsigned int itemIdx = 0; itemIdx < value.size(); itemIdx++) {
+        calibrationEeprom->readBytes(eepromBuffer, address[itemIdx], size[itemIdx]);
+        prevValue = 0;
+        for (uint32_t bufferIdx = 0; bufferIdx < size[itemIdx]; bufferIdx++) {
+            prevValue <<= 8;
+            prevValue += static_cast <uint32_t> (eepromBuffer[bufferIdx]);
+        }
+
+        if (prevValue != value[itemIdx]) {
+            /*! Write only if the existing value is different from the new one */
             for (uint32_t bufferIdx = 0; bufferIdx < size[itemIdx]; bufferIdx++) {
                 eepromBuffer[size[itemIdx]-bufferIdx-1] = value[itemIdx] & 0x000000FF;
                 value[itemIdx] >>= 8;
             }
 
-            ret = calEeprom->writeBytes(eepromBuffer, address[itemIdx], size[itemIdx]);
+            calibrationEeprom->writeBytes(eepromBuffer, address[itemIdx], size[itemIdx]);
         }
-
-        calEeprom->closeConnection();
-        this->pauseConnection(ConnectionStatus_t::Connected);
-
-        /*! Make a chip reset to force resynchronization of chip states. This is important when the FPGA has just been reset */
-        deviceResetCoder->encode(1, txStatus);
-        this->stackOutgoingMessage(txStatus);
-        this_thread::sleep_for(chrono::milliseconds(100));
-        deviceResetCoder->encode(0, txStatus);
-        this->stackOutgoingMessage(txStatus);
     }
-    else {
-        ret = ErrorEepromNotConnected;
-    }
-
-    return ret;
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::readCalibrationEeprom(std::vector <uint32_t> &value, std::vector <uint32_t> address, std::vector <uint32_t> size) {
-    ErrorCodes_t ret;
-    if (calEeprom != nullptr) {
-        ret = this->pauseConnection(ConnectionStatus_t::Calibrating);
-        calEeprom->openConnection();
-
-        if (value.size() != address.size()) {
-            value.resize(address.size());
-        }
-
-        unsigned char eepromBuffer[4];
-        for (unsigned int itemIdx = 0; itemIdx < value.size(); itemIdx++) {
-            ret = calEeprom->readBytes(eepromBuffer, address[itemIdx], size[itemIdx]);
-
-            value[itemIdx] = 0;
-            for (uint32_t bufferIdx = 0; bufferIdx < size[itemIdx]; bufferIdx++) {
-                value[itemIdx] <<= 8;
-                value[itemIdx] += static_cast <uint32_t> (eepromBuffer[bufferIdx]);
-            }
-        }
-
-        calEeprom->closeConnection();
-        this->pauseConnection(ConnectionStatus_t::Connected);
-
-        /*! Make a chip reset to force resynchronization of chip states. This is important when the FPGA has just been reset */
-        deviceResetCoder->encode(1, txStatus);
-        this->stackOutgoingMessage(txStatus);
-        this_thread::sleep_for(chrono::milliseconds(100));
-        deviceResetCoder->encode(0, txStatus);
-        this->stackOutgoingMessage(txStatus);
-    }
-    else {
-        ret = ErrorEepromNotConnected;
+    if (calibrationEeprom == nullptr || !calibrationModeFlag) {
+        return ErrorEepromNotConnected;
     }
 
-    return ret;
+    if (value.size() != address.size()) {
+        value.resize(address.size());
+    }
+
+    unsigned char eepromBuffer[4];
+    for (unsigned int itemIdx = 0; itemIdx < value.size(); itemIdx++) {
+        calibrationEeprom->readBytes(eepromBuffer, address[itemIdx], size[itemIdx]);
+
+        value[itemIdx] = 0;
+        for (uint32_t bufferIdx = 0; bufferIdx < size[itemIdx]; bufferIdx++) {
+            value[itemIdx] <<= 8;
+            value[itemIdx] += static_cast <uint32_t> (eepromBuffer[bufferIdx]);
+        }
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::getCustomFlags(vector <string> &customFlags, vector <bool> &customFlagsDefault) {
@@ -2808,38 +2728,69 @@ ErrorCodes_t MessageDispatcher::getDeviceType(DeviceTuple_t tuple, DeviceTypes_t
     }
 }
 
-ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
-    if (connected) {
-        return ErrorDeviceAlreadyConnected;
-    }
-
-    connected = true;
-    connectionStatus = ConnectionStatus_t::Connected;
-    ErrorCodes_t ret;
-
-    this->ftdiEeprom = ftdiEeprom;
-
+ErrorCodes_t MessageDispatcher::startCommunication() {
     /*! Initialize the ftdi Rx handle */
     ftdiRxHandle = new FT_HANDLE;
 
-    ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
+    ErrorCodes_t ret = this->initFtdiChannel(ftdiRxHandle, rxChannel);
     if (ret != Success) {
         return ret;
     }
 
     if (rxChannel == txChannel) {
         ftdiTxHandle = ftdiRxHandle;
+        return ret;
 
-    } else {
-        /*! Initialize the ftdi Tx handle */
-        ftdiTxHandle = new FT_HANDLE;
+    }
+    /*! Initialize the ftdi Tx handle */
+    ftdiTxHandle = new FT_HANDLE;
 
-        ret = this->initFtdiChannel(ftdiTxHandle, txChannel);
-        if (ret != Success) {
-            return ret;
+    return this->initFtdiChannel(ftdiTxHandle, txChannel);
+}
+
+ErrorCodes_t MessageDispatcher::stopCommunication() {
+    FT_STATUS ftRet;
+    if (ftdiRxHandle != nullptr) {
+        ftRet = Ftd2xxWrapper::FTW_Close(* ftdiRxHandle);
+        if (ftRet != FT_OK) {
+            return ErrorDeviceDisconnectionFailed;
+        }
+        delete ftdiRxHandle;
+        ftdiRxHandle = nullptr;
+        if (txChannel == rxChannel) {
+            ftdiTxHandle = nullptr;
         }
     }
-    deviceCommunicationErrorFlag = false;
+
+    if (ftdiTxHandle != nullptr) {
+        if (rxChannel != txChannel) {
+            FT_STATUS ftRet;
+            ftRet = Ftd2xxWrapper::FTW_Close(* ftdiTxHandle);
+            if (ftRet != FT_OK) {
+                return ErrorDeviceDisconnectionFailed;
+            }
+        }
+        delete ftdiTxHandle;
+        ftdiTxHandle = nullptr;
+    }
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
+    if (connected) {
+        return ErrorDeviceAlreadyConnected;
+    }
+
+    connected = true;
+    ErrorCodes_t ret;
+
+    this->ftdiEeprom = ftdiEeprom;
+
+    ret = startCommunication();
+    if (ret != Success) {
+        return ret;
+    }
 
     /*! Calculate the LSB noise vector */
     this->initializeLsbNoise();
@@ -2852,11 +2803,7 @@ ErrorCodes_t MessageDispatcher::connect(FtdiEeprom * ftdiEeprom) {
 
     this->setRawDataFilter({30.0, UnitPfxKilo, "Hz"}, true, false);
 
-    rxThread = thread(&MessageDispatcher::readDataFromDevice, this);
-
-    txThread = thread(&MessageDispatcher::sendCommandsToDevice, this);
-
-    threadsStarted = true;
+    this->createCommunicationThreads();
 
     this->resetDevice();
     this_thread::sleep_for(chrono::milliseconds(10));
@@ -2941,7 +2888,7 @@ ErrorCodes_t MessageDispatcher::init() {
 
     std::string spiChannelStr = deviceId+spiChannel;
 
-    calEeprom = new CalibrationEeprom(Ftd2xxWrapper::getDeviceIndex(spiChannelStr));
+    calibrationEeprom = new FtdiCalibrationEeprom();
 
     this->computeMinimumPacketNumber();
 
@@ -3025,12 +2972,29 @@ ErrorCodes_t MessageDispatcher::deinit() {
         rxRawFid = nullptr;
     }
 
-    if (calEeprom != nullptr) {
-        delete calEeprom;
-        calEeprom = nullptr;
+    if (calibrationEeprom != nullptr) {
+        delete calibrationEeprom;
+        calibrationEeprom = nullptr;
     }
 
     return Success;
+}
+
+void MessageDispatcher::joinCommunicationThreads() {
+    if (threadsStarted) {
+        txThread.join();
+        rxThread.join();
+        threadsStarted = false;
+    }
+}
+
+void MessageDispatcher::createCommunicationThreads() {
+    if (!threadsStarted) {
+        rxThread = thread(&MessageDispatcher::readDataFromDevice, this);
+
+        txThread = thread(&MessageDispatcher::sendCommandsToDevice, this);
+        threadsStarted = true;
+    }
 }
 
 ErrorCodes_t MessageDispatcher::initFtdiChannel(FT_HANDLE * handle, char channel) {
@@ -3246,26 +3210,7 @@ void MessageDispatcher::readDataFromDevice() {
 
     int minReadFrameNumberTries = 0;
 
-    bool skipReading = false;
     while (!stopConnectionFlag) {
-        switch (connectionStatus) {
-        case ConnectionStatus_t::Connected:
-            skipReading = false;
-            break;
-        case ConnectionStatus_t::Paused:
-            if (this->pauseConnection(Connected) != Success) {
-                this_thread::sleep_for(chrono::milliseconds(100));
-                skipReading = true;
-            }
-            break;
-        case ConnectionStatus_t::Calibrating:
-            this_thread::sleep_for(chrono::milliseconds(100));
-            skipReading = true;
-            break;
-        }
-        if (skipReading){
-            continue;
-        }
         /******************\
          *  Reading part  *
         \******************/
@@ -3273,8 +3218,6 @@ void MessageDispatcher::readDataFromDevice() {
         /*! Read queue status to check the number of available bytes */
         result = Ftd2xxWrapper::FTW_GetQueueStatus(* ftdiRxHandle, &ftdiQueuedBytes);
         if (result != FT_OK) {
-            deviceCommunicationErrorFlag = true;
-            this->pauseConnection(ConnectionStatus_t::Connected);
             this_thread::sleep_for(chrono::milliseconds(100));
             continue;
         }
@@ -3300,7 +3243,7 @@ void MessageDispatcher::readDataFromDevice() {
             continue;
         }
         minReadFrameNumberTries = 0;
-
+        fwLoadedFlag = true;
         /*! Cap bytes to read so that we do not try to read more than is available on the internal buffer */
         if (ftdiQueuedBytes+bytesReadFromDriver >= FTD_RX_BUFFER_SIZE) {
             ftdiQueuedBytes = FTD_RX_BUFFER_SIZE-bytesReadFromDriver;
@@ -3486,7 +3429,10 @@ void MessageDispatcher::sendCommandsToDevice() {
     txMutexLock.unlock();
 
     while (!stopConnectionFlag) {
-
+        if (!fwLoadedFlag) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            continue;
+        }
         /***********************\
          *  Data copying part  *
         \***********************/
@@ -3517,6 +3463,7 @@ void MessageDispatcher::sendCommandsToDevice() {
 
         notSentTxData = true;
         bytesToWrite = (DWORD)txDataBytes;
+
         while (notSentTxData && (writeTries++ < FTD_MAX_WRITE_TRIES)) { /*! \todo FCON prevedere un modo per notificare ad alto livello e all'utente */
             ftRet = Ftd2xxWrapper::FTW_Write(* ftdiTxHandle, txRawBuffer, bytesToWrite, &ftdiWrittenBytes);
 

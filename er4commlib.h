@@ -1489,6 +1489,14 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
  *  Calibration methods  *
 \*************************/
 
+/*! \brief Set device in calibration mode, communication stops while eeprom is being read/written.
+ *
+ * \param calibMode [in] True if calibrating, false otherwise.
+ * \return Error code.
+ */
+ErrorCodes_t setCalibrationMode(
+    ER4CL_ARGIN bool calibMode);
+
 /*! \brief Get calibration eeprom size in bytes.
  *
  * \param size [out] Size of the calibration eeprom in bytes.

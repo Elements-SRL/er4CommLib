@@ -1427,6 +1427,18 @@ ErrorCodes_t getFastReferencePulseTrainProtocolWave2Range(
  *  Calibration methods  *
 \*************************/
 
+ErrorCodes_t setCalibrationMode(
+    bool calibMode) {
+    ErrorCodes_t ret;
+    if (!msgDisps.empty()) {
+        ret = msgDisps[0]->setCalibrationMode(calibMode);
+
+    } else {
+        ret = ErrorDeviceNotConnected;
+    }
+    return ret;
+}
+
 ErrorCodes_t getCalibrationEepromSize(
         uint32_t &size) {
     ErrorCodes_t ret;

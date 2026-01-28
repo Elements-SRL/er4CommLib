@@ -206,7 +206,8 @@ typedef struct QueueStatus {
     bool currentRangeDecreaseFlag = false; /*!< This flag is true if all current channels are below the threshold that suggests a decrease of front end current range.
                                             *   This flag is reset after a call to getQueueStatus or to purgeData. */
     bool communicationErrorFlag = false; /*!< This flag is true after a communication error with the device.
-                                          *   This flag is reset if the communication restarts successfully. */
+                                          *   This flag is reset if the communication restarts successfully.
+                                          \note always false from version 1.11.1, will be activated back as soon as possible*/
 } QueueStatus_t;
 
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER

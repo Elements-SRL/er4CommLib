@@ -54,7 +54,6 @@ VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
     er4commlib.cpp \
-    calibrationeeprom.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
     devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.cpp \
@@ -96,7 +95,6 @@ HEADERS += \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
     er4commlib_global_addendum.h \
-    calibrationeeprom.h \
     messagedispatcher.h \
     commandcoder.h \
     devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.h \

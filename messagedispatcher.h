@@ -13,10 +13,10 @@
 #include "er4commlib_global.h"
 #include "er4commlib_global_addendum.h"
 #include "ftdieeprom.h"
+#include "ftdicalibrationeeprom.h"
+#include "commandcoder.h"
 #include "ftdieeprom56.h"
 #include "ftdieepromdemo.h"
-#include "commandcoder.h"
-#include "calibrationeeprom.h"
 
 #define SHORT_OFFSET_BINARY (static_cast <double> (0x8000))
 #define SHORT_MAX (static_cast <double> (0x7FFF))
@@ -84,12 +84,6 @@ namespace er4CommLib {
 
 class ER4COMMLIBSHARED_EXPORT MessageDispatcher {
 public:
-    typedef enum ConnectionStatus{
-        Connected,
-        Calibrating,
-        Paused,
-        Disconnected,
-    } ConnectionStatus_t;
 
     /*****************\
      *  Ctor / Dtor  *
@@ -105,7 +99,6 @@ public:
     static ErrorCodes_t detectDevices(std::vector <std::string> &deviceIds);
     static ErrorCodes_t connectDevice(std::string deviceId, MessageDispatcher * &messageDispatcher);
     virtual ErrorCodes_t disconnectDevice();
-    virtual ErrorCodes_t pauseConnection(ConnectionStatus_t pauseFlag);
     void readDataFromDevice();
     void sendCommandsToDevice();
 
@@ -279,6 +272,7 @@ public:
 
     /*! Calibration methods */
 
+    ErrorCodes_t setCalibrationMode(bool calibrationMode);
     ErrorCodes_t getCalibrationEepromSize(uint32_t &size);
     ErrorCodes_t writeCalibrationEeprom(std::vector <uint32_t> value, std::vector <uint32_t> address, std::vector <uint32_t> size);
     ErrorCodes_t readCalibrationEeprom(std::vector <uint32_t> &value, std::vector <uint32_t> address, std::vector <uint32_t> size);
@@ -334,9 +328,13 @@ protected:
 
     static ErrorCodes_t getDeviceType(DeviceTuple_t tuple, DeviceTypes_t &type);
 
+    ErrorCodes_t startCommunication();
+    ErrorCodes_t stopCommunication();
     virtual ErrorCodes_t connect(FtdiEeprom * ftdiEeprom);
     ErrorCodes_t init();
     ErrorCodes_t deinit();
+    void joinCommunicationThreads();
+    void createCommunicationThreads();
     ErrorCodes_t initFtdiChannel(FT_HANDLE * handle, char channel);
     virtual void initializeDevice();
     virtual bool checkProtocolValidity(std::string &message) = 0;
@@ -367,7 +365,6 @@ protected:
     \****************/
 
     FtdiEepromId_t ftdiEepromId = FtdiEepromId56;
-    CalibrationEeprom * calEeprom = nullptr;
 
     std::string upgradeNotes = "NONE";
     std::string notificationTag = "UNDEFINED";
@@ -380,6 +377,7 @@ protected:
     uint8_t txSyncWord;
 
     int packetsPerFrame = 16;
+    bool fwLoadedFlag = false;
 
     uint16_t voltageChannelsNum = 1;
     uint16_t currentChannelsNum = 1;
@@ -436,6 +434,10 @@ protected:
     bool singleChannelZapFlag = false;
     bool channelOnFlag = false;
     bool singleChannelOnFlag = false;
+
+
+    FtdiCalibrationEeprom * calibrationEeprom = nullptr;
+    bool calibrationModeFlag = false;
 
     bool resetCalibrationFlag = false;
 
@@ -681,7 +683,6 @@ protected:
     bool syncFtdiFlag = false;
 
     bool connected = false;
-    ConnectionStatus_t connectionStatus = ConnectionStatus_t::Disconnected;
     bool threadsStarted = false;
     bool stopConnectionFlag = false;
 
@@ -713,7 +714,6 @@ protected:
     bool bufferSaturationFlag = false; /*!< Set to true by data saturating the front end range */
     bool bufferIncreaseCurrentRangeFlag = false; /*!< Set to true by data indicating that the front end range might be increased */
     bool bufferDecreaseCurrentRangeFlag = false; /*!< Set to true by data indicating that the front end range might be decreased */
-    bool deviceCommunicationErrorFlag = false; /*!< Set to true by failures in communication with the device */
 
     /*! Write data buffer management */
     uint8_t * txRawBuffer; /*!< Raw outgoing data to the device */

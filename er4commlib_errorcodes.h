@@ -56,7 +56,7 @@ typedef enum ErrorCode {
                                                                                      *   e.g. a current range index bigger than the total number of current ranges available. */
     WarningNoDataAvailable =            ErrorGroupDeviceCommands +      0x00000004, /*!< Warning returned when trying to read data but there's none. */
     WarningNotEnoughDataAvailable =     ErrorGroupDeviceCommands +      0x00000005, /*!< Warning returned when trying to read data but there's not enough. */
-    ErrorInvalidProtocolParameters =    ErrorGroupDeviceCommands +      0x00000006, /*!< Error returned when trying to set invalid parameters for a votlage protocol. */
+    ErrorInvalidProtocolParameters =    ErrorGroupDeviceCommands +      0x00000006, /*!< Error returned when trying to set invalid parameters for a voltage protocol. */
 
     ErrorFeatureNotImplemented =        ErrorGroupDeviceFeatures +      0x00000000, /*!< Error returned when trying to use a feature that is not implemented for the current device. */
     ErrorUpgradesNotAvailable =         ErrorGroupDeviceFeatures +      0x00000001, /*!< Error returned when there are no upgrades available for the current device. */

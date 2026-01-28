@@ -206,11 +206,11 @@ MessageDispatcher_e1_e4nBased_V01::MessageDispatcher_e1_e4nBased_V01(string id) 
 
     /*! Time ranges */
     protocolTimeRangesArray.resize(ProtocolTimeRangesNum);
-    protocolTimeRangesArray[ProtocolTimeRange2_10ms].min = 1.0;
-    protocolTimeRangesArray[ProtocolTimeRange2_10ms].max = 1000.0;
-    protocolTimeRangesArray[ProtocolTimeRange2_10ms].step = 1.0;
-    protocolTimeRangesArray[ProtocolTimeRange2_10ms].prefix = UnitPfxMilli;
-    protocolTimeRangesArray[ProtocolTimeRange2_10ms].unit = "s";
+    protocolTimeRangesArray[ProtocolTimeRange1_1000ms].min = 1.0;
+    protocolTimeRangesArray[ProtocolTimeRange1_1000ms].max = 1000.0;
+    protocolTimeRangesArray[ProtocolTimeRange1_1000ms].step = 1.0;
+    protocolTimeRangesArray[ProtocolTimeRange1_1000ms].prefix = UnitPfxMilli;
+    protocolTimeRangesArray[ProtocolTimeRange1_1000ms].unit = "s";
     protocolTimeRangesArray[ProtocolTimeRange0to2_28].min = 0.0;
     protocolTimeRangesArray[ProtocolTimeRange0to2_28].max = 200.0e6;
     protocolTimeRangesArray[ProtocolTimeRange0to2_28].step = 1.0;
@@ -239,11 +239,11 @@ MessageDispatcher_e1_e4nBased_V01::MessageDispatcher_e1_e4nBased_V01(string id) 
 
     /*! Slope ranges */
     protocolSlopeRangesArray.resize(ProtocolSlopeRangesNum);
-    protocolSlopeRangesArray[ProtocolSlopeRange2_10mVms].min = 0.0;
-    protocolSlopeRangesArray[ProtocolSlopeRange2_10mVms].max = 1000.0;
-    protocolSlopeRangesArray[ProtocolSlopeRange2_10mVms].step = 1.0;
-    protocolSlopeRangesArray[ProtocolSlopeRange2_10mVms].prefix = UnitPfxMilli;
-    protocolSlopeRangesArray[ProtocolSlopeRange2_10mVms].unit = "V/ms";
+    protocolSlopeRangesArray[ProtocolSlopeRange1_1000mVms].min = 1.0;
+    protocolSlopeRangesArray[ProtocolSlopeRange1_1000mVms].max = 1000.0;
+    protocolSlopeRangesArray[ProtocolSlopeRange1_1000mVms].step = 1.0;
+    protocolSlopeRangesArray[ProtocolSlopeRange1_1000mVms].prefix = UnitPfxMilli;
+    protocolSlopeRangesArray[ProtocolSlopeRange1_1000mVms].unit = "V/ms";
 
     /*! Protocol selection */
     protocolsNames.resize(ProtocolsNum);
@@ -899,7 +899,7 @@ bool MessageDispatcher_e1_e4nBased_V01::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vhold-Vamp\nmust be within [-500,500]mV";
 
-        } else if (!(protocolTimeRangesArray[ProtocolTimeRange2_10ms].includes(selectedProtocolTime[ProtocolTPe]))) {
+        } else if (!(protocolTimeRangesArray[ProtocolTimeRange1_1000ms].includes(selectedProtocolTime[ProtocolTPe]))) {
             validFlag = false;
             message = "TPeriod\nmust be within [1,1000]ms";
 
@@ -1034,9 +1034,9 @@ bool MessageDispatcher_e1_e4nBased_V01::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vmin\nmust be within [-500,500]mV";
 
-        } else if (!(protocolSlopeRangesArray[ProtocolSlopeRange2_10mVms].includes(selectedProtocolSlope[ProtocolSlope]))) {
+        } else if (!(protocolSlopeRangesArray[ProtocolSlopeRange1_1000mVms].includes(selectedProtocolSlope[ProtocolSlope]))) {
             validFlag = false;
-            message = "Slope\nmust be within [0, 1000]mV/ms";
+            message = "Slope\nmust be within [1, 1000]mV/ms";
 
         } else {
             validFlag = true;
@@ -1057,9 +1057,9 @@ bool MessageDispatcher_e1_e4nBased_V01::checkProtocolValidity(string &message) {
             validFlag = false;
             message = "Vmin\nmust be within [-500,500]mV";
 
-        } else if (!(protocolSlopeRangesArray[ProtocolSlopeRange2_10mVms].includes(selectedProtocolSlope[ProtocolSlope]))) {
+        } else if (!(protocolSlopeRangesArray[ProtocolSlopeRange1_1000mVms].includes(selectedProtocolSlope[ProtocolSlope]))) {
             validFlag = false;
-            message = "Slope\nmust be within [0, 1000]mV/ms";
+            message = "Slope\nmust be within [1, 1000]mV/ms";
 
         } else if (!(selectedProtocolAdimensional[ProtocolN].value > 0)) {
             validFlag = false;

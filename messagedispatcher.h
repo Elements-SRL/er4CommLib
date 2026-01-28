@@ -734,7 +734,7 @@ protected:
     std::vector <double> gpOffsets;
 
     double voltageOffsetCorrected = 0.0; /*!< Value currently corrected in applied voltages by the device (expressed in the unit of the liquid junction control) */
-    double voltageOffsetCorrection = 0.0; /*!< Value to be used to correct the measured votlage values (expressed in the unit of current voltage range) */
+    double voltageOffsetCorrection = 0.0; /*!< Value to be used to correct the measured voltage values (expressed in the unit of current voltage range) */
 
     Measurement_t voltageOffsetCompensationGain = {1.0, UnitPfxNone, "V"};
 

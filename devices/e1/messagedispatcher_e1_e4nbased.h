@@ -62,7 +62,7 @@ protected:
     };
 
     enum ProtocolTimeRanges {
-        ProtocolTimeRange2_10ms,
+        ProtocolTimeRange1_1000ms,
         ProtocolTimeRange0to2_28,
         ProtocolTimeRange1to2_28,
         ProtocolTimeRange1orMore,
@@ -72,7 +72,7 @@ protected:
     };
 
     enum ProtocolSlopeRanges {
-        ProtocolSlopeRange2_10mVms,
+        ProtocolSlopeRange1_1000mVms,
         ProtocolSlopeRangesNum
     };
 

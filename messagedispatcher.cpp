@@ -794,6 +794,17 @@ ErrorCodes_t MessageDispatcher::setOversamplingRatio(uint16_t oversamplingRatioI
     }
 }
 
+ErrorCodes_t MessageDispatcher::setClockDiv(uint16_t ckdiv) {
+    if (!clockDivImplemented) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    clockDivCoder->encode(on ? 1 : 0, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    return Success;
+}
+
+
 ErrorCodes_t MessageDispatcher::setVoltageStimulusLpf(uint16_t filterIdx, bool applyFlag) {
     if (filterIdx < voltageStimulusLpfOptionsNum) {
         dacIntFilterCoder->encode(filterIdx, txStatus);

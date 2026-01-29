@@ -116,6 +116,7 @@ public:
     virtual ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true);
     virtual ErrorCodes_t setSamplingRate(uint16_t samplingRateIdx, bool applyFlag = true);
     virtual ErrorCodes_t setOversamplingRatio(uint16_t oversamplingRatioIdx, bool applyFlag = true);
+    ErrorCodes_t setClockDiv(uint16_t);
 
     ErrorCodes_t setVoltageStimulusLpf(uint16_t filterIdx, bool applyFlag = true);
     ErrorCodes_t setVoltageReferenceLpf(uint16_t filterIdx, bool applyFlag = true);
@@ -424,6 +425,9 @@ protected:
     uint32_t oversamplingRatiosNum = 1;
     std::vector <uint16_t> oversamplingRatiosArray;
     BoolRandomArrayCoder * oversamplingRatioCoder;
+
+    bool clockDivImplemented = false;
+    BoolCoder * clockDivCoder;
 
     bool selectStimulusChannelFlag = false;
     bool singleChannelSSCFlag = false;
@@ -751,7 +755,6 @@ protected:
 
     uint16_t selectedOversamplingRatioIdx = 0;
     uint16_t oversamplingRatio = 1;
-
     /*! Filter */
     bool rawDataFilterLowPassFlag = true;
     bool rawDataFilterActiveFlag = false;

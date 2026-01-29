@@ -426,8 +426,7 @@ protected:
     std::vector <uint16_t> oversamplingRatiosArray;
     BoolRandomArrayCoder * oversamplingRatioCoder;
 
-    bool clockDivImplemented = false;
-    BoolCoder * clockDivCoder;
+    BoolCoder * clockDivCoder = nullptr;
 
     bool selectStimulusChannelFlag = false;
     bool singleChannelSSCFlag = false;

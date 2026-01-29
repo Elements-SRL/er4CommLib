@@ -795,11 +795,11 @@ ErrorCodes_t MessageDispatcher::setOversamplingRatio(uint16_t oversamplingRatioI
 }
 
 ErrorCodes_t MessageDispatcher::setClockDiv(uint16_t ckdiv) {
-    if (!clockDivImplemented) {
+    if (clockDivCoder == nullptr) {
         return ErrorFeatureNotImplemented;
     }
 
-    clockDivCoder->encode(on ? 1 : 0, txStatus);
+    clockDivCoder->encode(ckdiv, txStatus);
     this->stackOutgoingMessage(txStatus);
     return Success;
 }

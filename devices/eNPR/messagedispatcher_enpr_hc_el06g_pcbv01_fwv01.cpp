@@ -606,7 +606,7 @@ MessageDispatcher_eNPR_HC_EL06g_PCBV01_FWV01::MessageDispatcher_eNPR_HC_EL06g_PC
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 2;
-    BoolArrayCoder * clkDivCoder = new BoolArrayCoder(boolConfig);
+    clockDivCoder = new BoolArrayCoder(boolConfig);
 
     boolConfig.initialByte = 14;
     boolConfig.initialBit = 0;
@@ -615,7 +615,7 @@ MessageDispatcher_eNPR_HC_EL06g_PCBV01_FWV01::MessageDispatcher_eNPR_HC_EL06g_PC
 
     samplingRateCoder = new EnsembleCoder();
     static_cast <EnsembleCoder *> (samplingRateCoder)->addCoder(srCoder);
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addCoder(clkDivCoder);
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addCoder(clockDivCoder);
     static_cast <EnsembleCoder *> (samplingRateCoder)->addCoder(iFiltCoder);
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x00); // 1.25kHz, clock/1, BW 20kHz
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x01); // 2.5kHz, clock/1, BW 20kHz

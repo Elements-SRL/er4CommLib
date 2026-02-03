@@ -2538,7 +2538,10 @@ ErrorCodes_t MessageDispatcher::setCalibrationMode(bool calibModeFlag) {
     else {
         calibrationEeprom->closeConnection();
 
-        this->startCommunication();
+        auto ret = this->startCommunication();
+        if (ret != Success) {
+            return ret;
+        }
         stopConnectionFlag = false;
         this->createCommunicationThreads();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));

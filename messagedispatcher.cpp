@@ -2525,8 +2525,7 @@ ErrorCodes_t MessageDispatcher::setCalibrationMode(bool calibModeFlag) {
     if (calibrationModeFlag == calibModeFlag) {
         return Success;
     }
-    calibrationModeFlag = calibModeFlag;
-    if (calibrationModeFlag) {
+    if (calibModeFlag) {
         stopConnectionFlag = true;
         this->joinCommunicationThreads();
 
@@ -2548,6 +2547,7 @@ ErrorCodes_t MessageDispatcher::setCalibrationMode(bool calibModeFlag) {
         this->resetDevice();
         this->stackOutgoingMessage(txStatus);
     }
+    calibrationModeFlag = calibModeFlag;
     return Success;
 }
 

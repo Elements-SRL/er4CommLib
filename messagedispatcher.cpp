@@ -2753,6 +2753,10 @@ ErrorCodes_t MessageDispatcher::startCommunication() {
     txMsgBufferWriteOffset = 0;
     txMsgBufferReadLength = 0;
 
+    bufferReadOffset = 0;
+    bufferWriteOffset = 0;
+    bytesReadFromDriver = 0;
+
     if (rxChannel == txChannel) {
         ftdiTxHandle = ftdiRxHandle;
         return ret;

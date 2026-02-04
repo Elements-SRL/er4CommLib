@@ -113,6 +113,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {11, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                                        //   11,  1,131 : e2HC /*! \todo FCON da eliminare, 11 è la versione del 10MHz. Dovrebbe esserci un solo device che la usa e2HC0024 */
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   12,  1,130 : e2HC SR up to 50kHz
     {DeviceVersionE2, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                           //   12,  1,131 : e2HC
+    {DeviceVersionE2, DeviceSubversionE2HC_EL06g, 131, DeviceE2HC_V02},                                     //   12,  2,  1 : e2HC with EL06g ASIC
     {DeviceVersionTestBoard, DeviceSubversionTestBoardDlp, 4, DeviceDlp},                                   //    6,  3,  4 : debug dlp
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06b, 129, TestboardEL06b},                          //    6,  5,129 : testboard EL06b
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06c, 129, TestboardEL06c},                          //    6,  6,129 : testboard EL06c

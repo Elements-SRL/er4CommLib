@@ -2532,7 +2532,7 @@ ErrorCodes_t MessageDispatcher::setCalibrationMode(bool calibModeFlag) {
 
         this->stopCommunication();
 
-        calibrationEeprom->openConnection(Ftd2xxWrapper::getDeviceIndex(deviceId+spiChannel));
+        calibrationEeprom->openConnection(deviceId+spiChannel);
         fwLoadedFlag = false;
     }
     else {

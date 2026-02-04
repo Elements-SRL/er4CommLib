@@ -248,14 +248,14 @@ ErrorCodes_t MessageDispatcher::detectDevices(
             /*! Devices with an open channel are detected wrongly and their name is an empty string */
             if (deviceName.size() > 0) {
                 /*! If this device has been found for the first time put it in the temporary list */
-                deviceIdsTemp.push_back(Ftd2xxWrapper::getDeviceSerial(i, true));
+                deviceIdsTemp.push_back(deviceName);
             }
         }
         else {
             /*! Devices with an open channel are detected wrongly and their name is an empty string */
             if (deviceName.size() > 0) {
                 /*! If this device has been already been found both channels A and B are detected, so add it in the output list */
-                deviceIds.push_back(Ftd2xxWrapper::getDeviceSerial(i, true));
+                deviceIds.push_back(deviceName);
             }
         }
     }
@@ -2543,7 +2543,6 @@ ErrorCodes_t MessageDispatcher::setCalibrationMode(bool calibModeFlag) {
         }
         stopConnectionFlag = false;
         this->createCommunicationThreads();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         this->resetDevice();
         this->stackOutgoingMessage(txStatus);
     }
@@ -2750,6 +2749,9 @@ ErrorCodes_t MessageDispatcher::startCommunication() {
     if (ret != Success) {
         return ret;
     }
+
+    txMsgBufferWriteOffset = 0;
+    txMsgBufferReadLength = 0;
 
     if (rxChannel == txChannel) {
         ftdiTxHandle = ftdiRxHandle;

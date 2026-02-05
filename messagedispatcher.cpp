@@ -702,15 +702,17 @@ ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, uint16
             return Success;
 
         } else if (channelIdx == currentChannelsNum) {
+
             for (channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
                 selectedCurrentRangesIdx[channelIdx] = currentRangeIdx;
                 currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
                 currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
+                auto coderIdx = channelIdx<currentRangeCoders.size()?channelIdx:0;
+                currentRangeCoders[coderIdx]->encode(selectedCurrentRangesIdx[channelIdx], txStatus);
             }
 
             this->setFerdParameters();
 
-            currentRangeCoders[0]->encode(selectedCurrentRangesIdx[0], txStatus);
             if (applyFlag) {
                 this->stackOutgoingMessage(txStatus);
             }

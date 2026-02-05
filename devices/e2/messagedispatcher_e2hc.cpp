@@ -1049,6 +1049,25 @@ MessageDispatcher_e2HC_V01::MessageDispatcher_e2HC_V01(string di) :
 MessageDispatcher_e2HC_V02::MessageDispatcher_e2HC_V02(string di) :
     MessageDispatcher_e2HC_V00(di) {
 
+    defaultCurrentRangesIdx[0] = CurrentRange200nA;
+    defaultCurrentRangesIdx[1] = CurrentRange200nA;
+    /*! Default values */
+    selectedVoltageRangeIdx = defaultVoltageRangeIdx;
+    selectedCurrentRangesIdx = defaultCurrentRangesIdx;
+    selectedSamplingRateIdx = defaultSamplingRateIdx;
+
+    currentRanges.resize(currentChannelsNum);
+    currentResolutions.resize(currentChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
+        currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
+        currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
+    }
+    voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
+    voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step;
+    baseSamplingRate = realSamplingRatesArray[selectedSamplingRateIdx];
+    samplingRate = baseSamplingRate;
+    integrationStep = integrationStepArray[selectedSamplingRateIdx];
+
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
     samplingRatesArray.resize(samplingRatesNum);

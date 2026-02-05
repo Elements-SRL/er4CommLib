@@ -1120,4 +1120,9 @@ MessageDispatcher_e2HC_V02::MessageDispatcher_e2HC_V02(string di) :
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(17);  /*!< 50kHz      -> 0b010001 */
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(24);  /*!< 100kHz     -> 0b011000 */
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(32);  /*!< 200kHz     -> 0b100000 */
+
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 2;
+    clockDivCoder = new BoolArrayCoder(boolConfig);
 }

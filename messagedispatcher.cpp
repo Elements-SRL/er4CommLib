@@ -3247,6 +3247,9 @@ void MessageDispatcher::readDataFromDevice() {
 
         /*! Computes the number of available packets */
         availableFrames = ftdiQueuedBytes/(unsigned long)readFrameLength;
+        if (ftdiQueuedBytes > 0) {
+            fwLoadedFlag = true;
+        }
 
         /*! If there are not enough frames wait for a minimum frame number,
          *  the ftdi driver will wait for that to decrease overhead */
@@ -3266,7 +3269,6 @@ void MessageDispatcher::readDataFromDevice() {
             continue;
         }
         minReadFrameNumberTries = 0;
-        fwLoadedFlag = true;
         /*! Cap bytes to read so that we do not try to read more than is available on the internal buffer */
         if (ftdiQueuedBytes+bytesReadFromDriver >= FTD_RX_BUFFER_SIZE) {
             ftdiQueuedBytes = FTD_RX_BUFFER_SIZE-bytesReadFromDriver;

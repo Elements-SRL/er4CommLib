@@ -1134,11 +1134,11 @@ MessageDispatcher_e2HC_V02::MessageDispatcher_e2HC_V02(string di) :
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 6;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(1); /*!< 12.5kHz      -> 0b000001 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9);  /*!< 25kHz       -> 0b001001 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(17);  /*!< 50kHz      -> 0b010001 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(24);  /*!< 100kHz     -> 0b011000 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(32);  /*!< 200kHz     -> 0b100000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(5);   /*!< 12.5kHz clk/4 -> 0b000101 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(13);  /*!< 25kHz   clk/4 -> 0b001101 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(19);  /*!< 50kHz   clk/2 -> 0b010011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(24);  /*!< 100kHz  clk/1 -> 0b011000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(32);  /*!< 200kHz  clk/1 -> 0b100000 */
 
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 1;

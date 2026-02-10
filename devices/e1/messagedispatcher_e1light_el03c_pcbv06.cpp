@@ -61,13 +61,13 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     voltageRangesNum = VoltageRangesNum;
     voltageRangesArray.resize(voltageRangesNum);
     voltageRangesArray[VoltageRange500mV].step = 0.0625;
-    voltageRangesArray[VoltageRange500mV].min = -voltageRangesArray[VoltageRange500mV].step*8192;
-    voltageRangesArray[VoltageRange500mV].max = voltageRangesArray[VoltageRange500mV].step*8192;
+    voltageRangesArray[VoltageRange500mV].min = -500;
+    voltageRangesArray[VoltageRange500mV].max = 500;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     voltageRangesArray[VoltageRange50mV].step = 0.0625;
-    voltageRangesArray[VoltageRange50mV].min = -voltageRangesArray[VoltageRange50mV].step*512;
-    voltageRangesArray[VoltageRange50mV].max = voltageRangesArray[VoltageRange50mV].step*511;
+    voltageRangesArray[VoltageRange50mV].min = -40;
+    voltageRangesArray[VoltageRange50mV].max = 40;
     voltageRangesArray[VoltageRange50mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange50mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
@@ -152,6 +152,10 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     integrationStepArray[SamplingRate200kHz].value = 5.0;
     integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate200kHz].unit = "s";
+
+    voltageOffsetCompensationGain.value = 62.5e-3;
+    voltageOffsetCompensationGain.prefix = UnitPfxMilli;
+    voltageOffsetCompensationGain.unit = "V";
 
     /*! Overampling ratios */
     oversamplingImplemented = false;
@@ -716,14 +720,9 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     protocolAdimensionalCoders[ProtocolNR] = new DoubleTwosCompCoder(doubleConfig);
 
     boolConfig.initialByte = 13;
-    boolConfig.initialBit = 1;
-    boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolArrayCoder(boolConfig);
-
-    boolConfig.initialByte = 13;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    dacExtFilterCoder = new BoolArrayCoder(boolConfig);
+    dacIntFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);

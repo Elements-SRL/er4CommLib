@@ -595,6 +595,7 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageRangeCoder = new BoolArrayCoder(boolConfig);
+    exclusiveOdacCoder = new BoolArrayCoder(boolConfig);
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;

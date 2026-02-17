@@ -55,12 +55,12 @@ MessageDispatcher_e1HC_EL09a_PCBV01::MessageDispatcher_e1HC_EL09a_PCBV01(string 
     currentRangesArray[CurrentRange2uA].min = -2.0;
     currentRangesArray[CurrentRange2uA].max = 2.0;
     currentRangesArray[CurrentRange2uA].step = currentRangesArray[CurrentRange2uA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange2uA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange2uA].prefix = UnitPfxMicro;
     currentRangesArray[CurrentRange2uA].unit = "A";
     currentRangesArray[CurrentRange20uA].min = -20.0;
     currentRangesArray[CurrentRange20uA].max = 20.0;
     currentRangesArray[CurrentRange20uA].step = currentRangesArray[CurrentRange20uA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange20uA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange20uA].prefix = UnitPfxMicro;
     currentRangesArray[CurrentRange20uA].unit = "A";
     defaultCurrentRangesIdx.resize(currentChannelsNum);
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
@@ -597,7 +597,24 @@ MessageDispatcher_e1HC_EL09a_PCBV01::MessageDispatcher_e1HC_EL09a_PCBV01(string 
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 4;
-    samplingRateCoder = new BoolArrayCoder(boolConfig);
+    BoolArrayCoder * srCoder = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 2;
+    clockDivCoder = new BoolArrayCoder(boolConfig);
+
+    samplingRateCoder = new EnsembleCoder();
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addCoder(srCoder);
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addCoder(clockDivCoder);
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x20); // 1.25kHz, clock/4,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x21); // 2.5kHz, clock/4,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x22); // 5kHz, clock/4,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x23); // 10kHz, clock/4,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x24); // 20kHz, clock/4,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x15); // 50kHz, clock/2,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x06); // 100kHz, clock/1,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x07); // 200kHz, clock/1,
 
     /*! Protocol selection */
     boolConfig.initialByte = 15;
@@ -714,7 +731,7 @@ MessageDispatcher_e1HC_EL09a_PCBV01::MessageDispatcher_e1HC_EL09a_PCBV01(string 
     boolConfig.initialByte = 13;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolArrayCoder(boolConfig);
+    dacExtFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);

@@ -651,42 +651,51 @@ ErrorCodes_t MessageDispatcher::convertGpValue(uint16_t uintValue, uint16_t chan
 }
 
 ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag) {
-    if (voltageRangeIdx < voltageRangesNum) {
-        selectedVoltageRangeIdx = voltageRangeIdx;
-        voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
-        voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step*(double)voltageRangeDivider;
-
-        this->setFerdParameters();
-
-        voltageRangeCoder->encode(selectedVoltageRangeIdx, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        return Success;
-
-    } else {
+    if (voltageRangeIdx >= voltageRangesNum) {
         return ErrorValueOutOfRange;
     }
+    selectedVoltageRangeIdx = voltageRangeIdx;
+    voltageRange = voltageRangesArray[selectedVoltageRangeIdx];
+    voltageResolution = voltageRangesArray[selectedVoltageRangeIdx].step*(double)voltageRangeDivider;
+
+    this->setFerdParameters();
+
+    voltageRangeCoder->encode(selectedVoltageRangeIdx, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::setExclusiveOdac(bool flag, bool applyFlag) {
+    if (exclusiveOdacCoder == nullptr) {
+        return ErrorFeatureNotImplemented;
+    }
+    exclusiveOdacCoder->encode(flag ? 1 : 0, txStatus);
+
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setVoltageReferenceRange(uint16_t voltageRangeIdx, bool applyFlag) {
-    if (voltageRangeIdx < voltageReferenceRangesNum) {
-        selectedVoltageReferenceRangeIdx = voltageRangeIdx;
-        voltageReferenceRange = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
-
-        voltageReferenceRangeCoder->encode(selectedVoltageReferenceRangeIdx, txStatus);
-        if (applyFlag) {
-            this->stackOutgoingMessage(txStatus);
-        }
-
-        this->manageVoltageReference();
-
-        return Success;
-
-    } else {
+    if (voltageRangeIdx >= voltageReferenceRangesNum) {
         return ErrorValueOutOfRange;
     }
+    selectedVoltageReferenceRangeIdx = voltageRangeIdx;
+    voltageReferenceRange = voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx];
+
+    voltageReferenceRangeCoder->encode(selectedVoltageReferenceRangeIdx, txStatus);
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    this->manageVoltageReference();
+
+    return Success;
 }
 
 ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag) {

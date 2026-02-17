@@ -111,6 +111,7 @@ public:
     ErrorCodes_t convertCurrentValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue);
     ErrorCodes_t convertGpValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue);
     ErrorCodes_t setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag = true);
+    ErrorCodes_t setExclusiveOdac(bool flag, bool applyFlag = true);
     ErrorCodes_t setVoltageReferenceRange(uint16_t voltageRangeIdx, bool applyFlag = true);
     virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag = true);
     virtual ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true);
@@ -397,13 +398,14 @@ protected:
     std::vector <RangedMeasurement_t> voltageRangesArray;
     std::vector <std::string> voltageRangesExtensions;
     uint16_t defaultVoltageRangeIdx = 0;
-    BoolCoder * voltageRangeCoder;
+    BoolCoder * voltageRangeCoder = nullptr;
+    BoolCoder * exclusiveOdacCoder = nullptr;
 
     uint32_t voltageReferenceRangesNum = 0;
     uint16_t selectedVoltageReferenceRangeIdx = 0;
     std::vector <RangedMeasurement_t> voltageReferenceRangesArray;
     uint16_t defaultVoltageReferenceRangeIdx = 0;
-    BoolRandomArrayCoder * voltageReferenceRangeCoder;
+    BoolRandomArrayCoder * voltageReferenceRangeCoder = nullptr;
 
     int16_t voltageRangeDivider = 1; /*! Divides the voltage data received from the amplifier */
 

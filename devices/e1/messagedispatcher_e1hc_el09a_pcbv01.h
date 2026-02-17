@@ -1,5 +1,5 @@
-#ifndef MESSAGEDISPATCHER_E1LIGHT_EL_3C_PCBV_6_H
-#define MESSAGEDISPATCHER_E1LIGHT_EL_3C_PCBV_6_H
+#ifndef MESSAGEDISPATCHER_E1HC_EL_9A_PCBV_1_H
+#define MESSAGEDISPATCHER_E1HC_EL_9A_PCBV_1_H
 
 #include "messagedispatcher.h"
 
@@ -7,10 +7,10 @@
 namespace er4CommLib {
 #endif
 
-class MessageDispatcher_e1Light_EL03c_PCBV06 : public MessageDispatcher {
+class MessageDispatcher_e1HC_EL09a_PCBV01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e1Light_EL03c_PCBV06(std::string di);
-    virtual ~MessageDispatcher_e1Light_EL03c_PCBV06();
+    MessageDispatcher_e1HC_EL09a_PCBV01(std::string di);
+    virtual ~MessageDispatcher_e1HC_EL09a_PCBV01();
 
 protected:
     typedef struct {
@@ -18,13 +18,15 @@ protected:
     } InfoStruct_t;
 
     enum CurrentRanges {
-        CurrentRange200pA,
         CurrentRange20nA,
+        CurrentRange200nA,
+        CurrentRange2uA,
+        CurrentRange20uA,
         CurrentRangesNum
     };
 
     enum VoltageRanges {
-        VoltageRange500mV,
+        VoltageRange2000mV,
         VoltageRangesNum
     };
 
@@ -46,17 +48,17 @@ protected:
     };
 
     enum VoltageStimulusLpfs {
-        VoltageStimulusLpf100Hz,
-        VoltageStimulusLpf10kHz,
-        VoltageStimulusLpfsNum
+        VoltageStimulusLpfsNum = 0
     };
 
     enum VoltageReferenceLpfs {
-        VoltageReferenceLpfsNum = 0
+        VoltageReferenceLpf3Hz,
+        VoltageReferenceLpf180kHz,
+        VoltageReferenceLpfsNum
     };
 
     enum ProtocolVoltageRanges {
-        ProtocolVoltageRange500mV,
+        ProtocolVoltageRange2000mV,
         ProtocolVoltageRangesNum
     };
 
@@ -109,7 +111,6 @@ protected:
 
     void initializeDevice() override;
     bool checkProtocolValidity(std::string &message) override;
-    virtual void setFerdParameters() override;
     ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) override;
 
     /*! Device specific controls */
@@ -120,4 +121,4 @@ protected:
 };
 #endif
 
-#endif // MESSAGEDISPATCHER_E1LIGHT_EL_3C_PCBV_6_H
+#endif // MESSAGEDISPATCHER_E1HC_EL_9A_PCBV_1_H

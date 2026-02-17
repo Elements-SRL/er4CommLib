@@ -61,6 +61,7 @@ SOURCES += \
     devices/e1/messagedispatcher_e1light_el03c_pcbv06.cpp \
     devices/e1/messagedispatcher_e1plus.cpp \
     devices/e1/messagedispatcher_e1hc.cpp \
+    devices/e1/messagedispatcher_e1hc_el09a_pcbv01.cpp \
     devices/e1/messagedispatcher_e1uln.cpp \
     devices/e1/messagedispatcher_e1_e4nbased.cpp \
     devices/eNPR/messagedispatcher_enpr.cpp \
@@ -102,6 +103,7 @@ HEADERS += \
     devices/e1/messagedispatcher_e1light_el03c_pcbv06.h \
     devices/e1/messagedispatcher_e1plus.h \
     devices/e1/messagedispatcher_e1hc.h \
+    devices/e1/messagedispatcher_e1hc_el09a_pcbv01.h \
     devices/e1/messagedispatcher_e1uln.h \
     devices/e1/messagedispatcher_e1_e4nbased.h \
     devices/eNPR/messagedispatcher_enpr.h \

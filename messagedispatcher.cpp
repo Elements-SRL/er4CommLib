@@ -5,6 +5,7 @@
 #include "messagedispatcher_e1light.h"
 #include "messagedispatcher_e1light_el03c_pcbv06.h"
 #include "messagedispatcher_e1hc.h"
+#include "messagedispatcher_e1hc_el09a_pcbv01.h"
 #include "messagedispatcher_e1uln.h"
 #include "messagedispatcher_e1_e4nbased.h"
 #include "messagedispatcher_enpr.h"
@@ -61,6 +62,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},                               //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 2, DeviceE1PlusEL03fEDR3},                               //    9,  8,  2 : e1+ EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1HcEL03F, 1, DeviceE1HcEL03fEDR3},                                   //    9,  9,  1 : e1HC EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1HcEL09a, 1, DeviceE1HcEL09a},                                       //    9, 14,  1 : e1HC EL09a chip
     {DeviceVersionE1, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                         //    9, 10,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionE1, DeviceSubversionE1LightEL03cPCBV06, 1, DeviceE1LightEL03c_PCBV06},                    //    9, 11,  1 : e1 Light based on e1ULN PCB V06
     {DeviceVersionE1, DeviceSubversionE1ULNEL03cPCBV06, 1, DeviceE1ULN_PCBV06},                             //    9, 13,  1 : e1ULN PCB V06
@@ -110,7 +112,6 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16HC_PCBV02_EL06f, 129, DeviceE16HC_PCB_V01_EL06f_V01},             //    3, 15,129 : e16HC with EL06f
     {DeviceVersionE16, DeviceSubversionE16nEL08a, 1, DeviceE16nEL08a},                                      //    3, 16,  1 : e16n with EL08a
     {11, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                                        //   11,  1,130 : e2HC SR up to 50kHz /*! \todo FCON da eliminare, 11 è la versione del 10MHz. Dovrebbe esserci un solo device che la usa e2HC0024 */
-    {11, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                                        //   11,  1,131 : e2HC /*! \todo FCON da eliminare, 11 è la versione del 10MHz. Dovrebbe esserci un solo device che la usa e2HC0024 */
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   12,  1,130 : e2HC SR up to 50kHz
     {DeviceVersionE2, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                           //   12,  1,131 : e2HC
     {DeviceVersionE2, DeviceSubversionE2HC_EL06g, 1, DeviceE2HC_V02},                                       //   12,  2,  1 : e2HC with EL06g ASIC
@@ -328,6 +329,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE1HcEL03fEDR3:
         messageDispatcher = new MessageDispatcher_e1Hc_El03f_LegacyEdr3_V00(deviceId);
+        break;
+
+    case DeviceE1HcEL09a:
+        messageDispatcher = new MessageDispatcher_e1HC_EL09a_PCBV01(deviceId);
         break;
 
     case DeviceENPREDR3_V03:

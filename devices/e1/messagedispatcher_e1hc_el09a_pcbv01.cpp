@@ -1,11 +1,11 @@
-#include "messagedispatcher_e1light_el03c_pcbv06.h"
+#include "messagedispatcher_e1hc_el09a_pcbv01.h"
 
 using namespace std;
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER
 using namespace er4CommLib;
 #endif
 
-MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(string di) :
+MessageDispatcher_e1HC_EL09a_PCBV01::MessageDispatcher_e1HC_EL09a_PCBV01(string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -42,30 +42,40 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     independentCurrentRangesFlag = false;
     currentRangesNum = CurrentRangesNum;
     currentRangesArray.resize(currentRangesNum);
-    currentRangesArray[CurrentRange200pA].min = -200.0;
-    currentRangesArray[CurrentRange200pA].max = 200.0;
-    currentRangesArray[CurrentRange200pA].step = currentRangesArray[CurrentRange200pA].max/SHORT_MAX;
-    currentRangesArray[CurrentRange200pA].prefix = UnitPfxPico;
-    currentRangesArray[CurrentRange200pA].unit = "A";
     currentRangesArray[CurrentRange20nA].min = -20.0;
     currentRangesArray[CurrentRange20nA].max = 20.0;
     currentRangesArray[CurrentRange20nA].step = currentRangesArray[CurrentRange20nA].max/SHORT_MAX;
     currentRangesArray[CurrentRange20nA].prefix = UnitPfxNano;
     currentRangesArray[CurrentRange20nA].unit = "A";
+    currentRangesArray[CurrentRange200nA].min = -200.0;
+    currentRangesArray[CurrentRange200nA].max = 200.0;
+    currentRangesArray[CurrentRange200nA].step = currentRangesArray[CurrentRange200nA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange200nA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange200nA].unit = "A";
+    currentRangesArray[CurrentRange2uA].min = -2.0;
+    currentRangesArray[CurrentRange2uA].max = 2.0;
+    currentRangesArray[CurrentRange2uA].step = currentRangesArray[CurrentRange2uA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange2uA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange2uA].unit = "A";
+    currentRangesArray[CurrentRange20uA].min = -20.0;
+    currentRangesArray[CurrentRange20uA].max = 20.0;
+    currentRangesArray[CurrentRange20uA].step = currentRangesArray[CurrentRange20uA].max/SHORT_MAX;
+    currentRangesArray[CurrentRange20uA].prefix = UnitPfxNano;
+    currentRangesArray[CurrentRange20uA].unit = "A";
     defaultCurrentRangesIdx.resize(currentChannelsNum);
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        defaultCurrentRangesIdx[channelIdx] = CurrentRange200pA;
+        defaultCurrentRangesIdx[channelIdx] = CurrentRange20nA;
     }
 
     /*! Voltage ranges */
     voltageRangesNum = VoltageRangesNum;
     voltageRangesArray.resize(voltageRangesNum);
-    voltageRangesArray[VoltageRange500mV].step = 0.0625;
-    voltageRangesArray[VoltageRange500mV].min = -500;
-    voltageRangesArray[VoltageRange500mV].max = 500;
-    voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
-    voltageRangesArray[VoltageRange500mV].unit = "V";
-    defaultVoltageRangeIdx = VoltageRange500mV;
+    voltageRangesArray[VoltageRange2000mV].step = 0.0625;
+    voltageRangesArray[VoltageRange2000mV].min = -2000.0;
+    voltageRangesArray[VoltageRange2000mV].max = 2000.0;
+    voltageRangesArray[VoltageRange2000mV].prefix = UnitPfxMilli;
+    voltageRangesArray[VoltageRange2000mV].unit = "V";
+    defaultVoltageRangeIdx = VoltageRange2000mV;
 
     /*! Sampling rates */
     samplingRatesNum = SamplingRatesNum;
@@ -159,23 +169,22 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     oversamplingRatiosArray[OversamplingRatioX1] = 1;
 
     /*! Voltage filters */
-    dacIntFilterAvailable = true;
+    dacIntFilterAvailable = false;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].value = 0.1;
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].prefix = UnitPfxNone;
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].unit = "kHz";
-    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
-    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
-    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
 
-    dacExtFilterAvailable = false;
+    dacExtFilterAvailable = true;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
     voltageReferenceLpfOptions.resize(voltageReferenceLpfOptionsNum);
+    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].value = 3.0;
+    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].prefix = UnitPfxNone;
+    voltageReferenceLpfOptions[VoltageReferenceLpf3Hz].unit = "Hz";
+    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
+    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
+    voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
 
     /*! Front end denoiser */
-    ferdImplementedFlag = true;
-    maxFerdSize = 512;
+    ferdImplementedFlag = false;
 
     /*! Default values */
     selectedVoltageRangeIdx = defaultVoltageRangeIdx;
@@ -200,12 +209,12 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
 
     /*! Voltage ranges */
     protocolVoltageRangesArray.resize(ProtocolVoltageRangesNum);
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].min = -511.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].max = 511.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";
-    defaultVoltageRangeIdx = VoltageRange500mV;
+    protocolVoltageRangesArray[ProtocolVoltageRange2000mV].min = -2048.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange2000mV].max = 2047.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange2000mV].step = 0.0625;
+    protocolVoltageRangesArray[ProtocolVoltageRange2000mV].prefix = UnitPfxMilli;
+    protocolVoltageRangesArray[ProtocolVoltageRange2000mV].unit = "V";
+    defaultVoltageRangeIdx = ProtocolVoltageRange2000mV;
 
     /*! Time ranges */
     protocolTimeRangesArray.resize(ProtocolTimeRangesNum);
@@ -334,18 +343,18 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
 
     protocolVoltageRanges.resize(ProtocolVoltagesNum);
     protocolVoltageRanges[ProtocolVHold].step = 0.0625;
-    protocolVoltageRanges[ProtocolVHold].min = voltageRangesArray[VoltageRange500mV].min;
-    protocolVoltageRanges[ProtocolVHold].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVHold].min = voltageRangesArray[VoltageRange2000mV].min;
+    protocolVoltageRanges[ProtocolVHold].max = voltageRangesArray[VoltageRange2000mV].max;
     protocolVoltageRanges[ProtocolVHold].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVHold].unit = "V";
     protocolVoltageRanges[ProtocolVPulse].step = 0.0625;
-    protocolVoltageRanges[ProtocolVPulse].min = voltageRangesArray[VoltageRange500mV].min;
-    protocolVoltageRanges[ProtocolVPulse].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVPulse].min = voltageRangesArray[VoltageRange2000mV].min;
+    protocolVoltageRanges[ProtocolVPulse].max = voltageRangesArray[VoltageRange2000mV].max;
     protocolVoltageRanges[ProtocolVPulse].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPulse].unit = "V";
     protocolVoltageRanges[ProtocolVStep].step = 0.0625;
-    protocolVoltageRanges[ProtocolVStep].min = voltageRangesArray[VoltageRange500mV].min;
-    protocolVoltageRanges[ProtocolVStep].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVStep].min = voltageRangesArray[VoltageRange2000mV].min;
+    protocolVoltageRanges[ProtocolVStep].max = voltageRangesArray[VoltageRange2000mV].max;
     protocolVoltageRanges[ProtocolVStep].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVStep].unit = "V";
     protocolVoltageRanges[ProtocolVPk].step = 25.0;
@@ -354,13 +363,13 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     protocolVoltageRanges[ProtocolVPk].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPk].unit = "V";
     protocolVoltageRanges[ProtocolVFinal].step = 0.0625;
-    protocolVoltageRanges[ProtocolVFinal].min = voltageRangesArray[VoltageRange500mV].min;
-    protocolVoltageRanges[ProtocolVFinal].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVFinal].min = voltageRangesArray[VoltageRange2000mV].min;
+    protocolVoltageRanges[ProtocolVFinal].max = voltageRangesArray[VoltageRange2000mV].max;
     protocolVoltageRanges[ProtocolVFinal].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVFinal].unit = "V";
     protocolVoltageRanges[ProtocolVInit].step = 0.0625;
-    protocolVoltageRanges[ProtocolVInit].min = voltageRangesArray[VoltageRange500mV].min;
-    protocolVoltageRanges[ProtocolVInit].max = voltageRangesArray[VoltageRange500mV].max;
+    protocolVoltageRanges[ProtocolVInit].min = voltageRangesArray[VoltageRange2000mV].min;
+    protocolVoltageRanges[ProtocolVInit].max = voltageRangesArray[VoltageRange2000mV].max;
     protocolVoltageRanges[ProtocolVInit].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVInit].unit = "V";
 
@@ -478,8 +487,8 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     voltageOffsetControlImplemented = true;
     selectedVoltageOffset.resize(currentChannelsNum);
     voltageOffsetRange.step = 1.0;
-    voltageOffsetRange.min = -500.0;
-    voltageOffsetRange.max = 500.0;
+    voltageOffsetRange.min = -2000.0;
+    voltageOffsetRange.max = 2000.0;
     voltageOffsetRange.prefix = UnitPfxMilli;
     voltageOffsetRange.unit = "V";
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
@@ -490,8 +499,8 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
 
     insertionPulseImplemented = true;
     insertionPulseVoltageRange.step = 0.0625;
-    insertionPulseVoltageRange.min = -500.0;
-    insertionPulseVoltageRange.max = 500.0;
+    insertionPulseVoltageRange.min = -2000.0;
+    insertionPulseVoltageRange.max = 2000.0;
     insertionPulseVoltageRange.prefix = UnitPfxMilli;
     insertionPulseVoltageRange.unit = "V";
     insertionPulseDurationRange.step = 1.0;
@@ -507,7 +516,7 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     edhFormat =
         "EDH Version: 2.0\n"
         "\n"
-        "Elements e1 Light\n"
+        "Elements e1 HC\n"
         "Channels: 1\n"
         "\n"
         "Data header file\n"
@@ -564,18 +573,8 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     digitalOffsetCompensationResetCoder = new BoolArrayCoder(boolConfig);
 
     /*! Zap */
-    zappableDeviceFlag = true;
-    singleChannelZapFlag = true;
-
-    boolConfig.initialByte = 65;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 1;
-    zapCoder = new BoolArrayCoder(boolConfig);
-
-    zapStates.resize(currentChannelsNum);
-    for (unsigned int currentIdx = 0; currentIdx < currentChannelsNum; currentIdx++) {
-        zapStates[currentIdx] = false;
-    }
+    zappableDeviceFlag = false;
+    singleChannelZapFlag = false;
 
     /*! Channel off */
     channelOnFlag = false;
@@ -584,11 +583,9 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     /*! Current range */
     boolConfig.initialByte = 12;
     boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 3;
+    boolConfig.bitsNum = 2;
     currentRangeCoders.resize(1);
-    currentRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(0); /*!< 200pA    -> 0b000 */
-    static_cast <BoolRandomArrayCoder *> (currentRangeCoders[0])->addMapItem(3); /*!< 20nA     -> 0b011 */
+    currentRangeCoders[0] = new BoolArrayCoder(boolConfig);
 
     /*! Voltage range */
     boolConfig.initialByte = 11;
@@ -761,7 +758,7 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
 
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
-    txStatus[txStatusIdx++] = 0x04; // CFG0 VcInt
+    txStatus[txStatusIdx++] = 0x00; // CFG0
     txStatus[txStatusIdx++] = 0x00; // CFG1
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
@@ -829,11 +826,11 @@ MessageDispatcher_e1Light_EL03c_PCBV06::MessageDispatcher_e1Light_EL03c_PCBV06(s
     txStatus[txStatusIdx++] = 0x00; // digital offset compensation
 }
 
-MessageDispatcher_e1Light_EL03c_PCBV06::~MessageDispatcher_e1Light_EL03c_PCBV06() {
+MessageDispatcher_e1HC_EL09a_PCBV01::~MessageDispatcher_e1HC_EL09a_PCBV01() {
 
 }
 
-void MessageDispatcher_e1Light_EL03c_PCBV06::initializeDevice() {
+void MessageDispatcher_e1HC_EL09a_PCBV01::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->digitalOffsetCompensation(currentChannelsNum, false);
@@ -841,14 +838,14 @@ void MessageDispatcher_e1Light_EL03c_PCBV06::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_e1Light_EL03c_PCBV06::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e1HC_EL09a_PCBV01::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
     case ProtocolConstant:
-        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
             validFlag = false;
-            message = "Vhold\nmust be within [-500,500]mV";
+            message = "Vhold\nmust be within [-2000,2000]mV";
 
         } else {
             validFlag = true;
@@ -857,13 +854,13 @@ bool MessageDispatcher_e1Light_EL03c_PCBV06::checkProtocolValidity(string &messa
         break;
 
     case ProtocolTriangular:
-        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPk]))) {
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPk]))) {
             validFlag = false;
-            message = "Vhold+Vamp\nmust be within [-500,500]mV";
+            message = "Vhold+Vamp\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPk]))) {
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPk]))) {
             validFlag = false;
-            message = "Vhold-Vamp\nmust be within [-500,500]mV";
+            message = "Vhold-Vamp\nmust be within [-2000,2000]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange2_10ms].includes(selectedProtocolTime[ProtocolTPe]))) {
             validFlag = false;
@@ -876,13 +873,13 @@ bool MessageDispatcher_e1Light_EL03c_PCBV06::checkProtocolValidity(string &messa
         break;
 
     case ProtocolSquareWave:
-        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
             validFlag = false;
-            message = "Vhold+Vpulse\nmust be within [-500,500]mV";
+            message = "Vhold+Vpulse\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]))) {
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]))) {
             validFlag = false;
-            message = "Vhold-Vpulse\nmust be within [-500,500]mV";
+            message = "Vhold-Vpulse\nmust be within [-2000,2000]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;
@@ -895,23 +892,23 @@ bool MessageDispatcher_e1Light_EL03c_PCBV06::checkProtocolValidity(string &messa
         break;
 
     case ProtocolConductance:
-        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
             validFlag = false;
-            message = "Vhold+Vpulse\nmust be within [-500,500]mV";
+            message = "Vhold+Vpulse\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
-            message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-500,500]mV";
+            message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]))) {
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]))) {
             validFlag = false;
-            message = "Vhold-Vpulse\nmust be within [-500,500]mV";
+            message = "Vhold-Vpulse\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPulse]-
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
-            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-500,500]mV";
+            message = "Vhold-Vpulse-Vstep(N-1)\nmust be within [-2000,2000]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;
@@ -928,18 +925,18 @@ bool MessageDispatcher_e1Light_EL03c_PCBV06::checkProtocolValidity(string &messa
         break;
 
     case ProtocolVariableAmplitude:
-        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
             validFlag = false;
-            message = "Vhold\nmust be within [-500,500]mV";
+            message = "Vhold\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
             validFlag = false;
-            message = "Vhold+Vpulse\nmust be within [-500,500]mV";
+            message = "Vhold+Vpulse\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]+
                                                                                     selectedProtocolVoltage[ProtocolVStep]*(selectedProtocolAdimensional[ProtocolN].value-1.0)))) {
             validFlag = false;
-            message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-500,500]mV";
+            message = "Vhold+Vpulse+Vstep(N-1)\nmust be within [-2000,2000]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;
@@ -956,13 +953,13 @@ bool MessageDispatcher_e1Light_EL03c_PCBV06::checkProtocolValidity(string &messa
         break;
 
     case ProtocolVariableDuration:
-        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
             validFlag = false;
-            message = "Vhold\nmust be within [-500,500]mV";
+            message = "Vhold\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPulse]))) {
             validFlag = false;
-            message = "Vhold+Vpulse\nmust be within [-500,500]mV";
+            message = "Vhold+Vpulse\nmust be within [-2000,2000]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_28].includes(selectedProtocolTime[ProtocolTPulse]))) {
             validFlag = false;
@@ -988,17 +985,17 @@ bool MessageDispatcher_e1Light_EL03c_PCBV06::checkProtocolValidity(string &messa
         break;
 
     case ProtocolRamp:
-        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
             validFlag = false;
-            message = "Vhold\nmust be within [-500,500]mV";
+            message = "Vhold\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVFinal]))) {
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVFinal]))) {
             validFlag = false;
-            message = "Vfinal\nmust be within [-500,500]mV";
+            message = "Vfinal\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVInit]))) {
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVInit]))) {
             validFlag = false;
-            message = "Vinit\nmust be within [-500,500]mV";
+            message = "Vinit\nmust be within [-2000,2000]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_25].includes(selectedProtocolTime[ProtocolTRamp]))) {
             validFlag = false;
@@ -1011,17 +1008,17 @@ bool MessageDispatcher_e1Light_EL03c_PCBV06::checkProtocolValidity(string &messa
         break;
 
     case ProtocolCyclicVoltammetry:
-        if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
+        if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVHold]))) {
             validFlag = false;
-            message = "Vhold\nmust be within [-500,500]mV";
+            message = "Vhold\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVFinal]))) {
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVFinal]))) {
             validFlag = false;
-            message = "Vfinal\nmust be within [-500,500]mV";
+            message = "Vfinal\nmust be within [-2000,2000]mV";
 
-        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange500mV].includes(selectedProtocolVoltage[ProtocolVInit]))) {
+        } else if (!(protocolVoltageRangesArray[ProtocolVoltageRange2000mV].includes(selectedProtocolVoltage[ProtocolVInit]))) {
             validFlag = false;
-            message = "Vinit\nmust be within [-500,500]mV";
+            message = "Vinit\nmust be within [-2000,2000]mV";
 
         } else if (!(protocolTimeRangesArray[ProtocolTimeRange1to2_25].includes(selectedProtocolTime[ProtocolTRamp]))) {
             validFlag = false;
@@ -1040,37 +1037,7 @@ bool MessageDispatcher_e1Light_EL03c_PCBV06::checkProtocolValidity(string &messa
     return validFlag;
 }
 
-void MessageDispatcher_e1Light_EL03c_PCBV06::setFerdParameters() {
-    unsigned int rangeCoeff;
-    /*! At the moment the front end reset denoiser is only available for devices that apply the same current range on all channels */
-    rangeCoeff = 1;
-
-    if (selectedSamplingRateIdx < SamplingRate20kHz) {
-        /*! sampling rate too low for reset */
-        ferdL = 1;
-        ferdInhibition = true;
-
-    } else if (selectedSamplingRateIdx == SamplingRate20kHz) {
-        if (rangeCoeff == 1) {
-            /*! sampling rate too low for reset (in the highest range the reset is 4 times faster) */
-            ferdL = 1;
-            ferdInhibition = true;
-
-        } else {
-            ferdL = oversamplingRatio*rangeCoeff/2;
-            ferdInhibition = false;
-        }
-
-    } else {
-        ferdL = oversamplingRatio*((unsigned int)round(baseSamplingRate.getNoPrefixValue()/50.0e3))*rangeCoeff*32; /*! It should be osrSR/baseSR*baseSR/50kHz */
-        ferdInhibition = false;
-    }
-    ferdK = 2.0/(2.0+1024.0/(double)rangeCoeff);
-
-    MessageDispatcher::setFerdParameters();
-}
-
-ErrorCodes_t MessageDispatcher_e1Light_EL03c_PCBV06::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
+ErrorCodes_t MessageDispatcher_e1HC_EL09a_PCBV01::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
     offsets[0] = voltageOffsetCompensationGain*(double)(infoStruct.offset);
     return Success;
 }

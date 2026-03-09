@@ -111,7 +111,6 @@ public:
     ErrorCodes_t convertCurrentValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue);
     ErrorCodes_t convertGpValue(uint16_t uintValue, uint16_t channelIdx, double &fltValue);
     ErrorCodes_t setVoltageRange(uint16_t voltageRangeIdx, bool applyFlag = true);
-    ErrorCodes_t setExclusiveOdac(bool flag, bool applyFlag = true);
     ErrorCodes_t setVoltageReferenceRange(uint16_t voltageRangeIdx, bool applyFlag = true);
     virtual ErrorCodes_t setCurrentRange(uint16_t currentRangeIdx, uint16_t channelIdx, bool applyFlag = true);
     virtual ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true);
@@ -195,6 +194,9 @@ public:
     ErrorCodes_t enableTtlPulseTrain(bool flag);
     ErrorCodes_t setTtlPulseTrain(Measurement_t pulseDuration, Measurement_t pulseDelay, Measurement_t period, unsigned int numberOfPulses);
     ErrorCodes_t startTtlPulseTrain();
+
+    ErrorCodes_t setExclusiveOdac(bool flag, bool applyFlag = true);
+    ErrorCodes_t setExclusiveChannel(uint32_t chIdx, bool exclusiveFlag, bool applyFlag = true);
 
     ErrorCodes_t setDebugBit(uint16_t byteOffset, uint16_t bitOffset, bool status);
     ErrorCodes_t setDebugByte(uint16_t byteOffset, uint16_t byteValue);
@@ -399,7 +401,6 @@ protected:
     std::vector <std::string> voltageRangesExtensions;
     uint16_t defaultVoltageRangeIdx = 0;
     BoolCoder * voltageRangeCoder = nullptr;
-    BoolCoder * exclusiveOdacCoder = nullptr;
 
     uint32_t voltageReferenceRangesNum = 0;
     uint16_t selectedVoltageReferenceRangeIdx = 0;
@@ -672,6 +673,10 @@ protected:
     std::vector <std::string> cFastCompensationOptions;
     std::vector <DoubleCoder *> cFastControlCoders;
     std::vector <BoolArrayCoder *> cFastOnCoders;
+
+    BoolCoder * exclusiveOdacCoder = nullptr;
+    BoolCoder * exclusiveChannelOnCoder = nullptr;
+    BoolCoder * exclusiveChannelCoder = nullptr;
 
     BoolArrayCoder * bitDebugCoder = nullptr;
     BoolArrayCoder * byteDebugCoder = nullptr;

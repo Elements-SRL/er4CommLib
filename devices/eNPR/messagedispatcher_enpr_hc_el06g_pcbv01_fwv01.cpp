@@ -594,8 +594,18 @@ MessageDispatcher_eNPR_HC_EL06g_PCBV01_FWV01::MessageDispatcher_eNPR_HC_EL06g_PC
     /*! Voltage range */
     boolConfig.initialByte = 11;
     boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 1;
+    boolConfig.bitsNum = 2;
     voltageRangeCoder = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 11;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 1;
+    exclusiveChannelOnCoder = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 11;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    exclusiveChannelCoder = new BoolArrayCoder(boolConfig);
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;

@@ -52,7 +52,7 @@ using namespace er4CommLib;
 #endif
 
 static const vector <vector <uint32_t>> deviceTupleMapping = {
-    {DeviceVersionE1, DeviceSubversionE1bEL03C_PCBV02, 2, DeviceE1bEL03c_PCBV02EDR3},                       //    9,  1,  1 : e1b EL03c chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1bEL03C_PCBV02, 2, DeviceE1bEL03c_PCBV02EDR3},                       //    9,  1,  2 : e1b EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1bEL03C, 6, DeviceE1bEL03cEDR3},                                     //    9,  2,  6 : e1b EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightEL03C, 2, DeviceE1LightEL03cEDR3},                             //    9,  4,  2 : e1Light EL03c chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1PlusEL03C, 6, DeviceE1PlusEL03cEDR3},                               //    9,  5,  6 : e1+ EL03c chip (Legacy version for EDR3)
@@ -661,19 +661,6 @@ ErrorCodes_t MessageDispatcher::setVoltageRange(uint16_t voltageRangeIdx, bool a
     this->setFerdParameters();
 
     voltageRangeCoder->encode(selectedVoltageRangeIdx, txStatus);
-    if (applyFlag) {
-        this->stackOutgoingMessage(txStatus);
-    }
-
-    return Success;
-}
-
-ErrorCodes_t MessageDispatcher::setExclusiveOdac(bool flag, bool applyFlag) {
-    if (exclusiveOdacCoder == nullptr) {
-        return ErrorFeatureNotImplemented;
-    }
-    exclusiveOdacCoder->encode(flag ? 1 : 0, txStatus);
-
     if (applyFlag) {
         this->stackOutgoingMessage(txStatus);
     }
@@ -1897,6 +1884,33 @@ ErrorCodes_t MessageDispatcher::startTtlPulseTrain() {
     ttlPulseTrainStartCoder->encode(1, txStatus);
     this->stackOutgoingMessage(txStatus);
     ttlPulseTrainStartCoder->encode(0, txStatus);
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::setExclusiveOdac(bool flag, bool applyFlag) {
+    if (exclusiveOdacCoder == nullptr) {
+        return ErrorFeatureNotImplemented;
+    }
+    exclusiveOdacCoder->encode(flag ? 1 : 0, txStatus);
+
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::setExclusiveChannel(uint32_t chIdx, bool exclusiveFlag, bool applyFlag) {
+    if (exclusiveChannelOnCoder == nullptr) {
+        return ErrorFeatureNotImplemented;
+    }
+    exclusiveChannelOnCoder->encode(exclusiveFlag ? 0 : 1, txStatus);
+    exclusiveChannelCoder->encode(chIdx, txStatus);
+
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
 
     return Success;
 }

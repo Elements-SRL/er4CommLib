@@ -610,8 +610,8 @@ MessageDispatcher_e1HC_EL09a_PCBV01::MessageDispatcher_e1HC_EL09a_PCBV01(string 
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x20); // 1.25kHz, clock/4,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x21); // 2.5kHz, clock/4,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x22); // 5kHz, clock/4,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x23); // 10kHz, clock/4,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x24); // 20kHz, clock/4,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x23); // 10kHz, clock/2,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x14); // 20kHz, clock/2,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x15); // 50kHz, clock/2,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x06); // 100kHz, clock/1,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x07); // 200kHz, clock/1,
@@ -775,8 +775,8 @@ MessageDispatcher_e1HC_EL09a_PCBV01::MessageDispatcher_e1HC_EL09a_PCBV01(string 
 
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
-    txStatus[txStatusIdx++] = 0x00; // CFG0
-    txStatus[txStatusIdx++] = 0x00; // CFG1
+    txStatus[txStatusIdx++] = 0x08; // CFG0 select third DAC
+    txStatus[txStatusIdx++] = 0x40; // CFG1 Enable stimulus
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
     txStatus[txStatusIdx++] = 0x00; // CFG4

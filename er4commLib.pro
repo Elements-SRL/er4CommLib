@@ -53,6 +53,7 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
+    devices/e1/messagedispatcher_e1uln_el03c_pcbv06.cpp \
     er4commlib.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
@@ -92,6 +93,7 @@ SOURCES += \
     devices/fake/messagedispatcher_fake_e16fastpulses.cpp
 
 HEADERS += \
+    devices/e1/messagedispatcher_e1uln_el03c_pcbv06.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \

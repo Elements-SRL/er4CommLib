@@ -788,7 +788,7 @@ MessageDispatcher_e1ULN_EL03c_PCBV06::MessageDispatcher_e1ULN_EL03c_PCBV06(strin
 
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
-    txStatus[txStatusIdx++] = 0x04; // CFG0 VcInt
+    txStatus[txStatusIdx++] = 0x0C; // CFG0 VcInt
     txStatus[txStatusIdx++] = 0x00; // CFG1
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3

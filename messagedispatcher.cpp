@@ -1297,7 +1297,8 @@ ErrorCodes_t MessageDispatcher::checkProtocolAdimensional(unsigned int idx, Meas
 
 ErrorCodes_t MessageDispatcher::setVoltageOffset(unsigned int idx, Measurement_t voltage, bool applyFlag) {
     if (voltageOffsetCoders.empty()) {
-        return ErrorFeatureNotImplemented;
+        Measurement_t duration = {0.0, UnitPfxNone, "s"};
+        return this->setVoltageRampOffset(idx, voltage, voltage, duration, applyFlag);
     }
     if (idx == currentChannelsNum) {
         for (idx = 0; idx < currentChannelsNum; idx++) {
@@ -3487,7 +3488,7 @@ void MessageDispatcher::sendCommandsToDevice() {
     txMutexLock.unlock();
 
     while (!stopConnectionFlag) {
-        if (!fwLoadedFlag) {
+        if (!fwLoadedFlag && !fwLoadedOverrideFlag) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             continue;
         }

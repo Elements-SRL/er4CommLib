@@ -35,6 +35,8 @@ MessageDispatcher_e16n_ramps_V01::MessageDispatcher_e16n_ramps_V01(string di) :
     BoolCoder::CoderConfig_t boolConfig;
     DoubleCoder::CoderConfig_t doubleConfig;
 
+    voltageOffsetCoders.clear();
+
     uint32_t vRampOffsetCodersOffset = 94;
     uint32_t vRampOffsetCodersSize = 21;
 

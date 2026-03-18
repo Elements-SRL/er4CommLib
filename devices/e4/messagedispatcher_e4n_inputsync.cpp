@@ -9,6 +9,7 @@ MessageDispatcher_e4n_InputSync::MessageDispatcher_e4n_InputSync(string di) :
     MessageDispatcher_e4n_V01(di) {
 
     digInSyncImplementedFlag = true;
+    fwLoadedOverrideFlag = true;
 
     /**********\
      * Coders *

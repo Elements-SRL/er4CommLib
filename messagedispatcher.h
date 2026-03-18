@@ -382,6 +382,7 @@ protected:
 
     int packetsPerFrame = 16;
     bool fwLoadedFlag = false;
+    bool fwLoadedOverrideFlag = false;
 
     uint16_t voltageChannelsNum = 1;
     uint16_t currentChannelsNum = 1;

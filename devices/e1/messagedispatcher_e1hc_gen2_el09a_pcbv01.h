@@ -1,5 +1,5 @@
-#ifndef MESSAGEDISPATCHER_E1HC_EL_9A_PCBV_1_H
-#define MESSAGEDISPATCHER_E1HC_EL_9A_PCBV_1_H
+#ifndef MESSAGEDISPATCHER_E1HC_GEN2_EL_9A_PCBV_1_H
+#define MESSAGEDISPATCHER_E1HC_GEN2_EL_9A_PCBV_1_H
 
 #include "messagedispatcher.h"
 
@@ -7,10 +7,10 @@
 namespace er4CommLib {
 #endif
 
-class MessageDispatcher_e1HC_EL09a_PCBV01 : public MessageDispatcher {
+class MessageDispatcher_e1HC_Gen2_EL09a_PCBV01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e1HC_EL09a_PCBV01(std::string di);
-    virtual ~MessageDispatcher_e1HC_EL09a_PCBV01();
+    MessageDispatcher_e1HC_Gen2_EL09a_PCBV01(std::string di);
+    virtual ~MessageDispatcher_e1HC_Gen2_EL09a_PCBV01();
 
 protected:
     typedef struct {
@@ -121,4 +121,4 @@ protected:
 };
 #endif
 
-#endif // MESSAGEDISPATCHER_E1HC_EL_9A_PCBV_1_H
+#endif // MESSAGEDISPATCHER_E1HC_GEN2_EL_9A_PCBV_1_H

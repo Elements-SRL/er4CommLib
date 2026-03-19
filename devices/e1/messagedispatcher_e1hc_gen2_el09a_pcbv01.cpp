@@ -1,11 +1,11 @@
-#include "messagedispatcher_e1hc_el09a_pcbv01.h"
+#include "messagedispatcher_e1hc_gen2_el09a_pcbv01.h"
 
 using namespace std;
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER
 using namespace er4CommLib;
 #endif
 
-MessageDispatcher_e1HC_EL09a_PCBV01::MessageDispatcher_e1HC_EL09a_PCBV01(string di) :
+MessageDispatcher_e1HC_Gen2_EL09a_PCBV01::MessageDispatcher_e1HC_Gen2_EL09a_PCBV01(string di) :
     MessageDispatcher(di) {
 
     /************************\
@@ -843,11 +843,11 @@ MessageDispatcher_e1HC_EL09a_PCBV01::MessageDispatcher_e1HC_EL09a_PCBV01(string 
     txStatus[txStatusIdx++] = 0x00; // digital offset compensation
 }
 
-MessageDispatcher_e1HC_EL09a_PCBV01::~MessageDispatcher_e1HC_EL09a_PCBV01() {
+MessageDispatcher_e1HC_Gen2_EL09a_PCBV01::~MessageDispatcher_e1HC_Gen2_EL09a_PCBV01() {
 
 }
 
-void MessageDispatcher_e1HC_EL09a_PCBV01::initializeDevice() {
+void MessageDispatcher_e1HC_Gen2_EL09a_PCBV01::initializeDevice() {
     this->setSamplingRate(defaultSamplingRateIdx, false);
 
     this->digitalOffsetCompensation(currentChannelsNum, false);
@@ -855,7 +855,7 @@ void MessageDispatcher_e1HC_EL09a_PCBV01::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_e1HC_EL09a_PCBV01::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e1HC_Gen2_EL09a_PCBV01::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1054,7 +1054,7 @@ bool MessageDispatcher_e1HC_EL09a_PCBV01::checkProtocolValidity(string &message)
     return validFlag;
 }
 
-ErrorCodes_t MessageDispatcher_e1HC_EL09a_PCBV01::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
+ErrorCodes_t MessageDispatcher_e1HC_Gen2_EL09a_PCBV01::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
     offsets[0] = voltageOffsetCompensationGain*(double)(infoStruct.offset);
     return Success;
 }

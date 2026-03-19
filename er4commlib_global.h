@@ -102,10 +102,13 @@ typedef enum {
     DeviceE1LightEL03cEDR3,         /*!< e1Light EL03f chip (Legacy version for EDR3). */
     DeviceE1HcEL03cEDR3,            /*!< e1HC EL03f chip (Legacy version for EDR3) */
     DeviceE1PlusEL03fEDR3,          /*!< e1+ EL03f chip (Legacy version for EDR3). */
+    DeviceE1PlusGen2EL03c_PCBV01,   /*!< e1+ gen 2 EL03c chip. */
     DeviceE1LightEL03fEDR3,         /*!< e1Light EL03f chip (Legacy version for EDR3). */
-    DeviceE1LightEL03c_PCBV06,      /*!< e1Light EL03c chip based on e1ULN PCB V06. */
+    DeviceE1LightGen2EL03c_PCBV01,  /*!< e1Light gen 2 EL03c chip. */
     DeviceE1HcEL03fEDR3,            /*!< e1HC EL03f chip (Legacy version for EDR3) */
-    DeviceE1HcEL09a,                /*!< e1HC EL09a chip */
+    DeviceE1HcGen2EL09a_PCBV01,     /*!< e1HC EL09a chip */
+    DeviceE1ULN_V01,                /*!< e1ULN with eNPR PCB. */
+    DeviceE1ULNGen2EL03c_PCBV06,    /*!< e1ULN PCB V06. */
     DeviceE16eEDR3,                 /*!< e16e (Legacy version for EDR3). */
     DeviceE16eArtix7PCBV01,         /*!< e16e Artix7 PCB V01. */
     DeviceE16ETHEDR3,               /*!< e16ETH (LegacyVersion for EDR3). */
@@ -156,8 +159,6 @@ typedef enum {
     DeviceE16nSine_V01,             /*!< e16 Orbit TC with additional sinusoidal waveforms. */
     DeviceE16nSine_V02,             /*!< e16 Orbit TC with additional protocols that resemble the standard ones with an additive sinusoid. */
     DeviceENPRNanopipette_V01,      /*!< eNPR prototype with 2 channels with independent current ranges and PWM control. */
-    DeviceE1ULN_V01,                /*!< e1ULN with eNPR PCB. */
-    DeviceE1ULN_PCBV06,             /*!< e1ULN PCB V06. */
     DeviceE4TtlPulseTrain_V01,      /*!< e4 customized with ttl pulse train. */
     DeviceE2Uln_V01,                /*!< e4 that returns 2 current channels measured in ULN mode */
     DeviceE16nRamps_V01,            /*!< e16n TC that can apply ramps on single channels */

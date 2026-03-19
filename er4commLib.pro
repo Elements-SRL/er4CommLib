@@ -53,16 +53,16 @@ DEFINES += "VERSION_MAJOR=$$VERSION_MAJOR"\
 VERSION_FULL = $${VERSION_MAJOR}.$${VERSION_MINOR}.$${VERSION_BUILD}
 
 SOURCES += \
-    devices/e1/messagedispatcher_e1uln_el03c_pcbv06.cpp \
     er4commlib.cpp \
     messagedispatcher.cpp \
     commandcoder.cpp \
     devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.cpp \
     devices/e1/messagedispatcher_e1light.cpp \
-    devices/e1/messagedispatcher_e1light_el03c_pcbv06.cpp \
     devices/e1/messagedispatcher_e1plus.cpp \
     devices/e1/messagedispatcher_e1hc.cpp \
-    devices/e1/messagedispatcher_e1hc_el09a_pcbv01.cpp \
+    devices/e1/messagedispatcher_e1hc_gen2_el09a_pcbv01.cpp \
+    devices/e1/messagedispatcher_e1light_gen2_el03c_pcbv01.cpp \
+    devices/e1/messagedispatcher_e1uln_gen2_el03c_pcbv06.cpp \
     devices/e1/messagedispatcher_e1uln.cpp \
     devices/e1/messagedispatcher_e1_e4nbased.cpp \
     devices/eNPR/messagedispatcher_enpr.cpp \
@@ -93,7 +93,6 @@ SOURCES += \
     devices/fake/messagedispatcher_fake_e16fastpulses.cpp
 
 HEADERS += \
-    devices/e1/messagedispatcher_e1uln_el03c_pcbv06.h \
     er4commlib.h \
     er4commlib_errorcodes.h \
     er4commlib_global.h \
@@ -102,10 +101,11 @@ HEADERS += \
     commandcoder.h \
     devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.h \
     devices/e1/messagedispatcher_e1light.h \
-    devices/e1/messagedispatcher_e1light_el03c_pcbv06.h \
     devices/e1/messagedispatcher_e1plus.h \
     devices/e1/messagedispatcher_e1hc.h \
-    devices/e1/messagedispatcher_e1hc_el09a_pcbv01.h \
+    devices/e1/messagedispatcher_e1hc_gen2_el09a_pcbv01.h \
+    devices/e1/messagedispatcher_e1light_gen2_el03c_pcbv01.h \
+    devices/e1/messagedispatcher_e1uln_gen2_el03c_pcbv06.h \
     devices/e1/messagedispatcher_e1uln.h \
     devices/e1/messagedispatcher_e1_e4nbased.h \
     devices/eNPR/messagedispatcher_enpr.h \

@@ -1,5 +1,5 @@
-#ifndef MESSAGEDISPATCHER_E1ULN_EL_3C_PCBV_6_H
-#define MESSAGEDISPATCHER_E1ULN_EL_3C_PCBV_6_H
+#ifndef MESSAGEDISPATCHER_E1ULN_GEN2_EL_3C_PCBV_6_H
+#define MESSAGEDISPATCHER_E1ULN_GEN2_EL_3C_PCBV_6_H
 
 #include "messagedispatcher.h"
 
@@ -7,10 +7,10 @@
     namespace er4CommLib {
 #endif
 
-    class MessageDispatcher_e1ULN_EL03c_PCBV06 : public MessageDispatcher {
+    class MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06 : public MessageDispatcher {
     public:
-        MessageDispatcher_e1ULN_EL03c_PCBV06(std::string di);
-        virtual ~MessageDispatcher_e1ULN_EL03c_PCBV06();
+        MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06(std::string di);
+        virtual ~MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06();
 
     protected:
         typedef struct {
@@ -122,4 +122,4 @@
 };
 #endif
 
-#endif // MESSAGEDISPATCHER_E1ULN_EL_3C_PCBV_6_H
+#endif // MESSAGEDISPATCHER_E1ULN_GEN2_EL_3C_PCBV_6_H

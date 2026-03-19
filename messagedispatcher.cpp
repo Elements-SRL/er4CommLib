@@ -2,6 +2,7 @@
 
 #include "messagedispatcher_e1b_el03c_legacyedr3_pcbv02.h"
 #include "messagedispatcher_e1plus.h"
+#include "messagedispatcher_e1plus_gen2_el03c_pcbv01.h"
 #include "messagedispatcher_e1light.h"
 #include "messagedispatcher_e1light_gen2_el03c_pcbv01.h"
 #include "messagedispatcher_e1uln_gen2_el03c_pcbv06.h"
@@ -543,6 +544,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE1LightGen2EL03c_PCBV01:
         messageDispatcher = new MessageDispatcher_e1Light_Gen2_EL03c_PCBV01(deviceId);
+        break;
+
+    case DeviceE1PlusGen2EL03c_PCBV01:
+        messageDispatcher = new MessageDispatcher_e1Plus_Gen2_EL03c_PCBV01(deviceId);
         break;
 
     case DeviceE1ULNGen2EL03c_PCBV06:

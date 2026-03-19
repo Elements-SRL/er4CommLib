@@ -59,6 +59,7 @@ SOURCES += \
     devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.cpp \
     devices/e1/messagedispatcher_e1light.cpp \
     devices/e1/messagedispatcher_e1plus.cpp \
+    devices/e1/messagedispatcher_e1plus_gen2_el03c_pcbv01.cpp \
     devices/e1/messagedispatcher_e1hc.cpp \
     devices/e1/messagedispatcher_e1hc_gen2_el09a_pcbv01.cpp \
     devices/e1/messagedispatcher_e1light_gen2_el03c_pcbv01.cpp \
@@ -102,6 +103,7 @@ HEADERS += \
     devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.h \
     devices/e1/messagedispatcher_e1light.h \
     devices/e1/messagedispatcher_e1plus.h \
+    devices/e1/messagedispatcher_e1plus_gen2_el03c_pcbv01.h \
     devices/e1/messagedispatcher_e1hc.h \
     devices/e1/messagedispatcher_e1hc_gen2_el09a_pcbv01.h \
     devices/e1/messagedispatcher_e1light_gen2_el03c_pcbv01.h \

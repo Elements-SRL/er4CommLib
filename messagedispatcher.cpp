@@ -63,6 +63,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1LightEL03F, 2, DeviceE1LightEL03fEDR3},                             //    9,  7,  2 : e1Light EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 1, DeviceE1PlusEL03fEDR3},                               //    9,  8,  1 : e1+ EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 2, DeviceE1PlusEL03fEDR3},                               //    9,  8,  2 : e1+ EL03f chip (Legacy version for EDR3)
+    {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 3, DeviceE1PlusEL03f},                                   //    9,  8,  3 : e1+ EL03f chip
     {DeviceVersionE1, DeviceSubversionE1HcEL03F, 1, DeviceE1HcEL03fEDR3},                                   //    9,  9,  1 : e1HC EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                         //    9, 10,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionE1, DeviceSubversionE1LightGen2EL03cPCBV01, 1, DeviceE1LightGen2EL03c_PCBV01},            //    9, 11,  1 : e1 Light based on e1ULN PCB V06
@@ -119,11 +120,11 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE2, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                           //   12,  1,131 : e2HC
     {DeviceVersionE2, DeviceSubversionE2HC_EL06g, 1, DeviceE2HC_V02},                                       //   12,  2,  1 : e2HC with EL06g ASIC
     {DeviceVersionTestBoard, DeviceSubversionTestBoardDlp, 4, DeviceDlp},                                   //    6,  3,  4 : debug dlp
-    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06b, 129, TestboardEL06b},                          //    6,  5,129 : testboard EL06b
-    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06c, 129, TestboardEL06c},                          //    6,  6,129 : testboard EL06c
-    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06d, 129, TestboardEL06dEL06e},                     //    6,  7,129 : testboard EL06d
-    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06e, 129, TestboardEL06dEL06e},                     //    6,  8,129 : testboard EL06e
-    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06f, 129, TestboardEL06f},                          //    6, 12,129 : testboard EL06f
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06b, 5, TestboardEL06b},                            //    6,  5,  5 : testboard EL06b
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06c, 5, TestboardEL06c},                            //    6,  6,  5 : testboard EL06c
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06d, 13, TestboardEL06dEL06e},                      //    6,  7, 13 : testboard EL06d
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06e, 13, TestboardEL06dEL06e},                      //    6,  8, 13 : testboard EL06e
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06f, 1, TestboardEL06f},                            //    6, 12,  1 : testboard EL06f
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL09a_PCBV01, 1, TestboardEL09a},                     //    6, 16,  1 : testboard EL09a
     {DeviceVersionPrototype, DeviceSubversionProtoE1E4nBased, 10, DeviceE1E4nBased},                        //  254,  1, 10 : e4n with only one channel
     {DeviceVersionPrototype, DeviceSubversionProtoE2HCExtAdc, 1, DeviceE2HCExtAdc},                         //  254, 14,  1 : e2HC with external ADC
@@ -328,6 +329,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE1PlusEL03fEDR3:
         messageDispatcher = new MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00(deviceId);
+        break;
+
+    case DeviceE1PlusEL03f:
+        messageDispatcher = new MessageDispatcher_e1Plus_EL03f_FWV03(deviceId);
         break;
 
     case DeviceE1HcEL03fEDR3:

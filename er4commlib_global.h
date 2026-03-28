@@ -102,6 +102,7 @@ typedef enum {
     DeviceE1LightEL03cEDR3,         /*!< e1Light EL03f chip (Legacy version for EDR3). */
     DeviceE1HcEL03cEDR3,            /*!< e1HC EL03f chip (Legacy version for EDR3) */
     DeviceE1PlusEL03fEDR3,          /*!< e1+ EL03f chip (Legacy version for EDR3). */
+    DeviceE1PlusEL03f,              /*!< e1+ EL03f chip. */
     DeviceE1PlusGen2EL03c_PCBV01,   /*!< e1+ gen 2 EL03c chip. */
     DeviceE1LightEL03fEDR3,         /*!< e1Light EL03f chip (Legacy version for EDR3). */
     DeviceE1LightGen2EL03c_PCBV01,  /*!< e1Light gen 2 EL03c chip. */

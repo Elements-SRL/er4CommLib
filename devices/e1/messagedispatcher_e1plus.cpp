@@ -835,9 +835,7 @@ MessageDispatcher_e1Plus_EL03f_FWV03::~MessageDispatcher_e1Plus_EL03f_FWV03() {
 }
 
 ErrorCodes_t MessageDispatcher_e1Plus_EL03f_FWV03::updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) {
-    for (int idx = 0; idx < currentChannelsNum; idx++) {
-        offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
-    }
+    offsets[0] = voltageOffsetCompensationGain*(double)(infoStruct.offset);
     return Success;
 }
 

@@ -164,6 +164,10 @@ MessageDispatcher_e16e_Artix7_PCBV01_V01::MessageDispatcher_e16e_Artix7_PCBV01_V
     integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate200kHz].unit = "s";
 
+    voltageOffsetCompensationGain.value = 100.0/1023.0*3.6/3.3;
+    voltageOffsetCompensationGain.prefix = UnitPfxMilli;
+    voltageOffsetCompensationGain.unit = "V";
+
     /*! Overampling ratios */
     oversamplingImplemented = false;
     oversamplingRatiosNum = OversamplingRatiosNum;

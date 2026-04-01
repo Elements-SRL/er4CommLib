@@ -149,6 +149,10 @@ MessageDispatcher_e1Plus_EL03f_FWV03::MessageDispatcher_e1Plus_EL03f_FWV03(strin
     integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate200kHz].unit = "s";
 
+    voltageOffsetCompensationGain.value = 62.5e-3;
+    voltageOffsetCompensationGain.prefix = UnitPfxMilli;
+    voltageOffsetCompensationGain.unit = "V";
+
     /*! Overampling ratios */
     oversamplingImplemented = false;
     oversamplingRatiosNum = OversamplingRatiosNum;
@@ -828,6 +832,13 @@ MessageDispatcher_e1Plus_EL03f_FWV03::MessageDispatcher_e1Plus_EL03f_FWV03(strin
 
 MessageDispatcher_e1Plus_EL03f_FWV03::~MessageDispatcher_e1Plus_EL03f_FWV03() {
 
+}
+
+ErrorCodes_t MessageDispatcher_e1Plus_EL03f_FWV03::updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) {
+    for (int idx = 0; idx < currentChannelsNum; idx++) {
+        offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
+    }
+    return Success;
 }
 
 void MessageDispatcher_e1Plus_EL03f_FWV03::initializeDevice() {

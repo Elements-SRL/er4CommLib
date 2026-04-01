@@ -610,7 +610,7 @@ MessageDispatcher_e1HC_Gen2_EL09a_PCBV01::MessageDispatcher_e1HC_Gen2_EL09a_PCBV
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x20); // 1.25kHz, clock/4,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x21); // 2.5kHz, clock/4,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x22); // 5kHz, clock/4,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x23); // 10kHz, clock/2,
+    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x23); // 10kHz, clock/4,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x14); // 20kHz, clock/2,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x15); // 50kHz, clock/2,
     static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x06); // 100kHz, clock/1,

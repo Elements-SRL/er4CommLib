@@ -730,7 +730,7 @@ MessageDispatcher_e1Plus_Gen2_EL03c_PCBV01::MessageDispatcher_e1Plus_Gen2_EL03c_
     boolConfig.initialByte = 13;
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
-    dacIntFilterCoder = new BoolArrayCoder(boolConfig);
+    dacExtFilterCoder = new BoolArrayCoder(boolConfig);
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
@@ -1087,4 +1087,3 @@ ErrorCodes_t MessageDispatcher_e1Plus_Gen2_EL03c_PCBV01::updateVoltageOffsetComp
     offsets[0] = voltageOffsetCompensationGain*(double)(infoStruct.offset);
     return Success;
 }
-

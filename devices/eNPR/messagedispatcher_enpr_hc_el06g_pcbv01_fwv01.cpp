@@ -157,6 +157,10 @@ MessageDispatcher_eNPR_HC_EL06g_PCBV01_FWV01::MessageDispatcher_eNPR_HC_EL06g_PC
     integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate200kHz].unit = "s";
 
+    voltageOffsetCompensationGain.value = 1.0;
+    voltageOffsetCompensationGain.prefix = UnitPfxMilli;
+    voltageOffsetCompensationGain.unit = "V";
+
     /*! Overampling ratios */
     oversamplingImplemented = false;
     oversamplingRatiosNum = OversamplingRatiosNum;

@@ -12,6 +12,8 @@ public:
     MessageDispatcher_e1Plus_EL03f_FWV03(std::string id);
     virtual ~MessageDispatcher_e1Plus_EL03f_FWV03();
 
+    ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) override;
+
 protected:
     typedef struct {
         int16_t offset;

@@ -1922,7 +1922,7 @@ ErrorCodes_t MessageDispatcher::setExclusiveChannel(uint32_t chIdx, bool exclusi
     if (exclusiveChannelOnCoder == nullptr) {
         return ErrorFeatureNotImplemented;
     }
-    exclusiveChannelOnCoder->encode(exclusiveFlag ? 0 : 1, txStatus);
+    exclusiveChannelOnCoder->encode(exclusiveFlag ? 1 : 0, txStatus);
     exclusiveChannelCoder->encode(chIdx, txStatus);
 
     if (applyFlag) {

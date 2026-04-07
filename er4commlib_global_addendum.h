@@ -7,6 +7,10 @@
 #include <limits>
 #include <unordered_map>
 
+#ifdef __linux__
+#include <cstdint>
+#endif
+
 #include "er4commlib_global.h"
 
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER

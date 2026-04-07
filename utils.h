@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include <string>
+#include <vector>
 #include <filesystem>
 #include <optional>
 
@@ -27,7 +28,11 @@ inline void createDebugFile(FILE * &fid, std::string fileName) {
 inline bool debugLevelEnabled(DebugLevels_t level) {
     static std::vector <std::optional <bool>> cachedResult(DebugLevelsNum);
     if (!cachedResult[level].has_value()) {
+#ifdef _WIN32
         const char * home = std::getenv("USERPROFILE");
+#elif __linux__
+        const char * home = std::getenv("HOME");
+#endif
         std::string filename;
         switch (level) {
         case DebugLevelDevice:

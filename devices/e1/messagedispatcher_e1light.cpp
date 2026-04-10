@@ -62,8 +62,8 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
     voltageRangesNum = VoltageRangesNum;
     voltageRangesArray.resize(voltageRangesNum);
     voltageRangesArray[VoltageRange500mV].step = 0.0625;
-    voltageRangesArray[VoltageRange500mV].min = -voltageRangesArray[VoltageRange500mV].step*8192;
-    voltageRangesArray[VoltageRange500mV].max = voltageRangesArray[VoltageRange500mV].step*8192;
+    voltageRangesArray[VoltageRange500mV].min = -500.0;
+    voltageRangesArray[VoltageRange500mV].max = 500.0;
     voltageRangesArray[VoltageRange500mV].prefix = UnitPfxMilli;
     voltageRangesArray[VoltageRange500mV].unit = "V";
     defaultVoltageRangeIdx = VoltageRange500mV;
@@ -189,8 +189,8 @@ MessageDispatcher_e1Light_El03f_LegacyEdr3_V01::MessageDispatcher_e1Light_El03f_
 
     /*! Voltage ranges */
     protocolVoltageRangesArray.resize(ProtocolVoltageRangesNum);
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].min = -511.0;
-    protocolVoltageRangesArray[ProtocolVoltageRange500mV].max = 511.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].min = -500.0;
+    protocolVoltageRangesArray[ProtocolVoltageRange500mV].max = 500.0;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].step = 0.0625;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].prefix = UnitPfxMilli;
     protocolVoltageRangesArray[ProtocolVoltageRange500mV].unit = "V";

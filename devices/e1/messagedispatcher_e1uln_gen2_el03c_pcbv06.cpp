@@ -172,9 +172,9 @@ MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06::MessageDispatcher_e1ULN_Gen2_EL03c_PC
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].value = 0.1;
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].prefix = UnitPfxNone;
-    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].unit = "kHz";
+    voltageStimulusLpfOptions[VoltageStimulusLpf10Hz].value = 10.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf10Hz].prefix = UnitPfxNone;
+    voltageStimulusLpfOptions[VoltageStimulusLpf10Hz].unit = "Hz";
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
@@ -487,7 +487,7 @@ MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06::MessageDispatcher_e1ULN_Gen2_EL03c_PC
 
     voltageOffsetControlImplemented = true;
     selectedVoltageOffset.resize(currentChannelsNum);
-    voltageOffsetRange.step = 1.0;
+    voltageOffsetRange.step = 0.0625;
     voltageOffsetRange.min = -700.0;
     voltageOffsetRange.max = 700.0;
     voltageOffsetRange.prefix = UnitPfxMilli;
@@ -517,7 +517,7 @@ MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06::MessageDispatcher_e1ULN_Gen2_EL03c_PC
     edhFormat =
         "EDH Version: 2.0\n"
         "\n"
-        "Elements e1 Light\n"
+        "Elements e1 ULN\n"
         "Channels: 1\n"
         "\n"
         "Data header file\n"

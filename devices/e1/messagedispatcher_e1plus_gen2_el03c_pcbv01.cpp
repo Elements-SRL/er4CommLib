@@ -487,7 +487,7 @@ MessageDispatcher_e1Plus_Gen2_EL03c_PCBV01::MessageDispatcher_e1Plus_Gen2_EL03c_
 
     voltageOffsetControlImplemented = true;
     selectedVoltageOffset.resize(currentChannelsNum);
-    voltageOffsetRange.step = 1.0;
+    voltageOffsetRange.step = 0.0625;
     voltageOffsetRange.min = -500.0;
     voltageOffsetRange.max = 500.0;
     voltageOffsetRange.prefix = UnitPfxMilli;
@@ -517,7 +517,7 @@ MessageDispatcher_e1Plus_Gen2_EL03c_PCBV01::MessageDispatcher_e1Plus_Gen2_EL03c_
     edhFormat =
         "EDH Version: 2.0\n"
         "\n"
-        "Elements e1 Light\n"
+        "Elements e1 Plus\n"
         "Channels: 1\n"
         "\n"
         "Data header file\n"

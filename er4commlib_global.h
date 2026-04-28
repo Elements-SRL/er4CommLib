@@ -112,6 +112,7 @@ typedef enum {
     DeviceE1ULNGen2EL03c_PCBV06,    /*!< e1ULN PCB V06. */
     DeviceE16eEDR3,                 /*!< e16e (Legacy version for EDR3). */
     DeviceE16eArtix7PCBV01,         /*!< e16e Artix7 PCB V01. */
+    DeviceE16eArtix7PCB_fwV01,      /*!< e16e Artix7 PCB V01. */
     DeviceE16ETHEDR3,               /*!< e16ETH (LegacyVersion for EDR3). */
     DeviceE16HC_PCB_V00_V01,        /*!< e16HC (no voltage amplifier). */
     DeviceE16HC_PCB_V00_V02,        /*!< e16HC (no DAC readout). */

@@ -102,6 +102,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16e1L, 12, DeviceE16eEDR3},                                         //    3, 13, 12 : e16e (Legacy version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16eArtix7PCBV01, 129, DeviceE16eArtix7PCBV01},                      //    3, 12,129 : e16e Artix7 PCB
     {DeviceVersionE16, DeviceSubversionE16eArtix7PCBV01, 130, DeviceE16eArtix7PCBV01},                      //    3, 12,130 : e16e Artix7 PCB V01
+    {DeviceVersionE16, DeviceSubversionE16eArtix7PCBV01, 1, DeviceE16eArtix7PCB_fwV01},                     //    3, 12,  1 : e16e Artix7 PCB V01
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
     {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 4, DeviceE16HC_PCB_V00_V01},                           //    3, 10,  4 : e16HC No voltage amplifier
     {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 132, DeviceE16HC_PCB_V00_V01},                         //    3, 10,132 : e16HC No voltage amplifier
@@ -409,6 +410,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE16eArtix7PCBV01:
         messageDispatcher = new MessageDispatcher_e16e_Artix7_PCBV01_V01(deviceId);
+        break;
+
+    case DeviceE16eArtix7PCB_fwV01:
+        messageDispatcher = new MessageDispatcher_e16e_Artix7_PCBV01_fwV01(deviceId);
         break;
 
     case DeviceE16FastPulses_V01:

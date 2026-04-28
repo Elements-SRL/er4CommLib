@@ -51,7 +51,124 @@ protected:
     };
 
     enum VoltageStimulusLpfs {
-        VoltageStimulusLpf100Hz,
+        VoltageStimulusLpf10Hz,
+        VoltageStimulusLpf10kHz,
+        VoltageStimulusLpfsNum
+    };
+
+    enum VoltageReferenceLpfs {
+        VoltageReferenceLpf3Hz,
+        VoltageReferenceLpf180kHz,
+        VoltageReferenceLpfsNum
+    };
+
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange500mV,
+        ProtocolVoltageRangesNum
+    };
+
+    enum ProtocolTimeRanges {
+        ProtocolTimeRange2_10ms,
+        ProtocolTimeRange0to2_28,
+        ProtocolTimeRange1to2_28,
+        ProtocolTimeRange1orMore,
+        ProtocolTimeRangeSigned2_27,
+        ProtocolTimeRange1to2_25,
+        ProtocolTimeRangesNum
+    };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
+
+    enum ProtocolVoltages {
+        ProtocolVHold,
+        ProtocolVPulse,
+        ProtocolVStep,
+        ProtocolVPk,
+        ProtocolVFinal,
+        ProtocolVInit,
+        ProtocolVoltagesNum
+    };
+
+    enum ProtocolTimes {
+        ProtocolTHold,
+        ProtocolTPulse,
+        ProtocolTStep,
+        ProtocolTRamp,
+        ProtocolTPe,
+        ProtocolTimesNum
+    };
+
+    enum ProtocolAdimensionals {
+        ProtocolN,
+        ProtocolNR,
+        ProtocolAdimensionalsNum
+    };
+
+    void initializeDevice() override;
+    bool checkProtocolValidity(std::string &message) override;
+    virtual void setFerdParameters() override;
+    ErrorCodes_t updateVoltageOffsetCompensations(std::vector <Measurement_t> &offsets) override;
+
+    /*! Device specific controls */
+    InfoStruct_t infoStruct;
+};
+
+class MessageDispatcher_e16e_Artix7_PCBV01_fwV01: public MessageDispatcher {
+public:
+    MessageDispatcher_e16e_Artix7_PCBV01_fwV01(std::string id);
+
+protected:
+    typedef struct {
+        int16_t offset[16];
+    } InfoStruct_t;
+
+    enum CurrentRanges {
+        CurrentRange200pA,
+        CurrentRange2nA,
+        CurrentRange20nA,
+        CurrentRange200nA,
+        CurrentRangesNum
+    };
+
+    enum VoltageRanges {
+        VoltageRange500mV,
+        VoltageRangesNum
+    };
+
+    enum VoltageReferenceRanges {
+        VoltageReferenceRange2V,
+        VoltageReferenceRangesNum
+    };
+
+    enum SamplingRates {
+        SamplingRate1_25kHz,
+        SamplingRate2_5kHz,
+        SamplingRate5kHz,
+        SamplingRate10kHz,
+        SamplingRate20kHz,
+        SamplingRate50kHz,
+        SamplingRate100kHz,
+        SamplingRate200kHz,
+        SamplingRatesNum
+    };
+
+    enum OveramplingRatios {
+        OversamplingRatioX1,
+        OversamplingRatiosNum
+    };
+
+    enum VoltageStimulusLpfs {
+        VoltageStimulusLpf10Hz,
         VoltageStimulusLpf10kHz,
         VoltageStimulusLpfsNum
     };

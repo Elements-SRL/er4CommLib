@@ -85,8 +85,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4n, 10, DeviceE4nEDR3_V04},                                          //    4,  3, 10 : e4n with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nEDR3_V04},                                          //    4,  3, 11 : e4n with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 15, DeviceE4nEDR3_V05},                                          //    4,  3, 15 : e4n (Legacy version for EDR3)
-    {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3_V05},                                          //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 129, DeviceE4n_V01},                                             //    4,  3,129 : e4n
+    {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3_V05},                                          //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e_V01},                                             //    4,  8,129 : e4 Elements version
     {DeviceVersionE4, DeviceSubversionE4nQc01a, 129, DeviceE4nQC01a_V01},                                   //    4,  9,129 : e4n with QC01a
     {DeviceVersionE4, DeviceSubversionE4nQc01a, 130, DeviceE4nQC01a_V02},                                   //    4,  9,130 : e4n with QC01a and only 5nA range

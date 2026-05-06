@@ -1269,9 +1269,6 @@ MessageDispatcher_e16e_Artix7_PCBV01_fwV01::MessageDispatcher_e16e_Artix7_PCBV01
     samplingRatesArray[SamplingRate1_25kHz].value = 1.25;
     samplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate2_5kHz].value = 2.5;
-    samplingRatesArray[SamplingRate2_5kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate2_5kHz].unit = "Hz";
     samplingRatesArray[SamplingRate5kHz].value = 5.0;
     samplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate5kHz].unit = "Hz";
@@ -1296,9 +1293,6 @@ MessageDispatcher_e16e_Artix7_PCBV01_fwV01::MessageDispatcher_e16e_Artix7_PCBV01
     realSamplingRatesArray[SamplingRate1_25kHz].value = 1.25e3/1024.0;
     realSamplingRatesArray[SamplingRate1_25kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate1_25kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate2_5kHz].value = 1.25e3/512.0;
-    realSamplingRatesArray[SamplingRate2_5kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate2_5kHz].unit = "Hz";
     realSamplingRatesArray[SamplingRate5kHz].value = 1.25e3/256.0;
     realSamplingRatesArray[SamplingRate5kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate5kHz].unit = "Hz";
@@ -1322,9 +1316,6 @@ MessageDispatcher_e16e_Artix7_PCBV01_fwV01::MessageDispatcher_e16e_Artix7_PCBV01
     integrationStepArray[SamplingRate1_25kHz].value = 1024.0/1.25;
     integrationStepArray[SamplingRate1_25kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate1_25kHz].unit = "s";
-    integrationStepArray[SamplingRate2_5kHz].value = 512.0/1.25;
-    integrationStepArray[SamplingRate2_5kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate2_5kHz].unit = "s";
     integrationStepArray[SamplingRate5kHz].value = 256.0/1.25;
     integrationStepArray[SamplingRate5kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate5kHz].unit = "s";
@@ -1836,7 +1827,14 @@ MessageDispatcher_e16e_Artix7_PCBV01_fwV01::MessageDispatcher_e16e_Artix7_PCBV01
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 4;
-    samplingRateCoder = new BoolArrayCoder(boolConfig);
+    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0); /*!< 1.25kHz  -> 0b0000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(1); /*!< 5kHz     -> 0b0001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(2); /*!< 10kHz    -> 0b0010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(3); /*!< 20kHz    -> 0b0011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(8); /*!< 50kHz    -> 0b1000 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(9); /*!< 100kHz   -> 0b1001 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(10); /*!< 200kHz  -> 0b1010 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 15;

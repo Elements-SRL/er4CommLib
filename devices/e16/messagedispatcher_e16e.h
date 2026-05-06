@@ -152,7 +152,6 @@ protected:
 
     enum SamplingRates {
         SamplingRate1_25kHz,
-        SamplingRate2_5kHz,
         SamplingRate5kHz,
         SamplingRate10kHz,
         SamplingRate20kHz,

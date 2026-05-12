@@ -3281,7 +3281,7 @@ void MessageDispatcher::readDataFromDevice() {
     unique_lock <mutex> readDataMtxLock(readDataMtx);
     readDataMtxLock.unlock();
 
-    int minReadFrameNumberTries = 0;
+    int readFrameNumberTries = 0;
 
     while (!stopConnectionFlag) {
         /******************\
@@ -3303,22 +3303,22 @@ void MessageDispatcher::readDataFromDevice() {
 
         /*! If there are not enough frames wait for a minimum frame number,
          *  the ftdi driver will wait for that to decrease overhead */
-        if (availableFrames < minReadFrameNumber && minReadFrameNumberTries < 3) {
-            minReadFrameNumberTries++;
+        if (availableFrames < minReadFrameNumber && readFrameNumberTries < minReadFrameNumberTries) {
+            readFrameNumberTries++;
             this_thread::sleep_for(chrono::microseconds(fewFramesSleep));
             continue;
         }
 
-        if (minReadFrameNumberTries >= 3) {
+        if (readFrameNumberTries >= minReadFrameNumberTries) {
             /*! Not receiving data. Reset the buffer and purge the USB FIFO */
-            minReadFrameNumberTries = 0;
+            readFrameNumberTries = 0;
             bufferReadOffset = bufferWriteOffset;
             bytesReadFromDriver = 0;
             Ftd2xxWrapper::FTW_Purge(* ftdiRxHandle, FT_PURGE_RX);
             exitOnSyncWord = false;
             continue;
         }
-        minReadFrameNumberTries = 0;
+        readFrameNumberTries = 0;
         /*! Cap bytes to read so that we do not try to read more than is available on the internal buffer */
         if (ftdiQueuedBytes+bytesReadFromDriver >= FTD_RX_BUFFER_SIZE) {
             ftdiQueuedBytes = FTD_RX_BUFFER_SIZE-bytesReadFromDriver;
@@ -3699,6 +3699,7 @@ void MessageDispatcher::computeMinimumPacketNumber() {
     samplingRateInHz.convertValue(UnitPfxNone);
     minStoreFrameNumber = (unsigned long)ceil(FTD_FEW_PACKET_COEFF*samplingRateInHz.value/((double)packetsPerFrame));
     minReadFrameNumber = (unsigned long)min(minStoreFrameNumber, (unsigned long)ceil(((double)FTD_MAX_BYTES_TO_WAIT_FOR)/(double)readFrameLength));
+    minReadFrameNumberTries = minStoreFrameNumber/minReadFrameNumber+2;
     fewFramesSleep = (unsigned int)ceil(((double)(minReadFrameNumber*(unsigned long)packetsPerFrame))/samplingRateInHz.value*1.0e6);
 }
 

@@ -705,6 +705,7 @@ protected:
     unsigned int infoStructSize = 1;
     unsigned long minReadFrameNumber = FTD_DEFAULT_MIN_READ_FRAME_NUMBER; /*!< Minimum number of frames before they are read from the FTDI driver buffer */
     unsigned long minStoreFrameNumber = FTD_DEFAULT_MIN_STORE_FRAME_NUMBER; /*!< Minimum number of frames before they are stored in the commlib output buffer */
+    unsigned long minReadFrameNumberTries = minStoreFrameNumber/minReadFrameNumber+2;
     unsigned int fewFramesSleep = FTD_DEFAULT_FEW_FRAME_SLEEP;
     unsigned char * readDataBuffer = nullptr; /*!< Buffer used in the read to store the data received from the device */
     unsigned int bufferReadOffset = 0; /*!< Device Rx buffer offset position in which data are collected by the outputDataBuffer */

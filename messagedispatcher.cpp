@@ -104,18 +104,19 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16eArtix7PCBV01, 130, DeviceE16eArtix7PCBV01},                      //    3, 12,130 : e16e Artix7 PCB V01
     {DeviceVersionE16, DeviceSubversionE16eArtix7PCBV01, 1, DeviceE16eArtix7PCB_fwV01},                     //    3, 12,  1 : e16e Artix7 PCB V01
     {DeviceVersionE16, DeviceSubversionE16eth, 4, DeviceE16ETHEDR3},                                        //    3,  9,  4 : e16eth (Legacy Version for EDR3)
-    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 4, DeviceE16HC_PCB_V00_V01},                           //    3, 10,  4 : e16HC No voltage amplifier
-    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 132, DeviceE16HC_PCB_V00_V01},                         //    3, 10,132 : e16HC No voltage amplifier
-    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 5, DeviceE16HC_PCB_V00_V02},                           //    3, 10,  5 : e16HC No DAC readout
-    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 133, DeviceE16HC_PCB_V00_V02},                         //    3, 10,133 : e16HC No DAC readout
-    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00, 134, DeviceE16HC_PCB_V00_V03},                         //    3, 10,134 : e16HC No DAC readout, with 16 voltage offset channels
-    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01, 6, DeviceE16HC_PCB_V00_V02},                           //    3, 11,  6 : e16HC No DAC readout
-    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01, 129, DeviceE16HC_PCB_V00_V02},                         //    3, 11,129 : e16HC No DAC readout
-    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01, 7, DeviceE16HC_PCB_V01_V01},                           //    3, 11,  7 : e16HC with EL06de
-    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01, 130, DeviceE16HC_PCB_V01_V01},                         //    3, 11,130 : e16HC with EL06de
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00_EL06de, 4, DeviceE16HC_PCB_V00_V01},                    //    3, 10,  4 : e16HC No voltage amplifier
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00_EL06de, 132, DeviceE16HC_PCB_V00_V01},                  //    3, 10,132 : e16HC No voltage amplifier
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00_EL06de, 5, DeviceE16HC_PCB_V00_V02},                    //    3, 10,  5 : e16HC No DAC readout
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00_EL06de, 133, DeviceE16HC_PCB_V00_V02},                  //    3, 10,133 : e16HC No DAC readout
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV00_EL06de, 134, DeviceE16HC_PCB_V00_V03},                  //    3, 10,134 : e16HC No DAC readout, with 16 voltage offset channels
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01_EL06de, 6, DeviceE16HC_PCB_V00_V02},                    //    3, 11,  6 : e16HC No DAC readout
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01_EL06de, 129, DeviceE16HC_PCB_V00_V02},                  //    3, 11,129 : e16HC No DAC readout
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01_EL06de, 7, DeviceE16HC_PCB_V01_V01},                    //    3, 11,  7 : e16HC with EL06de
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV01_EL06de, 130, DeviceE16HC_PCB_V01_V01},                  //    3, 11,130 : e16HC with EL06de
     {DeviceVersionE16, DeviceSubversionE16HC_PCBV01_EL06f, 129, DeviceE16HC_PCB_V01_EL06f_V01},             //    3, 14,129 : e16HC with EL06f
     {DeviceVersionE16, DeviceSubversionE16HC_PCBV02_EL06f, 129, DeviceE16HC_PCB_V01_EL06f_V01},             //    3, 15,129 : e16HC with EL06f
     {DeviceVersionE16, DeviceSubversionE16nEL08a, 1, DeviceE16nEL08a},                                      //    3, 16,  1 : e16n with EL08a
+    {DeviceVersionE16, DeviceSubversionE16HC_PCBV02_EL06de, 130, DeviceE16HC_PCB_V01_V01},                  //    3, 17,130 : e16HC with EL06de
     {11, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                                        //   11,  1,130 : e2HC SR up to 50kHz /*! \todo FCON da eliminare, 11 è la versione del 10MHz. Dovrebbe esserci un solo device che la usa e2HC0024 */
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                           //   12,  1,130 : e2HC SR up to 50kHz
     {DeviceVersionE2, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                           //   12,  1,131 : e2HC

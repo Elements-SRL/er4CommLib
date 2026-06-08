@@ -168,15 +168,18 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
+    voltageStimulusLpfOptions[VoltageStimulusLpf3Hz].value = 3.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf3Hz].prefix = UnitPfxNone;
+    voltageStimulusLpfOptions[VoltageStimulusLpf3Hz].unit = "Hz";
     voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].value = 1.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf1kHz].unit = "Hz";
     voltageStimulusLpfOptions[VoltageStimulusLpf5kHz].value = 5.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf5kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf5kHz].unit = "Hz";
-    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
-    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
-    voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].value = 20.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].prefix = UnitPfxKilo;
+    voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].unit = "Hz";
 
     dacExtFilterAvailable = false;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
@@ -647,13 +650,13 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     boolConfig.initialBit = 6;
     boolConfig.bitsNum = 8;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(1);   /*!<  1.25kHz 5kHz   BW CK/2 -> 0b00000001 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(17);  /*!<  2.5kHz  5kHz   BW CK/2 -> 0b00010001 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(33);  /*!<  5kHz    5kHz   BW CK/2 -> 0b00100001 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(53);  /*!<  10kHz   10kHz  BW CK/2 -> 0b00110101 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(3);   /*!<  1.25kHz 5kHz   BW CK/8 -> 0b00000011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(19);  /*!<  2.5kHz  5kHz   BW CK/8 -> 0b00010011 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(34);  /*!<  5kHz    5kHz   BW CK/4 -> 0b00100010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(54);  /*!<  10kHz   10kHz  BW CK/4 -> 0b00110110 */
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(73);  /*!<  20kHz   20kHz  BW CK/2 -> 0b01001001 */
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(93);  /*!<  50kHz   100kHz BW CK/2 -> 0b01011101 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(109); /*!<  100kHz  100kHz BW CK/2 -> 0b01101101 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(108); /*!<  100kHz  100kHz BW CK/1 -> 0b01101100 */
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(124); /*!<  200kHz  100kHz BW CK/1 -> 0b01111100 */
 
     /*! Protocol selection */
@@ -771,18 +774,22 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 2;
-    dacIntFilterCoder = new BoolArrayCoder(boolConfig);
+    dacIntFilterCoder = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(3); // 3Hz
+    static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(0); // 1kHz
+    static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(1); // 5kHz
+    static_cast <BoolRandomArrayCoder *> (dacIntFilterCoder)->addMapItem(2); // 20kHz
 
     /*! Voltage offsets */
     voltageOffsetCoders.resize(currentChannelsNum);
     doubleConfig.initialByte = 18;
     doubleConfig.initialBit = 0;
-    doubleConfig.bitsNum = 11;
+    doubleConfig.bitsNum = 10;
     doubleConfig.resolution = protocolVoltageRanges[ProtocolVHold].step;
     doubleConfig.minValue = protocolVoltageRanges[ProtocolVHold].min;
     doubleConfig.maxValue = protocolVoltageRanges[ProtocolVHold].max;
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
-        voltageOffsetCoders[channelIdx] = new DoubleSignAbsCoder(doubleConfig);
+        voltageOffsetCoders[channelIdx] = new DoubleTwosCompCoder(doubleConfig);
         doubleConfig.initialByte += 2;
     }
 
@@ -869,37 +876,37 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     txStatus[txStatusIdx++] = 0x00; // Vhold
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VOfs1
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs2
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs3
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs4
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs5
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs6
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs7
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs8
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs9
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs10
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs11
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs12
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs13
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs14
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs15
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VOfs16
-    txStatus[txStatusIdx++] = 0x00;
+    txStatus[txStatusIdx++] = 0x38;
     txStatus[txStatusIdx++] = 0x00; // VPulse
     txStatus[txStatusIdx++] = 0x00;
     txStatus[txStatusIdx++] = 0x00; // VInsPulse

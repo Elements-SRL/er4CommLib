@@ -1,0 +1,157 @@
+cmake_minimum_required(VERSION 3.21)
+
+project(er4commlib
+    VERSION 1.17.0
+    LANGUAGES CXX
+)
+
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
+# Library
+
+add_library(er4commlib STATIC
+    er4commlib.cpp
+    messagedispatcher.cpp
+    commandcoder.cpp
+    devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.cpp
+    devices/e1/messagedispatcher_e1light.cpp
+    devices/e1/messagedispatcher_e1plus.cpp
+    devices/e1/messagedispatcher_e1plus_gen2_el03c_pcbv01.cpp
+    devices/e1/messagedispatcher_e1hc.cpp
+    devices/e1/messagedispatcher_e1hc_gen2_el09a_pcbv01.cpp
+    devices/e1/messagedispatcher_e1light_gen2_el03c_pcbv01.cpp
+    devices/e1/messagedispatcher_e1uln_gen2_el03c_pcbv06.cpp
+    devices/e1/messagedispatcher_e1uln.cpp
+    devices/e1/messagedispatcher_e1_e4nbased.cpp
+    devices/eNPR/messagedispatcher_enpr.cpp
+    devices/eNPR/messagedispatcher_enpr_hc.cpp
+    devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.cpp
+    devices/e2/messagedispatcher_e2hc.cpp
+    devices/e2/messagedispatcher_e2uln_v01.cpp
+    devices/e2/messagedispatcher_e2qc_debug.cpp
+    devices/e4/messagedispatcher_e4n.cpp
+    devices/e4/messagedispatcher_e4e.cpp
+    devices/e4/messagedispatcher_e4n_inputsync.cpp
+    devices/e4/messagedispatcher_e4qc01a.cpp
+    devices/e16/messagedispatcher_e16e.cpp
+    devices/e16/messagedispatcher_e16n.cpp
+    devices/e16/messagedispatcher_e16n_ramps.cpp
+    devices/e16/messagedispatcher_e16n_el08a.cpp
+    devices/e16/messagedispatcher_e16fastpulses.cpp
+    devices/e16/messagedispatcher_e16hc.cpp
+    devices/e16/messagedispatcher_e16eth.cpp
+    devices/testboard/messagedispatcher_el06b.cpp
+    devices/testboard/messagedispatcher_el06c.cpp
+    devices/testboard/messagedispatcher_el06d_el06e.cpp
+    devices/testboard/messagedispatcher_el06f.cpp
+    devices/testboard/messagedispatcher_el09a_tb.cpp
+    devices/fake/messagedispatcher_fake_enpr.cpp
+    devices/fake/messagedispatcher_fake_enpr_hc.cpp
+    devices/fake/messagedispatcher_fake_e16n.cpp
+    devices/fake/messagedispatcher_fake_e16fastpulses.cpp
+)
+
+add_library(er4commlib::er4commlib ALIAS er4commlib)
+
+# C standard
+
+set_target_properties(er4commlib PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+)
+
+# Include directories
+
+target_include_directories(er4commlib
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/e1>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/eNPR>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/e2>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/e4>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/e16>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/fake>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/testboard>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+# Defines
+
+target_compile_definitions(er4commlib
+    PUBLIC
+    ER4COMMLIB_STATIC
+    COMMLIB_MAJOR=${PROJECT_VERSION_MAJOR}
+    COMMLIB_MINOR=${PROJECT_VERSION_MINOR}
+    COMMLIB_PATCH=${PROJECT_VERSION_PATCH}
+)
+
+# Transitive dependency
+
+cmake_path(SET FTDI_UTILS_PATH_CMAKE "$ENV{FTDI_UTILS_PATH}")
+list(APPEND CMAKE_PREFIX_PATH "${FTDI_UTILS_PATH_CMAKE}")
+
+find_package(ftdi_utils REQUIRED CONFIG)
+
+target_link_libraries(er4commlib
+    PUBLIC
+    ftdi_utils::ftdi_utils
+)
+
+# target name debug/release
+
+set_target_properties(er4commlib PROPERTIES
+    DEBUG_POSTFIX d
+)
+
+# Install
+
+cmake_path(SET ER4COMMLIB_PATH_CMAKE "$ENV{ER4COMMLIB_PATH}")
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX ${ER4COMMLIB_PATH_CMAKE} CACHE PATH "Install path" FORCE)
+endif()
+
+install(TARGETS er4commlib
+    EXPORT er4commlibTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+# Install header
+
+install(DIRECTORY src/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "*.hpp"
+)
+
+# Export target
+
+install(EXPORT er4commlibTargets
+    FILE er4commlibTargets.cmake
+    NAMESPACE er4commlib::
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/cmake/\${CMAKE_INSTALL_CONFIG_NAME}"
+)
+
+# Config package
+
+configure_package_config_file(
+    cmake/er4commlibConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/er4commlibConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/er4commlibConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/er4commlibConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/er4commlibConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake
+)

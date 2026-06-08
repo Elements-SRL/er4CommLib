@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+cmake_path(SET FTDI_UTILS_PATH_CMAKE "$ENV{FTDI_UTILS_PATH}")
+list(APPEND CMAKE_PREFIX_PATH "${FTDI_UTILS_PATH_CMAKE}")
+include(CMakeFindDependencyMacro)
+
+find_dependency(ftdi_utils REQUIRED)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CURRENT_CONFIG "Release")
+else()
+    set(CURRENT_CONFIG "${CMAKE_BUILD_TYPE}")
+endif()
+include("${CMAKE_CURRENT_LIST_DIR}/${CURRENT_CONFIG}/er4commlibTargets.cmake")

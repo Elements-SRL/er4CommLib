@@ -595,26 +595,22 @@ MessageDispatcher_e1HC_Gen2_EL09a_PCBV01::MessageDispatcher_e1HC_Gen2_EL09a_PCBV
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 4;
-    BoolArrayCoder * srCoder = new BoolArrayCoder(boolConfig);
-
-    boolConfig.initialByte = 2;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 2;
     clockDivCoder = new BoolArrayCoder(boolConfig);
 
-    samplingRateCoder = new EnsembleCoder();
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addCoder(srCoder);
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addCoder(clockDivCoder);
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x20); // 1.25kHz, clock/4,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x21); // 2.5kHz, clock/4,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x22); // 5kHz, clock/4,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x23); // 10kHz, clock/4,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x14); // 20kHz, clock/2,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x15); // 50kHz, clock/2,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x06); // 100kHz, clock/1,
-    static_cast <EnsembleCoder *> (samplingRateCoder)->addMapItem(0x07); // 200kHz, clock/1,
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 6;
+    samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x20); // 1.25kHz, clock/4,
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x21); // 2.5kHz, clock/4,
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x22); // 5kHz, clock/4,
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x23); // 10kHz, clock/4,
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x14); // 20kHz, clock/2,
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x15); // 50kHz, clock/2,
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x06); // 100kHz, clock/1,
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(0x07); // 200kHz, clock/1,
 
     /*! Protocol selection */
     boolConfig.initialByte = 15;

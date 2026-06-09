@@ -648,6 +648,11 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     /*! Sampling rate */
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 6;
+    boolConfig.bitsNum = 2;
+    clockDivCoder = new BoolArrayCoder(boolConfig);
+
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 6;
     boolConfig.bitsNum = 8;
     samplingRateCoder = new BoolRandomArrayCoder(boolConfig);
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(3);   /*!<  1.25kHz 5kHz   BW CK/8 -> 0b00000011 */

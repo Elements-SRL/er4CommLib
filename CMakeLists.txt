@@ -23,6 +23,7 @@ add_library(er4commlib STATIC
     devices/e1/messagedispatcher_e1light_gen2_el03c_pcbv01.cpp
     devices/e1/messagedispatcher_e1uln_gen2_el03c_pcbv06.cpp
     devices/e1/messagedispatcher_e1uln.cpp
+    devices/e1/messagedispatcher_e1light_gen2_el03c_pcbulnv067.cpp
     devices/e1/messagedispatcher_e1_e4nbased.cpp
     devices/eNPR/messagedispatcher_enpr.cpp
     devices/eNPR/messagedispatcher_enpr_hc.cpp

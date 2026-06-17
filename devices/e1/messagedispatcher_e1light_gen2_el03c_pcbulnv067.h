@@ -1,5 +1,5 @@
-#ifndef MESSAGEDISPATCHER_E1ULN_GEN2_EL_3C_PCBV_6_H
-#define MESSAGEDISPATCHER_E1ULN_GEN2_EL_3C_PCBV_6_H
+#ifndef MESSAGEDISPATCHER_E1LIGHT_GEN2_EL_3C_PCBULNV_67_H
+#define MESSAGEDISPATCHER_E1LIGHT_GEN2_EL_3C_PCBULNV_67_H
 
 #include "messagedispatcher.h"
 
@@ -7,10 +7,10 @@
 namespace er4CommLib {
 #endif
 
-class MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06 : public MessageDispatcher {
+class MessageDispatcher_e1Light_Gen2_EL03c_PCBULNV067 : public MessageDispatcher {
 public:
-    MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06(std::string di);
-    virtual ~MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06();
+    MessageDispatcher_e1Light_Gen2_EL03c_PCBULNV067(std::string di);
+    virtual ~MessageDispatcher_e1Light_Gen2_EL03c_PCBULNV067();
 
 protected:
     typedef struct {
@@ -19,14 +19,12 @@ protected:
 
     enum CurrentRanges {
         CurrentRange200pA,
-        CurrentRange2nA,
         CurrentRange20nA,
-        CurrentRange200nA,
         CurrentRangesNum
     };
 
     enum VoltageRanges {
-        VoltageRange700mV,
+        VoltageRange500mV,
         VoltageRangesNum
     };
 
@@ -58,7 +56,7 @@ protected:
     };
 
     enum ProtocolVoltageRanges {
-        ProtocolVoltageRange700mV,
+        ProtocolVoltageRange500mV,
         ProtocolVoltageRangesNum
     };
 
@@ -122,4 +120,4 @@ protected:
 };
 #endif
 
-#endif // MESSAGEDISPATCHER_E1ULN_GEN2_EL_3C_PCBV_6_H
+#endif // MESSAGEDISPATCHER_E1LIGHT_GEN2_EL_3C_PCBULNV_67_H

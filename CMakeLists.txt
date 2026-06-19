@@ -122,7 +122,7 @@ install(TARGETS er4commlib
 
 # Install header
 
-install(DIRECTORY src/
+install(DIRECTORY ./
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING
     PATTERN "*.h"

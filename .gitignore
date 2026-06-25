@@ -1,3 +1,4 @@
 *.lib
 *.pro.user
 build/
+.qtcreator/

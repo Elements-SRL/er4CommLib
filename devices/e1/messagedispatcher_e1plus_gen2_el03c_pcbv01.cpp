@@ -488,8 +488,8 @@ MessageDispatcher_e1Plus_Gen2_EL03c_PCBV01::MessageDispatcher_e1Plus_Gen2_EL03c_
     voltageOffsetControlImplemented = true;
     selectedVoltageOffset.resize(currentChannelsNum);
     voltageOffsetRange.step = 0.0625;
-    voltageOffsetRange.min = -500.0;
-    voltageOffsetRange.max = 500.0;
+    voltageOffsetRange.min = -2000.0;
+    voltageOffsetRange.max = 2000.0;
     voltageOffsetRange.prefix = UnitPfxMilli;
     voltageOffsetRange.unit = "V";
     for (uint16_t channelIdx = 0; channelIdx < currentChannelsNum; channelIdx++) {
@@ -500,8 +500,8 @@ MessageDispatcher_e1Plus_Gen2_EL03c_PCBV01::MessageDispatcher_e1Plus_Gen2_EL03c_
 
     insertionPulseImplemented = true;
     insertionPulseVoltageRange.step = 0.0625;
-    insertionPulseVoltageRange.min = -500.0;
-    insertionPulseVoltageRange.max = 500.0;
+    insertionPulseVoltageRange.min = -2000.0;
+    insertionPulseVoltageRange.max = 2000.0;
     insertionPulseVoltageRange.prefix = UnitPfxMilli;
     insertionPulseVoltageRange.unit = "V";
     insertionPulseDurationRange.step = 1.0;

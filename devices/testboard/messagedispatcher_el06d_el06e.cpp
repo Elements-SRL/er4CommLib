@@ -541,7 +541,7 @@ MessageDispatcher_EL06d_EL06e::MessageDispatcher_EL06d_EL06e(string id) :
     }
 
     /*! Current range */
-    currentRangeCoders.resize(currentChannelsNum);
+    currentRangeCoders.resize(1);
 
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 1;

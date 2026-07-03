@@ -737,7 +737,7 @@ ErrorCodes_t MessageDispatcher::setCurrentRange(uint16_t currentRangeIdx, uint16
                 selectedCurrentRangesIdx[channelIdx] = currentRangeIdx;
                 currentRanges[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]];
                 currentResolutions[channelIdx] = currentRangesArray[selectedCurrentRangesIdx[channelIdx]].step;
-                auto coderIdx = channelIdx<currentRangeCoders.size()?channelIdx:0;
+                auto coderIdx = channelIdx<currentRangeCoders.size() ? channelIdx : 0;
                 currentRangeCoders[coderIdx]->encode(selectedCurrentRangesIdx[channelIdx], txStatus);
             }
 

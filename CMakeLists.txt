@@ -51,6 +51,7 @@ add_library(er4commlib STATIC
     devices/fake/messagedispatcher_fake_enpr_hc.cpp
     devices/fake/messagedispatcher_fake_e16n.cpp
     devices/fake/messagedispatcher_fake_e16fastpulses.cpp
+    devices/testboard/messagedispatcher_el08b_tb.cpp
 )
 
 add_library(er4commlib::er4commlib ALIAS er4commlib)

@@ -148,6 +148,7 @@ typedef enum {
     TestboardEL06dEL06e,                /*!< testboard chip EL06d and EL06e */
     TestboardEL06f,                     /*!< testboard chip EL06f */
     TestboardEL09a,                     /*!< testboard chip EL09a */
+    TestboardEL08b,                     /*!< testboard chip EL08b */
     DeviceE1E4nBased,                   /*!< e4n with only one channel */
     DeviceE2HCExtAdc,                   /*!< e2HC prototype (external ADC). */
     DeviceE2HCIntAdc_V01,               /*!< e2HC prototype (internal ADC) up to 50kHz sampling rate. */

@@ -158,15 +158,13 @@ typedef enum {
     DeviceENPR2Channels_V01,            /*!< eNPR prototype with 2 channels and sinusoidal waveforms. */
     DeviceENPR2Channels_V02,            /*!< eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms. */
     DeviceENPR2Channels_V01_vcm,        /*!< eNPR prototype with 2 channels and sinusoidal waveforms with controllable vcm. */
-    DeviceOrbitMiniSine_V01,            /*!< Orbit mini prototype with additional sinusoidal waveforms. */
-    DeviceOrbitMiniSine_V02,            /*!< Orbit mini prototype with additional protocols that resemble the standard ones with an additive sinusoid. */
+    DeviceOrbitMiniSineAndTriggerIn_V02,/*!< Orbit mini prototype with additional protocols that resemble the standard ones with an additive sinusoid and with input trigger. */
     DeviceE16nSine_V01,                 /*!< e16 Orbit TC with additional sinusoidal waveforms. */
     DeviceE16nSine_V02,                 /*!< e16 Orbit TC with additional protocols that resemble the standard ones with an additive sinusoid. */
     DeviceENPRNanopipette_V01,          /*!< eNPR prototype with 2 channels with independent current ranges and PWM control. */
     DeviceE4TtlPulseTrain_V01,          /*!< e4 customized with ttl pulse train. */
     DeviceE2Uln_V01,                    /*!< e4 that returns 2 current channels measured in ULN mode */
     DeviceE16nRamps_V01,                /*!< e16n TC that can apply ramps on single channels */
-    DeviceE4nTriggerIn_V01,             /*!< e4n with input trigger */
     DeviceFakeENPR,                     /*!< Fake eNPR. */
     DeviceFakeENPRHC,                   /*!< Fake eNPR-HC. */
     DeviceFakeE16n,                     /*!< Fake e16 Orbit TC. */

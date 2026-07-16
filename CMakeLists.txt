@@ -8,9 +8,11 @@ project(er4commlib
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+option(BUILD_FOR_LABVIEW "Build the library as a DLL wrapper for LabVIEW" OFF)
+
 # Library
 
-add_library(er4commlib STATIC
+set(LIB_SOURCES
     er4commlib.cpp
     messagedispatcher.cpp
     commandcoder.cpp
@@ -54,11 +56,45 @@ add_library(er4commlib STATIC
     devices/testboard/messagedispatcher_el08b_tb.cpp
 )
 
-add_library(er4commlib::er4commlib ALIAS er4commlib)
+if(BUILD_FOR_LABVIEW)
+    set(TARGET_NAME "er4commlib_labview")
+
+    list(APPEND LIB_SOURCES er4commlib_labview.cpp)
+    set(LIB_HEADERS er4commlib_labview.h)
+
+    add_library(${TARGET_NAME} SHARED ${LIB_SOURCES} ${LIB_HEADERS})
+    add_library(er4commlib::er4commlib ALIAS ${TARGET_NAME})
+
+    target_compile_definitions(${TARGET_NAME} PRIVATE
+        ER4COMMLIB_LIBRARY
+    )
+
+    target_compile_definitions(${TARGET_NAME} PUBLIC
+        ER4COMMLIB_LABVIEW_WRAPPER
+    )
+
+    cmake_path(SET LABVIEW_TO_C_PATH_CMAKE "$ENV{LABVIEW_TO_C_PATH}")
+    target_include_directories(${TARGET_NAME}
+        PUBLIC
+        ${LABVIEW_TO_C_PATH_CMAKE}/include)
+    target_link_libraries(${TARGET_NAME}
+        PUBLIC
+        "${LABVIEW_TO_C_PATH_CMAKE}/lib/labview.lib"
+        "user32.lib")
+
+else()
+    set(TARGET_NAME "er4commlib")
+
+    add_library(${TARGET_NAME} STATIC ${LIB_SOURCES})
+    add_library(er4commlib::er4commlib ALIAS ${TARGET_NAME})
+
+    target_compile_definitions(${TARGET_NAME} PUBLIC ER4COMMLIB_STATIC)
+
+endif()
 
 # C standard
 
-set_target_properties(er4commlib PROPERTIES
+set_target_properties(${TARGET_NAME} PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
@@ -66,7 +102,7 @@ set_target_properties(er4commlib PROPERTIES
 
 # Include directories
 
-target_include_directories(er4commlib
+target_include_directories(${TARGET_NAME}
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/e1>
@@ -81,9 +117,8 @@ target_include_directories(er4commlib
 
 # Defines
 
-target_compile_definitions(er4commlib
+target_compile_definitions(${TARGET_NAME}
     PUBLIC
-    ER4COMMLIB_STATIC
     COMMLIB_MAJOR=${PROJECT_VERSION_MAJOR}
     COMMLIB_MINOR=${PROJECT_VERSION_MINOR}
     COMMLIB_PATCH=${PROJECT_VERSION_PATCH}
@@ -96,14 +131,14 @@ list(APPEND CMAKE_PREFIX_PATH "${FTDI_UTILS_PATH_CMAKE}")
 
 find_package(ftdi_utils REQUIRED CONFIG)
 
-target_link_libraries(er4commlib
+target_link_libraries(${TARGET_NAME}
     PUBLIC
     ftdi_utils::ftdi_utils
 )
 
 # target name debug/release
 
-set_target_properties(er4commlib PROPERTIES
+set_target_properties(${TARGET_NAME} PROPERTIES
     DEBUG_POSTFIX d
 )
 
@@ -114,7 +149,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${ER4COMMLIB_PATH_CMAKE} CACHE PATH "Install path" FORCE)
 endif()
 
-install(TARGETS er4commlib
+install(TARGETS ${TARGET_NAME}
     EXPORT er4commlibTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

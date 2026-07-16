@@ -124,39 +124,6 @@ private:
     };
 };
 
-class MessageDispatcher_e4n_sine_V01 : public MessageDispatcher_e4n_V01 {
-public:
-    MessageDispatcher_e4n_sine_V01(std::string di);
-    virtual ~MessageDispatcher_e4n_sine_V01();
-
-protected:
-    bool checkProtocolValidity(std::string &message) override;
-
-private:
-    enum ProtocolFrequencyRanges {
-        ProtocolFrequencyRange35Hz,
-        ProtocolFrequencyRangesNum
-    };
-
-    enum Protocols {
-        ProtocolConstant,
-        ProtocolTriangular,
-        ProtocolSquareWave,
-        ProtocolConductance,
-        ProtocolVariableAmplitude,
-        ProtocolVariableDuration,
-        ProtocolRamp,
-        ProtocolCyclicVoltammetry,
-        ProtocolSinusoid,
-        ProtocolsNum
-    };
-
-    enum ProtocolFrequencies {
-        ProtocolFrequency,
-        ProtocolFrequenciesNum
-    };
-};
-
 class MessageDispatcher_e4n_sine_V02 : public MessageDispatcher_e4n_V01 {
 public:
     MessageDispatcher_e4n_sine_V02(std::string di);

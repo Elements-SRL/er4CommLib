@@ -7,10 +7,55 @@
 namespace er4CommLib {
 #endif
 
-class MessageDispatcher_e4n_InputSync : public MessageDispatcher_e4n_V01 {
+class MessageDispatcher_e4n_SineInputSync : public MessageDispatcher_e4n_V01 {
 public:
-    MessageDispatcher_e4n_InputSync(std::string di);
-    virtual ~MessageDispatcher_e4n_InputSync();
+    MessageDispatcher_e4n_SineInputSync(std::string di);
+    virtual ~MessageDispatcher_e4n_SineInputSync();
+
+protected:
+    bool checkProtocolValidity(std::string &message) override;
+
+private:
+    enum ProtocolFrequencyRanges {
+        ProtocolFrequencyRange35Hz,
+        ProtocolFrequencyRangesNum
+    };
+
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolSinPlusConstant,
+        ProtocolSinPlusTriangular,
+        ProtocolSinPlusSquareWave,
+        ProtocolSinPlusConductance,
+        ProtocolSinPlusVariableAmplitude,
+        ProtocolSinPlusVariableDuration,
+        ProtocolSinPlusRamp,
+        ProtocolSinPlusCyclicVoltammetry,
+        ProtocolsNum
+    };
+
+    enum ProtocolVoltages {
+        ProtocolVHold,
+        ProtocolVPulse,
+        ProtocolVStep,
+        ProtocolVPk,
+        ProtocolVFinal,
+        ProtocolVInit,
+        ProtocolVSine,
+        ProtocolVoltagesNum
+    };
+
+    enum ProtocolFrequencies {
+        ProtocolFrequency,
+        ProtocolFrequenciesNum
+    };
 };
 
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER

@@ -579,7 +579,7 @@ MessageDispatcher_EL08b_TB::MessageDispatcher_EL08b_TB(string di) :
     /*! Digital offset compensations */
     digitalOffsetCompensationFlag = true;
     singleChannelDOCFlag = true;
-    selectableDOCAutostopFlag = true;
+    selectableDOCAutostopFlag = false;
 
     boolConfig.initialByte = 90;
     boolConfig.initialBit = 0;

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(er4commlib
-    VERSION 1.17.0
+    VERSION 1.18.0
     LANGUAGES CXX
 )
 
@@ -34,6 +34,7 @@ set(LIB_SOURCES
     devices/e2/messagedispatcher_e2uln_v01.cpp
     devices/e2/messagedispatcher_e2qc_debug.cpp
     devices/e4/messagedispatcher_e4n.cpp
+    devices/e4/messagedispatcher_e4n_fwv01.cpp
     devices/e4/messagedispatcher_e4e.cpp
     devices/e4/messagedispatcher_e4n_inputsync.cpp
     devices/e4/messagedispatcher_e4qc01a.cpp

@@ -18,6 +18,7 @@
 #include "messagedispatcher_e2uln_v01.h"
 #include "messagedispatcher_e2qc_debug.h"
 #include "messagedispatcher_e4n.h"
+#include "messagedispatcher_e4n_fwv01.h"
 #include "messagedispatcher_e4n_inputsync.h"
 #include "messagedispatcher_e4e.h"
 #include "messagedispatcher_e4qc01a.h"
@@ -90,6 +91,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE4, DeviceSubversionE4n, 11, DeviceE4nEDR3_V04},                                              //    4,  3, 11 : e4n with old ramp protocols (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 15, DeviceE4nEDR3_V05},                                              //    4,  3, 15 : e4n (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4n, 129, DeviceE4n_V01},                                                 //    4,  3,129 : e4n
+    {DeviceVersionE4, DeviceSubversionE4n, 1, DeviceE4n_FWV01},                                                 //    4,  3,  1 : e4n with digital offset compensation autostop
     {DeviceVersionE4, DeviceSubversionE4e, 15, DeviceE4eEDR3_V05},                                              //    4,  8, 15 : e4 Elements (Legacy version for EDR3)
     {DeviceVersionE4, DeviceSubversionE4e, 129, DeviceE4e_V01},                                                 //    4,  8,129 : e4 Elements version
     {DeviceVersionE4, DeviceSubversionE4nQc01a, 129, DeviceE4nQC01a_V01},                                       //    4,  9,129 : e4n with QC01a
@@ -144,8 +146,8 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 129, DeviceENPR2Channels_V01},                 //  254, 17,129 : eNPR prototype with 2 channels and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 130, DeviceENPR2Channels_V02},                 //  254, 17,130 : eNPR prototype with 2 channels with independent current ranges and sinusoidal waveforms
     {DeviceVersionPrototype, DeviceSubversionProtoENPR2Channels, 131, DeviceENPR2Channels_V01_vcm},             //  254, 17,131 : eNPR prototype with 2 channels and sinusoidal waveforms with controllable Vcm force
-    {DeviceVersionPrototype, DeviceSubversionProtoOrbitMiniSineWave, 1, DeviceOrbitMiniSineAndTriggerIn_V02},   //  254, 18,130 : e16n prototype with additional protocols that resemble the standard ones with an additive sinusoid and with input trigger
-    {DeviceVersionPrototype, DeviceSubversionProtoE16nSineWave, 130, DeviceE16nSine_V02},                       //  254, 19,1 : e16n TC prototype with additional protocols that resemble the standard ones with an additive sinusoid
+    {DeviceVersionPrototype, DeviceSubversionProtoOrbitMiniSineWave, 1, DeviceOrbitMiniSineAndTriggerIn_V02},   //  254, 18,  1 : e4n prototype with additional protocols that resemble the standard ones with an additive sinusoid and with input trigger
+    {DeviceVersionPrototype, DeviceSubversionProtoE16nSineWave, 130, DeviceE16nSine_V02},                       //  254, 19,130 : e16n TC prototype with additional protocols that resemble the standard ones with an additive sinusoid
     {DeviceVersionPrototype, DeviceSubversionProtoENPRNanopipette, 129, DeviceENPRNanopipette_V01},             //  254, 20,129 : eNPR prototype with 2 channels with independent current ranges and PWM control
     {DeviceVersionPrototype, DeviceSubversionProtoProtoE1ULN, 129, DeviceE1ULN_V01},                            //  254, 21,129 : e1ULN prototype with eNPR PCB
     {DeviceVersionPrototype, DeviceSubversionProtoE4TtlPulseTrain, 129, DeviceE4TtlPulseTrain_V01},             //  254, 22,129 : e4 customized with ttl pulse train
@@ -413,6 +415,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE4n_V01:
         messageDispatcher = new MessageDispatcher_e4n_V01(deviceId);
+        break;
+
+    case DeviceE4n_FWV01:
+        messageDispatcher = new MessageDispatcher_e4n_FWV01(deviceId);
         break;
 
     case DeviceE4e_V01:

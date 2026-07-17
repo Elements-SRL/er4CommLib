@@ -132,6 +132,7 @@ typedef enum {
     DeviceE4nEDR3_V05,                  /*!< e4 Orbit mini (Legacy version for EDR3). */
     DeviceE4eEDR3_V05,                  /*!< e4 Elements (Legacy version for EDR3). */
     DeviceE4n_V01,                      /*!< e4 Orbit mini. */
+    DeviceE4n_FWV01,                    /*!< e4 Orbit mini with digital offset compensation autostop. */
     DeviceE4e_V01,                      /*!< e4 Elements version. */
     DeviceE4nQC01a_V01,                 /*!< e4 Orbit mini with QC01a. */
     DeviceE4nQC01a_V02,                 /*!< e4 Orbit mini with QC01a and only 5nA range. */

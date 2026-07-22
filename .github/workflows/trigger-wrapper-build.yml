@@ -1,0 +1,70 @@
+# >>> THIS FILE BELONGS IN THE er4CommLib REPO, NOT IN er4-python. <<<
+#
+# Place at: er4CommLib/.github/workflows/trigger-wrapper-build.yml
+#
+# When an authorised user pushes a version tag to er4CommLib, this workflow
+# tells the er4-python repo to build and release a fresh .pyd for that tag.
+#
+# It runs on a free GitHub-hosted Linux runner: it only checks and forwards.
+# All the heavy lifting happens on er4-python's self-hosted Windows runner.
+
+name: Trigger wrapper build
+
+on:
+  push:
+    tags:
+      # er4CommLib tags look like 0.18.0 - no 'v' prefix.
+      # This pattern is a glob, not a regex: it matches "digit, anything,
+      # digit, anything, digit" which is enough to catch x.y.z and reject
+      # branch-ish or word tags.
+      - '[0-9]*.[0-9]*.[0-9]*'
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      # ----- Gate: only an approved user may cut a release ----------------
+      # github.actor is an authentication signal, not tamper-proof
+      # authorisation. See er4-python/docs/SECURITY.md for the honest limits
+      # and for the stronger required-reviewers gate you can add later.
+      - name: Verify authorised actor
+        env:
+          AUTHORISED_ACTORS: "FConaElements lucarossi147"   # space-separated
+        run: |
+          echo "Tag pushed by: $GITHUB_ACTOR"
+          for a in $AUTHORISED_ACTORS; do
+            if [ "$GITHUB_ACTOR" = "$a" ]; then
+              echo "Actor authorised."
+              exit 0
+            fi
+          done
+          echo "::error::User '$GITHUB_ACTOR' is not authorised to trigger a release build."
+          exit 1
+
+      # ----- Forward the tag to er4-python --------------------------------
+      # The built-in GITHUB_TOKEN cannot trigger workflows in a DIFFERENT
+      # repo, so this needs an explicit fine-grained PAT with Contents:write
+      # scoped to er4-python only. Stored as a secret on THIS repo.
+      - name: Dispatch build to er4-python
+        env:
+          ER4_DISPATCH_TOKEN: ${{ secrets.ER4_DISPATCH_TOKEN }}
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "Dispatching build for tag: $TAG"
+
+          HTTP=$(curl -sS -o /tmp/resp.json -w '%{http_code}' \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $ER4_DISPATCH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/Elements-SRL/er4-python/dispatches \
+            -d "{\"event_type\":\"commlib-tagged\",\"client_payload\":{\"commlib_ref\":\"$TAG\"}}")
+
+          echo "HTTP $HTTP"
+          cat /tmp/resp.json || true
+
+          if [ "$HTTP" != "204" ]; then
+            echo "::error::Dispatch failed (HTTP $HTTP). Check ER4_DISPATCH_TOKEN scope: it needs Contents:write on Elements-SRL/er4-python."
+            exit 1
+          fi
+          echo "Dispatch accepted."

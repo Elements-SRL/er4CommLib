@@ -29,6 +29,7 @@
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16hc.h"
 #include "messagedispatcher_e16eth.h"
+#include "messagedispatcher_el03ce_char.h"
 #include "messagedispatcher_el06b.h"
 #include "messagedispatcher_el06c.h"
 #include "messagedispatcher_el06d_el06e.h"
@@ -127,7 +128,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                               //   12,  1,130 : e2HC SR up to 50kHz
     {DeviceVersionE2, DeviceSubversionE2HC, 131, DeviceE2HC_V02},                                               //   12,  1,131 : e2HC
     {DeviceVersionE2, DeviceSubversionE2HC_EL06g, 1, DeviceE2HC_V02},                                           //   12,  2,  1 : e2HC with EL06g ASIC
-    {DeviceVersionTestBoard, DeviceSubversionTestBoardDlp, 4, DeviceDlp},                                       //    6,  3,  4 : debug dlp
+    {DeviceVersionTestBoard, DeviceSubversionTestBoardDlp, 4, DeviceEL03ceChar},                                //    6,  3,  4 : characterizer EL03ce
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06b, 5, TestboardEL06b},                                //    6,  5,  5 : testboard EL06b
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06c, 5, TestboardEL06c},                                //    6,  6,  5 : testboard EL06c
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL06d, 13, TestboardEL06dEL06e},                          //    6,  7, 13 : testboard EL06d
@@ -497,8 +498,8 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_e2HC_V02(deviceId);
         break;
 
-    case DeviceDlp:
-        messageDispatcher = new MessageDispatcher_dlp(deviceId);
+    case DeviceEL03ceChar:
+        messageDispatcher = new MessageDispatcher_EL03ce_Char_LegacyEdr3(deviceId);
         break;
 
     case TestboardEL06b:
@@ -2392,8 +2393,9 @@ ErrorCodes_t MessageDispatcher::getTriangularProtocolIdx(uint16_t &idx) {
         /*! Protocol 0 is always the VHold */
         idx = triangularProtocolIdx;
         return Success;
-
-    } else {
+    }
+    else {
+        idx = 0;
         return ErrorFeatureNotImplemented;
     }
 }
@@ -2403,8 +2405,9 @@ ErrorCodes_t MessageDispatcher::getSealTestProtocolIdx(uint16_t &idx) {
         /*! Protocol 0 is always the VHold */
         idx = sealTestProtocolIdx;
         return Success;
-
-    } else {
+    }
+    else {
+        idx = 0;
         return ErrorFeatureNotImplemented;
     }
 }

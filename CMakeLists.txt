@@ -45,6 +45,7 @@ set(LIB_SOURCES
     devices/e16/messagedispatcher_e16fastpulses.cpp
     devices/e16/messagedispatcher_e16hc.cpp
     devices/e16/messagedispatcher_e16eth.cpp
+    devices/testboard/messagedispatcher_el03ce_char.cpp
     devices/testboard/messagedispatcher_el06b.cpp
     devices/testboard/messagedispatcher_el06c.cpp
     devices/testboard/messagedispatcher_el06d_el06e.cpp

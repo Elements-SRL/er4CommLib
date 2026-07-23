@@ -143,7 +143,7 @@ typedef enum {
     DeviceE16nEL08a,                    /*!< e16n TC with EL08a. */
     DeviceE2HC_V01,                     /*!< e2HC. SR up to 50kHz */
     DeviceE2HC_V02,                     /*!< e2HC. */
-    DeviceDlp,                          /*!< debug dlp. */
+    DeviceEL03ceChar,                   /*!< Characterizer chip EL03ce. */
     TestboardEL06b,                     /*!< testboard chip EL06b */
     TestboardEL06c,                     /*!< testboard chip EL06c */
     TestboardEL06dEL06e,                /*!< testboard chip EL06d and EL06e */

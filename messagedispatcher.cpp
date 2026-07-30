@@ -1190,6 +1190,7 @@ ErrorCodes_t MessageDispatcher::selectVoltageProtocol(unsigned int idx, bool app
 }
 
 ErrorCodes_t MessageDispatcher::applyVoltageProtocol() {
+    this->remapProtocolParameters();
     protocolStartCoder->encode(1, txStatus);
     this->stackOutgoingMessage(txStatus);
     protocolStartCoder->encode(0, txStatus);
@@ -1201,6 +1202,7 @@ ErrorCodes_t MessageDispatcher::setProtocolVoltage(unsigned int idx, Measurement
     if (idx >= protocolVoltagesNum) {
         return ErrorValueOutOfRange;
     }
+    selectedProtocolVoltage[idx] = voltage;
     voltage.convertValue(protocolVoltageRanges[idx].prefix);
     protocolVoltageCoders[idx]->encode(voltage.value, txStatus);
     if (applyFlag) {
@@ -3184,6 +3186,10 @@ void MessageDispatcher::initializeDevice() {
     }
 
     this->applyDacExt({0.0, UnitPfxNone, "V"}, false);
+}
+
+void MessageDispatcher::remapProtocolParameters() {
+    /*! No parameters to remap in general */
 }
 
 void MessageDispatcher::initializeLsbNoise(bool nullValues) {

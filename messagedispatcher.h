@@ -342,6 +342,7 @@ protected:
     ErrorCodes_t initFtdiChannel(FT_HANDLE * handle, char channel);
     virtual void initializeDevice();
     virtual bool checkProtocolValidity(std::string &message) = 0;
+    virtual void remapProtocolParameters();
 
     void initializeLsbNoise(bool nullValues = true);
     void initializeCompensations();
@@ -484,7 +485,7 @@ protected:
     std::vector <std::vector <uint16_t>> protocolsAvailableSlopes;
     std::vector <std::vector <uint16_t>> protocolsAvailableFrequencies;
     std::vector <std::vector <uint16_t>> protocolsAvailableAdimensionals;
-    BoolArrayCoder * protocolsSelectCoder;
+    BoolCoder * protocolsSelectCoder;
     BoolArrayCoder * protocolStartCoder;
     uint16_t defaultProtocol;
     uint16_t selectedProtocol;

@@ -2189,9 +2189,9 @@ MessageDispatcher_e16n_sine_V02::MessageDispatcher_e16n_sine_V02(string di) :
     protocolVoltageRanges[ProtocolVStep].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVStep].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVStep].unit = "V";
-    protocolVoltageRanges[ProtocolVPk].step = 25.0;
-    protocolVoltageRanges[ProtocolVPk].min = 25.0;
-    protocolVoltageRanges[ProtocolVPk].max = 4.0*protocolVoltageRanges[ProtocolVPk].step;
+    protocolVoltageRanges[ProtocolVPk].step = 1.0;
+    protocolVoltageRanges[ProtocolVPk].min = voltageRangesArray[VoltageRange500mV].min;
+    protocolVoltageRanges[ProtocolVPk].max = voltageRangesArray[VoltageRange500mV].max;
     protocolVoltageRanges[ProtocolVPk].prefix = UnitPfxMilli;
     protocolVoltageRanges[ProtocolVPk].unit = "V";
     protocolVoltageRanges[ProtocolVFinal].step = 1.0;
@@ -2377,7 +2377,30 @@ MessageDispatcher_e16n_sine_V02::MessageDispatcher_e16n_sine_V02(string di) :
     \**********/
 
     /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
     DoubleCoder::CoderConfig_t doubleConfig;
+
+    /*! Protocol selection */
+    boolConfig.initialByte = 9;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 4;
+    protocolsSelectCoder = new BoolRandomArrayCoder(boolConfig);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(7);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(2);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(3);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(4);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(5);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(6);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(7);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(8);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(15);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(10);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(11);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(12);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(13);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(14);
+    static_cast <BoolRandomArrayCoder *> (protocolsSelectCoder)->addMapItem(15);
 
     /*! Protocol voltages */
     protocolVoltageCoders.resize(ProtocolVoltagesNum);
@@ -3026,6 +3049,35 @@ bool MessageDispatcher_e16n_sine_V02::checkProtocolValidity(string &message) {
         break;
     }
     return validFlag;
+}
+
+void MessageDispatcher_e16n_sine_V02::remapProtocolParameters() {
+    if (selectedProtocol == 1 || selectedProtocol == 9) {
+        Measurement_t voltage = selectedProtocolVoltage[ProtocolVHold]+selectedProtocolVoltage[ProtocolVPk];
+        voltage.convertValue(protocolVoltageRanges[ProtocolVFinal].prefix);
+        protocolVoltageCoders[ProtocolVFinal]->encode(voltage.value, txStatus);
+        selectedProtocolVoltage[ProtocolVFinal] = voltage;
+
+        voltage = selectedProtocolVoltage[ProtocolVHold]-selectedProtocolVoltage[ProtocolVPk];
+        voltage.convertValue(protocolVoltageRanges[ProtocolVInit].prefix);
+        protocolVoltageCoders[ProtocolVInit]->encode(voltage.value, txStatus);
+        selectedProtocolVoltage[ProtocolVInit] = voltage;
+
+        Measurement_t time = {0.0, UnitPfxNone, "s"};
+        time.convertValue(protocolTimeRanges[ProtocolTHold].prefix);
+        protocolTimeCoders[ProtocolTHold]->encode(time.value, txStatus);
+        selectedProtocolTime[ProtocolTHold] = time;
+
+        time = selectedProtocolTime[ProtocolTPe]*0.5;
+        time.convertValue(protocolTimeRanges[ProtocolTRamp].prefix);
+        protocolTimeCoders[ProtocolTRamp]->encode(time.value, txStatus);
+        selectedProtocolTime[ProtocolTRamp] = time;
+
+        Measurement_t N = {0.0, UnitPfxNone, ""};
+        N.convertValue(protocolAdimensionalRanges[ProtocolNR].prefix);
+        protocolAdimensionalCoders[ProtocolNR]->encode(N.value, txStatus);
+        selectedProtocolAdimensional[ProtocolNR] = N;
+    }
 }
 
 MessageDispatcher_dlp::MessageDispatcher_dlp(string di) :

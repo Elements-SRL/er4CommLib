@@ -14,6 +14,7 @@ public:
 
 protected:
     bool checkProtocolValidity(std::string &message) override;
+    void remapProtocolParameters() override;
 
 private:
     enum ProtocolFrequencyRanges {

@@ -101,9 +101,6 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     samplingRatesArray[SamplingRate100kHz].value = 100.0;
     samplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate100kHz].unit = "Hz";
-    samplingRatesArray[SamplingRate200kHz].value = 200.0;
-    samplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
-    samplingRatesArray[SamplingRate200kHz].unit = "Hz";
     defaultSamplingRateIdx = SamplingRate1_25kHz;
 
     realSamplingRatesArray.resize(samplingRatesNum);
@@ -128,9 +125,6 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     realSamplingRatesArray[SamplingRate100kHz].value = 100.0;
     realSamplingRatesArray[SamplingRate100kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate100kHz].unit = "Hz";
-    realSamplingRatesArray[SamplingRate200kHz].value = 200.0;
-    realSamplingRatesArray[SamplingRate200kHz].prefix = UnitPfxKilo;
-    realSamplingRatesArray[SamplingRate200kHz].unit = "Hz";
 
     integrationStepArray.resize(samplingRatesNum);
     integrationStepArray[SamplingRate1_25kHz].value = 1024.0/1.25;
@@ -154,9 +148,6 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     integrationStepArray[SamplingRate100kHz].value = 10.0;
     integrationStepArray[SamplingRate100kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate100kHz].unit = "s";
-    integrationStepArray[SamplingRate200kHz].value = 5.0;
-    integrationStepArray[SamplingRate200kHz].prefix = UnitPfxMicro;
-    integrationStepArray[SamplingRate200kHz].unit = "s";
 
     /*! Oversampling ratios */
     oversamplingImplemented = false;
@@ -658,11 +649,10 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(3);   /*!<  1.25kHz 5kHz   BW CK/8 -> 0b00000011 */
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(19);  /*!<  2.5kHz  5kHz   BW CK/8 -> 0b00010011 */
     static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(34);  /*!<  5kHz    5kHz   BW CK/4 -> 0b00100010 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(54);  /*!<  10kHz   10kHz  BW CK/4 -> 0b00110110 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(73);  /*!<  20kHz   20kHz  BW CK/2 -> 0b01001001 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(93);  /*!<  50kHz   100kHz BW CK/2 -> 0b01011101 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(108); /*!<  100kHz  100kHz BW CK/1 -> 0b01101100 */
-    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(124); /*!<  200kHz  100kHz BW CK/1 -> 0b01111100 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(50);  /*!<  10kHz   5kHz   BW CK/4 -> 0b00110010 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(69);  /*!<  20kHz   10kHz  BW CK/2 -> 0b01000101 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(85);  /*!<  50kHz   10kHz  BW CK/2 -> 0b01010101 */
+    static_cast <BoolRandomArrayCoder *> (samplingRateCoder)->addMapItem(104); /*!<  100kHz  20kHz  BW CK/1 -> 0b01101000 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 9;

@@ -76,13 +76,12 @@ if(BUILD_FOR_LABVIEW)
     )
 
     cmake_path(SET LABVIEW_TO_C_PATH_CMAKE "$ENV{LABVIEW_TO_C_PATH}")
-    target_include_directories(${TARGET_NAME}
-        PUBLIC
-        ${LABVIEW_TO_C_PATH_CMAKE}/include)
-    target_link_libraries(${TARGET_NAME}
-        PUBLIC
-        "${LABVIEW_TO_C_PATH_CMAKE}/lib/labview.lib"
-        "user32.lib")
+	include(${LABVIEW_TO_C_PATH_CMAKE}cmake/Findlabview2c.cmake)
+
+	target_link_libraries(${TARGET_NAME}
+            PUBLIC
+            labview2c::labview2c
+        )
 
 else()
     set(TARGET_NAME "er4commlib")

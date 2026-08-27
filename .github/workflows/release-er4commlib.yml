@@ -36,7 +36,7 @@ jobs:
           cmake -S . -B build\lib -G "Visual Studio 17 2022" -A x64 `
             -DCMAKE_CONFIGURATION_TYPES=Release `
             -DBUILD_FOR_LABVIEW=OFF `
-            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}\install\lib"
+            -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}\er4commlib-install\lib"
 
       - name: Build
         shell: powershell
@@ -46,11 +46,18 @@ jobs:
         shell: powershell
         run: cmake --install build\lib --config Release
 
+      # NOTE: CMAKE_INSTALL_PREFIX above is deliberately outside the checked-out
+      # workspace. er4commlib's CMakeLists.txt installs headers via
+      # install(DIRECTORY ./ ...) - i.e. it scans the ENTIRE repo root. If the
+      # install prefix were a subfolder of the workspace (e.g. under
+      # github.workspace), that install step would walk into its own output
+      # and copy itself into itself recursively, without end. Keep this
+      # pointed at runner.temp (a sibling of the checkout) so that can't happen.
       - name: Upload lib artifact
         uses: actions/upload-artifact@v4
         with:
           name: er4commlib-static
-          path: install\lib
+          path: ${{ runner.temp }}\er4commlib-install\lib
           retention-days: 7
 
   build-labview:
@@ -74,7 +81,7 @@ jobs:
           cmake -S . -B build\labview -G "Visual Studio 17 2022" -A x64 `
             -DCMAKE_CONFIGURATION_TYPES=Release `
             -DBUILD_FOR_LABVIEW=ON `
-            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}\install\labview"
+            -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}\er4commlib-install\labview"
 
       - name: Build
         shell: powershell
@@ -88,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: er4commlib-labview
-          path: install\labview
+          path: ${{ runner.temp }}\er4commlib-install\labview
           retention-days: 7
 
   package-release:

@@ -13,56 +13,56 @@ option(BUILD_FOR_LABVIEW "Build the library as a DLL wrapper for LabVIEW" OFF)
 # Library
 
 set(LIB_SOURCES
-    er4commlib.cpp
-    messagedispatcher.cpp
-    commandcoder.cpp
-    devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.cpp
-    devices/e1/messagedispatcher_e1light.cpp
-    devices/e1/messagedispatcher_e1plus.cpp
-    devices/e1/messagedispatcher_e1plus_gen2_el03c_pcbv01.cpp
-    devices/e1/messagedispatcher_e1hc.cpp
-    devices/e1/messagedispatcher_e1hc_gen2_el09a_pcbv01.cpp
-    devices/e1/messagedispatcher_e1light_gen2_el03c_pcbv01.cpp
-    devices/e1/messagedispatcher_e1uln_gen2_el03c_pcbv06.cpp
-    devices/e1/messagedispatcher_e1uln.cpp
-    devices/e1/messagedispatcher_e1light_gen2_el03c_pcbulnv067.cpp
-    devices/e1/messagedispatcher_e1_e4nbased.cpp
-    devices/eNPR/messagedispatcher_enpr.cpp
-    devices/eNPR/messagedispatcher_enpr_hc.cpp
-    devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.cpp
-    devices/e2/messagedispatcher_e2hc.cpp
-    devices/e2/messagedispatcher_e2uln_v01.cpp
-    devices/e2/messagedispatcher_e2qc_debug.cpp
-    devices/e4/messagedispatcher_e4n.cpp
-    devices/e4/messagedispatcher_e4n_fwv01.cpp
-    devices/e4/messagedispatcher_e4e.cpp
-    devices/e4/messagedispatcher_e4n_inputsync.cpp
-    devices/e4/messagedispatcher_e4qc01a.cpp
-    devices/e16/messagedispatcher_e16e.cpp
-    devices/e16/messagedispatcher_e16n.cpp
-    devices/e16/messagedispatcher_e16n_ramps.cpp
-    devices/e16/messagedispatcher_e16n_el08a.cpp
-    devices/e16/messagedispatcher_e16fastpulses.cpp
-    devices/e16/messagedispatcher_e16hc.cpp
-    devices/e16/messagedispatcher_e16eth.cpp
-    devices/testboard/messagedispatcher_el03ce_char.cpp
-    devices/testboard/messagedispatcher_el06b.cpp
-    devices/testboard/messagedispatcher_el06c.cpp
-    devices/testboard/messagedispatcher_el06d_el06e.cpp
-    devices/testboard/messagedispatcher_el06f.cpp
-    devices/testboard/messagedispatcher_el09a_tb.cpp
-    devices/fake/messagedispatcher_fake_enpr.cpp
-    devices/fake/messagedispatcher_fake_enpr_hc.cpp
-    devices/fake/messagedispatcher_fake_e16n.cpp
-    devices/fake/messagedispatcher_fake_e16fastpulses.cpp
-    devices/testboard/messagedispatcher_el08b_tb.cpp
+    src/er4commlib.cpp
+    src/messagedispatcher.cpp
+    src/commandcoder.cpp
+    src/devices/e1/messagedispatcher_e1b_el03c_legacyedr3_pcbv02.cpp
+    src/devices/e1/messagedispatcher_e1light.cpp
+    src/devices/e1/messagedispatcher_e1plus.cpp
+    src/devices/e1/messagedispatcher_e1plus_gen2_el03c_pcbv01.cpp
+    src/devices/e1/messagedispatcher_e1hc.cpp
+    src/devices/e1/messagedispatcher_e1hc_gen2_el09a_pcbv01.cpp
+    src/devices/e1/messagedispatcher_e1light_gen2_el03c_pcbv01.cpp
+    src/devices/e1/messagedispatcher_e1uln_gen2_el03c_pcbv06.cpp
+    src/devices/e1/messagedispatcher_e1uln.cpp
+    src/devices/e1/messagedispatcher_e1light_gen2_el03c_pcbulnv067.cpp
+    src/devices/e1/messagedispatcher_e1_e4nbased.cpp
+    src/devices/eNPR/messagedispatcher_enpr.cpp
+    src/devices/eNPR/messagedispatcher_enpr_hc.cpp
+    src/devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.cpp
+    src/devices/e2/messagedispatcher_e2hc.cpp
+    src/devices/e2/messagedispatcher_e2uln_v01.cpp
+    src/devices/e2/messagedispatcher_e2qc_debug.cpp
+    src/devices/e4/messagedispatcher_e4n.cpp
+    src/devices/e4/messagedispatcher_e4n_fwv01.cpp
+    src/devices/e4/messagedispatcher_e4e.cpp
+    src/devices/e4/messagedispatcher_e4n_inputsync.cpp
+    src/devices/e4/messagedispatcher_e4qc01a.cpp
+    src/devices/e16/messagedispatcher_e16e.cpp
+    src/devices/e16/messagedispatcher_e16n.cpp
+    src/devices/e16/messagedispatcher_e16n_ramps.cpp
+    src/devices/e16/messagedispatcher_e16n_el08a.cpp
+    src/devices/e16/messagedispatcher_e16fastpulses.cpp
+    src/devices/e16/messagedispatcher_e16hc.cpp
+    src/devices/e16/messagedispatcher_e16eth.cpp
+    src/devices/testboard/messagedispatcher_el03ce_char.cpp
+    src/devices/testboard/messagedispatcher_el06b.cpp
+    src/devices/testboard/messagedispatcher_el06c.cpp
+    src/devices/testboard/messagedispatcher_el06d_el06e.cpp
+    src/devices/testboard/messagedispatcher_el06f.cpp
+    src/devices/testboard/messagedispatcher_el09a_tb.cpp
+    src/devices/fake/messagedispatcher_fake_enpr.cpp
+    src/devices/fake/messagedispatcher_fake_enpr_hc.cpp
+    src/devices/fake/messagedispatcher_fake_e16n.cpp
+    src/devices/fake/messagedispatcher_fake_e16fastpulses.cpp
+    src/devices/testboard/messagedispatcher_el08b_tb.cpp
 )
 
 if(BUILD_FOR_LABVIEW)
     set(TARGET_NAME "er4commlib_labview")
 
-    list(APPEND LIB_SOURCES er4commlib_labview.cpp)
-    set(LIB_HEADERS er4commlib_labview.h)
+    list(APPEND LIB_SOURCES src/er4commlib_labview.cpp)
+    set(LIB_HEADERS include/er4commlib_labview.h)
 
     add_library(${TARGET_NAME} SHARED ${LIB_SOURCES} ${LIB_HEADERS})
     add_library(er4commlib::er4commlib ALIAS ${TARGET_NAME})
@@ -76,12 +76,12 @@ if(BUILD_FOR_LABVIEW)
     )
 
     cmake_path(SET LABVIEW_TO_C_PATH_CMAKE "$ENV{LABVIEW_TO_C_PATH}")
-	include(${LABVIEW_TO_C_PATH_CMAKE}cmake/Findlabview2c.cmake)
+    include(${LABVIEW_TO_C_PATH_CMAKE}cmake/Findlabview2c.cmake)
 
-	target_link_libraries(${TARGET_NAME}
-            PUBLIC
-            labview2c::labview2c
-        )
+    target_link_libraries(${TARGET_NAME}
+        PUBLIC
+        labview2c::labview2c
+    )
 
 else()
     set(TARGET_NAME "er4commlib")
@@ -105,14 +105,15 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 
 target_include_directories(${TARGET_NAME}
     PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/e1>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/eNPR>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/e2>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/e4>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/e16>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/fake>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/devices/testboard>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/devices/e1>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/devices/eNPR>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/devices/e2>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/devices/e4>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/devices/e16>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/devices/fake>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/devices/testboard>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
@@ -159,7 +160,7 @@ install(TARGETS ${TARGET_NAME}
 
 # Install header
 
-install(DIRECTORY ./
+install(DIRECTORY include/
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING
     PATTERN "*.h"

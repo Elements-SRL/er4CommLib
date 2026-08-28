@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(er4commlib
-    VERSION 1.20.3
+    VERSION 1.20.4
     LANGUAGES CXX
 )
 

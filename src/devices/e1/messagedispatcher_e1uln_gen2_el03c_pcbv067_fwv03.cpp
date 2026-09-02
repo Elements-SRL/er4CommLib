@@ -283,7 +283,7 @@ MessageDispatcher_e1ULN_Gen2_EL03c_PCBV067_FWV03::MessageDispatcher_e1ULN_Gen2_E
     protocolsImages[ProtocolVariableDuration] = "stepVariableDuration001";
     protocolsImages[ProtocolRamp] = "ramp002";
     protocolsImages[ProtocolCyclicVoltammetry] = "cyclicVoltammetry002";
-    protocolsImages[ProtocolSin] = "";
+    protocolsImages[ProtocolSin] = "sineWave001";
 
     protocolsAvailableVoltages.resize(ProtocolsNum);
     protocolsAvailableTimes.resize(ProtocolsNum);

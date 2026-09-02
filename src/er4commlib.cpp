@@ -1599,7 +1599,7 @@ void resetSampleDiscardVariables() {
     std::fill(sdKfInnovation.begin(), sdKfInnovation.end(), 0.0);
     std::fill(sdKfStateEstimate.begin(), sdKfStateEstimate.end(), 0.0);
     std::fill(sdKfMeasurementVariance.begin(), sdKfMeasurementVariance.end(), 0.0);
-    std::fill(sdTotalReadSamples.begin(), sdTotalReadSamples.end(), 0.0);
+    std::fill(sdTotalReadSamples.begin(), sdTotalReadSamples.end(), 0);
     std::fill(availableSamples.begin(), availableSamples.end(), 0);
     std::fill(sdSamplesToDiscard.begin(), sdSamplesToDiscard.end(), 0);
 }

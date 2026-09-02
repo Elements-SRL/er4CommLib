@@ -6,6 +6,7 @@
 #include "messagedispatcher_e1light.h"
 #include "messagedispatcher_e1light_gen2_el03c_pcbv01.h"
 #include "messagedispatcher_e1uln_gen2_el03c_pcbv06.h"
+#include "messagedispatcher_e1uln_gen2_el03c_pcbv067_fwv03.h"
 #include "messagedispatcher_e1hc.h"
 #include "messagedispatcher_e1hc_gen2_el09a_pcbv01.h"
 #include "messagedispatcher_e1uln.h"
@@ -70,9 +71,11 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1PlusEL03F, 3, DeviceE1PlusEL03f},                                       //    9,  8,  3 : e1+ EL03f chip
     {DeviceVersionE1, DeviceSubversionE1HcEL03F, 1, DeviceE1HcEL03fEDR3},                                       //    9,  9,  1 : e1HC EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1ULN, 129, DeviceE1ULN_V01},                                             //    9, 10,129 : e1ULN prototype with eNPR PCB
+    {DeviceVersionE1, DeviceSubversionE1ULN, 3, DeviceE1ULNGen2EL03c_PCBV067_FWV03},                            //    9, 10,  3 : e1ULN prototype with eNPR PCB and sine waves
     {DeviceVersionE1, DeviceSubversionE1LightGen2EL03cPCBV01, 1, DeviceE1LightGen2EL03c_PCBV01},                //    9, 11,  1 : e1 Light based on e1LightPlus PCB V01
     {DeviceVersionE1, DeviceSubversionE1PlusGen2EL03cPCBV01, 1, DeviceE1PlusGen2EL03c_PCBV01},                  //    9, 12,  1 : e1 Plus based on e1LightPlus PCB V01
     {DeviceVersionE1, DeviceSubversionE1ULNGen2EL03cPCBV06, 2, DeviceE1ULNGen2EL03c_PCBV06},                    //    9, 13,  2 : e1ULN PCB V06
+    {DeviceVersionE1, DeviceSubversionE1ULNGen2EL03cPCBV06, 3, DeviceE1ULNGen2EL03c_PCBV067_FWV03},             //    9, 13,  3 : e1ULN PCB V06 with sine waves
     {DeviceVersionE1, DeviceSubversionE1HcGen2EL09aPCBV01, 1, DeviceE1HcGen2EL09a_PCBV01},                      //    9, 14,  1 : e1HC EL09a chip
     {DeviceVersionE1, DeviceSubversionE1LightEL03FXC3S500E, 2, DeviceE1LightEL03fEDR3},                         //    9, 15,  2 : e1Light EL03f chip (Legacy version for EDR3)
     {DeviceVersionE1, DeviceSubversionE1LightGen2EL03cPCBULNGen2V067, 2, DeviceE1LightGen2EL03c_PCBULNV067},    //    9, 16,  2 : e1 Light based on e1ULN PCB V06
@@ -364,6 +367,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE1ULNGen2EL03c_PCBV06:
         messageDispatcher = new MessageDispatcher_e1ULN_Gen2_EL03c_PCBV06(deviceId);
+        break;
+
+    case DeviceE1ULNGen2EL03c_PCBV067_FWV03:
+        messageDispatcher = new MessageDispatcher_e1ULN_Gen2_EL03c_PCBV067_FWV03(deviceId);
         break;
 
     case DeviceE1LightGen2EL03c_PCBULNV067:

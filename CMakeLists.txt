@@ -24,6 +24,7 @@ set(LIB_SOURCES
     src/devices/e1/messagedispatcher_e1hc_gen2_el09a_pcbv01.cpp
     src/devices/e1/messagedispatcher_e1light_gen2_el03c_pcbv01.cpp
     src/devices/e1/messagedispatcher_e1uln_gen2_el03c_pcbv06.cpp
+    src/devices/e1/messagedispatcher_e1uln_gen2_el03c_pcbv067_fwv03.cpp
     src/devices/e1/messagedispatcher_e1uln.cpp
     src/devices/e1/messagedispatcher_e1light_gen2_el03c_pcbulnv067.cpp
     src/devices/e1/messagedispatcher_e1_e4nbased.cpp

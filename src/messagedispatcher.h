@@ -26,6 +26,8 @@
 #define INT14_MAX (static_cast <double> (0x1FFF))
 #define UINT14_MAX (static_cast <double> (0x3FFF))
 #define INT18_MAX (static_cast <double> (0x1FFFF))
+#define INT21_MAX (static_cast <double> (0xFFFFF))
+#define UINT21_MAX (static_cast <double> (0x1FFFFF))
 #define UINT28_MAX (static_cast <double> (0xFFFFFFF))
 #define INT28_MAX (static_cast <double> (0x7FFFFFF))
 #define INT28_MIN (-INT28_MAX-1.0)

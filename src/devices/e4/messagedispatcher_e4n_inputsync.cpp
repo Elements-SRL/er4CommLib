@@ -1050,3 +1050,60 @@ void MessageDispatcher_e4n_SineInputSync::remapProtocolParameters() {
         selectedProtocolAdimensional[ProtocolNR] = N;
     }
 }
+
+MessageDispatcher_e4n_SineInputSync_FwV02::MessageDispatcher_e4n_SineInputSync_FwV02(string di) :
+    MessageDispatcher_e4n_SineInputSync(di) {
+
+    /************************\
+     * Communication format *
+    \************************/
+
+    gpChannelsNum = 1;
+    totalChannelsNum = voltageChannelsNum+currentChannelsNum+gpChannelsNum;
+
+    readFrameLength = FTD_RX_SYNC_WORD_SIZE+FTD_RX_INFO_WORD_SIZE+(packetsPerFrame*(int)totalChannelsNum)*(int)FTD_RX_WORD_SIZE;
+
+    maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
+
+    gpRangesNum.resize(gpChannelsNum);
+    gpRangesNum[GpChannelTrigger] = TriggerRangesNum;
+    gpRangesArray.resize(gpChannelsNum);
+    gpRangesArray[GpChannelTrigger].resize(TriggerRangesNum);
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].min = 0.0;
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].max = 3.3;
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].step = gpRangesArray[GpChannelTrigger][TriggerRange3_3V].max/UINT16_MAX;
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].prefix = UnitPfxNone;
+    gpRangesArray[GpChannelTrigger][TriggerRange3_3V].unit = "V";
+    gpNames.resize(gpChannelsNum);
+    gpNames[GpChannelTrigger] = "Digital trigger";
+    defaultGpRangesIdx.resize(gpChannelsNum);
+    defaultGpRangesIdx[GpChannelTrigger] = TriggerRange3_3V;
+    selectedGpRangesIdx.resize(gpChannelsNum);
+    gpResolutions.resize(gpChannelsNum);
+    gpOffsets.resize(gpChannelsNum);
+
+    /*! Default values */
+    gpRanges.resize(gpChannelsNum);
+    gpResolutions.resize(gpChannelsNum);
+    gpOffsets.resize(gpChannelsNum);
+    for (uint16_t channelIdx = 0; channelIdx < gpChannelsNum; channelIdx++) {
+        gpRanges[channelIdx] = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]];
+        gpResolutions[channelIdx] = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]].step;
+        gpOffsets[channelIdx] = gpRangesArray[channelIdx][selectedGpRangesIdx[channelIdx]].min;
+    }
+
+    /**********\
+     * Coders *
+    \**********/
+
+    /*! Input controls */
+    BoolCoder::CoderConfig_t boolConfig;
+
+    /*! Gp range */
+    boolConfig.initialByte = 0;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    gpRangeCoders.resize(1);
+    gpRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
+    gpRangeCoders[0]->addMapItem(0); /*!< No controls  -> 0b0 */
+}

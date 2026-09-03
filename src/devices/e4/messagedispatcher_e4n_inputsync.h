@@ -59,6 +59,22 @@ private:
     };
 };
 
+class MessageDispatcher_e4n_SineInputSync_FwV02 : public MessageDispatcher_e4n_SineInputSync {
+public:
+    enum TriggerRanges {
+        TriggerRange3_3V,
+        TriggerRangesNum
+    };
+
+    enum GpChannels {
+        GpChannelTrigger,
+        GpChannelsNum
+    };
+
+    MessageDispatcher_e4n_SineInputSync_FwV02(std::string di);
+    virtual ~MessageDispatcher_e4n_SineInputSync_FwV02();
+};
+
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER
 };
 #endif

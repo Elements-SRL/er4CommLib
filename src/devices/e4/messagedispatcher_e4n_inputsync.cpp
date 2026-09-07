@@ -1107,3 +1107,8 @@ MessageDispatcher_e4n_SineInputSync_FwV02::MessageDispatcher_e4n_SineInputSync_F
     gpRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
     gpRangeCoders[0]->addMapItem(0); /*!< No controls  -> 0b0 */
 }
+
+
+MessageDispatcher_e4n_SineInputSync_FwV02::~MessageDispatcher_e4n_SineInputSync_FwV02() {
+
+}

@@ -52,6 +52,7 @@ set(LIB_SOURCES
     src/devices/testboard/messagedispatcher_el06d_el06e.cpp
     src/devices/testboard/messagedispatcher_el06f.cpp
     src/devices/testboard/messagedispatcher_el09a_tb.cpp
+    src/devices/testboard/messagedispatcher_el10a_tb.cpp
     src/devices/fake/messagedispatcher_fake_enpr.cpp
     src/devices/fake/messagedispatcher_fake_enpr_hc.cpp
     src/devices/fake/messagedispatcher_fake_e16n.cpp

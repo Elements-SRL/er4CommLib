@@ -4,6 +4,8 @@
 #include "messagedispatcher.h"
 #include "messagedispatcher_e4e.h"
 
+#include "commandcoder.h"
+
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER
 namespace er4CommLib {
 #endif

@@ -709,8 +709,8 @@ MessageDispatcher_e16HC_PCBV01_EL06f_V01::MessageDispatcher_e16HC_PCBV01_EL06f_V
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 3;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b001 */
-    voltageReferenceRangeCoder->addMapItem(6); /*!< Enable DCDC and connect to the voltage amplifier -> 0b110 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b001 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(6); /*!< Enable DCDC and connect to the voltage amplifier -> 0b110 */
 
     /*! Gp range */
     boolConfig.initialByte = 2;
@@ -718,14 +718,14 @@ MessageDispatcher_e16HC_PCBV01_EL06f_V01::MessageDispatcher_e16HC_PCBV01_EL06f_V
     boolConfig.bitsNum = 1;
     gpRangeCoders.resize(gpChannelsNum);
     gpRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    gpRangeCoders[0]->addMapItem(0); /*!< 2V    -> 0b0*/
-    gpRangeCoders[0]->addMapItem(1); /*!< 15V   -> 0b1*/
+    static_cast <BoolRandomArrayCoder *> (gpRangeCoders[0])->addMapItem(0); /*!< 2V    -> 0b0*/
+    static_cast <BoolRandomArrayCoder *> (gpRangeCoders[0])->addMapItem(1); /*!< 15V   -> 0b1*/
     for (int idx = 1; idx < gpChannelsNum; idx++) {
         boolConfig.initialByte = 1;
         boolConfig.initialBit = 6;
         boolConfig.bitsNum = 1;
         gpRangeCoders[idx] = new BoolRandomArrayCoder(boolConfig);
-        gpRangeCoders[idx]->addMapItem(0);
+        static_cast <BoolRandomArrayCoder *> (gpRangeCoders[idx])->addMapItem(0);
     }
 
     /*! Sampling rate */
@@ -1969,8 +1969,8 @@ MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 3;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b001 */
-    voltageReferenceRangeCoder->addMapItem(6); /*!< Enable DCDC and connect to the voltage amplifier -> 0b110 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b001 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(6); /*!< Enable DCDC and connect to the voltage amplifier -> 0b110 */
 
     /*! Gp range */
     boolConfig.initialByte = 2;
@@ -1978,8 +1978,8 @@ MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id
     boolConfig.bitsNum = 1;
     gpRangeCoders.resize(1);
     gpRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    gpRangeCoders[0]->addMapItem(0); /*!< 2V    -> 0b0*/
-    gpRangeCoders[0]->addMapItem(1); /*!< 15V   -> 0b1*/
+    static_cast <BoolRandomArrayCoder *> (gpRangeCoders[0])->addMapItem(0); /*!< 2V    -> 0b0*/
+    static_cast <BoolRandomArrayCoder *> (gpRangeCoders[0])->addMapItem(1); /*!< 15V   -> 0b1*/
 
     /*! Sampling rate */
     boolConfig.initialByte = 1;
@@ -3205,8 +3205,8 @@ MessageDispatcher_e16HC_PCBV00_V03::MessageDispatcher_e16HC_PCBV00_V03(string id
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 3;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b001 */
-    voltageReferenceRangeCoder->addMapItem(6); /*!< Enable DCDC and connect to the voltage amplifier -> 0b110 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b001 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(6); /*!< Enable DCDC and connect to the voltage amplifier -> 0b110 */
 
     /*! Gp range */
     boolConfig.initialByte = 2;
@@ -3214,14 +3214,14 @@ MessageDispatcher_e16HC_PCBV00_V03::MessageDispatcher_e16HC_PCBV00_V03(string id
     boolConfig.bitsNum = 1;
     gpRangeCoders.resize(gpChannelsNum);
     gpRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    gpRangeCoders[0]->addMapItem(0); /*!< 2V    -> 0b0*/
-    gpRangeCoders[0]->addMapItem(1); /*!< 15V   -> 0b1*/
+    static_cast <BoolRandomArrayCoder *> (gpRangeCoders[0])->addMapItem(0); /*!< 2V    -> 0b0*/
+    static_cast <BoolRandomArrayCoder *> (gpRangeCoders[0])->addMapItem(1); /*!< 15V   -> 0b1*/
     for (int idx = 1; idx < gpChannelsNum; idx++) {
         boolConfig.initialByte = 1;
         boolConfig.initialBit = 6;
         boolConfig.bitsNum = 1;
         gpRangeCoders[idx] = new BoolRandomArrayCoder(boolConfig);
-        gpRangeCoders[idx]->addMapItem(0);
+        static_cast <BoolRandomArrayCoder *> (gpRangeCoders[idx])->addMapItem(0);
     }
 
     /*! Sampling rate */
@@ -3810,8 +3810,8 @@ MessageDispatcher_e16HC_PCBV00_V02::MessageDispatcher_e16HC_PCBV00_V02(string id
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 2;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b01 */
-    voltageReferenceRangeCoder->addMapItem(2); /*!< Enable DCDC and connect to the voltage amplifier -> 0b10 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(1); /*!< Disable DCDC and connect to DAC                  -> 0b01 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(2); /*!< Enable DCDC and connect to the voltage amplifier -> 0b10 */
 }
 
 MessageDispatcher_e16HC_PCBV00_V02::~MessageDispatcher_e16HC_PCBV00_V02() {
@@ -3863,7 +3863,7 @@ MessageDispatcher_e16HC_PCBV00_V01::MessageDispatcher_e16HC_PCBV00_V01(string id
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(0); /*!< No controls -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(0); /*!< No controls -> 0b0 */
 }
 
 MessageDispatcher_e16HC_PCBV00_V01::~MessageDispatcher_e16HC_PCBV00_V01() {

@@ -561,7 +561,7 @@ MessageDispatcher_EL06c::MessageDispatcher_EL06c(string id) :
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(0); /*!< No controls -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(0); /*!< No controls -> 0b0 */
 
     /*! Voltage DAC Ext */
     doubleConfig.initialByte = 104;

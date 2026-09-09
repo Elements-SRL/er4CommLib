@@ -638,8 +638,8 @@ MessageDispatcher_eNPR::MessageDispatcher_eNPR(string di) :
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     oversamplingRatioCoder = new BoolRandomArrayCoder(boolConfig);
-    oversamplingRatioCoder->addMapItem(0); /*!< x1  -> 0b0 */
-    oversamplingRatioCoder->addMapItem(1); /*!< x4  -> 0b1 */
+    static_cast <BoolRandomArrayCoder *> (oversamplingRatioCoder)->addMapItem(0); /*!< x1  -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (oversamplingRatioCoder)->addMapItem(1); /*!< x4  -> 0b1 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 4;
@@ -1596,7 +1596,7 @@ MessageDispatcher_eNPR_2Channels_V01_vcm::MessageDispatcher_eNPR_2Channels_V01_v
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(0); /*!< No controls -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(0); /*!< No controls -> 0b0 */
 
     /*! Voltage DAC Ext */
     doubleConfig.initialByte = 51;
@@ -2743,7 +2743,7 @@ MessageDispatcher_eNPR_FL_V01::MessageDispatcher_eNPR_FL_V01(string di) :
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(0); /*!< No controls -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(0); /*!< No controls -> 0b0 */
 
     /*! Voltage DAC Ext */
     DoubleCoder::CoderConfig_t doubleConfig;
@@ -3463,8 +3463,8 @@ MessageDispatcher_eNPR_LegacyEdr3_V04::MessageDispatcher_eNPR_LegacyEdr3_V04(str
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     oversamplingRatioCoder = new BoolRandomArrayCoder(boolConfig);
-    oversamplingRatioCoder->addMapItem(0); /*!< x1  -> 0b0 */
-    oversamplingRatioCoder->addMapItem(1); /*!< x4  -> 0b1 */
+    static_cast <BoolRandomArrayCoder *> (oversamplingRatioCoder)->addMapItem(0); /*!< x1  -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (oversamplingRatioCoder)->addMapItem(1); /*!< x4  -> 0b1 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 4;
@@ -4579,8 +4579,8 @@ MessageDispatcher_eNPR_LegacyEdr3_V03::MessageDispatcher_eNPR_LegacyEdr3_V03(str
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     oversamplingRatioCoder = new BoolRandomArrayCoder(boolConfig);
-    oversamplingRatioCoder->addMapItem(0); /*!< x1  -> 0b0 */
-    oversamplingRatioCoder->addMapItem(1); /*!< x4  -> 0b1 */
+    static_cast <BoolRandomArrayCoder *> (oversamplingRatioCoder)->addMapItem(0); /*!< x1  -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (oversamplingRatioCoder)->addMapItem(1); /*!< x4  -> 0b1 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 4;

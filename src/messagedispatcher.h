@@ -14,7 +14,6 @@
 #include "er4commlib_global_addendum.h"
 #include "ftdieeprom.h"
 #include "ftdicalibrationeeprom.h"
-#include "commandcoder.h"
 #include "ftdieeprom56.h"
 #include "ftdieepromdemo.h"
 
@@ -79,6 +78,9 @@
  *                                 MessageDispatcher                                        *
  *                                                                                          *
 \********************************************************************************************/
+
+class BoolCoder;
+class DoubleCoder;
 
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER
 namespace er4CommLib {
@@ -410,7 +412,7 @@ protected:
     uint16_t selectedVoltageReferenceRangeIdx = 0;
     std::vector <RangedMeasurement_t> voltageReferenceRangesArray;
     uint16_t defaultVoltageReferenceRangeIdx = 0;
-    BoolRandomArrayCoder * voltageReferenceRangeCoder = nullptr;
+    BoolCoder * voltageReferenceRangeCoder = nullptr;
 
     int16_t voltageRangeDivider = 1; /*! Divides the voltage data received from the amplifier */
 
@@ -418,7 +420,7 @@ protected:
     std::vector <uint16_t> selectedGpRangesIdx;
     std::vector <std::vector <RangedMeasurement_t>> gpRangesArray;
     std::vector <uint16_t> defaultGpRangesIdx;
-    std::vector <BoolRandomArrayCoder *> gpRangeCoders;
+    std::vector <BoolCoder *> gpRangeCoders;
     std::vector <std::string> gpNames;
 
     uint32_t samplingRatesNum;
@@ -431,7 +433,7 @@ protected:
     bool oversamplingImplemented = false;
     uint32_t oversamplingRatiosNum = 1;
     std::vector <uint16_t> oversamplingRatiosArray;
-    BoolRandomArrayCoder * oversamplingRatioCoder;
+    BoolCoder * oversamplingRatioCoder;
 
     BoolCoder * clockDivCoder = nullptr;
 
@@ -454,24 +456,24 @@ protected:
     BoolCoder * selectStimulusChannelCoder;
     std::vector <bool> selectStimulusChannelStates;
 
-    BoolArrayCoder * deviceResetCoder = nullptr;
-    BoolArrayCoder * deviceResetOverrideCoder = nullptr;
-    BoolArrayCoder * calibResetCoder = nullptr;
+    BoolCoder * deviceResetCoder = nullptr;
+    BoolCoder * deviceResetOverrideCoder = nullptr;
+    BoolCoder * calibResetCoder = nullptr;
     BoolCoder * digitalOffsetCompensationCoder = nullptr;
-    BoolArrayCoder * digitalOffsetCompensationAutostopCoder = nullptr;
+    BoolCoder * digitalOffsetCompensationAutostopCoder = nullptr;
     std::vector <bool> digitalOffsetCompensationStates;
     bool digitalOffsetCompensationResetFlag = false;
-    BoolArrayCoder * digitalOffsetCompensationResetCoder = nullptr;
+    BoolCoder * digitalOffsetCompensationResetCoder = nullptr;
 
-    BoolArrayCoder * zapCoder;
+    BoolCoder * zapCoder;
     std::vector <bool> zapStates;
 
-    BoolArrayCoder * channelOnCoder;
+    BoolCoder * channelOnCoder;
     std::vector <bool> channelOnStates;
 
-    BoolArrayCoder * VcSel0Coder;
-    BoolArrayCoder * VcSel1Coder;
-    BoolArrayCoder * digOutCoder;
+    BoolCoder * VcSel0Coder;
+    BoolCoder * VcSel1Coder;
+    BoolCoder * digOutCoder;
 
     std::vector <RangedMeasurement_t> protocolVoltageRangesArray;
     std::vector <RangedMeasurement_t> protocolTimeRangesArray;
@@ -488,7 +490,7 @@ protected:
     std::vector <std::vector <uint16_t>> protocolsAvailableFrequencies;
     std::vector <std::vector <uint16_t>> protocolsAvailableAdimensionals;
     BoolCoder * protocolsSelectCoder;
-    BoolArrayCoder * protocolStartCoder;
+    BoolCoder * protocolStartCoder;
     uint16_t defaultProtocol;
     uint16_t selectedProtocol;
     uint16_t triangularProtocolIdx = 0;
@@ -534,8 +536,8 @@ protected:
     DoubleCoder * ttlPulseTrainDelayCoder = nullptr;
     DoubleCoder * ttlPulseTrainDurationCoder = nullptr;
     DoubleCoder * ttlPulseTrainPeriodCoder = nullptr;
-    BoolArrayCoder * ttlPulseTrainPulsesNumberCoder = nullptr;
-    BoolArrayCoder * ttlPulseTrainStartCoder = nullptr;
+    BoolCoder * ttlPulseTrainPulsesNumberCoder = nullptr;
+    BoolCoder * ttlPulseTrainStartCoder = nullptr;
 
     std::vector <Measurement_t> selectedVoltageOffset;
     Measurement_t minSelectedVoltageOffset = {0, UnitPfxMilli, "V"};
@@ -561,7 +563,7 @@ protected:
     DoubleCoder * referencePulseVoltageCoder;
     DoubleCoder * referencePulseDurationCoder;
     DoubleCoder * referencePulseWaitTimeCoder;
-    BoolArrayCoder * referencePulseNumberCoder;
+    BoolCoder * referencePulseNumberCoder;
     BoolCoder * referencePulseApplyCoder;
 
     bool overrideReferencePulseImplemented = false;
@@ -590,7 +592,7 @@ protected:
     std::vector <DoubleCoder *> fastPulseW2WaitTimeCoder;
     std::vector <Measurement_t> fastPulseW2Periods;
     RangedMeasurement_t fastPulseW2PeriodRange;
-    std::vector <BoolArrayCoder *> fastPulseW2NumberCoder;
+    std::vector <BoolCoder *> fastPulseW2NumberCoder;
     std::vector <uint16_t> fastPulseW2PulsesNumbers;
 
     std::vector <std::vector <DoubleCoder *> > vInitRampOffsetCoders;
@@ -647,20 +649,20 @@ protected:
     BoolCoder * dacExtFilterCoder;
 
     uint16_t ledsNum = 0;
-    std::vector <BoolArrayCoder *> ledsCoders;
+    std::vector <BoolCoder *> ledsCoders;
     std::vector <uint32_t> ledsColorsArray;
 
     bool dacExtControllableFlag = false; /*! This is true if the voltage applied on the external DAC is directly controllable by the user, not through protocols */
     bool invertedDacExtFlag = false; /*! Negate the DAC value before applying it */
-    std::vector <DoubleOffsetBinaryCoder *> dacExtCoders;
+    std::vector <DoubleCoder *> dacExtCoders;
     Measurement_t dacExtDefault = {0.0, UnitPfxNone, "V"};
     Measurement_t voltageReference = {0.0, UnitPfxNone, "V"};
     int16_t voltageReferenceOffset = 0; /*! Value added to returned voltage data to account for the voltage applied on the reference */
     bool addVoltageReferenceToReadout = true;
 
     bool vcmAbleFlag = false;
-    std::vector <BoolArrayCoder *> vcIntCoders;
-    std::vector <BoolArrayCoder *> vcmForceCoders;
+    std::vector <BoolCoder *> vcIntCoders;
+    std::vector <BoolCoder *> vcmForceCoders;
 
     /*! Device specific parameters */
 
@@ -676,14 +678,14 @@ protected:
     CompensationControl_t cFastCompensationControl;
     std::vector <std::string> cFastCompensationOptions;
     std::vector <DoubleCoder *> cFastControlCoders;
-    std::vector <BoolArrayCoder *> cFastOnCoders;
+    std::vector <BoolCoder *> cFastOnCoders;
 
     BoolCoder * exclusiveOdacCoder = nullptr;
     BoolCoder * exclusiveChannelOnCoder = nullptr;
     BoolCoder * exclusiveChannelCoder = nullptr;
 
-    BoolArrayCoder * bitDebugCoder = nullptr;
-    BoolArrayCoder * byteDebugCoder = nullptr;
+    BoolCoder * bitDebugCoder = nullptr;
+    BoolCoder * byteDebugCoder = nullptr;
 
     /***************\
      *  Variables  *

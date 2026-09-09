@@ -1105,7 +1105,7 @@ MessageDispatcher_e4n_SineInputSync_FwV02::MessageDispatcher_e4n_SineInputSync_F
     boolConfig.bitsNum = 1;
     gpRangeCoders.resize(1);
     gpRangeCoders[0] = new BoolRandomArrayCoder(boolConfig);
-    gpRangeCoders[0]->addMapItem(0); /*!< No controls  -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (gpRangeCoders[0])->addMapItem(0); /*!< No controls  -> 0b0 */
 }
 
 

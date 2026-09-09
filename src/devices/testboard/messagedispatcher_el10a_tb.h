@@ -1,139 +1,155 @@
-// #ifndef MESSAGEDISPATCHER_EL1_A_TB_H
-// #define MESSAGEDISPATCHER_EL1_A_TB_H
+#ifndef MESSAGEDISPATCHER_EL1_A_TB_H
+#define MESSAGEDISPATCHER_EL1_A_TB_H
 
-// #include "messagedispatcher.h"
+#include "messagedispatcher.h"
 
-// #ifndef ER4COMMLIB_LABVIEW_WRAPPER
-// namespace er4CommLib {
-// #endif
+#include "commandcoder.h"
 
-// class MessageDispatcher_EL10a_TB : public MessageDispatcher {
-// public:
-//     MessageDispatcher_EL10a_TB(std::string di);
-//     virtual ~MessageDispatcher_EL10a_TB();
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+namespace er4CommLib {
+#endif
 
-// protected:
-//     typedef struct {
-//         uint8_t unused;
-//     } InfoStruct_t;
+class MessageDispatcher_EL10a_TB : public MessageDispatcher {
+public:
+    MessageDispatcher_EL10a_TB(std::string di);
+    virtual ~MessageDispatcher_EL10a_TB();
 
-//     enum CurrentRanges {
-//         CurrentRange25nA,
-//         CurrentRange50nA,
-//         CurrentRange100nA,
-//         CurrentRange200nA,
-//         CurrentRangesNum
-//     };
+protected:
+    typedef struct {
+        uint8_t unused;
+    } InfoStruct_t;
 
-//     enum VoltageRanges {
-//         VoltageRange1650mV,
-//         VoltageRangesNum
-//     };
+    enum CurrentRanges {
+        CurrentRange25nA,
+        CurrentRange50nA,
+        CurrentRange100nA,
+        CurrentRange200nA,
+        CurrentRangesNum
+    };
 
-//     enum SamplingRates {
-//         SamplingRate1_25kHz,
-//         SamplingRate2_5kHz,
-//         SamplingRate5kHz,
-//         SamplingRate10kHz,
-//         SamplingRate20kHz,
-//         SamplingRate50kHz,
-//         SamplingRate100kHz,
-//         SamplingRate200kHz,
-//         SamplingRatesNum
-//     };
+    enum VoltageRanges {
+        VoltageRange1650mV,
+        VoltageRangesNum
+    };
 
-//     enum OveramplingRatios {
-//         OversamplingRatioX1,
-//         OversamplingRatiosNum
-//     };
+    enum SamplingRates {
+        SamplingRate1_25kHz,
+        SamplingRate2_5kHz,
+        SamplingRate5kHz,
+        SamplingRate10kHz,
+        SamplingRatesNum
+    };
 
-//     enum VoltageStimulusLpfs {
-//         VoltageStimulusLpfsNum = 0
-//     };
+    enum OveramplingRatios {
+        OversamplingRatioX1,
+        OversamplingRatiosNum
+    };
 
-//     enum VoltageReferenceLpfs {
-//         VoltageReferenceLpfsNum = 0
-//     };
+    enum VoltageStimulusLpfs {
+        VoltageStimulusLpfsNum = 0
+    };
 
-//     enum ProtocolVoltageRanges {
-//         ProtocolVoltageRange1650mV,
-//         ProtocolVoltageRangesNum
-//     };
+    enum VoltageReferenceLpfs {
+        VoltageReferenceLpfsNum = 0
+    };
 
-//     enum ProtocolTimeRanges {
-//         ProtocolTimeRange2_10ms,
-//         ProtocolTimeRange0to2_28,
-//         ProtocolTimeRange1to2_28,
-//         ProtocolTimeRange1orMore,
-//         ProtocolTimeRangeSigned2_27,
-//         ProtocolTimeRange1to2_25,
-//         ProtocolTimeRangesNum
-//     };
+    enum ProtocolVoltageRanges {
+        ProtocolVoltageRange1650mV,
+        ProtocolVoltageRangesNum
+    };
 
-//     enum Protocols {
-//         ProtocolConstant,
-//         ProtocolTriangular,
-//         ProtocolSquareWave,
-//         ProtocolConductance,
-//         ProtocolVariableAmplitude,
-//         ProtocolVariableDuration,
-//         ProtocolRamp,
-//         ProtocolCyclicVoltammetry,
-//         ProtocolsNum
-//     };
+    enum ProtocolTimeRanges {
+        ProtocolTimeRange2_10ms,
+        ProtocolTimeRange0to2_28,
+        ProtocolTimeRange1to2_28,
+        ProtocolTimeRange1orMore,
+        ProtocolTimeRangeSigned2_27,
+        ProtocolTimeRange1to2_25,
+        ProtocolTimeRangesNum
+    };
 
-//     enum ProtocolVoltages {
-//         ProtocolVHold,
-//         ProtocolVPulse,
-//         ProtocolVStep,
-//         ProtocolVPk,
-//         ProtocolVFinal,
-//         ProtocolVInit,
-//         ProtocolVoltagesNum
-//     };
+    enum Protocols {
+        ProtocolConstant,
+        ProtocolTriangular,
+        ProtocolSquareWave,
+        ProtocolConductance,
+        ProtocolVariableAmplitude,
+        ProtocolVariableDuration,
+        ProtocolRamp,
+        ProtocolCyclicVoltammetry,
+        ProtocolsNum
+    };
 
-//     enum ProtocolTimes {
-//         ProtocolTHold,
-//         ProtocolTPulse,
-//         ProtocolTStep,
-//         ProtocolTRamp,
-//         ProtocolTPe,
-//         ProtocolTimesNum
-//     };
+    enum ProtocolVoltages {
+        ProtocolVHold,
+        ProtocolVPulse,
+        ProtocolVStep,
+        ProtocolVPk,
+        ProtocolVFinal,
+        ProtocolVInit,
+        ProtocolVoltagesNum
+    };
 
-//     enum ProtocolAdimensionals {
-//         ProtocolN,
-//         ProtocolNR,
-//         ProtocolAdimensionalsNum
-//     };
+    enum ProtocolTimes {
+        ProtocolTHold,
+        ProtocolTPulse,
+        ProtocolTStep,
+        ProtocolTRamp,
+        ProtocolTPe,
+        ProtocolTimesNum
+    };
 
-//     enum CustomFlags {
-//         CustomFlagDac0Cap,
-//         CustomFlagsNum
-//     };
+    enum ProtocolAdimensionals {
+        ProtocolN,
+        ProtocolNR,
+        ProtocolAdimensionalsNum
+    };
 
-//     enum CustomOptions {
-//         CustomOptionDacWriteSelection,
-//         CustomOptionDacApplySelection,
-//         CustomOptionClockDivider,
-//         CustomOptionsNum
-//     };
+    enum CustomFlags {
+        CustomFlagBgRef3_3VLdoEn,
+        CustomFlag3_3VLdoEn,
+        CustomFlagVddUcLdoEn,
+        CustomFlag5VLdoEn,
+        CustomFlagBiasChargePump4VEn,
+        CustomFlagChargePump4VEn,
+        CustomFlagChargePump6VEn,
+        CustomFlagVmidEn,
+        CustomFlagHeater1En,
+        CustomFlagHeater2En,
+        CustomFlagHeater3En,
+        CustomFlagReSel1,
+        CustomFlagReSel2,
+        CustomFlagReSel3,
+        CustomFlagReSel4,
+        CustomFlagWeSel1,
+        CustomFlagWeSel2,
+        CustomFlagWeSel3,
+        CustomFlagWeSel4,
+        CustomFlagsNum
+    };
 
-//     enum CustomDoubles {
-//         CustomDoubleRShuntCorr,
-//         CustomDoubleOffset,
-//         CustomDoublesNum
-//     };
+    enum CustomOptions {
+        CustomOptionVmidSel,
+        CustomOptionCeSel,
+        CustomOptionReFilter,
+        CustomOptionClock,
+        CustomOptionsNum
+    };
 
-//     void initializeDevice() override;
-//     bool checkProtocolValidity(std::string &message) override;
+    enum CustomDoubles {
+        CustomDoubleTemperature,
+        CustomDoublesNum
+    };
 
-//     /*! Device specific controls */
-//     InfoStruct_t infoStruct;
-// };
+    void initializeDevice() override;
+    bool checkProtocolValidity(std::string &message) override;
 
-// #ifndef ER4COMMLIB_LABVIEW_WRAPPER
-// };
-// #endif
+    /*! Device specific controls */
+    InfoStruct_t infoStruct;
+};
 
-// #endif // MESSAGEDISPATCHER_EL1_A_TB_H
+#ifndef ER4COMMLIB_LABVIEW_WRAPPER
+};
+#endif
+
+#endif // MESSAGEDISPATCHER_EL1_A_TB_H

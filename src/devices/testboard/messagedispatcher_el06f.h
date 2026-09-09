@@ -3,6 +3,8 @@
 
 #include "messagedispatcher_el06d_el06e.h"
 
+#include "commandcoder.h"
+
 #ifndef ER4COMMLIB_LABVIEW_WRAPPER
 namespace er4CommLib {
 #endif

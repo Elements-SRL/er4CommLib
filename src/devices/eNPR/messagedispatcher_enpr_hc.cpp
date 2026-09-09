@@ -597,8 +597,8 @@ MessageDispatcher_eNPR_HC_V01::MessageDispatcher_eNPR_HC_V01(string di) :
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     oversamplingRatioCoder = new BoolRandomArrayCoder(boolConfig);
-    oversamplingRatioCoder->addMapItem(0); /*!< x1  -> 0b0 */
-    oversamplingRatioCoder->addMapItem(1); /*!< x4  -> 0b1 */
+    static_cast <BoolRandomArrayCoder *> (oversamplingRatioCoder)->addMapItem(0); /*!< x1  -> 0b0 */
+    static_cast <BoolRandomArrayCoder *> (oversamplingRatioCoder)->addMapItem(1); /*!< x4  -> 0b1 */
 
     /*! Protocol selection */
     boolConfig.initialByte = 4;

@@ -44,6 +44,7 @@
 #include "messagedispatcher_fake_e16fastpulses.h"
 #include "utils.h"
 #include "ftd2xxwrapper.h"
+#include "commandcoder.h"
 
 #include <ctime>
 #include <thread>
@@ -536,9 +537,9 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
         messageDispatcher = new MessageDispatcher_EL08b_TB(deviceId);
         break;
 
-    // case TestboardEL10a:
-    //     messageDispatcher = new MessageDispatcher_EL10a_TB(deviceId);
-    //     break;
+    case TestboardEL10a:
+        messageDispatcher = new MessageDispatcher_EL10a_TB(deviceId);
+        break;
 
     case DeviceE1E4nBased:
         messageDispatcher = new MessageDispatcher_e1_e4nBased_V01(deviceId);

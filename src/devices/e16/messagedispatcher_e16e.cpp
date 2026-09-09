@@ -644,7 +644,7 @@ MessageDispatcher_e16e_Artix7_PCBV01_V01::MessageDispatcher_e16e_Artix7_PCBV01_V
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(0);
 
     /*! Sampling rate */
     boolConfig.initialByte = 2;
@@ -1821,7 +1821,7 @@ MessageDispatcher_e16e_Artix7_PCBV01_fwV01::MessageDispatcher_e16e_Artix7_PCBV01
     boolConfig.initialBit = 0;
     boolConfig.bitsNum = 1;
     voltageReferenceRangeCoder = new BoolRandomArrayCoder(boolConfig);
-    voltageReferenceRangeCoder->addMapItem(0);
+    static_cast <BoolRandomArrayCoder *> (voltageReferenceRangeCoder)->addMapItem(0);
 
     /*! Sampling rate */
     boolConfig.initialByte = 1;

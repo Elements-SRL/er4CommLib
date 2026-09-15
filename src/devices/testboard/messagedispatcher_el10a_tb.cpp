@@ -33,6 +33,7 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
     txDataBytes = 70;
+    fwLoadedOverrideFlag = true;
 
     /**********************\
      * Available settings *
@@ -482,13 +483,13 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
 
     customFlagsNum = CustomFlagsNum;
     customFlagsNames.resize(customFlagsNum);
-    customFlagsNames[CustomFlagBgRef3_3VLdoEn] = "Enable BG reference for 3.3V LDO";
-    customFlagsNames[CustomFlag3_3VLdoEn] = "Enable 3.3V LDO";
-    customFlagsNames[CustomFlagVddUcLdoEn] = "Enable Vdd_uC LDO";
-    customFlagsNames[CustomFlag5VLdoEn] = "Enable 5V LDO";
-    customFlagsNames[CustomFlagBiasChargePump4VEn] = "Enable Bias voltage for 4V charge pump";
     customFlagsNames[CustomFlagChargePump4VEn] = "Enable 4V charge pump";
+    customFlagsNames[CustomFlag3_3VLdoEn] = "Enable 3.3V LDO";
+    customFlagsNames[CustomFlagBgRefEn] = "Enable BG reference";
+    customFlagsNames[CustomFlagBiasEn] = "Enable Bias voltage";
+    customFlagsNames[CustomFlagVddUcLdoEn] = "Enable Vdd_uC LDO";
     customFlagsNames[CustomFlagChargePump6VEn] = "Enable 6V charge pump";
+    customFlagsNames[CustomFlag5VLdoEn] = "Enable 5V LDO";
     customFlagsNames[CustomFlagVmidEn] = "Enable Vmid generator";
     customFlagsNames[CustomFlagHeater1En] = "Heater 1 ON";
     customFlagsNames[CustomFlagHeater2En] = "Heater 2 ON";
@@ -502,11 +503,11 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     customFlagsNames[CustomFlagWeSel3] = "Select WE 3";
     customFlagsNames[CustomFlagWeSel4] = "Select WE 4";
     customFlagsDefault.resize(customFlagsNum);
-    customFlagsDefault[CustomFlagBgRef3_3VLdoEn] = false;
+    customFlagsDefault[CustomFlagBgRefEn] = false;
     customFlagsDefault[CustomFlag3_3VLdoEn] = false;
     customFlagsDefault[CustomFlagVddUcLdoEn] = false;
     customFlagsDefault[CustomFlag5VLdoEn] = false;
-    customFlagsDefault[CustomFlagBiasChargePump4VEn] = false;
+    customFlagsDefault[CustomFlagBiasEn] = false;
     customFlagsDefault[CustomFlagChargePump4VEn] = false;
     customFlagsDefault[CustomFlagChargePump6VEn] = false;
     customFlagsDefault[CustomFlagVmidEn] = false;
@@ -767,12 +768,12 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
 
     /*! Device specific controls */
     customFlagsCoders.resize(customFlagsNum);
-    boolConfig.initialByte = 1;
-    boolConfig.initialBit = 2;
-    boolConfig.bitsNum = 1;
-    customFlagsCoders[CustomFlagBgRef3_3VLdoEn] = new BoolArrayCoder(boolConfig);
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 5;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[CustomFlagBgRefEn] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 1;
+    boolConfig.initialBit = 2;
     boolConfig.bitsNum = 1;
     customFlagsCoders[CustomFlag3_3VLdoEn] = new BoolArrayCoder(boolConfig);
     boolConfig.initialByte = 2;
@@ -786,7 +787,7 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    customFlagsCoders[CustomFlagBiasChargePump4VEn] = new BoolArrayCoder(boolConfig);
+    customFlagsCoders[CustomFlagBiasEn] = new BoolArrayCoder(boolConfig);
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 5;
     boolConfig.bitsNum = 1;
@@ -861,7 +862,7 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     static_cast <EnsembleCoder *> (customOptionsCoders[CustomOptionVmidSel])->addMapItem(0x2); // PN = 0b0, VMidSel = 0b10
     static_cast <EnsembleCoder *> (customOptionsCoders[CustomOptionVmidSel])->addMapItem(0x5); // PN = 0b1, VMidSel = 0b01
 
-    boolConfig.initialByte = 4;
+    boolConfig.initialByte = 5;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 4;
     customOptionsCoders[CustomOptionCeSel] = new BoolOneHotCoder(boolConfig);
@@ -894,7 +895,7 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
     txStatus[txStatusIdx++] = 0x00; // CFG0
-    txStatus[txStatusIdx++] = 0x0A; // CFG1 delta sigma enabled, Vdd uC = 3V
+    txStatus[txStatusIdx++] = 0x08; // CFG1 delta sigma enabled, Vdd uC = 3V
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x04; // CFG3 heater circuitry on
     txStatus[txStatusIdx++] = 0x00; // CFG4

@@ -106,13 +106,13 @@ protected:
     };
 
     enum CustomFlags {
-        CustomFlagBgRef3_3VLdoEn,
-        CustomFlag3_3VLdoEn,
-        CustomFlagVddUcLdoEn,
-        CustomFlag5VLdoEn,
-        CustomFlagBiasChargePump4VEn,
         CustomFlagChargePump4VEn,
+        CustomFlag3_3VLdoEn,
+        CustomFlagBgRefEn,
+        CustomFlagBiasEn,
+        CustomFlagVddUcLdoEn,
         CustomFlagChargePump6VEn,
+        CustomFlag5VLdoEn,
         CustomFlagVmidEn,
         CustomFlagHeater1En,
         CustomFlagHeater2En,

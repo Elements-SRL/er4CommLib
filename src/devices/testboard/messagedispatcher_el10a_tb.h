@@ -28,7 +28,7 @@ protected:
     };
 
     enum VoltageRanges {
-        VoltageRange1650mV,
+        VoltageRange3300mV,
         VoltageRangesNum
     };
 
@@ -54,7 +54,7 @@ protected:
     };
 
     enum ProtocolVoltageRanges {
-        ProtocolVoltageRange1650mV,
+        ProtocolVoltageRange3300mV,
         ProtocolVoltageRangesNum
     };
 
@@ -125,6 +125,7 @@ protected:
         CustomFlagWeSel2,
         CustomFlagWeSel3,
         CustomFlagWeSel4,
+        CustomFlagClockEnable,
         CustomFlagsNum
     };
 
@@ -143,6 +144,7 @@ protected:
 
     void initializeDevice() override;
     bool checkProtocolValidity(std::string &message) override;
+    void remapProtocolParameters() override;
 
     /*! Device specific controls */
     InfoStruct_t infoStruct;

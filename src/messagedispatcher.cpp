@@ -3735,7 +3735,10 @@ void MessageDispatcher::computeMinimumPacketNumber() {
     Measurement_t samplingRateInHz = samplingRate;
     samplingRateInHz.convertValue(UnitPfxNone);
     minStoreFrameNumber = (unsigned long)ceil(FTD_FEW_PACKET_COEFF*samplingRateInHz.value/((double)packetsPerFrame));
-    minReadFrameNumber = (unsigned long)min(minStoreFrameNumber, (unsigned long)ceil(((double)FTD_MAX_BYTES_TO_WAIT_FOR)/(double)readFrameLength));
+    minReadFrameNumber = (unsigned long)min(minStoreFrameNumber, (unsigned long)ceil(((double)FTD_MAX_BYTES_TO_WAIT_FOR)/(double)readFrameLength))/minReadFrameNumberMargin;
+    if (minReadFrameNumber == 0) {
+        minReadFrameNumber = 1;
+    }
     minReadFrameNumberTries = minStoreFrameNumber/minReadFrameNumber+2;
     fewFramesSleep = (unsigned int)ceil(((double)(minReadFrameNumber*(unsigned long)packetsPerFrame))/samplingRateInHz.value*1.0e6);
 }

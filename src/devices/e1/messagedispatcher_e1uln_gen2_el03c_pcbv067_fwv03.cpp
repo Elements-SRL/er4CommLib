@@ -172,9 +172,9 @@ MessageDispatcher_e1ULN_Gen2_EL03c_PCBV067_FWV03::MessageDispatcher_e1ULN_Gen2_E
     dacIntFilterAvailable = true;
     voltageStimulusLpfOptionsNum = VoltageStimulusLpfsNum;
     voltageStimulusLpfOptions.resize(voltageStimulusLpfOptionsNum);
-    voltageStimulusLpfOptions[VoltageStimulusLpf10Hz].value = 10.0;
-    voltageStimulusLpfOptions[VoltageStimulusLpf10Hz].prefix = UnitPfxNone;
-    voltageStimulusLpfOptions[VoltageStimulusLpf10Hz].unit = "Hz";
+    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].value = 100.0;
+    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].prefix = UnitPfxNone;
+    voltageStimulusLpfOptions[VoltageStimulusLpf100Hz].unit = "Hz";
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";

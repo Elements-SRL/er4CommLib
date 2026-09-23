@@ -709,6 +709,7 @@ protected:
     uint8_t * infoStructPtr = &nullInfoStruct;
     unsigned int infoStructSize = 1;
     unsigned long minReadFrameNumber = FTD_DEFAULT_MIN_READ_FRAME_NUMBER; /*!< Minimum number of frames before they are read from the FTDI driver buffer */
+    unsigned long minReadFrameNumberMargin = 1;
     unsigned long minStoreFrameNumber = FTD_DEFAULT_MIN_STORE_FRAME_NUMBER; /*!< Minimum number of frames before they are stored in the commlib output buffer */
     unsigned long minReadFrameNumberTries = minStoreFrameNumber/minReadFrameNumber+2;
     unsigned int fewFramesSleep = FTD_DEFAULT_FEW_FRAME_SLEEP;

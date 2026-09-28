@@ -106,6 +106,8 @@ protected:
     };
 
     enum CustomFlags {
+        CustomFlagClockEn,
+        CustomFlagAutoPowerOn,
         CustomFlagChargePump4VEn,
         CustomFlag3_3VLdoEn,
         CustomFlagBgRefEn,
@@ -114,6 +116,10 @@ protected:
         CustomFlagChargePump6VEn,
         CustomFlag5VLdoEn,
         CustomFlagVmidEn,
+        CustomFlagCeShort,
+        CustomFlagDsEn,
+        CustomFlagX2,
+        CustomFlagHeaterEn,
         CustomFlagHeater1En,
         CustomFlagHeater2En,
         CustomFlagHeater3En,
@@ -125,13 +131,13 @@ protected:
         CustomFlagWeSel2,
         CustomFlagWeSel3,
         CustomFlagWeSel4,
-        CustomFlagClockEnable,
         CustomFlagsNum
     };
 
     enum CustomOptions {
-        CustomOptionVmidSel,
         CustomOptionCeSel,
+        CustomOptionVddUcSel,
+        CustomOptionVmidSel,
         CustomOptionReFilter,
         CustomOptionClock,
         CustomOptionsNum

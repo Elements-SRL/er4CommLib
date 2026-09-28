@@ -32,7 +32,7 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
 
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
-    txDataBytes = 70;
+    txDataBytes = 65;
     fwLoadedOverrideFlag = true;
     minReadFrameNumberMargin = 8;
 
@@ -484,6 +484,8 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
 
     customFlagsNum = CustomFlagsNum;
     customFlagsNames.resize(customFlagsNum);
+    customFlagsNames[CustomFlagClockEn] = "Enable clock";
+    customFlagsNames[CustomFlagAutoPowerOn] = "Power on sequence";
     customFlagsNames[CustomFlagChargePump4VEn] = "Enable 4V charge pump";
     customFlagsNames[CustomFlag3_3VLdoEn] = "Enable 3.3V LDO";
     customFlagsNames[CustomFlagBgRefEn] = "Enable BG reference";
@@ -492,6 +494,10 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     customFlagsNames[CustomFlagChargePump6VEn] = "Enable 6V charge pump";
     customFlagsNames[CustomFlag5VLdoEn] = "Enable 5V LDO";
     customFlagsNames[CustomFlagVmidEn] = "Enable Vmid generator";
+    customFlagsNames[CustomFlagCeShort] = "Short CE and RE";
+    customFlagsNames[CustomFlagDsEn] = "Enable delta sigma modulator";
+    customFlagsNames[CustomFlagX2] = "X2 gain";
+    customFlagsNames[CustomFlagHeaterEn] = "Enable heater circuitry";
     customFlagsNames[CustomFlagHeater1En] = "Heater 1 ON";
     customFlagsNames[CustomFlagHeater2En] = "Heater 2 ON";
     customFlagsNames[CustomFlagHeater3En] = "Heater 3 ON";
@@ -503,16 +509,21 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     customFlagsNames[CustomFlagWeSel2] = "Select WE 2";
     customFlagsNames[CustomFlagWeSel3] = "Select WE 3";
     customFlagsNames[CustomFlagWeSel4] = "Select WE 4";
-    customFlagsNames[CustomFlagClockEnable] = "Enable clock";
     customFlagsDefault.resize(customFlagsNum);
-    customFlagsDefault[CustomFlagBgRefEn] = false;
-    customFlagsDefault[CustomFlag3_3VLdoEn] = false;
-    customFlagsDefault[CustomFlagVddUcLdoEn] = false;
-    customFlagsDefault[CustomFlag5VLdoEn] = false;
-    customFlagsDefault[CustomFlagBiasEn] = false;
+    customFlagsDefault[CustomFlagClockEn] = true;
+    customFlagsDefault[CustomFlagAutoPowerOn] = false;
     customFlagsDefault[CustomFlagChargePump4VEn] = false;
+    customFlagsDefault[CustomFlag3_3VLdoEn] = false;
+    customFlagsDefault[CustomFlagBgRefEn] = false;
+    customFlagsDefault[CustomFlagBiasEn] = false;
+    customFlagsDefault[CustomFlagVddUcLdoEn] = false;
     customFlagsDefault[CustomFlagChargePump6VEn] = false;
+    customFlagsDefault[CustomFlag5VLdoEn] = false;
     customFlagsDefault[CustomFlagVmidEn] = false;
+    customFlagsDefault[CustomFlagCeShort] = false;
+    customFlagsDefault[CustomFlagDsEn] = false;
+    customFlagsDefault[CustomFlagX2] = false;
+    customFlagsDefault[CustomFlagHeaterEn] = false;
     customFlagsDefault[CustomFlagHeater1En] = false;
     customFlagsDefault[CustomFlagHeater2En] = false;
     customFlagsDefault[CustomFlagHeater3En] = false;
@@ -524,24 +535,29 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     customFlagsDefault[CustomFlagWeSel2] = false;
     customFlagsDefault[CustomFlagWeSel3] = false;
     customFlagsDefault[CustomFlagWeSel4] = false;
-    customFlagsDefault[CustomFlagClockEnable] = true;
 
     customOptionsNum = CustomOptionsNum;
     customOptionsNames.resize(customOptionsNum);
-    customOptionsNames[CustomOptionVmidSel] = "Vmid voltage";
     customOptionsNames[CustomOptionCeSel] = "CE selection";
+    customOptionsNames[CustomOptionVddUcSel] = "Vdd uC selection";
+    customOptionsNames[CustomOptionVmidSel] = "Vmid voltage";
     customOptionsNames[CustomOptionReFilter] = "RE filter";
     customOptionsNames[CustomOptionClock] = "Clock";
     customOptionsDescriptions.resize(customOptionsNum);
-    customOptionsDescriptions[CustomOptionVmidSel].resize(3);
-    customOptionsDescriptions[CustomOptionVmidSel][0] = "0.2V";
-    customOptionsDescriptions[CustomOptionVmidSel][1] = "1.65V";
-    customOptionsDescriptions[CustomOptionVmidSel][2] = "3.1V";
     customOptionsDescriptions[CustomOptionCeSel].resize(4);
     customOptionsDescriptions[CustomOptionCeSel][0] = "CE 1";
     customOptionsDescriptions[CustomOptionCeSel][1] = "CE 2";
     customOptionsDescriptions[CustomOptionCeSel][2] = "CE 3";
     customOptionsDescriptions[CustomOptionCeSel][3] = "CE 4";
+    customOptionsDescriptions[CustomOptionVddUcSel].resize(4);
+    customOptionsDescriptions[CustomOptionVddUcSel][0] = "1.8V";
+    customOptionsDescriptions[CustomOptionVddUcSel][1] = "2.4V";
+    customOptionsDescriptions[CustomOptionVddUcSel][2] = "3V";
+    customOptionsDescriptions[CustomOptionVddUcSel][3] = "3.3V";
+    customOptionsDescriptions[CustomOptionVmidSel].resize(3);
+    customOptionsDescriptions[CustomOptionVmidSel][0] = "0.2V";
+    customOptionsDescriptions[CustomOptionVmidSel][1] = "1.65V";
+    customOptionsDescriptions[CustomOptionVmidSel][2] = "3.1V";
     customOptionsDescriptions[CustomOptionReFilter].resize(4);
     customOptionsDescriptions[CustomOptionReFilter][0] = "100 Hz";
     customOptionsDescriptions[CustomOptionReFilter][1] = "500 Hz";
@@ -553,8 +569,9 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     customOptionsDescriptions[CustomOptionClock][2] = "2.5 MHz";
     customOptionsDescriptions[CustomOptionClock][3] = "1.25 MHz";
     customOptionsDefault.resize(customOptionsNum);
-    customOptionsDefault[CustomOptionVmidSel] = 0;
     customOptionsDefault[CustomOptionCeSel] = 0;
+    customOptionsDefault[CustomOptionVddUcSel] = 2;
+    customOptionsDefault[CustomOptionVmidSel] = 0;
     customOptionsDefault[CustomOptionReFilter] = 0;
     customOptionsDefault[CustomOptionClock] = 0;
 
@@ -779,38 +796,62 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
 
     /*! Device specific controls */
     customFlagsCoders.resize(customFlagsNum);
-    boolConfig.initialByte = 2;
+    boolConfig.initialByte = 7;
     boolConfig.initialBit = 5;
     boolConfig.bitsNum = 1;
-    customFlagsCoders[CustomFlagBgRefEn] = new BoolArrayCoder(boolConfig);
+    customFlagsCoders[CustomFlagClockEn] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 7;
+    boolConfig.initialBit = 6;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[CustomFlagAutoPowerOn] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 3;
+    boolConfig.initialBit = 5;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[CustomFlagChargePump4VEn] = new BoolArrayCoder(boolConfig);
     boolConfig.initialByte = 1;
     boolConfig.initialBit = 2;
     boolConfig.bitsNum = 1;
     customFlagsCoders[CustomFlag3_3VLdoEn] = new BoolArrayCoder(boolConfig);
     boolConfig.initialByte = 2;
-    boolConfig.initialBit = 4;
+    boolConfig.initialBit = 5;
     boolConfig.bitsNum = 1;
-    customFlagsCoders[CustomFlagVddUcLdoEn] = new BoolArrayCoder(boolConfig);
-    boolConfig.initialByte = 3;
-    boolConfig.initialBit = 0;
-    boolConfig.bitsNum = 1;
-    customFlagsCoders[CustomFlag5VLdoEn] = new BoolArrayCoder(boolConfig);
+    customFlagsCoders[CustomFlagBgRefEn] = new BoolArrayCoder(boolConfig);
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
     customFlagsCoders[CustomFlagBiasEn] = new BoolArrayCoder(boolConfig);
-    boolConfig.initialByte = 3;
-    boolConfig.initialBit = 5;
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 4;
     boolConfig.bitsNum = 1;
-    customFlagsCoders[CustomFlagChargePump4VEn] = new BoolArrayCoder(boolConfig);
+    customFlagsCoders[CustomFlagVddUcLdoEn] = new BoolArrayCoder(boolConfig);
     boolConfig.initialByte = 2;
     boolConfig.initialBit = 6;
     boolConfig.bitsNum = 1;
     customFlagsCoders[CustomFlagChargePump6VEn] = new BoolArrayCoder(boolConfig);
     boolConfig.initialByte = 3;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[CustomFlag5VLdoEn] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 3;
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 1;
     customFlagsCoders[CustomFlagVmidEn] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 7;
+    boolConfig.initialBit = 0;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[CustomFlagCeShort] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[CustomFlagDsEn] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 6;
+    boolConfig.initialBit = 1;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[CustomFlagX2] = new BoolArrayCoder(boolConfig);
+    boolConfig.initialByte = 4;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 1;
+    customFlagsCoders[CustomFlagHeaterEn] = new BoolArrayCoder(boolConfig);
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 6;
     boolConfig.bitsNum = 1;
@@ -855,12 +896,18 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     boolConfig.initialBit = 3;
     boolConfig.bitsNum = 1;
     customFlagsCoders[CustomFlagWeSel4] = new BoolArrayCoder(boolConfig);
-    boolConfig.initialByte = 7;
-    boolConfig.initialBit = 5;
-    boolConfig.bitsNum = 1;
-    customFlagsCoders[CustomFlagClockEnable] = new BoolArrayCoder(boolConfig);
 
     customOptionsCoders.resize(customOptionsNum);
+    boolConfig.initialByte = 5;
+    boolConfig.initialBit = 4;
+    boolConfig.bitsNum = 4;
+    customOptionsCoders[CustomOptionCeSel] = new BoolOneHotCoder(boolConfig);
+
+    boolConfig.initialByte = 2;
+    boolConfig.initialBit = 2;
+    boolConfig.bitsNum = 2;
+    customOptionsCoders[CustomOptionVddUcSel] = new BoolArrayCoder(boolConfig);
+
     boolConfig.initialByte = 3;
     boolConfig.initialBit = 1;
     boolConfig.bitsNum = 2;
@@ -876,11 +923,6 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     static_cast <EnsembleCoder *> (customOptionsCoders[CustomOptionVmidSel])->addMapItem(0x0); // PN = 0b0, VMidSel = 0b00
     static_cast <EnsembleCoder *> (customOptionsCoders[CustomOptionVmidSel])->addMapItem(0x2); // PN = 0b0, VMidSel = 0b10
     static_cast <EnsembleCoder *> (customOptionsCoders[CustomOptionVmidSel])->addMapItem(0x5); // PN = 0b1, VMidSel = 0b01
-
-    boolConfig.initialByte = 5;
-    boolConfig.initialBit = 4;
-    boolConfig.bitsNum = 4;
-    customOptionsCoders[CustomOptionCeSel] = new BoolOneHotCoder(boolConfig);
 
     boolConfig.initialByte = 7;
     boolConfig.initialBit = 1;
@@ -910,11 +952,11 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     int txStatusIdx = 0;
     txStatus[txStatusIdx++] = txSyncWord; // HDR
     txStatus[txStatusIdx++] = 0x00; // CFG0
-    txStatus[txStatusIdx++] = 0x0A; // CFG1 delta sigma enabled, Vdd uC = 3V
+    txStatus[txStatusIdx++] = 0x00; // CFG1
     txStatus[txStatusIdx++] = 0x00; // CFG2
-    txStatus[txStatusIdx++] = 0x04; // CFG3 heater circuitry on
+    txStatus[txStatusIdx++] = 0x00; // CFG3
     txStatus[txStatusIdx++] = 0x00; // CFG4
-    txStatus[txStatusIdx++] = 0x48; // CFG5 WE front end enabled, Stimulus generator enabled
+    txStatus[txStatusIdx++] = 0x00; // CFG5
     txStatus[txStatusIdx++] = 0x00; // CFG6
     txStatus[txStatusIdx++] = 0x00; // CFG7
     txStatus[txStatusIdx++] = 0x00; // CFG8

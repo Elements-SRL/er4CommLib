@@ -956,7 +956,7 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
     txStatus[txStatusIdx++] = 0x00; // CFG4
-    txStatus[txStatusIdx++] = 0x00; // CFG5
+    txStatus[txStatusIdx++] = 0x40; // CFG5 WE front end enabled
     txStatus[txStatusIdx++] = 0x00; // CFG6
     txStatus[txStatusIdx++] = 0x00; // CFG7
     txStatus[txStatusIdx++] = 0x00; // CFG8

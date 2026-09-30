@@ -94,6 +94,9 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     samplingRatesArray[SamplingRate10kHz].value = 10.0;
     samplingRatesArray[SamplingRate10kHz].prefix = UnitPfxKilo;
     samplingRatesArray[SamplingRate10kHz].unit = "Hz";
+    samplingRatesArray[SamplingRate20kHz].value = 20.0;
+    samplingRatesArray[SamplingRate20kHz].prefix = UnitPfxKilo;
+    samplingRatesArray[SamplingRate20kHz].unit = "Hz";
     defaultSamplingRateIdx = SamplingRate1_25kHz;
 
     realSamplingRatesArray.resize(samplingRatesNum);
@@ -109,6 +112,9 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     realSamplingRatesArray[SamplingRate10kHz].value = 1.25e3/128.0;
     realSamplingRatesArray[SamplingRate10kHz].prefix = UnitPfxKilo;
     realSamplingRatesArray[SamplingRate10kHz].unit = "Hz";
+    realSamplingRatesArray[SamplingRate20kHz].value = 1.25e3/64.0;
+    realSamplingRatesArray[SamplingRate20kHz].prefix = UnitPfxKilo;
+    realSamplingRatesArray[SamplingRate20kHz].unit = "Hz";
 
     integrationStepArray.resize(samplingRatesNum);
     integrationStepArray[SamplingRate1_25kHz].value = 1024.0/1.25;
@@ -123,6 +129,9 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     integrationStepArray[SamplingRate10kHz].value = 128.0/1.25;
     integrationStepArray[SamplingRate10kHz].prefix = UnitPfxMicro;
     integrationStepArray[SamplingRate10kHz].unit = "s";
+    integrationStepArray[SamplingRate20kHz].value = 64.0/1.25;
+    integrationStepArray[SamplingRate20kHz].prefix = UnitPfxMicro;
+    integrationStepArray[SamplingRate20kHz].unit = "s";
 
     /*! Oversampling ratios */
     oversamplingImplemented = false;
@@ -511,7 +520,7 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     customFlagsNames[CustomFlagWeSel4] = "Select WE 4";
     customFlagsDefault.resize(customFlagsNum);
     customFlagsDefault[CustomFlagClockEn] = true;
-    customFlagsDefault[CustomFlagAutoPowerOn] = false;
+    customFlagsDefault[CustomFlagAutoPowerOn] = true;
     customFlagsDefault[CustomFlagChargePump4VEn] = false;
     customFlagsDefault[CustomFlag3_3VLdoEn] = false;
     customFlagsDefault[CustomFlagBgRefEn] = false;
@@ -519,9 +528,9 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     customFlagsDefault[CustomFlagVddUcLdoEn] = false;
     customFlagsDefault[CustomFlagChargePump6VEn] = false;
     customFlagsDefault[CustomFlag5VLdoEn] = false;
-    customFlagsDefault[CustomFlagVmidEn] = false;
-    customFlagsDefault[CustomFlagCeShort] = false;
-    customFlagsDefault[CustomFlagDsEn] = false;
+    customFlagsDefault[CustomFlagVmidEn] = true;
+    customFlagsDefault[CustomFlagCeShort] = true;
+    customFlagsDefault[CustomFlagDsEn] = true;
     customFlagsDefault[CustomFlagX2] = false;
     customFlagsDefault[CustomFlagHeaterEn] = false;
     customFlagsDefault[CustomFlagHeater1En] = false;
@@ -956,7 +965,7 @@ MessageDispatcher_EL10a_TB::MessageDispatcher_EL10a_TB(string di) :
     txStatus[txStatusIdx++] = 0x00; // CFG2
     txStatus[txStatusIdx++] = 0x00; // CFG3
     txStatus[txStatusIdx++] = 0x00; // CFG4
-    txStatus[txStatusIdx++] = 0x40; // CFG5 WE front end enabled
+    txStatus[txStatusIdx++] = 0x48; // CFG5 WE front end enabled, stimulus enabled
     txStatus[txStatusIdx++] = 0x00; // CFG6
     txStatus[txStatusIdx++] = 0x00; // CFG7
     txStatus[txStatusIdx++] = 0x00; // CFG8

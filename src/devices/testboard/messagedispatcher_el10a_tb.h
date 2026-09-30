@@ -37,6 +37,7 @@ protected:
         SamplingRate2_5kHz,
         SamplingRate5kHz,
         SamplingRate10kHz,
+        SamplingRate20kHz,
         SamplingRatesNum
     };
 

@@ -187,6 +187,7 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].value = 20.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange500mV;
 
     dacExtFilterAvailable = true;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;

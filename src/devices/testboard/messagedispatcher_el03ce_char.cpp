@@ -166,6 +166,7 @@ MessageDispatcher_EL03ce_Char_LegacyEdr3::MessageDispatcher_EL03ce_Char_LegacyEd
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange500mV;
 
     dacExtFilterAvailable = false;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;

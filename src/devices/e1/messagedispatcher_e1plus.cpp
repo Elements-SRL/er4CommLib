@@ -173,6 +173,7 @@ MessageDispatcher_e1Plus_EL03f_FWV03::MessageDispatcher_e1Plus_EL03f_FWV03(strin
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange2000mV;
 
     /*! Front end denoiser */
     ferdImplementedFlag = true;
@@ -1246,6 +1247,7 @@ MessageDispatcher_e1Plus_El03f_LegacyEdr3_V00::MessageDispatcher_e1Plus_El03f_Le
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange2000mV;
 
     /*! Front end denoiser */
     ferdImplementedFlag = true;

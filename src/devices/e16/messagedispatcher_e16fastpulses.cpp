@@ -170,6 +170,7 @@ MessageDispatcher_e16FastPulses_V02::MessageDispatcher_e16FastPulses_V02(string 
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange500mV;
 
     dacExtFilterAvailable = false;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
@@ -1708,6 +1709,7 @@ MessageDispatcher_e16FastPulses_V01::MessageDispatcher_e16FastPulses_V01(string 
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange500mV;
 
     dacExtFilterAvailable = false;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;
@@ -3270,6 +3272,7 @@ MessageDispatcher_e16FastPulses_LegacyEdr3_V03::MessageDispatcher_e16FastPulses_
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].value = 10.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf10kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange500mV;
 
     dacExtFilterAvailable = false;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;

@@ -171,6 +171,7 @@ MessageDispatcher_e16n_EL08a_V01::MessageDispatcher_e16n_EL08a_V01(string di) :
     voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].value = 20.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf20kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange500mV;
 
     dacExtFilterAvailable = false;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;

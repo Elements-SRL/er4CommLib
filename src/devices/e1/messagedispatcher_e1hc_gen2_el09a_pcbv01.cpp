@@ -182,6 +182,7 @@ MessageDispatcher_e1HC_Gen2_EL09a_PCBV01::MessageDispatcher_e1HC_Gen2_EL09a_PCBV
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange2000mV;
 
     /*! Front end denoiser */
     ferdImplementedFlag = false;

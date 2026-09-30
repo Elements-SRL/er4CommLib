@@ -200,6 +200,7 @@ MessageDispatcher_EL09a_TB::MessageDispatcher_EL09a_TB(string di) :
     voltageStimulusLpfOptions[VoltageStimulusLpf25kHz].value = 25.0;
     voltageStimulusLpfOptions[VoltageStimulusLpf25kHz].prefix = UnitPfxKilo;
     voltageStimulusLpfOptions[VoltageStimulusLpf25kHz].unit = "Hz";
+    voltageStimulusLpfRange = VoltageRange500mV;
 
     dacExtFilterAvailable = false;
     voltageReferenceLpfOptionsNum = VoltageReferenceLpfsNum;

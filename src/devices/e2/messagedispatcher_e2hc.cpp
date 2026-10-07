@@ -33,6 +33,8 @@ MessageDispatcher_e2HC_V00::MessageDispatcher_e2HC_V00(string di) :
     maxOutputPacketsNum = ER4CL_DATA_ARRAY_SIZE/totalChannelsNum;
 
     txDataBytes = 51;
+    fwLoadedOverrideFlag = true;
+    minReadFrameNumberMargin = 8;
 
     /**********************\
      * Available settings *

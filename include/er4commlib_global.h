@@ -112,6 +112,7 @@ typedef enum {
     DeviceE1ULNGen2EL03c_PCBV06,            /*!< e1ULN PCB V06. */
     DeviceE1ULNGen2EL03c_PCBV067_FWV03,     /*!< e1ULN PCB V06 with sine waves. */
     DeviceE1LightGen2EL03c_PCBULNV067,      /*!< e1 Light based on e1ULN PCB V06/7. */
+    DeviceE1LightGen2EL03c_PCBULNV067_FWV03,/*!< e1 Light based on e1ULN PCB V06/7 with sine waves. */
     DeviceE16eEDR3,                         /*!< e16e (Legacy version for EDR3). */
     DeviceE16eArtix7PCBV01,                 /*!< e16e Artix7 PCB V01. */
     DeviceE16eArtix7PCB_fwV01,              /*!< e16e Artix7 PCB V01. */

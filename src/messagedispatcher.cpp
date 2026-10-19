@@ -385,6 +385,7 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE1LightGen2EL03c_PCBULNV067_FWV03:
         messageDispatcher = new MessageDispatcher_e1Light_Gen2_EL03c_PCBULNV067_FWV03(deviceId);
+        break;
 
     case DeviceENPREDR3_V03:
         messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V03(deviceId);

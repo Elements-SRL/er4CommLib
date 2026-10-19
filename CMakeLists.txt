@@ -32,6 +32,7 @@ set(LIB_SOURCES
     src/devices/eNPR/messagedispatcher_enpr.cpp
     src/devices/eNPR/messagedispatcher_enpr_hc.cpp
     src/devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.cpp
+	src/devices/eNPR/messagedispatcher_enpr_el03c_pcbv03_fwv09.cpp
     src/devices/e2/messagedispatcher_e2hc.cpp
     src/devices/e2/messagedispatcher_e2uln_v01.cpp
     src/devices/e2/messagedispatcher_e2qc_debug.cpp

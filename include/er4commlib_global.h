@@ -124,6 +124,7 @@ typedef enum {
     DeviceE16HC_PCB_V01_EL06f_V01,          /*!< e16HC with EL06f. */
     DeviceENPREDR3_V03,                     /*!< eNPR (Legacy version for EDR3). */
     DeviceENPREDR3_V04,                     /*!< eNPR (Legacy version for EDR3). */
+    DeviceENPR_EL03C_PCBV03_FWV09,          /*!< eNPR with sinusoidal waves. */
     DeviceENPR,                             /*!< eNPR. */
     DeviceENPRHC_V01,                       /*!< eNPR-HC. */
     DeviceENPRHC_V02,                       /*!< eNPR-HC with 200ksps option. */

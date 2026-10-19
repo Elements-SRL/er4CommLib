@@ -16,6 +16,7 @@
 #include "messagedispatcher_enpr.h"
 #include "messagedispatcher_enpr_hc.h"
 #include "messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.h"
+#include "messagedispatcher_enpr_el03c_pcbv03_fwv09.h"
 #include "messagedispatcher_e2hc.h"
 #include "messagedispatcher_e2uln_v01.h"
 #include "messagedispatcher_e2qc_debug.h"
@@ -85,6 +86,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE1, DeviceSubversionE1LightGen2EL03cPCBULNGen2V067, 3, DeviceE1LightGen2EL03c_PCBULNV067_FWV03},  //    9, 16,  2 : e1 Light based on e1ULN PCB V06 with sine waves
     {DeviceVersionENPR, DeviceSubversionENPR, 4, DeviceENPREDR3_V03},                                               //    8,  2,  4 : eNPR (Legacy version for EDR3)
     {DeviceVersionENPR, DeviceSubversionENPR, 8, DeviceENPREDR3_V04},                                               //    8,  2,  8 : eNPR (Legacy version for EDR3)
+    {DeviceVersionENPR, DeviceSubversionENPR, 9, DeviceENPR_EL03C_PCBV03_FWV09},                                    //    8,  2,  9 : eNPR with sine waves
     {DeviceVersionENPR, DeviceSubversionENPR, 129, DeviceENPR},                                                     //    8,  2,129 : eNPR
     {DeviceVersionENPR, DeviceSubversionENPRHC, 129, DeviceENPRHC_V01},                                             //    8,  8,129 : eNPR-HC
     {DeviceVersionENPR, DeviceSubversionENPRHC, 130, DeviceENPRHC_V02},                                             //    8,  8,130 : eNPR-HC with 200ksps option
@@ -393,6 +395,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceENPREDR3_V04:
         messageDispatcher = new MessageDispatcher_eNPR_LegacyEdr3_V04(deviceId);
+        break;
+
+    case DeviceENPR_EL03C_PCBV03_FWV09:
+        messageDispatcher = new MessageDispatcher_eNPR_EL03c_PCBV03_FWV09(deviceId);
         break;
 
     case DeviceENPR:

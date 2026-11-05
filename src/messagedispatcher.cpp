@@ -31,6 +31,7 @@
 #include "messagedispatcher_e16n_el08a.h"
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16hc.h"
+#include "messagedispatcher_e16hc_cdb.h"
 #include "messagedispatcher_e16eth.h"
 #include "messagedispatcher_el03ce_char.h"
 #include "messagedispatcher_el06b.h"
@@ -560,6 +561,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE2HCExtAdc:
         messageDispatcher = new MessageDispatcher_e2HC_V00(deviceId);
+        break;
+
+    case DeviceE16HCCdb:
+        messageDispatcher = new MessageDispatcher_e16HC_CDB_PCBV01_V01(deviceId);
         break;
 
     case DeviceE2HCIntAdc_V01:

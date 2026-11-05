@@ -6,7 +6,7 @@ using namespace std;
 using namespace er4CommLib;
 #endif
 
-MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id) :
+MessageDispatcher_e16HC_CDB_PCBV01_V01::MessageDispatcher_e16HC_CDB_PCBV01_V01(string id) :
     MessageDispatcher(id) {
 
     /************************\
@@ -892,13 +892,12 @@ MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id
     unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
     voltageReferenceRangesArrayOB[voltageReferenceIdx].step = voltageReferenceRangesArray[voltageReferenceIdx].step;
     voltageReferenceRangesArrayOB[voltageReferenceIdx].min = -vcm_mV;
-    voltageReferenceRangesArrayOB[voltageReferenceIdx].max = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
+    voltageReferenceRangesArrayOB[voltageReferenceIdx].max = maxDacExtVoltage-vcm_mV-voltageReferenceRangesArrayOB[voltageReferenceIdx].step;
 
     voltageReferenceIdx = VoltageReferenceRange15V;
     voltageReferenceRangesArrayOB[voltageReferenceIdx].step = voltageReferenceRangesArray[voltageReferenceIdx].step;
     voltageReferenceRangesArrayOB[voltageReferenceIdx].min = -vcm_mV*voltageAmplifierGain;
-    voltageReferenceRangesArrayOB[voltageReferenceIdx].max = (maxDacExtVoltage-vcm_mV)*voltageAmplifierGain-doubleConfig.resolution;
-    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
+    voltageReferenceRangesArrayOB[voltageReferenceIdx].max = (maxDacExtVoltage-vcm_mV)*voltageAmplifierGain-voltageReferenceRangesArrayOB[voltageReferenceIdx].step;
 
     /*! V Ramp Offset */
     doubleConfig.initialBit = 0;
@@ -914,7 +913,7 @@ MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id
 
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 16;
-    vFinalRampOffsetCoders.resize(voltageReferenceRangesNum);
+    vRefFinalRampOffsetCoders.resize(voltageReferenceRangesNum);
     for (uint32_t rangeIdx = 0; rangeIdx < voltageReferenceRangesNum; rangeIdx++) {
         doubleConfig.initialByte = 89;
         doubleConfig.resolution = voltageReferenceRangesArrayOB[rangeIdx].step;
@@ -1077,21 +1076,21 @@ MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id
     txStatus[txStatusIdx++] = 0x00;
 }
 
-ErrorCodes_t MessageDispatcher_e16HC_PCBV01_V01::setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag) {
+ErrorCodes_t MessageDispatcher_e16HC_CDB_PCBV01_V01::setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag) {
     if (channelIdx == 0) { /*! Channel 0 contains the voltage reference range */
         MessageDispatcher::setVoltageReferenceRange(gpRangeIdx, false);
     }
     return MessageDispatcher::setGpRange(gpRangeIdx, channelIdx, applyFlag);
 }
 
-ErrorCodes_t MessageDispatcher_e16HC_PCBV01_V01::getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) {
+ErrorCodes_t MessageDispatcher_e16HC_CDB_PCBV01_V01::getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) {
     ranges.resize(1);
     ranges[VoltageReferenceRange2V] = voltageReferenceRangesArray[VoltageReferenceRange2V];
     defaultOption = VoltageReferenceRange2V;
     return Success;
 }
 
-void MessageDispatcher_e16HC_PCBV01_V01::initializeDevice() {
+void MessageDispatcher_e16HC_CDB_PCBV01_V01::initializeDevice() {
     this->updateVoltageReferenceOffsetCalibration();
     this->setGpRange(defaultGpRangesIdx[GpChannelVoltageReference], GpChannelVoltageReference, false);
     this->setSamplingRate(defaultSamplingRateIdx, false);
@@ -1103,7 +1102,7 @@ void MessageDispatcher_e16HC_PCBV01_V01::initializeDevice() {
     MessageDispatcher::initializeDevice();
 }
 
-bool MessageDispatcher_e16HC_PCBV01_V01::checkProtocolValidity(string &message) {
+bool MessageDispatcher_e16HC_CDB_PCBV01_V01::checkProtocolValidity(string &message) {
     bool validFlag = true;
     message = "Valid protocol";
     switch (selectedProtocol) {
@@ -1302,21 +1301,20 @@ bool MessageDispatcher_e16HC_PCBV01_V01::checkProtocolValidity(string &message) 
     return validFlag;
 }
 
-ErrorCodes_t MessageDispatcher_e16HC_PCBV01_V01::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
+ErrorCodes_t MessageDispatcher_e16HC_CDB_PCBV01_V01::updateVoltageOffsetCompensations(vector <Measurement_t> &offsets) {
     for (int idx = 0; idx < currentChannelsNum; idx++) {
         offsets[idx] = voltageOffsetCompensationGain*(double)(infoStruct.offset[idx]);
     }
     return Success;
 }
 
-void MessageDispatcher_e16HC_PCBV01_V01::updateVoltageReferenceOffsetCalibration() {
+void MessageDispatcher_e16HC_CDB_PCBV01_V01::updateVoltageReferenceOffsetCalibration() {
     /*! Voltage DAC Ext */
     /*! \todo FCON serve davvero ricreare i coder? */
     DoubleCoder::CoderConfig_t doubleConfig;
     doubleConfig.initialByte = 86;
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 16;
-    dacExtCoders.resize(voltageReferenceRangesNum);
 
     int16_t voltageReferenceOffsetCalibrationInt = (int16_t)ftdiEeprom->getVcOffset();
     voltageReferenceOffsetCalibration.value = voltageReferenceRangesArray[VoltageReferenceRange2V].step*(double)voltageReferenceOffsetCalibrationInt;
@@ -1332,13 +1330,12 @@ void MessageDispatcher_e16HC_PCBV01_V01::updateVoltageReferenceOffsetCalibration
     unsigned int voltageReferenceIdx = VoltageReferenceRange2V;
     voltageReferenceRangesArrayOB[voltageReferenceIdx].step = voltageReferenceRangesArray[voltageReferenceIdx].step;
     voltageReferenceRangesArrayOB[voltageReferenceIdx].min = -vcm_mV;
-    voltageReferenceRangesArrayOB[voltageReferenceIdx].max = maxDacExtVoltage-vcm_mV-doubleConfig.resolution;
+    voltageReferenceRangesArrayOB[voltageReferenceIdx].max = maxDacExtVoltage-vcm_mV-voltageReferenceRangesArrayOB[voltageReferenceIdx].step;
 
     voltageReferenceIdx = VoltageReferenceRange15V;
     voltageReferenceRangesArrayOB[voltageReferenceIdx].step = voltageReferenceRangesArray[voltageReferenceIdx].step;
     voltageReferenceRangesArrayOB[voltageReferenceIdx].min = -vcm_mV*voltageAmplifierGain;
-    voltageReferenceRangesArrayOB[voltageReferenceIdx].max = (maxDacExtVoltage-vcm_mV)*voltageAmplifierGain-doubleConfig.resolution;
-    dacExtCoders[voltageReferenceIdx] = new DoubleOffsetBinaryCoder(doubleConfig);
+    voltageReferenceRangesArrayOB[voltageReferenceIdx].max = (maxDacExtVoltage-vcm_mV)*voltageAmplifierGain-voltageReferenceRangesArrayOB[voltageReferenceIdx].step;
 
     /*! V Ramp Offset */
     doubleConfig.initialBit = 0;

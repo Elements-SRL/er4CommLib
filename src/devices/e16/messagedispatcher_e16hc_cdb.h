@@ -9,9 +9,9 @@
 namespace er4CommLib {
 #endif
 
-class MessageDispatcher_e16HC_PCBV01_V01 : public MessageDispatcher {
+class MessageDispatcher_e16HC_CDB_PCBV01_V01 : public MessageDispatcher {
 public:
-    MessageDispatcher_e16HC_PCBV01_V01(std::string id);
+    MessageDispatcher_e16HC_CDB_PCBV01_V01(std::string id);
 
     virtual ErrorCodes_t setGpRange(uint16_t gpRangeIdx, uint16_t channelIdx, bool applyFlag = true) override;
     virtual ErrorCodes_t getVoltageReferenceRanges(std::vector <RangedMeasurement_t> &ranges, uint16_t &defaultOption) override;

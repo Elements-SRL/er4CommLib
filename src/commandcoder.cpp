@@ -1,5 +1,5 @@
 #include "commandcoder.h"
-#define ONE_U32 ((uint32_t)1)
+#define ONE_U64 ((uint64_t)1)
 
 CommandCoder::CommandCoder(uint16_t initialByte, uint8_t initialBit, uint8_t bitsNum):
     initialByte(initialByte),
@@ -26,7 +26,7 @@ CommandCoder::~CommandCoder() {
 
 }
 
-void CommandCoder::encodeUint(uint32_t uintValue, std::vector <uint8_t> &encodingBytes) {
+void CommandCoder::encodeUint(uint64_t uintValue, std::vector <uint8_t> &encodingBytes) {
     for (uint8_t byteIdx = 0; byteIdx < bytesNum; byteIdx++) {
         encodingBytes[byteIdx+initialByte] &= ~bitMasks[byteIdx];
         encodingBytes[byteIdx+initialByte] |= (uintValue << bitOffsets[byteIdx]) & bitMasks[byteIdx];
@@ -49,7 +49,7 @@ BoolArrayCoder::BoolArrayCoder(CoderConfig_t config) :
 
 }
 
-void BoolArrayCoder::encode(uint32_t value, std::vector <uint8_t> &encodingBytes) {
+void BoolArrayCoder::encode(uint64_t value, std::vector <uint8_t> &encodingBytes) {
     this->encodeUint(value, encodingBytes);
 }
 
@@ -58,7 +58,7 @@ BoolNegatedArrayCoder::BoolNegatedArrayCoder(CoderConfig_t config) :
 
 }
 
-void BoolNegatedArrayCoder::encode(uint32_t value, std::vector <uint8_t> &encodingBytes) {
+void BoolNegatedArrayCoder::encode(uint64_t value, std::vector <uint8_t> &encodingBytes) {
     this->encodeUint((~value), encodingBytes);
 }
 
@@ -68,15 +68,15 @@ BoolRandomArrayCoder::BoolRandomArrayCoder(CoderConfig_t config) :
     tos.clear();
 }
 
-void BoolRandomArrayCoder::encode(uint32_t value, std::vector <uint8_t> &encodingBytes) {
+void BoolRandomArrayCoder::encode(uint64_t value, std::vector <uint8_t> &encodingBytes) {
     this->encodeUint(this->map(value), encodingBytes);
 }
 
-void BoolRandomArrayCoder::addMapItem(uint32_t to) {
+void BoolRandomArrayCoder::addMapItem(uint64_t to) {
     tos.push_back(to);
 }
 
-uint32_t BoolRandomArrayCoder::map(uint32_t from) {
+uint64_t BoolRandomArrayCoder::map(uint64_t from) {
     if (from >= tos.size()) {
         from = 0;
     }
@@ -88,7 +88,7 @@ BoolOneHotCoder::BoolOneHotCoder(CoderConfig_t config) :
 
 }
 
-void BoolOneHotCoder::encode(uint32_t value, std::vector <uint8_t> &encodingBytes) {
+void BoolOneHotCoder::encode(uint64_t value, std::vector <uint8_t> &encodingBytes) {
     this->encodeUint(1 << value, encodingBytes);
 }
 
@@ -102,11 +102,11 @@ EnsembleCoder::~EnsembleCoder() {
 
 }
 
-void EnsembleCoder::encode(uint32_t value, std::vector <uint8_t> &encodingBytes) {
+void EnsembleCoder::encode(uint64_t value, std::vector <uint8_t> &encodingBytes) {
     value = this->map(value);
     for (auto coder : coders) {
-        uint32_t b = (uint32_t)coder->getConfig().bitsNum;
-        uint32_t m = (ONE_U32 << b)-ONE_U32;
+        uint64_t b = (uint64_t)coder->getConfig().bitsNum;
+        uint64_t m = (ONE_U64 << b)-ONE_U64;
         coder->encode(value & m, encodingBytes);
         value >>= b;
     }
@@ -116,11 +116,11 @@ void EnsembleCoder::addCoder(BoolCoder * coder) {
     coders.push_back(coder);
 }
 
-void EnsembleCoder::addMapItem(uint32_t to) {
+void EnsembleCoder::addMapItem(uint64_t to) {
     tos.push_back(to);
 }
 
-uint32_t EnsembleCoder::map(uint32_t from) {
+uint64_t EnsembleCoder::map(uint64_t from) {
     if (from >= tos.size()) {
         from = 0;
     }
@@ -148,7 +148,7 @@ DoubleTwosCompCoder::DoubleTwosCompCoder(CoderConfig_t config) :
 double DoubleTwosCompCoder::encode(double value, std::vector <uint8_t> &encodingBytes) {
     value = this->clip(value);
     int32_t intValue = (int32_t)round(value/resolution);
-    this->encodeUint((uint32_t)intValue, encodingBytes);
+    this->encodeUint((uint64_t)intValue, encodingBytes);
     return resolution*(double)intValue;
 }
 
@@ -159,7 +159,7 @@ DoubleOffsetBinaryCoder::DoubleOffsetBinaryCoder(CoderConfig_t config) :
 
 double DoubleOffsetBinaryCoder::encode(double value, std::vector <uint8_t> &encodingBytes) {
     value = this->clip(value);
-    uint32_t uintValue = (uint32_t)round((value-minValue)/resolution);
+    uint64_t uintValue = (uint64_t)round((value-minValue)/resolution);
     this->encodeUint(uintValue, encodingBytes);
     return minValue+resolution*(double)uintValue;
 }
@@ -171,7 +171,7 @@ DoubleSignAbsCoder::DoubleSignAbsCoder(CoderConfig_t config) :
 
 double DoubleSignAbsCoder::encode(double value, std::vector <uint8_t> &encodingBytes) {
     value = this->clip(value);
-    uint32_t uintValue = (uint32_t)round(fabs(value)/resolution);
+    uint64_t uintValue = (uint64_t)round(fabs(value)/resolution);
     uintValue += (value < 0.0 ? 1 << (bitsNum-1) : 0);
     this->encodeUint(uintValue, encodingBytes);
     if (value < 0.0) {

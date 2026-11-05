@@ -32,7 +32,7 @@ set(LIB_SOURCES
     src/devices/eNPR/messagedispatcher_enpr.cpp
     src/devices/eNPR/messagedispatcher_enpr_hc.cpp
     src/devices/eNPR/messagedispatcher_enpr_hc_el06g_pcbv01_fwv01.cpp
-	src/devices/eNPR/messagedispatcher_enpr_el03c_pcbv03_fwv09.cpp
+    src/devices/eNPR/messagedispatcher_enpr_el03c_pcbv03_fwv09.cpp
     src/devices/e2/messagedispatcher_e2hc.cpp
     src/devices/e2/messagedispatcher_e2uln_v01.cpp
     src/devices/e2/messagedispatcher_e2qc_debug.cpp
@@ -47,6 +47,7 @@ set(LIB_SOURCES
     src/devices/e16/messagedispatcher_e16n_el08a.cpp
     src/devices/e16/messagedispatcher_e16fastpulses.cpp
     src/devices/e16/messagedispatcher_e16hc.cpp
+    src/devices/e16/messagedispatcher_e16hc_cdb.cpp
     src/devices/e16/messagedispatcher_e16eth.cpp
     src/devices/testboard/messagedispatcher_el03ce_char.cpp
     src/devices/testboard/messagedispatcher_el06b.cpp

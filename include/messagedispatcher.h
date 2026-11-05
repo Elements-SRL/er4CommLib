@@ -32,6 +32,7 @@
 #define INT28_MIN (-INT28_MAX-1.0)
 #define LINT32_MAX (static_cast <double> (0x7FFFFFFF))
 #define LINT32_MIN (-LINT32_MAX-1.0)
+#define UINT35_MAX (static_cast <double> (0x7FFFFFFFF))
 
 #define UINT16_POSITIVE_SATURATION 0x7FFE
 #define UINT16_NEGATIVE_SATURATION 0x8000 /*! \todo FCON dovrebbe essere 0x8001 */
@@ -168,6 +169,7 @@ public:
 
     ErrorCodes_t setRawDataFilter(Measurement_t cutoffFrequency, bool lowPassFlag, bool activeFlag);
     ErrorCodes_t applyDacExt(Measurement_t voltage, bool applyFlag = true);
+    ErrorCodes_t setVoltageReferenceRampOffset(Measurement_t initialVoltage, Measurement_t finalVoltage, Measurement_t duration, bool applyFlag = true);
     ErrorCodes_t setFastReferencePulseProtocolWave1Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
     ErrorCodes_t setFastReferencePulseProtocolWave1Time(unsigned int idx, Measurement_t time, bool applyFlag = false);
     ErrorCodes_t setFastReferencePulseProtocolWave2Voltage(unsigned int idx, Measurement_t voltage, bool applyFlag = false);
@@ -265,6 +267,7 @@ public:
     ErrorCodes_t getProtocolAdimensional(std::vector <std::string> &adimensionalNames, std::vector <RangedMeasurement_t> &ranges, std::vector <Measurement_t> &defaultValues);
     ErrorCodes_t getVoltageOffsetControls(RangedMeasurement_t &voltageRange);
     ErrorCodes_t getVoltageRampOffsetControls(std::vector <RangedMeasurement_t> &voltageRanges, RangedMeasurement_t &durationRange);
+    ErrorCodes_t getVoltageReferenceRampOffsetControls(std::vector <RangedMeasurement_t> &voltageRanges, RangedMeasurement_t &durationRange);
     ErrorCodes_t getInsertionPulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
     ErrorCodes_t hasReferencePulseControls(bool &referencePulseImplemented, bool &overrideReferencePulseImplemented);
     ErrorCodes_t getReferencePulseControls(RangedMeasurement_t &voltageRange, RangedMeasurement_t &durationRange);
@@ -481,6 +484,7 @@ protected:
     std::vector <RangedMeasurement_t> protocolFrequencyRangesArray;
 
     RangedMeasurement_t rampTimeRange;
+    RangedMeasurement_t refRampTimeRange;
 
     std::vector <std::string> protocolsNames;
     std::vector <std::string> protocolsImages;
@@ -601,6 +605,13 @@ protected:
     std::vector <std::vector <DoubleCoder *> >  quotRampOffsetCoders;
     std::vector <std::vector <DoubleCoder *> > remRampOffsetCoders;
     std::vector <BoolCoder *> activateRampOffsetCoders;
+
+    std::vector <DoubleCoder *> vRefInitRampOffsetCoders;
+    std::vector <DoubleCoder *> vRefFinalRampOffsetCoders;
+    DoubleCoder * tRefRampOffsetCoder;
+    std::vector <DoubleCoder *> quotRefRampOffsetCoders;
+    std::vector <DoubleCoder *> remRefRampOffsetCoders;
+    BoolCoder * activateRefRampOffsetCoder;
 
     uint16_t customFlagsNum = 0;
     std::vector <std::string> customFlagsNames;

@@ -429,6 +429,17 @@ ErrorCodes_t applyDacExt(
     MASS_CALL1(applyDacExt, voltage)
 }
 
+ErrorCodes_t setVoltageReferenceRampOffset(
+    Measurement_t initialVoltage,
+    Measurement_t finalVoltage,
+    Measurement_t duration) {
+    if (msgDisps.empty()) {
+        return ErrorDeviceNotConnected;
+    }
+
+    return msgDisps[0]->setVoltageReferenceRampOffset(initialVoltage, finalVoltage, duration);
+}
+
 ErrorCodes_t setVcmOnChannel(
     uint32_t chIdx,
     bool flag) {
@@ -1343,6 +1354,12 @@ ErrorCodes_t getVoltageRampOffsetControls(
     std::vector <RangedMeasurement_t> &voltageRanges,
     RangedMeasurement_t &durationRange) {
     CALL_FIRST2(getVoltageRampOffsetControls, voltageRanges, durationRange);
+}
+
+ErrorCodes_t getVoltageReferenceRampOffsetControls(
+    std::vector <RangedMeasurement_t> &voltageRanges,
+    RangedMeasurement_t &durationRange) {
+    CALL_FIRST2(getVoltageReferenceRampOffsetControls, voltageRanges, durationRange);
 }
 
 ErrorCodes_t getInsertionPulseControls(

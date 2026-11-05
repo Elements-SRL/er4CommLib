@@ -315,6 +315,19 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t applyDacExt(
         ER4CL_ARGIN Measurement_t voltage);
 
+/*! \brief Set a voltage reference ramp.
+ *
+ * \param initialVoltage [in] Value of the ramp intial voltage.
+ * \param finalVoltage [in] Value of the ramp final voltage.
+ * \param duration [in] Value of the ramp duration.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+    ErrorCodes_t setVoltageReferenceRampOffset(
+        ER4CL_ARGIN Measurement_t initialVoltage,
+        ER4CL_ARGIN Measurement_t finalVoltage,
+        ER4CL_ARGIN Measurement_t duration);
+
 /*! \brief Apply voltage on the external DAC using the absolute value of the DAC (only for internal use).
  *
  * \param voltage [in] Voltage applied on the external DAC with respect to GND.
@@ -1338,6 +1351,17 @@ ErrorCodes_t getVoltageOffsetControls(
  */
 ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t getVoltageRampOffsetControls(
+        ER4CL_ARGOUT std::vector <RangedMeasurement_t> &voltageRanges,
+        ER4CL_ARGOUT RangedMeasurement_t &durationRange);
+
+/*! \brief Availability of reference voltage ramp controls.
+ *
+ * \param voltageRanges [out] Ranges of applicable ramp voltages.
+ * \param durationRange [out] Range of applicable ramp duration.
+ * \return Success if the voltage offsets of reference can be controlled.
+ */
+ER4COMMLIBSHARED_EXPORT
+    ErrorCodes_t getVoltageReferenceRampOffsetControls(
         ER4CL_ARGOUT std::vector <RangedMeasurement_t> &voltageRanges,
         ER4CL_ARGOUT RangedMeasurement_t &durationRange);
 

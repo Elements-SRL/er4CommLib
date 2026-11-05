@@ -14,7 +14,7 @@ public:
     virtual ~CommandCoder();
 
 protected:
-    void encodeUint(uint32_t uintValue, std::vector <uint8_t> &encodingBytes);
+    void encodeUint(uint64_t uintValue, std::vector <uint8_t> &encodingBytes);
 
     uint16_t initialByte;
     uint8_t bitsNum;
@@ -33,7 +33,7 @@ public:
 
     BoolCoder(CoderConfig_t config);
 
-    virtual void encode(uint32_t value, std::vector <uint8_t> &encodingBytes) = 0;
+    virtual void encode(uint64_t value, std::vector <uint8_t> &encodingBytes) = 0;
     CoderConfig_t getConfig() const;
 
 protected:
@@ -44,34 +44,34 @@ class BoolArrayCoder : public BoolCoder {
 public:
     BoolArrayCoder(CoderConfig_t config);
 
-    void encode(uint32_t value, std::vector <uint8_t> &encodingBytes) override;
+    void encode(uint64_t value, std::vector <uint8_t> &encodingBytes) override;
 };
 
 class BoolNegatedArrayCoder : public BoolArrayCoder {
 public:
     BoolNegatedArrayCoder(CoderConfig_t config);
 
-    void encode(uint32_t value, std::vector <uint8_t> &encodingBytes) override;
+    void encode(uint64_t value, std::vector <uint8_t> &encodingBytes) override;
 };
 
 class BoolRandomArrayCoder : public BoolArrayCoder {
 public:
     BoolRandomArrayCoder(CoderConfig_t config);
 
-    void encode(uint32_t value, std::vector <uint8_t> &encodingBytes) override;
-    void addMapItem(uint32_t to);
+    void encode(uint64_t value, std::vector <uint8_t> &encodingBytes) override;
+    void addMapItem(uint64_t to);
 
 private:
-    uint32_t map(uint32_t from);
+    uint64_t map(uint64_t from);
 
-    std::vector <uint32_t> tos;
+    std::vector <uint64_t> tos;
 };
 
 class BoolOneHotCoder : public BoolCoder {
 public:
     BoolOneHotCoder(CoderConfig_t config);
 
-    void encode(uint32_t value, std::vector <uint8_t> &encodingBytes) override;
+    void encode(uint64_t value, std::vector <uint8_t> &encodingBytes) override;
 };
 
 class EnsembleCoder : public BoolCoder {
@@ -79,15 +79,15 @@ public:
     EnsembleCoder();
     virtual ~EnsembleCoder();
 
-    virtual void encode(uint32_t value, std::vector <uint8_t> &encodingBytes) override;
+    virtual void encode(uint64_t value, std::vector <uint8_t> &encodingBytes) override;
     void addCoder(BoolCoder * coder);
-    void addMapItem(uint32_t to);
+    void addMapItem(uint64_t to);
 
 private:
-    uint32_t map(uint32_t from);
+    uint64_t map(uint64_t from);
 
     std::vector <BoolCoder *> coders;
-    std::vector <uint32_t> tos;
+    std::vector <uint64_t> tos;
 };
 
 class DoubleCoder : public CommandCoder {

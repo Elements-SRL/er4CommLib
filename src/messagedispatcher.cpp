@@ -147,6 +147,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL08b_PCBV01, 1, TestboardEL08b},                             //    6, 22,  1 : testboard EL08b
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL10a_PCBV01, 1, TestboardEL10a},                             //    6, 27,  1 : testboard EL10a
     {DeviceVersionPrototype, DeviceSubversionProtoE1E4nBased, 10, DeviceE1E4nBased},                                //  254,  1, 10 : e4n with only one channel
+    {DeviceVersionPrototype, DeviceSubversionProtoE16HcCdb, 1, DeviceE16HCCdb},                                     //  254,  4,  1 : e16HC for CDB
     {DeviceVersionPrototype, DeviceSubversionProtoE2HCExtAdc, 1, DeviceE2HCExtAdc},                                 //  254, 14,  1 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionProtoE2HCExtAdc, 129, DeviceE2HCExtAdc},                               //  254, 14,129 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionProtoE2HCIntAdc, 1, DeviceE2HCIntAdc_V01},                             //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
@@ -1559,13 +1560,16 @@ ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFla
     if (!dacExtControllableFlag) {
         return ErrorFeatureNotImplemented;
     }
-
+    if (dacExtCoders.empty()) {
+        Measurement_t duration = {0.0, UnitPfxNone, "s"};
+        return this->setVoltageReferenceRampOffset(voltage, voltage, duration, applyFlag);
+    }
     voltage.convertValue(voltageReferenceRange.prefix);
     voltageReference = voltage;
     if (invertedDacExtFlag) {
         dacExtCoders[selectedVoltageReferenceRangeIdx]->encode(-voltage.value, txStatus);
-
-    } else {
+    }
+    else {
         dacExtCoders[selectedVoltageReferenceRangeIdx]->encode(voltage.value, txStatus);
         voltageReference.value = -voltageReference.value;
     }
@@ -1576,6 +1580,41 @@ ErrorCodes_t MessageDispatcher::applyDacExt(Measurement_t voltage, bool applyFla
 
     this->manageVoltageReference();
 
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::setVoltageReferenceRampOffset(Measurement_t initialVoltage, Measurement_t finalVoltage, Measurement_t duration, bool applyFlag) {
+    if (vRefInitRampOffsetCoders.empty()) {
+        return ErrorFeatureNotImplemented;
+    }
+
+    double q;
+    double r;
+    initialVoltage.convertValue(voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx].prefix);
+    initialVoltage.value = vRefInitRampOffsetCoders[selectedVoltageReferenceRangeIdx]->encode(initialVoltage.value, txStatus);
+    finalVoltage.convertValue(voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx].prefix);
+    finalVoltage.value = vRefFinalRampOffsetCoders[selectedVoltageReferenceRangeIdx]->encode(finalVoltage.value, txStatus);
+    /*! \todo FCON qui bisognerebbe salvare i parametri (almeno la tensione finale) in modo che durante un cambio della VcVoltageRange si possa aggiornare il parametro come avviene per gli hold Offset */
+    duration.convertValue(UnitPfxMilli);
+    duration.value = tRefRampOffsetCoder->encode(duration.value, txStatus);
+    if (duration.value == 0.0) {
+        q = 0.0;
+        initialVoltage.value = vRefInitRampOffsetCoders[selectedVoltageReferenceRangeIdx]->encode(finalVoltage.value, txStatus);
+    }
+    else {
+        q = (finalVoltage.value-initialVoltage.value)/duration.value;
+        q = quotRefRampOffsetCoders[selectedVoltageReferenceRangeIdx]->encode(q, txStatus);
+    }
+
+    r = (finalVoltage.value-initialVoltage.value)-duration.value*q;
+    remRefRampOffsetCoders[selectedVoltageReferenceRangeIdx]->encode(r, txStatus);
+    activateRefRampOffsetCoder->encode(1, txStatus);
+
+    if (applyFlag) {
+        this->stackOutgoingMessage(txStatus);
+    }
+
+    activateRefRampOffsetCoder->encode(0, txStatus);
     return Success;
 }
 
@@ -2494,6 +2533,15 @@ ErrorCodes_t MessageDispatcher::getVoltageRampOffsetControls(std::vector <Ranged
     }
     voltageRanges = protocolVoltageRanges;
     durationRange = rampTimeRange;
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getVoltageReferenceRampOffsetControls(std::vector <RangedMeasurement_t> &voltageRanges, RangedMeasurement_t &durationRange) {
+    if (vRefInitRampOffsetCoders.empty()) {
+        return ErrorFeatureNotImplemented;
+    }
+    voltageRanges = voltageReferenceRangesArray;
+    durationRange = refRampTimeRange;
     return Success;
 }
 

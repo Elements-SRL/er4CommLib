@@ -1600,7 +1600,7 @@ ErrorCodes_t MessageDispatcher::setVoltageReferenceRampOffset(Measurement_t init
     finalVoltage.convertValue(voltageReferenceRangesArray[selectedVoltageReferenceRangeIdx].prefix);
     finalVoltage.value = vRefFinalRampOffsetCoders[selectedVoltageReferenceRangeIdx]->encode(finalVoltage.value, txStatus);
     /*! \todo FCON qui bisognerebbe salvare i parametri (almeno la tensione finale) in modo che durante un cambio della VcVoltageRange si possa aggiornare il parametro come avviene per gli hold Offset */
-    duration.convertValue(UnitPfxMilli);
+    duration.convertValue(refRampTimeRange.prefix);
     duration.value = tRefRampOffsetCoder->encode(duration.value, txStatus);
     if (duration.value == 0.0) {
         q = 0.0;

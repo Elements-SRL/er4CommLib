@@ -40,7 +40,7 @@ MessageDispatcher_e16HC_CDB_PCBV01_V01::MessageDispatcher_e16HC_CDB_PCBV01_V01(s
     double protocolFpgaClockFrequencyHz = 10.0e6;
 
     refRampTimeRange.step = 1.0/protocolFpgaClockFrequencyHz;
-    refRampTimeRange.min = 1;
+    refRampTimeRange.min = refRampTimeRange.step;
     refRampTimeRange.max = UINT35_MAX*refRampTimeRange.step;
     refRampTimeRange.prefix = UnitPfxNone;
     refRampTimeRange.unit = "s";
@@ -926,7 +926,7 @@ MessageDispatcher_e16HC_CDB_PCBV01_V01::MessageDispatcher_e16HC_CDB_PCBV01_V01(s
     doubleConfig.initialBit = 0;
     doubleConfig.bitsNum = 35;
     doubleConfig.resolution = refRampTimeRange.step;
-    doubleConfig.minValue = refRampTimeRange.min;
+    doubleConfig.minValue = 0.0;
     doubleConfig.maxValue = refRampTimeRange.max;
     tRefRampOffsetCoder = new DoubleOffsetBinaryCoder(doubleConfig);
 

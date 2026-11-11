@@ -198,6 +198,7 @@ MessageDispatcher_e2qc_debug::MessageDispatcher_e2qc_debug(string di) :
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange500mV;
 
     /*! Default values */
     selectedVoltageRangeIdx = defaultVoltageRangeIdx;

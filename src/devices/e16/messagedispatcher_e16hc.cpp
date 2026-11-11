@@ -238,6 +238,7 @@ MessageDispatcher_e16HC_PCBV01_EL06f_V01::MessageDispatcher_e16HC_PCBV01_EL06f_V
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
     addVoltageReferenceToReadout = false;
+    voltageReferenceLpfRange = VoltageRange500mV;
 
     resetCalibrationFlag = true;
 
@@ -1498,6 +1499,7 @@ MessageDispatcher_e16HC_PCBV01_V01::MessageDispatcher_e16HC_PCBV01_V01(string id
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
     addVoltageReferenceToReadout = false;
+    voltageReferenceLpfRange = VoltageRange500mV;
 
     resetCalibrationFlag = true;
 
@@ -2734,6 +2736,7 @@ MessageDispatcher_e16HC_PCBV00_V03::MessageDispatcher_e16HC_PCBV00_V03(string id
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
     addVoltageReferenceToReadout = true;
+    voltageReferenceLpfRange = VoltageRange500mV;
 
     resetCalibrationFlag = true;
 

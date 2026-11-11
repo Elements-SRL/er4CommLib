@@ -2368,8 +2368,8 @@ ErrorCodes_t MessageDispatcher::getVoltageReferenceLpfs(vector <Measurement_t> &
         defaultOption = voltageReferenceLpfDefaultOption;
         voltageRangeIdx = voltageReferenceLpfRange;
         return Success;
-
-    } else {
+    }
+    else {
         voltageRangeIdx = -1;
         return ErrorFeatureNotImplemented;
     }

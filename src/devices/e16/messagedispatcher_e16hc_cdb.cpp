@@ -231,6 +231,7 @@ MessageDispatcher_e16HC_CDB_PCBV01_V01::MessageDispatcher_e16HC_CDB_PCBV01_V01(s
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
     addVoltageReferenceToReadout = false;
+    voltageReferenceLpfRange = VoltageRange500mV;
 
     resetCalibrationFlag = true;
 

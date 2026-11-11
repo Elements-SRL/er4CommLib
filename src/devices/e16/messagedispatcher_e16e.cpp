@@ -195,6 +195,7 @@ MessageDispatcher_e16e_Artix7_PCBV01_V01::MessageDispatcher_e16e_Artix7_PCBV01_V
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange500mV;
 
     /*! Front end denoiser */
     ferdImplementedFlag = true;
@@ -1367,6 +1368,7 @@ MessageDispatcher_e16e_Artix7_PCBV01_fwV01::MessageDispatcher_e16e_Artix7_PCBV01
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].value = 180.0;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].prefix = UnitPfxKilo;
     voltageReferenceLpfOptions[VoltageReferenceLpf180kHz].unit = "Hz";
+    voltageReferenceLpfRange = VoltageRange500mV;
 
     /*! Front end denoiser */
     ferdImplementedFlag = true;

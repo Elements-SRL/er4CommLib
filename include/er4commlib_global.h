@@ -144,6 +144,7 @@ typedef enum {
     DeviceE16FastPulsesEDR3,                /*!< e16n customized for fast pulses (Legacy version for EDR3). */
     DeviceE16n,                             /*!< e16n TC. */
     DeviceE16nEL08a,                        /*!< e16n TC with EL08a. */
+    DeviceE16nEL08b_FWV02,                  /*!< e16n TC with EL08b. */
     DeviceE2HC_V01,                         /*!< e2HC. SR up to 50kHz */
     DeviceE2HC_V02,                         /*!< e2HC. */
     DeviceEL03ceChar,                       /*!< Characterizer chip EL03ce. */

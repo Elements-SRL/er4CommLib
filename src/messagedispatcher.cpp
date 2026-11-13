@@ -29,6 +29,7 @@
 #include "messagedispatcher_e16n.h"
 #include "messagedispatcher_e16n_ramps.h"
 #include "messagedispatcher_e16n_el08a.h"
+#include "messagedispatcher_e16n_el08b_fwv02.h"
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16hc.h"
 #include "messagedispatcher_e16hc_cdb.h"
@@ -133,6 +134,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionE16, DeviceSubversionE16HC_PCBV01_EL06f, 129, DeviceE16HC_PCB_V01_EL06f_V01},                     //    3, 14,129 : e16HC with EL06f
     {DeviceVersionE16, DeviceSubversionE16HC_PCBV02_EL06f, 129, DeviceE16HC_PCB_V01_EL06f_V01},                     //    3, 15,129 : e16HC with EL06f
     {DeviceVersionE16, DeviceSubversionE16nEL08a, 1, DeviceE16nEL08a},                                              //    3, 16,  1 : e16n with EL08a
+    {DeviceVersionE16, DeviceSubversionE16nEL08a, 2, DeviceE16nEL08b_FWV02},                                        //    3, 16,  2 : e16n with EL08b
     {DeviceVersionE16, DeviceSubversionE16HC_PCBV02_EL06de, 130, DeviceE16HC_PCB_V01_V01},                          //    3, 17,130 : e16HC with EL06de
     {11, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                                                //   11,  1,130 : e2HC SR up to 50kHz /*! \todo FCON da eliminare, 11 è la versione del 10MHz. Dovrebbe esserci un solo device che la usa e2HC0024 */
     {DeviceVersionE2, DeviceSubversionE2HC, 130, DeviceE2HC_V01},                                                   //   12,  1,130 : e2HC SR up to 50kHz
@@ -513,6 +515,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE16nEL08a:
         messageDispatcher = new MessageDispatcher_e16n_EL08a_V01(deviceId);
+        break;
+
+    case DeviceE16nEL08b_FWV02:
+        messageDispatcher = new MessageDispatcher_e16n_EL08b_FWV02(deviceId);
         break;
 
     case DeviceE2HC_V01:

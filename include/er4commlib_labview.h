@@ -304,6 +304,16 @@ ER4COMMLIBSHARED_EXPORT
 ErrorCodes_t applyDacExt(
         ER4CL_ARGIN LVMeasurement_t voltage);
 
+/*! \brief Set a custom trigger control.
+ *
+ * \param idx [in] Index of the custom control to set.
+ * \return Error code.
+ */
+ER4COMMLIB_NAME_MANGLING
+ER4COMMLIBSHARED_EXPORT
+ErrorCodes_t setCustomTrigger(
+        ER4CL_ARGIN unsigned short idx);
+
 /*! \brief Set a custom flag control.
  *
  * \param idx [in] Index of the custom control to set.

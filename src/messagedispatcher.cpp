@@ -33,6 +33,7 @@
 #include "messagedispatcher_e16e.h"
 #include "messagedispatcher_e16hc.h"
 #include "messagedispatcher_e16hc_cdb.h"
+#include "messagedispatcher_e16hc_cdb_fwv02.h"
 #include "messagedispatcher_e16eth.h"
 #include "messagedispatcher_el03ce_char.h"
 #include "messagedispatcher_el06b.h"
@@ -151,6 +152,7 @@ static const vector <vector <uint32_t>> deviceTupleMapping = {
     {DeviceVersionTestBoard, DeviceSubversionTestBoardEL10a_PCBV01, 1, TestboardEL10a},                             //    6, 27,  1 : testboard EL10a
     {DeviceVersionPrototype, DeviceSubversionProtoE1E4nBased, 10, DeviceE1E4nBased},                                //  254,  1, 10 : e4n with only one channel
     {DeviceVersionPrototype, DeviceSubversionProtoE16HcCdb, 1, DeviceE16HCCdb},                                     //  254,  4,  1 : e16HC for CDB
+    {DeviceVersionPrototype, DeviceSubversionProtoE16HcCdb, 2, DeviceE16HCCdb_FW02},                                //  254,  4,  2 : e16HC for CDB
     {DeviceVersionPrototype, DeviceSubversionProtoE2HCExtAdc, 1, DeviceE2HCExtAdc},                                 //  254, 14,  1 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionProtoE2HCExtAdc, 129, DeviceE2HCExtAdc},                               //  254, 14,129 : e2HC with external ADC
     {DeviceVersionPrototype, DeviceSubversionProtoE2HCIntAdc, 1, DeviceE2HCIntAdc_V01},                             //  254, 15,  1 : e2HC with internal (delta-sigma) ADC
@@ -240,6 +242,9 @@ MessageDispatcher::MessageDispatcher(string deviceId) :
 
     customFlagsNames.resize(customFlagsNum);
     customFlagsCoders.resize(customFlagsNum);
+
+    customTriggersNames.resize(customTriggersNum);
+    customTriggersCoders.resize(customTriggersNum);
 }
 
 MessageDispatcher::~MessageDispatcher() {
@@ -571,6 +576,10 @@ ErrorCodes_t MessageDispatcher::connectDevice(std::string deviceId, MessageDispa
 
     case DeviceE16HCCdb:
         messageDispatcher = new MessageDispatcher_e16HC_CDB_PCBV01_V01(deviceId);
+        break;
+
+    case DeviceE16HCCdb_FW02:
+        messageDispatcher = new MessageDispatcher_e16HC_CDB_PCBV01_FWV02(deviceId);
         break;
 
     case DeviceE2HCIntAdc_V01:
@@ -1809,6 +1818,16 @@ ErrorCodes_t MessageDispatcher::setVcmOnChannel(unsigned int chIdx, bool flag, b
     return Success;
 }
 
+ErrorCodes_t MessageDispatcher::setCustomTrigger(uint16_t idx) {
+    if (idx >= customTriggersNum) {
+        return ErrorValueOutOfRange;
+    }
+    customTriggersCoders[idx]->encode(1, txStatus);
+    this->stackOutgoingMessage(txStatus);
+    customTriggersCoders[idx]->encode(0, txStatus);
+    return Success;
+}
+
 ErrorCodes_t MessageDispatcher::setCustomFlag(uint16_t idx, bool flag, bool applyFlag) {
     if (idx >= customFlagsNum) {
         return ErrorValueOutOfRange;
@@ -2765,6 +2784,14 @@ ErrorCodes_t MessageDispatcher::readCalibrationEeprom(std::vector <uint32_t> &va
         }
     }
 
+    return Success;
+}
+
+ErrorCodes_t MessageDispatcher::getCustomTriggers(vector <string> &customTriggers) {
+    if (customTriggersNum == 0) {
+        return ErrorFeatureNotImplemented;
+    }
+    customTriggers = customTriggersNames;
     return Success;
 }
 

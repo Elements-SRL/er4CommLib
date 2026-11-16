@@ -446,6 +446,11 @@ ErrorCodes_t setVcmOnChannel(
     MASS_CALL3(setVcmOnChannel, chIdx, flag, true)
 }
 
+ErrorCodes_t setCustomTrigger(
+    uint16_t idx) {
+    MASS_CALL1(setCustomTrigger, idx)
+}
+
 ErrorCodes_t setCustomFlag(
         uint16_t idx,
         bool flag) {
@@ -1494,6 +1499,11 @@ ErrorCodes_t readCalibrationEeprom(
         ret = ErrorDeviceNotConnected;
     }
     return ret;
+}
+
+ErrorCodes_t getCustomTriggers(
+    std::vector <std::string> &customTriggers) {
+    CALL_FIRST1(getCustomTriggers, customTriggers)
 }
 
 ErrorCodes_t getCustomFlags(

@@ -182,6 +182,7 @@ public:
 
     /*! Device specific controls */
 
+    ErrorCodes_t setCustomTrigger(uint16_t idx);
     ErrorCodes_t setCustomFlag(uint16_t idx, bool flag, bool applyFlag);
     ErrorCodes_t setCustomOption(uint16_t idx, uint16_t value, bool applyFlag);
     ErrorCodes_t setCustomDouble(uint16_t idx, double value, bool applyFlag);
@@ -290,6 +291,7 @@ public:
 
     /*! Device specific controls */
 
+    ErrorCodes_t getCustomTriggers(std::vector <std::string> &customTriggers);
     ErrorCodes_t getCustomFlags(std::vector <std::string> &customFlags, std::vector <bool> &customFlagsDefault);
     ErrorCodes_t getCustomOptions(std::vector <std::string> &customOptions, std::vector <std::vector <std::string>> &customOptionsDescriptions, std::vector <uint16_t> &customOptionsDefault);
     ErrorCodes_t getCustomDoubles(std::vector <std::string> &customDoubles, std::vector <RangedMeasurement_t> &customDoublesRanges, std::vector <double> &customDoublesDefault);
@@ -612,6 +614,10 @@ protected:
     std::vector <DoubleCoder *> quotRefRampOffsetCoders;
     std::vector <DoubleCoder *> remRefRampOffsetCoders;
     BoolCoder * activateRefRampOffsetCoder;
+
+    uint16_t customTriggersNum = 0;
+    std::vector <std::string> customTriggersNames;
+    std::vector <BoolCoder *> customTriggersCoders;
 
     uint16_t customFlagsNum = 0;
     std::vector <std::string> customFlagsNames;

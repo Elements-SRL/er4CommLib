@@ -348,6 +348,15 @@ ErrorCodes_t setVcmOnChannel(
     ER4CL_ARGIN unsigned int chIdx,
     ER4CL_ARGIN bool flag);
 
+/*! \brief Set a custom trigger control.
+ *
+ * \param idx [in] Index of the custom control to set.
+ * \return Error code.
+ */
+ER4COMMLIBSHARED_EXPORT
+    ErrorCodes_t setCustomTrigger(
+        ER4CL_ARGIN uint16_t idx);
+
 /*! \brief Set a custom flag control.
  *
  * \param idx [in] Index of the custom control to set.
@@ -1555,6 +1564,15 @@ ErrorCodes_t readCalibrationEeprom(
         ER4CL_ARGOUT std::vector <uint32_t> &value,
         ER4CL_ARGIN std::vector <uint32_t> address,
         ER4CL_ARGIN std::vector <uint32_t> size);
+
+/*! \brief Get the available custom controls of type trigger.
+ *
+ * \param customTriggers [out] Names of the available custom controls.
+ * \return Success if there's at least one custom trigger control available.
+ */
+ER4COMMLIBSHARED_EXPORT
+    ErrorCodes_t getCustomTriggers(
+        ER4CL_ARGOUT std::vector <std::string> &customTriggers);
 
 /*! \brief Get the available custom controls of type flag (active/inactive).
  *

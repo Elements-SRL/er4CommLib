@@ -1322,8 +1322,8 @@ void MessageDispatcher_e16HC_CDB_PCBV01_V01::updateVoltageReferenceOffsetCalibra
     voltageReferenceOffsetCalibration.prefix = voltageReferenceRangesArray[VoltageReferenceRange2V].prefix;
     voltageReferenceOffsetCalibration.convertValue(UnitPfxMilli);
 
-    double vcm_mV = 1650.0+voltageReferenceOffsetCalibration.value;;
-    double maxDacExtVoltage = 4096.0+voltageReferenceOffsetCalibration.value;;
+    double vcm_mV = 1650.0+voltageReferenceOffsetCalibration.value;
+    double maxDacExtVoltage = 4096.0+voltageReferenceOffsetCalibration.value;
     double voltageAmplifierGain = voltageReferenceRangesArray[VoltageReferenceRange15V].step/voltageReferenceRangesArray[VoltageReferenceRange2V].step;
 
     std::vector <RangedMeasurement_t> voltageReferenceRangesArrayOB;

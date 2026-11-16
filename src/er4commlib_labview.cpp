@@ -229,6 +229,11 @@ ErrorCodes_t applyDacExt(
     return er4cl::applyDacExt(voltage);
 }
 
+ErrorCodes_t setCustomTrigger(
+    uint16_t idx) {
+    return er4cl::setCustomTrigger(idx);
+}
+
 ErrorCodes_t setCustomFlag(
         uint16_t idx,
         bool flag) {

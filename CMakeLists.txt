@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(er4commlib
-    VERSION 1.24.0
+    VERSION 1.25.0
     LANGUAGES CXX
 )
 
@@ -49,6 +49,7 @@ set(LIB_SOURCES
     src/devices/e16/messagedispatcher_e16fastpulses.cpp
     src/devices/e16/messagedispatcher_e16hc.cpp
     src/devices/e16/messagedispatcher_e16hc_cdb.cpp
+    src/devices/e16/messagedispatcher_e16hc_cdb_fwv02.cpp
     src/devices/e16/messagedispatcher_e16eth.cpp
     src/devices/testboard/messagedispatcher_el03ce_char.cpp
     src/devices/testboard/messagedispatcher_el06b.cpp
